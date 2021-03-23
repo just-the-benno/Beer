@@ -1,0 +1,33 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inherits LayoutComponentBase
+
+@inject IStringLocalizer<SharedRessources> sharedLocalizer
+
+<style>
+    html, body, #app, .mud-main-content {
+        height: 100%
+    }
+</style>
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIcon Size="Size.Large" Icon="fas fa-beer" />
+        <MudText Typo="Typo.h5" Class="mudblazor-appbar-brand-text">@sharedLocalizer["AppName"] </MudText>
+        <MudAppBarSpacer />
+    </MudAppBar>
+    <MudMainContent>
+        <div class="d-flex flex-column align-center justify-center" style="height: 100%;">
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+
+}

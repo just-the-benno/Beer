@@ -1,0 +1,10 @@
+﻿<MudPaper Class="pa-10 d-flex flex-column align-center">
+    <MudProgressCircular Class="mb-5" Color="Color.Primary" Indeterminate="true" />
+    <MudText Typo="Typo.body1">@Text</MudText>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public String Text { get; set; }
+}

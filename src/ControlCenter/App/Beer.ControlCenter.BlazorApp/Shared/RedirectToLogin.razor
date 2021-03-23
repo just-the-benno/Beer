@@ -1,0 +1,13 @@
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@code {
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("RedirectToLogin: OnInitialized");
+        String url = $"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+        Console.WriteLine($"RedirectToLogin: OnInitialized | url {url}");
+
+        Navigation.NavigateTo(url);
+    }
+}

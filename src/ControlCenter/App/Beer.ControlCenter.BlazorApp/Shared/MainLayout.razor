@@ -1,0 +1,95 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inherits LayoutComponentBase
+
+@inject IStringLocalizer<SharedRessources> sharedLocalizer
+
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+
+<MudThemeProvider Theme="@_default" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudMenu Icon="@Icons.Material.Filled.ViewModule" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true">
+            <MudNavLink Href="/dashboard" IconColor="Color.Default" Icon="@Icons.Filled.AccountTree">DaAPI</MudNavLink>
+        </MudMenu>
+
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudText Typo="Typo.h5" Class="mudblazor-appbar-brand-text">@sharedLocalizer["AppName"]</MudText>
+        </MudHidden>
+        <MudAppBarSpacer />
+
+        <MudMenu Icon="@Icons.Material.Filled.Person" Direction="Direction.Left" Color="Color.Inherit" OffsetX="true">
+            <MudMenuItem OnClick="BeginSignOut">@sharedLocalizer["LogoutCaption"]</MudMenuItem>
+        </MudMenu>
+
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Class="flex-fill" Style="overflow:hidden">
+        <MudDrawerHeader Class="pa-0 flex-min">
+            <div class="d-flex flex-column align-center mt-4 flex-fill ">
+                <div class="d-flex flex-row align-center ">
+                    <MudIcon Size="Size.Large" Icon="fas fa-beer" />
+                    <MudText Class="ml-3" Typo="Typo.h5">@sharedLocalizer["AppName"]</MudText>
+                </div>
+                <AuthorizeView>
+                    <MudPaper Elevation="0" Class="my-4 pa-5 d-flex flex-column align-center align-self-stretch mud-theme-primary" Square="true">
+                        <MudAvatar Size="Size.Large" Image="@GetClaimsValue(context.User, "picture")" />
+                        <MudText Typo="Typo.h6">@GetClaimsValue(context.User, "preferred_username")</MudText>
+                    </MudPaper>
+                </AuthorizeView>
+
+            </div>
+        </MudDrawerHeader>
+
+        <NavMenu />
+
+        <MudDivider />
+        <MudGrid Class="flex-min px-3">
+            <MudItem xs="4" Class="d-flex justify-center">
+                <MudIconButtonWithContent Icon="@Icons.Material.Filled.Message" Link="@UrlManager.MessageCenter">@sharedLocalizer["AppMenuMessageCaption"]</MudIconButtonWithContent>
+            </MudItem>
+            <MudItem xs="4" Class="d-flex justify-center">
+                <MudIconButtonWithContent Icon="@Icons.Material.Filled.Settings" Link="@UrlManager.Settings">@sharedLocalizer["AppMenuSettingsCaption"]</MudIconButtonWithContent>
+            </MudItem>
+            <MudItem xs="4" Class="d-flex justify-center">
+                <MudIconButtonWithContent Icon="@Icons.Material.Filled.Logout" OnClick="BeginSignOut">@sharedLocalizer["LogoutCaption"]</MudIconButtonWithContent>
+            </MudItem>
+        </MudGrid>
+    </MudDrawer>
+
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+
+    private String GetClaimsValue(System.Security.Claims.ClaimsPrincipal principal, String type) =>
+            principal.Claims.FirstOrDefault(x => x.Type == type)?.Value;
+
+    private MudTheme _default = new MudTheme
+    {
+        Palette = new Palette
+        {
+            Background = "#fafafa",
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
+}

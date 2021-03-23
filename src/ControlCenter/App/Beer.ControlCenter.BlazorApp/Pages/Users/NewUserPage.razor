@@ -1,0 +1,123 @@
+﻿@page "/new-user"
+
+@using Beer.ControlCenter.BlazorApp.Pages.Users
+
+@inject IStringLocalizer<NewUserPage> L
+@inject IBeerUserService _userService
+@inject ISnackbar _snackBarService
+@inject NavigationManager _navManager
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <EditForm Model="@_model" @ref="_form" OnSubmit="CreateNewUser">
+        <FluentValidator />
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">@L["NewUserHeading"]</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["UsernamePlaceHolder"]" Label="@L["UsernameLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.Loginname" For="@(() => _model.Loginname)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["DisplayNamePlaceHolder"]" Label="@L["DisplayNameLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.DisplayName" For="@(() => _model.DisplayName)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["PasswordPlaceHolder"]" Label="@L["PasswordLabel"]" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_model.Password" For="@(() => _model.Password)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["PasswordConfirmationPlaceHolder"]" Label="@L["PasswordConfirmationLabel"]" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_model.PasswordConfirmation" For="@(() => _model.PasswordConfirmation)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                </MudGrid>
+                @if (_possibleAvatars.Any() == false)
+                {
+                    <CenteredCircularLoading Text="@L["LoadingAvatarMessage"]" /> }
+                else
+                {
+                    <MudText Typo="Typo.h6" Class="mt-5 mb-3">@L["SelectAvatarHeading"]</MudText>
+                    @if (String.IsNullOrEmpty(_model.AvatarUrl) == true && _firstSubmitHappened == true)
+                    {
+                        <MudAlert Severity="Severity.Error">
+                            <ValidationMessage For="@( () => _model.AvatarUrl )" />
+                        </MudAlert>
+                    }
+
+                    <MudGrid>
+                        @foreach (var item in _possibleAvatars)
+                        {
+                            <MudItem xs="6" md="3" lg="2" Class="d-flex justify-center">
+                                <MudAvatar @onclick="@(() => SelectAvatar(item))" Image="@item" Size="Size.Large" Class="@(_model.AvatarUrl == item ? "primary-border" : String.Empty)" />
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <SendingAwareButton DefaultText="@L["CreateNewUserButtonCaption"]" InProgressText="@L["CreatingNewUserButtonCaption"]" IsExecuting="_creatingUserInProgress" />
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+</MudContainer>
+
+@code {
+
+    private EditForm _form;
+
+    private CreateNewUserViewModel _model = new();
+    private Boolean _firstSubmitHappened = false;
+
+    private IEnumerable<String> _possibleAvatars = Array.Empty<String>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _possibleAvatars = await _userService.GetAvailableAvatars();
+    }
+
+    private void SelectAvatar(String url)
+    {
+        if (_creatingUserInProgress == true)
+        {
+            return;
+        }
+
+        _model.AvatarUrl = url;
+    }
+
+    private Boolean _creatingUserInProgress;
+
+    private async Task CreateNewUser()
+    {
+        if (_form.EditContext.Validate() == false)
+        {
+            _firstSubmitHappened = true;
+            return;
+        }
+
+        _creatingUserInProgress = true;
+
+        Boolean result = await _userService.CreateUser(new CreateBeerUserRequest
+        {
+            DisplayName = _model.DisplayName,
+            Password = _model.Password,
+            Username = _model.Loginname,
+            ProfilePictureUrl = new Uri(_model.AvatarUrl).PathAndQuery
+        });
+
+        if (result == true)
+        {
+            _snackBarService.Add(String.Format(L["UserCreatedSuccessMessage"], _model.Loginname), Severity.Success, (opt) =>
+            {
+                opt.CloseAfterNavigation = false;
+            });
+            _navManager.NavigateTo(UrlManager.UserOverview);
+        }
+        else
+        {
+            _creatingUserInProgress = false;
+            _snackBarService.Add(String.Format(L["UserCreatedFailedMessage"], _model.Loginname), Severity.Error);
+        }
+    }
+}

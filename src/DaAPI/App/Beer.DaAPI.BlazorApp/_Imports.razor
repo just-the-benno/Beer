@@ -1,0 +1,103 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using Microsoft.Extensions.Localization
+
+@*Imports from Components *@
+
+@* own components *@
+@using Beer.DaAPI.BlazorApp
+
+
+@* shared with api project *@
+@using Beer.DaAPI.Shared.Commands
+
+@* pages *@
+@using Beer.DaAPI.BlazorApp.Pages.Common
+@using Beer.DaAPI.BlazorApp.Pages.Dashboard
+@using Beer.DaAPI.BlazorApp.Pages.DHCPv6Interfaces
+@using Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
+@using Beer.DaAPI.BlazorApp.Pages.Notifications
+
+@* services *@
+@using Beer.DaAPI.BlazorApp.Services
+
+@* modals *@
+@using Beer.DaAPI.BlazorApp.Modals
+
+@* modals *@
+@using Beer.DaAPI.BlazorApp.Helper
+
+@* shared components *@
+@using Beer.DaAPI.BlazorApp.Shared
+@using Beer.DaAPI.BlazorApp.Shared.Components
+@using Beer.DaAPI.BlazorApp.Shared.Components.Breadcrumb
+@using Beer.DaAPI.BlazorApp.Shared.Components.Nav
+@using Beer.DaAPI.BlazorApp.Shared.Components.Forms
+
+@* shared forms *@
+@using Beer.DaAPI.BlazorApp.Shared.Layout
+
+@* shared forms *@
+@using Beer.DaAPI.BlazorApp.Shared.Forms
+
+@* other components *@
+
+@using Blazored
+@using Blazored.Modal
+@using Blazored.Modal.Services
+
+@using Blazored.Toast
+@using Blazored.Toast.Services
+
+@using BlazorDateRangePicker
+
+@using ChartJs.Blazor
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.BarChart.Axes
+@using ChartJs.Blazor.Interop
+@using ChartJs.Blazor.Util
+
+@using Sve.Blazor.DataTable.Components
+
+@using BlazorStrap
+
+@* requests and responses *@
+
+@using static Beer.DaAPI.Shared.Responses.ServerControllerResponses.V1
+@using static Beer.DaAPI.Shared.Responses.NotificationPipelineResponses.V1
+@using static Beer.DaAPI.Shared.Responses.StatisticsControllerResponses.V1
+
+@using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1
+
+@using static Beer.DaAPI.Shared.Responses.DHCPv6InterfaceResponses.V1
+@using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1
+@using static Beer.DaAPI.Shared.Responses.DHCPv6LeasesResponses.V1;
+
+@using static Beer.DaAPI.Shared.Requests.DHCPv6InterfaceRequests.V1
+@using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1
+
+@using static Beer.DaAPI.Shared.Responses.DHCPv4InterfaceResponses.V1
+@using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1
+@using static Beer.DaAPI.Shared.Responses.DHCPv4LeasesResponses.V1
+
+@using static Beer.DaAPI.Shared.Requests.DHCPv4InterfaceRequests.V1
+@using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1
+
+
+

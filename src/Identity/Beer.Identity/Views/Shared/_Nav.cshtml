@@ -1,0 +1,35 @@
+@using IdentityServer4.Extensions
+@inject IStringLocalizer<SharedResources> localizer
+
+@{
+    string name = null;
+    if (!true.Equals(ViewData["signed-out"]))
+    {
+        name = Context.User?.GetDisplayName();
+    }
+}
+
+<header class="demo-header mdl-layout__header mdl-layout__header--scroll">
+    <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">@localizer["AppTitle"]</span>
+        <div class="mdl-layout-spacer"></div>
+        @if (!string.IsNullOrWhiteSpace(name))
+        {
+            <button id="demo-menu-lower-right"
+                    class="mdl-button mdl-js-button mdl-button mdl-color-text--white">
+                @name
+            </button>
+
+            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                for="demo-menu-lower-right">
+
+                <li class="mdl-menu__item">
+                    <a class="mdl-navigation__link mdl-color-text--black" style="color: inherit !important;" asp-action="Logout" asp-controller="Account">
+                        <i class="material-icons mdl-list__item-icon">person</i>
+                        @localizer["Logout"]
+                    </a>
+                </li>
+            </ul>
+        }
+        </div>
+</header>

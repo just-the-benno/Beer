@@ -1,0 +1,6 @@
+﻿@inject IStringLocalizer<NavMenu> L
+
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">@L["DashboardCaption"]</MudNavLink>
+    <MudNavLink Href="@UrlManager.UserOverview" Match="NavLinkMatch.Prefix" Icon="fas fa-users">@L["UserOverviewCaption"]</MudNavLink>
+</MudNavMenu>

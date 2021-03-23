@@ -1,0 +1,124 @@
+﻿@page "/users"
+
+@using Beer.ControlCenter.BlazorApp.Pages.Users
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject IStringLocalizer<UserOverviewPage> L
+@inject IStringLocalizer<SharedRessources> LShared
+@inject NavigationManager _navManager
+@inject SignOutSessionStateManager SignOutManager
+
+@inject IBeerUserService _service
+@inject IDialogService _dialogService
+@inject ISnackbar  _snackBarService
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudText Typo="Typo.h3" GutterBottom="true">@L["PageHeading"]</MudText>
+    <MudText Class="mb-8">@L["PageSubtext"]</MudText>
+    @if (_users == null)
+    {
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+    }
+    else
+    {
+        <MudTable SortLabel="@L["SortLabel"]" Items="_users" Hover="true" Elevation="0">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">@L["PageHeading"]</MudText>
+                <MudToolBarSpacer />
+                <MudTooltip Text="@L["CreateNewUserToolTipContent"]" Placement="Placement.Start">
+                    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" OnClick="GoToNewUserPage" />
+                </MudTooltip>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<BeerUserOverview, object>(x=>x.LoginName)">@L["LoginNameTableHeader"]</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<BeerUserOverview, object>(x=>x.DisplayName)">@L["DisplayNameTableHeader"]</MudTableSortLabel></MudTh>
+                <MudTh>
+                    @L["ActionTableHeader"]
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["LoginNameTableHeader"]">@context.LoginName</MudTd>
+                <MudTd DataLabel="@L["DisplayNameTableHeader"]">@context.DisplayName</MudTd>
+                <MudTd>
+                    <MudTooltip Text="@L["ResetPasswordUserToolTipContent"]">
+                        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="@( () => OpenResetPassworDialog(context))" />
+                    </MudTooltip>
+
+                    @if (IsCurrentUser(context.Id) == false)
+                        {
+                        <MudTooltip Text="@L["DeleteUserToolTipContent"]">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@( () => DeleteUser(context))" />
+                        </MudTooltip>
+                        }
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{50, 100}" RowsPerPageString="@L["RowsPerPageString"]" InfoFormat="@L["ItemsFormat"]" />
+            </PagerContent>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+    private List<BeerUserOverview> _users = null;
+    private System.Security.Claims.ClaimsPrincipal _principal;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> _authenticationStateTask { get; set; }
+
+    private Boolean IsCurrentUser(String id) => _principal.Claims.First(x => x.Type == "sub").Value == id;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _principal = (await _authenticationStateTask).User;
+        _users = new List<BeerUserOverview>(await _service.GetLocalUsers());
+    }
+
+    private async Task OpenResetPassworDialog(BeerUserOverview user)
+    {
+        Boolean isSelf = IsCurrentUser(user.Id);
+
+        var parameters = new DialogParameters();
+        parameters.Add(nameof(ChangeUserPasswordDialog.User), user);
+        parameters.Add(nameof(ChangeUserPasswordDialog.IsSelf), isSelf);
+
+
+        var instance = _dialogService.Show<ChangeUserPasswordDialog>(L["ChangePasswordDialogTitle"], parameters);
+        var result = await instance.Result;
+        
+        if (result.Cancelled == false && result.Data is Boolean && (Boolean)result.Data == true && isSelf == true)
+        {
+            await SignOutManager.SetSignOutState();
+            _navManager.NavigateTo("authentication/logout");
+        }
+    }
+
+    private async Task DeleteUser(BeerUserOverview user)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+           L["DeleteUserDialogHeader"],
+           String.Format(L["DeleteUserQuestion"], user.LoginName),
+           yesText: LShared["DeleteButtonCaption"], cancelText: LShared["CancelButtonCaption"]);
+
+        if (result == true)
+        {
+            _snackBarService.Add(String.Format(L["DeletingUserMessage"], user.LoginName), Severity.Info);
+            Boolean serviceResult = await _service.DeleteUser(user.Id);
+            if (serviceResult == true)
+            {
+                _snackBarService.Add(String.Format(L["UserDeletedSuccessMessage"], user.LoginName), Severity.Success);
+                _users.Remove(user);
+            }
+            else
+            {
+                _snackBarService.Add(String.Format(L["UserDeletedFailedMessage"], user.LoginName), Severity.Error);
+            }
+        }
+    }
+
+    private void GoToNewUserPage()
+    {
+        _navManager.NavigateTo(UrlManager.CreateNewUser);
+    }
+
+}

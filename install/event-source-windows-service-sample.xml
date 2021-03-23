@@ -1,0 +1,13 @@
+<service>
+  <id>ESDB</id>
+  <executable>EventStore.ClusterNode.exe</executable>
+  <name>Eventsource Database for Beer</name>
+  <description>The event store database used for Beer</description>
+  <onfailure action="restart" delay="10 sec"/>
+  <onfailure action="restart" delay="20 sec"/>
+  <resetfailure>1 hour</resetfailure>
+  <arguments>--config eventstore.conf</arguments>
+  <priority>Normal</priority>
+  <stoptimeout>15 sec</stoptimeout>
+  <startmode>Automatic</startmode>
+</service>

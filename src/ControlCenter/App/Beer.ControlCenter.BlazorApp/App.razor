@@ -1,0 +1,44 @@
+﻿@inject IStringLocalizer<SharedRessources> sharedLocalizer
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            @if (routeData.PageType == typeof(Beer.ControlCenter.BlazorApp.Pages.Authentication))
+            {
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            }
+            else
+            {
+            <AuthorizeView>
+                <Authorizing>
+                    <LayoutView Layout="typeof(SinglePageLayout)">
+                        <LoadingComponent Text="@sharedLocalizer["AuthorizingMessage"]" />
+                    </LayoutView>
+                </Authorizing>
+                <NotAuthorized>
+                    @if (!context.User.Identity.IsAuthenticated)
+                        {
+                    <RedirectToLogin />
+                        }
+                        else
+                        {
+                    <LayoutView Layout="typeof(SinglePageLayout)">
+                        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@sharedLocalizer["AuthorizationFailed"]</MudAlert>
+                    </LayoutView>
+                        }
+                </NotAuthorized>
+                <Authorized>
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                </Authorized>
+            </AuthorizeView>
+            }
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(SinglePageLayout)">
+                <LayoutView Layout="typeof(SinglePageLayout)">
+                    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@sharedLocalizer["RouteNotFoundMessage"]</MudAlert>
+                </LayoutView>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

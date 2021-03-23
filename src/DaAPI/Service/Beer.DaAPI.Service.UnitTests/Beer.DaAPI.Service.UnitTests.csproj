@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Helper\Beer.TestHelper\Beer.TestHelper.csproj" />
+    <ProjectReference Include="..\Beer.DaAPI.Service.API\Beer.DaAPI.Service.API.csproj" />
+    <ProjectReference Include="..\Beer.DaAPI.Service.Core\Beer.DaAPI.Service.Core.csproj" />
+    <ProjectReference Include="..\Beer.DaAPI.Service.Infrastructure\Beer.DaAPI.Service.Infrastructure.csproj" />
+    <ProjectReference Include="..\Beer.DaAPI.Service.TestHelper\Beer.DaAPI.Service.TestHelper.csproj" />
+  </ItemGroup>
+
+</Project>

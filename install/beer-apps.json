@@ -1,0 +1,69 @@
+[
+    {
+        "Name": "Beer-Identity",
+        "ProjectFile": "src/Identity/Beer.Identity/Beer.Identity.csproj",
+        "OutputDir": "E:/Applications/Identity",
+        "Urls": 
+        [
+            "<$IdentityUrl>"
+        ],
+        "Variables": 
+        {
+            "ConnectionStrings__BeerIdentityContext": "Server=localhost;Port=5432;Database=IdentityUserStorage;User Id=postgres;Password=<$PostgresPassword>;",
+            "ConnectionStrings__OperationalStorage": "Server=localhost;Port=5432;Database=IdentityOperationalStorage;User Id=postgres;Password=<$PostgresPassword>;",
+            "AppConfiguration__OpenIdConnectConfiguration__AuthorityUrl": "<$IdentityUrl>",
+            "AppConfiguration__BeerAuthenticationClients__ControlCenter__Urls__0": "<$ControlCenterAppUrl>",
+            "AppConfiguration__BeerAuthenticationClients__ControlCenter__Password": "<$ControlCenterAppPassword>",
+            "AppConfiguration__BeerAuthenticationClients__DaAPI__Urls__0": "<$DaAPIAppUrl>",
+            "AppConfiguration__BeerAuthenticationClients__DaAPI__Password": "<$DaAPIAppPassword>"
+        }
+    },
+    {
+        "Name": "ControlCenter",
+        "ProjectFile": "src/ControlCenter/App/Beer.ControlCenter.BlazorHost.csproj",
+        "OutputDir": "E:/Applications/ControlCenter-App",
+        "Urls": 
+        [
+            "<$ControlCenterAppUrl>"
+        ],
+        "Variables": 
+        {
+            "AppConfiguration__OpenIdConnection__Authority": "<$IdentityUrl>",
+            "AppConfiguration__OpenIdConnection__RedirectUri": "<$ControlCenterAppUrl>/authentication/login-callback",
+            "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "<$ControlCenterAppUrl>/authentication/logout-callback",
+            "AppConfiguration__AppUrls__BeerIdentity": "<$IdentityUrl>"
+        }
+    },
+    {
+        "Name": "DaAPI-API",
+        "ProjectFile": "src/DaAPI/Service/Beer.DaAPI.Service.API/Beer.DaAPI.Service.API.csproj",
+        "OutputDir": "E:/Applications/DaAPI-API",
+        "Urls": 
+        [
+            "<$DaAPI-APIUrl>"
+        ],
+        "Variables": 
+        {
+            "ConnectionStrings__DaAPIDatabaseTestConnection": "Server=localhost;Port=5432;Database=DaAPI;User Id=postgres;Password=<PASSWORD>;",
+            "ConnectionStrings__ESDB": "esdb://admin:<$ESDBPassword>@<$ExternalESDBUrl>::2113?tls=true",
+            "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "<$IdentityUrl>/",
+            "AppConfiguration__AppURIs__DaAPI-Blazor": "<$DaAPIAppUrl>/"
+        }
+    },
+    {
+        "Name": "DaAPI-App",
+        "ProjectFile": "src/DaAPI/App/Beer.DaAPI.BlazorHost/Beer.DaAPI.BlazorHost.csproj",
+        "OutputDir": "E:/Applications/DaAPI-APP",
+        "Urls": 
+        [
+            "<$DaAPIAppUrl>"
+        ],
+        "Variables": 
+        {
+            "AppConfiguration__OpenIdConnection__Authority": "<$IdentityUrl>/",
+            "AppConfiguration__OpenIdConnection__RedirectUri": "<$DaAPIAppUrl>/authentication/login-callback",
+            "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "<$DaAPIAppUrl>/authentication/logout-callback",
+            "AppConfiguration__APIUrls__DaAPI": "<$DaAPIAppUrl>/"
+        }
+    }
+]

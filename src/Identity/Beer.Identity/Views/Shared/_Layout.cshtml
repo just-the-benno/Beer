@@ -1,0 +1,45 @@
+﻿@inject IStringLocalizer<SharedResources> localizer
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+    <title>@localizer["AppTitle"]</title>
+
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
+
+    <link rel="stylesheet" href="~/css/lib/mdl/material.min.css" />
+    <script src="~/js/lib/mdl/material.min.js"></script>
+    <link rel="stylesheet" href="~/css/lib/md-icons/material-design-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+        <partial name="_Nav" />
+
+        <main class="demo-main mdl-layout__content">
+            <div class="demo-container mdl-grid">
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+                <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+                    @RenderBody()
+
+                    @*<div class="demo-crumbs mdl-color-text--grey-500">
+                            Google &gt; Material Design Lite &gt; How to install MDL
+                        </div>*@
+                </div>
+            </div>
+        </main>
+        <partial name="_Footer" />
+
+    </div>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+<partial name="_Nav" />
+

@@ -1,0 +1,25 @@
+﻿@inherits MudIconButton
+@using MudBlazor.Extensions
+
+<MudElement @bind-Ref="@_elementReference"
+            HtmlTag="@HtmlTag"
+            Class="@Classname"
+            Style="@Style"
+            @attributes="UserAttributes"
+            @onclick="OnClickHandler"
+            type="@ButtonType.ToDescriptionString()"
+            href="@Link"
+            target="@Target"
+            rel="@(Target=="_blank"?"noopener":null)"
+            disabled="@Disabled">
+    <div class="d-flex flex-column align-center">
+        <span class="mud-icon-button-label" style="display:block">
+            <MudIcon Icon="@Icon" Size="@Size" />
+        </span>
+        <MudText Typo="Typo.body2" Color="Color.Inherit">@ChildContent</MudText>
+    </div>
+</MudElement>
+
+@code {
+
+}

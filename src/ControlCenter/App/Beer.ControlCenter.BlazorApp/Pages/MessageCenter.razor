@@ -1,0 +1,8 @@
+﻿@page "/MessageCenter"
+
+@inject IStringLocalizer<Beer.ControlCenter.BlazorApp.Pages.MessageCenter> L
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudAlert Severity="Severity.Warning">@L["UnderConstructionMessage"]</MudAlert>
+</MudContainer>

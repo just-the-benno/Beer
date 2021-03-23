@@ -1,0 +1,64 @@
+@page "/authentication/{action}"
+
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject IStringLocalizer<Beer.ControlCenter.BlazorApp.Pages.Authentication> L
+@inject NavigationManager navManager
+
+@layout SinglePageLayout
+
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        <LoadingComponent Text="@L["SigninText"]" />
+    </LoggingIn>
+    <LogInFailed>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@L["LoginFailedTitle"]</MudAlert>
+    </LogInFailed>
+    <CompletingLoggingIn>
+        <LoadingComponent  Text="@L["CompletingLogginInText"]" />
+    </CompletingLoggingIn>
+
+    <LogOutSucceeded>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@L["LogoutSuccessTitle"]</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.body2">@L["LogoutSuccessContent"].</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Login" >@L["LogoutLoginAgainCaption"]</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </LogOutSucceeded>
+    <LogOutFailed>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@L["LogoutFailed"]</MudAlert>
+    </LogOutFailed>
+    <LogOut>
+        <LoadingComponent  Text="@L["LogoutText"]" />
+    </LogOut>
+    <CompletingLogOut>
+        <LoadingComponent  Text="@L["CompletingLogOutText"]" />
+    </CompletingLogOut>
+    <UserProfile>
+        <LoadingComponent Text="@L["UserProfileText"]" />
+    </UserProfile>
+
+</RemoteAuthenticatorView>
+
+@code{
+    [Parameter] public string Action { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("authentication: OnInitialized");
+        base.OnInitialized();
+    }
+
+    private void Login()
+    {
+        navManager.NavigateTo(navManager.BaseUri, true);
+    }
+}
