@@ -693,7 +693,7 @@ function  Install-Beer {
     
     param (
         [string]$configFilePath = "./beer-apps.json",
-        [string]$repoUrl = "https://github.com/just-the-benno/DaAPI.git",
+        [string]$repoUrl = "https://github.com/just-the-benno/Beer.git",
         [string]$repoDestDict = "./../temp",
         [string]$downloadTempPath = "./downloadtemp",
         [string]$azureDNsWinACMEPluginDownloadUrl = "https://github.com/win-acme/win-acme/releases/download/v2.1.15/plugin.validation.dns.azure.v2.1.15.1008.zip",
