@@ -96,7 +96,7 @@ function Install-ChocoPackage {
 
     $command = "choco upgrade ${Name} -y --source=`"'https://chocolatey.org/api/v2'`"";
     if ([String]::IsNullOrEmpty($AddtionalParameter) -eq $false) {
-        $command += "--params `"${AddtionalParameter}`"";
+        $command += " --params `"${AddtionalParameter}`"";
     }
 
     Invoke-Expression $command 
@@ -113,7 +113,7 @@ function Install-PreChocoPackage {
 
     $command = "choco upgrade ${Name} --pre -y --source=`"'https://chocolatey.org/api/v2'`"";
     if ([String]::IsNullOrEmpty($AddtionalParameter) -eq $false) {
-        $command += "--params `"${AddtionalParameter}`"";
+        $command += " --params `"${AddtionalParameter}`"";
     }
 
     Invoke-Expression $command 
@@ -170,7 +170,7 @@ function Install-NPMPackageIfNeeded {
                 Write-Host "installing npm package '$Name' failed" -ForegroundColor DarkRed
             }
 
-            return installResult
+            return $installResult
         }
         catch {
             Write-Host "installing npm package '$Name' failed" -ForegroundColor DarkRed
@@ -343,7 +343,9 @@ function Clear-AppFolder {
         continue;
     }
 
-    Get-ChildItem -Path $app.OutputDir -Directory | ForEach-Object { $_.Delete($true) }
+    Get-ChildItem -Path "." -Recurse  | Remove-Item -Force -Recurse
+    Start-Sleep -Seconds 1.5
+    Get-ChildItem -Path "." -Recurse  | Remove-Item -Force -Recurse
 }
 
 function Copy-App {
@@ -393,7 +395,7 @@ function Add-Apps {
         $projectFilePath = Join-Path -Path  $repoDestDict -ChildPath $app.ProjectFile
         $projectDir = Split-Path -Path $projectFilePath
         if ([System.IO.File]::Exists($projectFilePath) -eq $false) {
-            Write-Host "Project file $projectFilePath cnot found. Skipping..." -ForegroundColor DarkRed
+            Write-Host "Project file $projectFilePath not found. Skipping..." -ForegroundColor DarkRed
             continue;
         }
     
@@ -549,7 +551,7 @@ function Add-DotNetToolIfNeeded {
     else {
         Write-Host "Installing .NET tool '$name'..."
         Invoke-Expression "dotnet tool install $Name --global " *>$null
-        if (Find-DotNetTool -Name $Name -eq $true) {
+        if ( (Find-DotNetTool -Name $Name) -eq $true) {
             Write-Host ".NET tool '$name' installed successfully" -ForegroundColor DarkGreen
             return $true
         }
@@ -607,7 +609,7 @@ function Set-EventStoreOperational {
     if ( ($existingConfigrationContent -match '(CertificateThumbPrint: ")(.*?)(")') -eq $true) {
         $thumbprint = $Matches[2];
         $requestCertficate = [String]::IsNullOrEmpty($thumbprint)
-        if ($requestCertficate -eq $false) {
+        if ($requestCertficate -eq $true) {
             Write-Host "No certificate found, requesting it"
         }
         else {
@@ -627,8 +629,10 @@ function Set-EventStoreOperational {
     if ( (Get-Service | Where-Object -Property Name -eq -Value "ESDB").Count -eq 0) {
         $eventstoreBinaryPath = Invoke-Expression -Command "where.exe EventStore.ClusterNode.exe"
 
+        $xmlFilePath = Join-Path -Path (Get-Location) -ChildPath "event-source-windows-service-sample.xml"
+
         [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq") | Out-Null
-        $xmlRoot = [System.Xml.Linq.XElement]::Load('event-source-windows-service-sample.xml')
+        $xmlRoot = [System.Xml.Linq.XElement]::Load($xmlFilePath)
 
         $xmlRoot.Element('executable').SetValue($eventstoreBinaryPath)
         $xmlRoot.Element('arguments').SetValue("--config " + $pathToConfigFile);
@@ -647,6 +651,10 @@ function Set-EventStoreOperational {
     else {
         Write-Host "EventSource Database Service found"
     }
+
+    Write-Host "Updating hostname file..."
+    Edit-HostsSingleEntry -Hostname $ExternalDnsName -Address $ExternalIp
+    Write-Host "hostname file updated"
 
     Write-Host "Check if default password needs to be changed"
     $users = @('ops', 'admin');
@@ -682,11 +690,23 @@ function Set-EventStoreOperational {
             }
         }
     }
+}
 
-    Write-Host "Updating hostname file..."
-    Edit-HostsSingleEntry -Hostname $ExternalDnsName -Address $ExternalIp
-    Write-Host "hostname file updated"
+function Install-SelfSignCertificateIfNeeded {
+    param (
+        [Parameter(Mandatory = $true)][string]$CommenName
+    )
 
+    Write-Host "Check if a selfsigned certificate with the name $CommenName exists"
+    $existingCertifcate = Get-ChildItem -Path "Cert:\LocalMachine\My" | Where-Object -Property Subject -eq -Value $CommenName;
+    if ($existingCertifcate.Count -eq 0) {
+        Write-Host "Certifacte with name $CommenName not found. Creating it..."
+        $certficate =  New-SelfsignedCertificate -KeyExportPolicy Exportable -Subject $CommenName -KeySpec Signature -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -CertStoreLocation "cert:\LocalMachine\My"
+        Write-Host "Certifacte with Thumbprint $certficate.Thumbprint created" -ForegroundColor DarkGreen
+    }
+    else {
+        Write-Host "Certifacte with name $CommenName found. Nothing to do"
+    }
 }
 
 function  Install-Beer {
@@ -770,6 +790,9 @@ function  Install-Beer {
 
         Set-EventStoreOperational -RootPath "C:\ESDB2" -AdminPassword $ESDBAdminPassword -ExternalDnsName $ESDBExternalName -ExternalIp $ExternalIpAddress -EmailAddress $EmailAddress -AzureTenendId $AzureTenendId -AzureClientId $AzureClientId  -AzureClientPassword $AzureClientPassword -AzureSubscrionId $AzureSubscrionId -AzureResourceGroupName $AzureResourceGroupName  
 
+        $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerSignin"
+        $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerVerification"
+
         Write-Host @"
 
 ##########################################################################
@@ -828,9 +851,7 @@ function  Install-Beer {
         Write-Host "Cloning the repo: $repoUrl ..."
         Invoke-Expression "git clone  $repoUrl $repoDestDict"
         Write-Host "## Step 1: Cloning finished. Building apps is next..."
-        #Add-Apps($apps)
-        $apps[0].IsBuilt = $true
-        $apps[0].PublishDir = "C:\Blub\temp\src\DaAPI.Host\publish"
+        Add-Apps($apps)
         Write-Host "## Step 2: Building finished. Updating existing IIS sites is next..." 
         Update-IISSites($apps)
         Write-Host "## Step 3: Updating of existing apps finished. Copy new apps to output directories is next..." 

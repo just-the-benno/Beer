@@ -11,8 +11,8 @@
   <ItemGroup>
     <Content Remove="C:\Users\Benja\.nuget\packages\chartjs.blazor\2.0.0-preview1\contentFiles\any\netstandard2.1\tsbuild\release\tsconfig.json" />
   </ItemGroup>
-  
-    <Target Name="NPMandGrunt" BeforeTargets="CoreCompile" Condition="'$(Configuration)' != 'Debug'">
+
+  <Target Name="NPMandGrunt" BeforeTargets="CoreCompile" Condition="'$(Configuration)' != 'Debug'">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
@@ -22,7 +22,6 @@
     <Exec Command="npm install" />
     <Exec Command="npm run build" />
   </Target>
-  
 
   <ItemGroup>
     <None Remove="FrontendAssets\fonts\source-sans-pro-v13-latin-300.woff" />
@@ -177,6 +176,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
-  
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties />
+    </VisualStudio>
+  </ProjectExtensions>
+
 </Project>

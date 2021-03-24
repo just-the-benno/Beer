@@ -154,7 +154,11 @@ namespace Beer.DaAPI.Service.API
             services.AddSingleton<IDHCPv6StorageEngine, DHCPv6StorageEngine>();
             services.AddSingleton<IDHCPv6ReadStore, StorageContext>();
 
-            services.AddSingleton(new EventStoreBasedStoreConnenctionOptions(new EventStoreClient(EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"))), appSettings.EventStoreSettings.Prefix));
+            var esdbSettings = EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"));
+            esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.UserName, appSettings.EventStoreSettings.Password);
+
+            services.AddSingleton(new EventStoreBasedStoreConnenctionOptions(new EventStoreClient(esdbSettings), appSettings.EventStoreSettings.Prefix));
+
             services.AddSingleton<IDHCPv6EventStore, EventStoreBasedStore>();
 
             services.AddTransient<INotificationHandler<DHCPv6PacketArrivedMessage>>(sp => new DHCPv6PacketArrivedMessageHandler(
@@ -244,11 +248,6 @@ namespace Beer.DaAPI.Service.API
                     pb.AllowAnyHeader().AllowAnyMethod().WithOrigins(appSettings.AppURIs.Values.ToArray());
                 });
             });
-
-            foreach (var item in appSettings.AppURIs.Values)
-            {
-                Console.WriteLine($"Blub {item}");
-            }
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider provider)

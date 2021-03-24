@@ -12,15 +12,15 @@
             "ConnectionStrings__BeerIdentityContext": "Server=localhost;Port=5432;Database=IdentityUserStorage;User Id=postgres;Password=<$PostgresPassword>;",
             "ConnectionStrings__OperationalStorage": "Server=localhost;Port=5432;Database=IdentityOperationalStorage;User Id=postgres;Password=<$PostgresPassword>;",
             "AppConfiguration__OpenIdConnectConfiguration__AuthorityUrl": "<$IdentityUrl>",
-            "AppConfiguration__BeerAuthenticationClients__ControlCenter__Urls__0": "<$ControlCenterAppUrl>",
-            "AppConfiguration__BeerAuthenticationClients__ControlCenter__Password": "<$ControlCenterAppPassword>",
-            "AppConfiguration__BeerAuthenticationClients__DaAPI__Urls__0": "<$DaAPIAppUrl>",
-            "AppConfiguration__BeerAuthenticationClients__DaAPI__Password": "<$DaAPIAppPassword>"
+            "AppConfiguration__BeerAuthenticationClients__ControlCenter__Urls__0": "https://<$ControlCenterAppUrl>",
+            "AppConfiguration__BeerAuthenticationClients__DaAPI__Urls__0": "https://<$DaAPIAppUrl>",
+            "AppConfiguration__IdentityServerOptions__SigningCertificate": "CN=IdentiyServerSignin",
+            "AppConfiguration__IdentityServerOptions__ValidationCertificate": "CN=IdentiyServerVerification"
         }
     },
     {
         "Name": "ControlCenter",
-        "ProjectFile": "src/ControlCenter/App/Beer.ControlCenter.BlazorHost.csproj",
+        "ProjectFile": "src/ControlCenter/App/Beer.ControlCenter.BlazorHost/Beer.ControlCenter.BlazorHost.csproj",
         "OutputDir": "E:/Applications/ControlCenter-App",
         "Urls": 
         [
@@ -28,10 +28,10 @@
         ],
         "Variables": 
         {
-            "AppConfiguration__OpenIdConnection__Authority": "<$IdentityUrl>",
-            "AppConfiguration__OpenIdConnection__RedirectUri": "<$ControlCenterAppUrl>/authentication/login-callback",
-            "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "<$ControlCenterAppUrl>/authentication/logout-callback",
-            "AppConfiguration__AppUrls__BeerIdentity": "<$IdentityUrl>"
+            "AppConfiguration__OpenIdConnection__Authority": "https://<$IdentityUrl>",
+            "AppConfiguration__OpenIdConnection__RedirectUri": "https://<$ControlCenterAppUrl>/authentication/login-callback",
+            "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "https://<$ControlCenterAppUrl>/authentication/logout-callback",
+            "AppConfiguration__AppUrls__BeerIdentity": "https://<$IdentityUrl>"
         }
     },
     {
@@ -44,10 +44,11 @@
         ],
         "Variables": 
         {
-            "ConnectionStrings__DaAPIDatabaseTestConnection": "Server=localhost;Port=5432;Database=DaAPI;User Id=postgres;Password=<PASSWORD>;",
-            "ConnectionStrings__ESDB": "esdb://admin:<$ESDBPassword>@<$ExternalESDBUrl>::2113?tls=true",
-            "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "<$IdentityUrl>/",
-            "AppConfiguration__AppURIs__DaAPI-Blazor": "<$DaAPIAppUrl>/"
+            "ConnectionStrings__DaAPIDb": "Server=localhost;Port=5432;Database=DaAPI;User Id=postgres;Password=<$PostgresPassword>;",
+            "ConnectionStrings__ESDB": "esdb://<$ExternalESDBUrl>:2113?tls=true",
+            "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "https://<$IdentityUrl>/",
+            "AppSettings_AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
+            "AppSettings_EventStoreSettings__Password": "<$ESDBPassword>"
         }
     },
     {
@@ -60,10 +61,10 @@
         ],
         "Variables": 
         {
-            "AppConfiguration__OpenIdConnection__Authority": "<$IdentityUrl>/",
-            "AppConfiguration__OpenIdConnection__RedirectUri": "<$DaAPIAppUrl>/authentication/login-callback",
-            "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "<$DaAPIAppUrl>/authentication/logout-callback",
-            "AppConfiguration__APIUrls__DaAPI": "<$DaAPIAppUrl>/"
+            "AppConfiguration__OpenIdConnection__Authority": "https://<$IdentityUrl>/",
+            "AppConfiguration__OpenIdConnection__RedirectUri": "https://<$DaAPIAppUrl>/authentication/login-callback",
+            "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "https://<$DaAPIAppUrl>/authentication/logout-callback",
+            "AppConfiguration__APIUrls__DaAPI": "https://<$DaAPI-APIUrl>/"
         }
     }
 ]

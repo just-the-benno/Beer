@@ -117,6 +117,16 @@ namespace Beer.Identity
                     options.EnableTokenCleanup = true;
                 });
 
+            if (Environment.IsDevelopment() || String.IsNullOrEmpty(config.IdentityServerOptions.SigningCertificate) == true)
+            {
+                builder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                builder.AddSigningCredential(config.IdentityServerOptions.SigningCertificate);
+                builder.AddValidationKey(config.IdentityServerOptions.ValidationCertificate);
+            }
+
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
 
