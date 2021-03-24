@@ -13,8 +13,8 @@ namespace Beer.DaAPI.Service.API.Infrastrucutre
     public class EventStoreSettings
     {
         public String Prefix { get; set; }
-        public String UserName { get; internal set; }
-        public String Password { get; internal set; }
+        public String Username { get; set; }
+        public String Password { get; set; }
     }
 
     public class AppSettings

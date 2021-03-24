@@ -155,7 +155,7 @@ namespace Beer.DaAPI.Service.API
             services.AddSingleton<IDHCPv6ReadStore, StorageContext>();
 
             var esdbSettings = EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"));
-            esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.UserName, appSettings.EventStoreSettings.Password);
+            esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.Username, appSettings.EventStoreSettings.Password);
 
             services.AddSingleton(new EventStoreBasedStoreConnenctionOptions(new EventStoreClient(esdbSettings), appSettings.EventStoreSettings.Prefix));
 

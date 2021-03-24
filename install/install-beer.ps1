@@ -313,6 +313,7 @@ function Add-IISSites {
 
         Write-Host "Creating website..."
         New-WebAppPool -Name $app.Name -Force *>$null
+        Set-ItemProperty -Path (Join-Path -Path "IIS:\AppPools\" -ChildPath $app.Name) processModel.loadUserProfile $true
         New-WebSite -Name $app.Name -Port 80  -IPAddress "*" -HostHeader $app.Urls[0] -PhysicalPath $app.OutputDir.Replace("/", "\") -ApplicationPool $app.Name *>$null
         $site = Get-WebSite -Name $app.Name
         Write-Host "App $($app.Name) is created and listen to $($app.Urls[0])" -ForegroundColor DarkGreen
@@ -694,7 +695,9 @@ function Set-EventStoreOperational {
 
 function Install-SelfSignCertificateIfNeeded {
     param (
-        [Parameter(Mandatory = $true)][string]$CommenName
+        [Parameter(Mandatory = $true)][string]$CommenName,
+        [Parameter(Mandatory = $false)][string]$IdentityName = "Beer-Identity"
+
     )
 
     Write-Host "Check if a selfsigned certificate with the name $CommenName exists"
@@ -702,7 +705,18 @@ function Install-SelfSignCertificateIfNeeded {
     if ($existingCertifcate.Count -eq 0) {
         Write-Host "Certifacte with name $CommenName not found. Creating it..."
         $certficate =  New-SelfsignedCertificate -KeyExportPolicy Exportable -Subject $CommenName -KeySpec Signature -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -CertStoreLocation "cert:\LocalMachine\My"
-        Write-Host "Certifacte with Thumbprint $certficate.Thumbprint created" -ForegroundColor DarkGreen
+        Write-Host "Certifacte with Thumbprint $($certficate.Thumbprint) created" -ForegroundColor DarkGreen
+
+        $CertObj= Get-ChildItem (Join-Path -Path "Cert:\LocalMachine\my" -ChildPath $certficate.Thumbprint )
+
+        $rsaCert = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($CertObj)
+        $fileName = $rsaCert.key.UniqueName
+        $path = "$env:ALLUSERSPROFILE\Microsoft\Crypto\RSA\MachineKeys\$fileName"
+        $permissions = Get-Acl -Path $path
+        $rule = new-object security.accesscontrol.filesystemaccessrule "Beer-Identity", "read", allow
+        $permissions.AddAccessRule($rule)
+        Set-Acl -Path $path -AclObject $permissions
+
     }
     else {
         Write-Host "Certifacte with name $CommenName found. Nothing to do"
@@ -790,9 +804,6 @@ function  Install-Beer {
 
         Set-EventStoreOperational -RootPath "C:\ESDB2" -AdminPassword $ESDBAdminPassword -ExternalDnsName $ESDBExternalName -ExternalIp $ExternalIpAddress -EmailAddress $EmailAddress -AzureTenendId $AzureTenendId -AzureClientId $AzureClientId  -AzureClientPassword $AzureClientPassword -AzureSubscrionId $AzureSubscrionId -AzureResourceGroupName $AzureResourceGroupName  
 
-        $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerSignin"
-        $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerVerification"
-
         Write-Host @"
 
 ##########################################################################
@@ -861,6 +872,13 @@ function  Install-Beer {
         Write-Host "## Step 5: new IIS sites are ready. Updating Host file" 
         Edit-Hosts($apps)
         Write-Host "## Step 6: updating host file finisehd. Nothing more todo" 
+
+        Write-Host "After publish steps..." 
+
+        $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerSignin"
+        $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerVerification"
+
+        Write-Host @"
 
         Write-Host @"
 
