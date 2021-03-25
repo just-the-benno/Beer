@@ -17,13 +17,17 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         public IEnumerable<SimpleIPv4AddressString> OtherItems { get; }
 
-        public SimpleIPv4AddressString(String content) : this(Array.Empty<SimpleIPv4AddressString>())
+        public SimpleIPv4AddressString(String content) : this(content, Array.Empty<SimpleIPv4AddressString>())
         {
-            Value = content;
         }
 
-        public SimpleIPv4AddressString(IEnumerable<SimpleIPv4AddressString> otherItems)
+        public SimpleIPv4AddressString(IEnumerable<SimpleIPv4AddressString> otherItems) : this(String.Empty, otherItems)
         {
+        }
+
+        public SimpleIPv4AddressString(String content, IEnumerable<SimpleIPv4AddressString> otherItems)
+        {
+            Value = content;
             OtherItems = otherItems;
         }
     }

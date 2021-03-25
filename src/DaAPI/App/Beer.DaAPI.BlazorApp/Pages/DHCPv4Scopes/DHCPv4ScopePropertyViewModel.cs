@@ -30,11 +30,61 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         { get; private set; } =
             new Dictionary<String, (string DisplayName, DHCPv4ScopePropertyType Type)>
         {
-            { "23",  ("DNS-Server", DHCPv4ScopePropertyType.AddressList) },
-            { "31",  ("SNTP-Server", DHCPv4ScopePropertyType.AddressList) },
-            { "56",  ("NTP-Server", DHCPv4ScopePropertyType.AddressList) },
-            { "7",   ("Preference", DHCPv4ScopePropertyType.Byte) },
-        };
+
+            { "6",  ("DNS-Server", DHCPv4ScopePropertyType.AddressList) },
+            { "15",   ("Domain Name", DHCPv4ScopePropertyType.Text) },
+            { "42",   ("NTP Servers", DHCPv4ScopePropertyType.AddressList) },
+
+            { "4",  ("Time-Server", DHCPv4ScopePropertyType.AddressList) },
+            { "5",  ("Name-Server", DHCPv4ScopePropertyType.AddressList) },
+            { "7",   ("Log-Server", DHCPv4ScopePropertyType.AddressList) },
+            { "8",   ("Cookie Server", DHCPv4ScopePropertyType.AddressList) },
+            { "9",   ("LRP Server", DHCPv4ScopePropertyType.AddressList) },
+            { "10",   ("Impress Server", DHCPv4ScopePropertyType.AddressList) },
+            { "11",   ("Resouce Location Server", DHCPv4ScopePropertyType.AddressList) },
+            { "12",   ("Host Name", DHCPv4ScopePropertyType.Text) },
+            { "13",   ("Boot File Size", DHCPv4ScopePropertyType.UInt16) },
+            { "14",   ("Merit Dump File", DHCPv4ScopePropertyType.Text) },
+            { "16",   ("Swap Server", DHCPv4ScopePropertyType.AddressList) },
+            { "17",   ("Root Path", DHCPv4ScopePropertyType.Text) },
+            { "19",   ("IP Forwarding", DHCPv4ScopePropertyType.Boolean) },
+            { "20",   ("Non-Local Source Routing", DHCPv4ScopePropertyType.Boolean) },
+            { "21",   ("Policy Filter", DHCPv4ScopePropertyType.AddressAndMask) },
+            { "22",   ("Maximum Datagram Reassembly", DHCPv4ScopePropertyType.UInt16) },
+            { "23",   ("Default IP Time-to-live", DHCPv4ScopePropertyType.Byte) },
+            { "24",   ("Path MTU Aging Timeout", DHCPv4ScopePropertyType.Time) },
+            { "26",   ("Interface MTU", DHCPv4ScopePropertyType.UInt16) },
+            { "27",   ("All Subnets are Local", DHCPv4ScopePropertyType.Boolean) },
+            { "28",   ("Broadcast Address", DHCPv4ScopePropertyType.Address) },
+            { "29",   ("Perform Mask Discovery", DHCPv4ScopePropertyType.Boolean) },
+            { "30",   ("Mask Supplier", DHCPv4ScopePropertyType.Boolean) },
+            { "31",   ("Perform Router Discovery", DHCPv4ScopePropertyType.Boolean) },
+            { "32",   ("Router Solicitation Address", DHCPv4ScopePropertyType.Address) },
+            //{ "33",   ("Static Route", DHCPv4ScopePropertyType.RouteList) },
+            { "34",   ("Trailer Encapsulation", DHCPv4ScopePropertyType.Boolean) },
+            { "35",   ("ARP Cache Timeout", DHCPv4ScopePropertyType.Time) },
+            { "36",   ("Ethernet Encapsulation", DHCPv4ScopePropertyType.Boolean) },
+            { "37",   ("TCP Default TTL", DHCPv4ScopePropertyType.Byte) },
+            { "38",   ("TCP Keepalive Interval", DHCPv4ScopePropertyType.Time) },
+            { "39",   ("TCP Keepalive Garbage", DHCPv4ScopePropertyType.Boolean) },
+            { "40",   ("Network Information Service Domain", DHCPv4ScopePropertyType.Text) },
+            { "41",   ("Network Information Servers", DHCPv4ScopePropertyType.AddressList) },
+            { "44",   ("NetBIOS over TCP/IP Name Server", DHCPv4ScopePropertyType.AddressList) },
+            { "45",   ("NetBIOS over TCP/IP Datagram Distribution Server", DHCPv4ScopePropertyType.AddressList) },
+            { "49",   ("X Window System Display Manager", DHCPv4ScopePropertyType.AddressList) },
+            { "64",   ("Network Information Service+ Domain", DHCPv4ScopePropertyType.AddressList) },
+            { "65",   ("Network Information Service+ Servers", DHCPv4ScopePropertyType.AddressList) },
+            { "69",   ("SMTP Server", DHCPv4ScopePropertyType.AddressList) },
+            { "70",   ("POP3 Server", DHCPv4ScopePropertyType.AddressList) },
+            { "71",   ("NNTP Server", DHCPv4ScopePropertyType.AddressList) },
+            { "72",   ("Default World Wide Web Server", DHCPv4ScopePropertyType.AddressList) },
+            { "73",   ("Default Finger Server", DHCPv4ScopePropertyType.AddressList) },
+            { "74",   ("IRC Server", DHCPv4ScopePropertyType.AddressList) },
+            { "75",   ("StreetTalk  Server", DHCPv4ScopePropertyType.AddressList) },
+            { "76",   ("StreetTalk Directory Assistance Server", DHCPv4ScopePropertyType.AddressList) },
+            { "66",   ("TFTP Server Name", DHCPv4ScopePropertyType.Text) },
+            { "67",   ("Bootfile Name", DHCPv4ScopePropertyType.Text) },
+            };
 
         private String _optionCode;
 
@@ -55,10 +105,15 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 if (IsWellknownType == true)
                 {
                     Type = WellknowOptions[value].Type;
-                    if (UInt16.TryParse(value, out UInt16 code) == true)
-                    {
-                        CustomOptionCode = code;
-                    }
+                }
+                else
+                {
+                    _optionCode = "0";
+                }
+
+                if (UInt16.TryParse(value, out UInt16 code) == true && code != 0)
+                {
+                    CustomOptionCode = code;
                 }
             }
         }
@@ -91,6 +146,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         [DHCPv4ScopePropertyValidation(ErrorMessageResourceName = nameof(ValidationErrorMessages.DHCPv4ScopePropertyValidation), ErrorMessageResourceType = typeof(ValidationErrorMessages))]
         public SimpleIPv4AddressString Address { get;  set; }
 
+
         public DHCPv4ScopePropertyViewModel()
         {
             Addresses = new List<SimpleIPv4AddressString>();
@@ -98,6 +154,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         public DHCPv4ScopePropertyViewModel(DHCPv4ScopePropertyResponse response) : this()
         {
+            Type = response.Type;
             OptionCode = response.OptionCode.ToString();
 
             switch (response)
@@ -107,6 +164,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                     {
                         AddAddress(item);
                     }
+                    Type = DHCPv4ScopePropertyType.AddressList;
                     break;
                 case DHCPv4AddressScopePropertyResponse property:
                     Address = new SimpleIPv4AddressString(property.Value);
@@ -116,6 +174,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                     break;
                 case DHCPv4NumericScopePropertyResponse property:
                     NumericValue = property.Value;
+
                     break;
                 case DHCPv4TextScopePropertyResponse property:
                     TextValue = property.Value;

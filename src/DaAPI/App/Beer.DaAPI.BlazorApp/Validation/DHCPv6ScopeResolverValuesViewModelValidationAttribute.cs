@@ -105,7 +105,6 @@ namespace Beer.DaAPI.BlazorApp.Validation
                         break;
                     case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray:
                         isValid = Regex.IsMatch(castedValue, @"^[0-9a-fA-F]+$");
-                        
                         break;
                     default:
                         isValid = true;
@@ -114,12 +113,14 @@ namespace Beer.DaAPI.BlazorApp.Validation
             }
             else if (objectInstance.IsNullableNumericValue == true && value is Int64?)
             {
+
                 Int64? castedNumericValue = (Int64?)value;
                 if (castedNumericValue.HasValue == true)
                 {
                     isValid = objectInstance.ValueType switch
                     {
                         Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.NullableUInt32 => castedNumericValue.Value >= 0 && castedNumericValue.Value <= UInt32.MaxValue,
+                      
                         _ => false,
                     };
                 }
@@ -135,6 +136,8 @@ namespace Beer.DaAPI.BlazorApp.Validation
                 isValid = objectInstance.ValueType switch
                 {
                     Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.UInt32 => castedNumericValue2 >= 0 && castedNumericValue2 <= UInt32.MaxValue,
+                    Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte => castedNumericValue2 > 0 && castedNumericValue2 <= Byte.MaxValue,
+                    Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.VLANId => castedNumericValue2 > 0 && castedNumericValue2 <= 4094,
                     _ => false,
                 };
             }

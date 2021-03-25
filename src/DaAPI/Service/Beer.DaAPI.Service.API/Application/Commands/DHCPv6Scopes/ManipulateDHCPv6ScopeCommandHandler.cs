@@ -23,7 +23,7 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
                    preferredLifeTime: request.AddressProperties.PreferredLifeTime,
                    validLifeTime: request.AddressProperties.ValidLifeTime,
                    reuseAddressIfPossible: request.AddressProperties.ReuseAddressIfPossible,
-                   addressAllocationStrategy: (Core.Scopes.ScopeAddressProperties<DHCPv6ScopeAddressProperties, IPv6Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
+                   addressAllocationStrategy: (Beer.DaAPI.Core.Scopes.ScopeAddressProperties<DHCPv6ScopeAddressProperties,IPv6Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
                    supportDirectUnicast: request.AddressProperties.SupportDirectUnicast,
                    acceptDecline: request.AddressProperties.AcceptDecline,
                    informsAreAllowd: request.AddressProperties.InformsAreAllowd,

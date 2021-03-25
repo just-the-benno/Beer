@@ -11,7 +11,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
     {
         static readonly JsonSerializerSettings SpecifiedSubclassConversion = new JsonSerializerSettings()
         {
-            Converters = new List<JsonConverter> { new IPv6AddressJsonConverter() },
+            Converters = new List<JsonConverter> { new IPv4AddressJsonConverter() },
             ContractResolver = new BaseSpecifiedConcreteClassConverter<DHCPv4ScopeProperty>(),
         };
 

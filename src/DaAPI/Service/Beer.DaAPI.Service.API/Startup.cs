@@ -91,6 +91,8 @@ namespace Beer.DaAPI.Service.API
             {
                 services.AddSingleton(settings);
                 services.AddSingleton(settings.JwtTokenAuthenticationOptions);
+                services.AddSingleton(settings.EventStoreSettings);
+
             }
 
             return settings;
@@ -115,6 +117,7 @@ namespace Beer.DaAPI.Service.API
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Converters.Add(new DHCPv6ScopePropertyRequestJsonConverter());
+                    options.SerializerSettings.Converters.Add(new DHCPv4ScopePropertyRequestJsonConverter());
                     options.SerializerSettings.Converters.Add(new DUIDJsonConverter());
                 });
 

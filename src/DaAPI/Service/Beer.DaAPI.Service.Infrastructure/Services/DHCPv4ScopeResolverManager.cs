@@ -18,6 +18,8 @@ namespace Beer.DaAPI.Infrastructure.Services
         {
             AddOrUpdateScopeResolver(nameof(DHCPv4RelayAgentResolver), () => new DHCPv4RelayAgentResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4RelayAgentSubnetResolver), () => new DHCPv4RelayAgentSubnetResolver());
+            AddOrUpdateScopeResolver(nameof(DHCPv4SimpleZyxelIESResolver), () => new DHCPv4SimpleZyxelIESResolver());
+            AddOrUpdateScopeResolver(nameof(DHCPv4SimpleCiscoSGSeriesResolver), () => new DHCPv4SimpleCiscoSGSeriesResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4Option82Resolver), () => new DHCPv4Option82Resolver());
         }
     }

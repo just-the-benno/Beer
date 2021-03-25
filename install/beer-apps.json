@@ -11,7 +11,7 @@
         {
             "ConnectionStrings__BeerIdentityContext": "Server=localhost;Port=5432;Database=IdentityUserStorage;User Id=postgres;Password=<$PostgresPassword>;",
             "ConnectionStrings__OperationalStorage": "Server=localhost;Port=5432;Database=IdentityOperationalStorage;User Id=postgres;Password=<$PostgresPassword>;",
-            "AppConfiguration__OpenIdConnectConfiguration__AuthorityUrl": "<$IdentityUrl>",
+            "AppConfiguration__OpenIdConnectConfiguration__AuthorityUrl": "https://<$IdentityUrl>",
             "AppConfiguration__BeerAuthenticationClients__ControlCenter__Urls__0": "https://<$ControlCenterAppUrl>",
             "AppConfiguration__BeerAuthenticationClients__DaAPI__Urls__0": "https://<$DaAPIAppUrl>",
             "AppConfiguration__IdentityServerOptions__SigningCertificate": "CN=IdentiyServerSignin",
@@ -47,8 +47,8 @@
             "ConnectionStrings__DaAPIDb": "Server=localhost;Port=5432;Database=DaAPI;User Id=postgres;Password=<$PostgresPassword>;",
             "ConnectionStrings__ESDB": "esdb://<$ExternalESDBUrl>:2113?tls=true",
             "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "https://<$IdentityUrl>/",
-            "AppSettings_AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
-            "AppSettings_EventStoreSettings__Password": "<$ESDBPassword>"
+            "AppSettings__AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
+            "AppSettings__EventStoreSettings__Password": "<$ESDBPassword>"
         }
     },
     {

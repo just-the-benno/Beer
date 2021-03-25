@@ -9,27 +9,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Beer.DaAPI.Core.Scopes.DHCPv4
 {
-    public class DHCPv4Option82Resolver : IScopeResolver<DHCPv4Packet, IPv4Address>
+    public class DHCPv4Option82Resolver : DHCPv4Option82ResolverBase
     {
-        #region Properties
-
-        public Byte[] Value { get; private set; } = Array.Empty<Byte>();
-
-        #endregion
-
         #region Methods
 
-        public Boolean HasUniqueIdentifier => true;
-        public byte[] GetUniqueIdentifier(DHCPv4Packet packet) => packet.GetOptionByIdentifier(82)?.OptionData ?? Array.Empty<Byte>();
-
-        public Boolean PacketMeetsCondition(DHCPv4Packet packet)
-        {
-            Byte[] rawData = GetUniqueIdentifier(packet);
-
-            return ByteHelper.AreEqual(rawData, Value);
-        }
-
-        public Boolean ArePropertiesAndValuesValid(IDictionary<String, String> valueMapper, ISerializer serializer)
+        public override Boolean ArePropertiesAndValuesValid(IDictionary<String, String> valueMapper, ISerializer serializer)
         {
             if (valueMapper.ContainsKey(nameof(Value)) == false) { return false; }
 
@@ -44,15 +28,15 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             }
         }
 
-        public void ApplyValues(IDictionary<String, String> valueMapper, ISerializer serializer)
+        public override void ApplyValues(IDictionary<String, String> valueMapper, ISerializer serializer)
         {
             Value = serializer.Deserialze<Byte[]>(valueMapper[nameof(Value)]);
         }
 
-        public ScopeResolverDescription GetDescription()
+        public override ScopeResolverDescription GetDescription()
         {
             return new ScopeResolverDescription(
-                nameof(DHCPv4RelayAgentResolver),
+                nameof(DHCPv4Option82Resolver),
                 new List<ScopeResolverPropertyDescription>
                 {
                    new ScopeResolverPropertyDescription(nameof(Value),ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray),
@@ -60,12 +44,11 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 );
         }
 
-        public IDictionary<String, String> GetValues() => new Dictionary<String, String>
+        public override IDictionary<String, String> GetValues() => new Dictionary<String, String>
         {
             { nameof(Value), System.Text.Json.JsonSerializer.Serialize(Value) },
         };
 
         #endregion
-
     }
 }

@@ -558,7 +558,7 @@
                                         <div class="col-sm-5">
                                             <BootstrapInputSelect @bind-Value=Model.ScopeProperties[index].OptionCode class="form-control">
                                                 <option value="0">@L["CustomOptionName"]</option>
-                                                @foreach (var item in DHCPv6ScopePropertyViewModel.WellknowOptions)
+                                                @foreach (var item in DHCPv4ScopePropertyViewModel.WellknowOptions)
                                                         {
                                                     <option value="@item.Key">@item.Value.DisplayName</option>
                                                         }
@@ -619,11 +619,11 @@
                                                     <ValidationMessageContainer For="@(() => Model.ScopeProperties[index].NumericValue)" />
                                                     break;
                                                 case DHCPv4ScopePropertyType.Address:
-                                                    <BootstrapInputNumber @bind-Value="Model.ScopeProperties[index].Address" class="form-control" placeholder="Enter an address here" />
+                                                    <BootstrapInputText @bind-Value="Model.ScopeProperties[index].Address.Value" class="form-control" placeholder="@L["OptionAddressValuePlaceholder"]" />
                                                     <ValidationMessageContainer For="@(() => Model.ScopeProperties[index].Address)" />
                                                     break;
                                                 case DHCPv4ScopePropertyType.Text:
-                                                    <BootstrapInputNumber @bind-Value="Model.ScopeProperties[index].TextValue" class="form-control" placeholder="Enter an IPv4 address here" />
+                                                    <BootstrapInputText @bind-Value="Model.ScopeProperties[index].TextValue" class="form-control" placeholder="@L["OptionAddressTextPlaceholder"]" />
                                                     <ValidationMessageContainer For="@(() => Model.ScopeProperties[index].TextValue)" />
                                                     break;
                                                 case DHCPv4ScopePropertyType.Boolean:
@@ -692,6 +692,10 @@
                                             <label class="col-form-label" for="@Model.ResolverProperties[index].Name">
                                                 <DHCPv4ScopeResolverExplanation ResolverTypeName="@Model.ResolverTypeName" ResolverPropertyName="@Model.ResolverProperties[index].Name" OnlyTitle="true" />
                                             </label>
+                                            @if (Model.ResolverProperties[index].IsListValue == true)
+                                            {
+                                                <button type="button" class="btn btn-default btn-sm btn-flat ml-2" @onclick="Model.ResolverProperties[index].AddEmptyValue"><i class="fas fa-plus"></i></button>
+                                            }
                                             <DHCPv4ScopeResolverExplanation ResolverTypeName="@Model.ResolverTypeName" ResolverPropertyName="@Model.ResolverProperties[index].Name" />
                                         </div>
 
@@ -700,6 +704,12 @@
                                             {
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.UInt32:
                                                     <BootstrapInputNumber @bind-Value="Model.ResolverProperties[index].NumericValue" class="form-control" minimum="0" placeholder="Enter a positive number here" id="@Model.ResolverProperties[index].Name" />
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte:
+                                                    <BootstrapInputNumber @bind-Value="Model.ResolverProperties[index].NumericValue" class="form-control" minimum="1" maximum="255" placeholder="Enter a positive number here" id="@Model.ResolverProperties[index].Name" />
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.VLANId:
+                                                    <BootstrapInputNumber @bind-Value="Model.ResolverProperties[index].NumericValue" class="form-control" minimum="1" maximum="4096" placeholder="Enter a positive number here" id="@Model.ResolverProperties[index].Name" />
                                                     break;
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Boolean:
                                                     <div class="icheck-primary">
@@ -711,21 +721,31 @@
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.NullableUInt32:
                                                     <BootstrapNullableInt64 @bind-Value="Model.ResolverProperties[index].NullableNumericValue" id="@Model.ResolverProperties[index].Name" />
                                                     break;
-                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv6Address:
-                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv6NetworkAddress:
-                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv6Subnet:
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.String:
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray:
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4Address:
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4Subnetmask:
                                                     <BootstrapInputText @bind-Value="Model.ResolverProperties[index].SingleValue" class="form-control" id="@Model.ResolverProperties[index].Name" />
                                                     break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4AddressList:
+                                                    @for (int j = 0; j < Model.ResolverProperties[index].Addresses.Count; j++)
+                                                    {
+                                                        var addressIndex = j;
+                                                        <div class="input-group mb-3">
+                                                            <BootstrapInputText @bind-Value="Model.ResolverProperties[index].Addresses[addressIndex].Value" class="form-control" placeholder="@L["OptionAddressInputPlaceHolder"]" />
+                                                            <span class="input-group-append">
+                                                                <button type="button" class="btn btn-flat btn-outline-primary" @onclick="@(() => Model.ResolverProperties[index].RemoveValue(addressIndex))"><i class="fas fa-trash"></i></button>
+                                                            </span>
+                                                            <ValidationMessageContainer For="@(() => Model.ResolverProperties[index].Addresses[addressIndex].Value)" />
+                                                        </div>
+                                                    }
+                                                    break;
                                                 default:
                                                     throw new NotImplementedException();
                                             }
                                             <div class="invalid-feedback mb-3">
                                                 <ValidationMessage For="@(() => Model.ResolverProperties[index].SingleValue)" />
-                                                <ValidationMessage For="@(() => Model.ResolverProperties[index].MultipleValues)" />
+                                                <ValidationMessage For="@(() => Model.ResolverProperties[index].Addresses)" />
                                                 <ValidationMessage For="@(() => Model.ResolverProperties[index].NullableNumericValue)" />
                                                 <ValidationMessage For="@(() => Model.ResolverProperties[index].NumericValue)" />
                                             </div>

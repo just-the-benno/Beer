@@ -23,6 +23,8 @@ namespace Beer.DaAPI.Core.Scopes
             IPv6Subnet = 11,
             IPv6Address = 12,
             Boolean = 13,
+            Byte = 14,
+            VLANId = 15,
         }
 
         #region Properties

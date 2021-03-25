@@ -204,6 +204,12 @@
   <data name="OptionAddressInputPlaceHolder" xml:space="preserve">
     <value>Enter an IPv4 Adddress here</value>
   </data>
+  <data name="OptionAddressTextPlaceholder" xml:space="preserve">
+    <value>Enter any text here</value>
+  </data>
+  <data name="OptionAddressValuePlaceholder" xml:space="preserve">
+    <value>Enter a valid IPv4 address here</value>
+  </data>
   <data name="OptionColumnHeaderForDelete" xml:space="preserve">
     <value>Delete</value>
   </data>

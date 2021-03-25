@@ -344,9 +344,14 @@ function Clear-AppFolder {
         continue;
     }
 
-    Get-ChildItem -Path "." -Recurse  | Remove-Item -Force -Recurse
-    Start-Sleep -Seconds 1.5
-    Get-ChildItem -Path "." -Recurse  | Remove-Item -Force -Recurse
+    for ($i = 0; $i -le 2; $i++) {
+        try {
+            Get-ChildItem -Path $app.OutputDir -Recurse  | Remove-Item -Force -Recurse *>$null
+            Start-Sleep -Seconds 1.0
+        }
+        catch {
+        }
+    }
 }
 
 function Copy-App {
@@ -696,7 +701,7 @@ function Set-EventStoreOperational {
 function Install-SelfSignCertificateIfNeeded {
     param (
         [Parameter(Mandatory = $true)][string]$CommenName,
-        [Parameter(Mandatory = $false)][string]$IdentityName = "Beer-Identity"
+        [Parameter(Mandatory = $false)][string]$IdentityName = "IIS_IUSRS"
 
     )
 
@@ -704,16 +709,16 @@ function Install-SelfSignCertificateIfNeeded {
     $existingCertifcate = Get-ChildItem -Path "Cert:\LocalMachine\My" | Where-Object -Property Subject -eq -Value $CommenName;
     if ($existingCertifcate.Count -eq 0) {
         Write-Host "Certifacte with name $CommenName not found. Creating it..."
-        $certficate =  New-SelfsignedCertificate -KeyExportPolicy Exportable -Subject $CommenName -KeySpec Signature -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -CertStoreLocation "cert:\LocalMachine\My"
+        $certficate = New-SelfsignedCertificate -KeyExportPolicy Exportable -Subject $CommenName -KeySpec Signature -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -CertStoreLocation "cert:\LocalMachine\My"
         Write-Host "Certifacte with Thumbprint $($certficate.Thumbprint) created" -ForegroundColor DarkGreen
 
-        $CertObj= Get-ChildItem (Join-Path -Path "Cert:\LocalMachine\my" -ChildPath $certficate.Thumbprint )
+        $CertObj = Get-ChildItem (Join-Path -Path "Cert:\LocalMachine\my" -ChildPath $certficate.Thumbprint )
 
         $rsaCert = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($CertObj)
         $fileName = $rsaCert.key.UniqueName
         $path = "$env:ALLUSERSPROFILE\Microsoft\Crypto\RSA\MachineKeys\$fileName"
         $permissions = Get-Acl -Path $path
-        $rule = new-object security.accesscontrol.filesystemaccessrule "Beer-Identity", "read", allow
+        $rule = new-object security.accesscontrol.filesystemaccessrule $IdentityName, "read", allow
         $permissions.AddAccessRule($rule)
         Set-Acl -Path $path -AclObject $permissions
 
