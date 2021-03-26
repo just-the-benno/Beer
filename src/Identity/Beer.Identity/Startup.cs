@@ -103,7 +103,7 @@ namespace Beer.Identity
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryApiResources(Config.GetApiResources)
                 .AddInMemoryClients(new IdentityServer4.Models.Client[] {
-                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["ControlCenter"].SetClientId(AuthenticationDefaults.BeerAppClientId).SetScopes(AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope)),
+                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["ControlCenter"].SetClientId(AuthenticationDefaults.BeerAppClientId).SetScopes(AuthenticationDefaults.ControlCenterManageScope, AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope)),
                     Config.GetBlazorWasmClient(config.BeerAuthenticationClients["DaAPI"].SetClientId(AuthenticationDefaults.DaAPIAppClientId).SetScopes(AuthenticationDefaults.DaAPIMangeScope)),
                 })
 

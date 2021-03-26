@@ -23,11 +23,9 @@ namespace DaAPI.IntegrationTests.ServiceBus
 {
     public class InvalidDHCPv6PacketArrivedMessageHandlerTester : ServiceBusTesterBase
     {
-
         public InvalidDHCPv6PacketArrivedMessageHandlerTester(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
-      
 
         [Fact]
         public async Task HandleInvalidPacket()

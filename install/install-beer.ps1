@@ -733,7 +733,7 @@ function  Install-Beer {
     param (
         [string]$configFilePath = "./beer-apps.json",
         [string]$repoUrl = "https://github.com/just-the-benno/Beer.git",
-        [string]$repoDestDict = "./../temp",
+        [string]$repoDestDict = "./temp",
         [string]$downloadTempPath = "./downloadtemp",
         [string]$azureDNsWinACMEPluginDownloadUrl = "https://github.com/win-acme/win-acme/releases/download/v2.1.15/plugin.validation.dns.azure.v2.1.15.1008.zip",
         [Parameter(Mandatory = $true)][string]$PostgresqlPassword,
@@ -857,7 +857,7 @@ function  Install-Beer {
 "@
 
         try {
-            # Remove-Item $repoDestDict -Recurse -Force    
+            Remove-Item $repoDestDict -Recurse -Force    
         }
         catch {
     
@@ -904,7 +904,7 @@ function  Install-Beer {
         Write-Host "Deleting download directory"
         Remove-Item $downloadTempPath -Recurse -Force
         Write-Host "Deleting repositoty directory"
-        # Remove-Item $repoDestDict -Recurse -Force
+        Remove-Item $repoDestDict -Recurse -Force
     }
 }
 

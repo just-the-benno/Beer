@@ -4,7 +4,7 @@
 @inherits LayoutComponentBase
 
 @inject IStringLocalizer<SharedRessources> sharedLocalizer
-
+@inject IControlCenterService ccService
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
 
@@ -15,10 +15,17 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudMenu Icon="@Icons.Material.Filled.ViewModule" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true">
-            <MudNavLink Href="/dashboard" IconColor="Color.Default" Icon="@Icons.Filled.AccountTree">DaAPI</MudNavLink>
-        </MudMenu>
-
+        <AuthorizeView>
+            @if(_urls.Count > 0)
+            { 
+            <MudMenu Icon="@Icons.Material.Filled.ViewModule" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true">
+                @if (_urls.ContainsKey("DaAPI-Blazor") == true)
+                {
+                    <MudNavLink Href="@_urls["DaAPI-Blazor"]" IconColor="Color.Default" Icon="@Icons.Filled.AccountTree">DaAPI</MudNavLink>
+                }
+            </MudMenu>
+            }
+        </AuthorizeView>
         <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
             <MudText Typo="Typo.h5" Class="mudblazor-appbar-brand-text">@sharedLocalizer["AppName"]</MudText>
         </MudHidden>
@@ -91,5 +98,13 @@
     {
         await SignOutManager.SetSignOutState();
         Navigation.NavigateTo("authentication/logout");
+    }
+
+    private IDictionary<String, String> _urls = new Dictionary<String, String>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _urls = await ccService.GetAppUrls();
     }
 }

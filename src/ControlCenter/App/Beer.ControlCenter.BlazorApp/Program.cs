@@ -60,10 +60,14 @@ namespace Beer.ControlCenter.BlazorApp
 
             var urlDict = (await configurationLoader.GetFromJsonAsync<Dictionary<String, String>>("/Configuration/Apps")).ToDictionary(x => x.Key.ToLower(), x => x.Value);
 
-
             builder.Services.AddHttpClient<IBeerUserService, HttpClientBasedBeerUserService>(client =>
                  client.BaseAddress = new Uri(urlDict["beeridentity"]))
                  .AddHttpMessageHandler( (provider) => new ConfigurableAuthorizationMessageHandler(urlDict["beeridentity"], provider.GetRequiredService<IAccessTokenProvider>(),provider.GetRequiredService<NavigationManager>()));
+
+            builder.Services.AddHttpClient<IControlCenterService, HttpClientBasedControlCenterService>(client =>
+                 client.BaseAddress = new Uri(urlDict["controlcenterapi"]))
+                 .AddHttpMessageHandler((provider) => new ConfigurableAuthorizationMessageHandler(urlDict["controlcenterapi"], provider.GetRequiredService<IAccessTokenProvider>(), provider.GetRequiredService<NavigationManager>()));
+
 
             var host = builder.Build();
             var jsInterop = host.Services.GetRequiredService<IJSRuntime>();

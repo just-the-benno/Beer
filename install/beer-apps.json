@@ -31,7 +31,23 @@
             "AppConfiguration__OpenIdConnection__Authority": "https://<$IdentityUrl>",
             "AppConfiguration__OpenIdConnection__RedirectUri": "https://<$ControlCenterAppUrl>/authentication/login-callback",
             "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "https://<$ControlCenterAppUrl>/authentication/logout-callback",
-            "AppConfiguration__AppUrls__BeerIdentity": "https://<$IdentityUrl>"
+            "AppConfiguration__AppUrls__BeerIdentity": "https://<$IdentityUrl>",
+            "AppConfiguration__AppUrls__ControlCenterAPI": "https://<$ControlCenterAPIUrl>"
+        }
+    },
+    {
+        "Name": "ControlCenter-API",
+        "ProjectFile": "/src/ControlCenter/Service/Beer.ControlCenter.Service.API/Beer.ControlCenter.Service.API.csproj",
+        "OutputDir": "E:/Applications/ControlCenter-API",
+        "Urls": 
+        [
+            "<$ControlCenterAPIUrl>"
+        ],
+        "Variables": 
+        {
+            "AppSettings__JwtTokenAuthenticationOptions_AuthorityUrl": "https://<$IdentityUrl>",
+            "AppSettings__AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
+            "AppSettings__AppURIs__ControlCenter-BlazorApp": "https://<$ControlCenterAppUrl>"
         }
     },
     {

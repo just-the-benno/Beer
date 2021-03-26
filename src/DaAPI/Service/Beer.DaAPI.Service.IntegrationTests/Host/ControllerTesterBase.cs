@@ -1,4 +1,6 @@
 ﻿using Beer.DaAPI.Infrastructure.StorageEngine;
+using Beer.DaAPI.Service.IntegrationTests;
+using Beer.TestHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,43 +18,14 @@ namespace DaAPI.IntegrationTests.Host
 {
     public abstract class ControllerTesterBase : WebApplicationFactoryBase
     {
-        protected static async Task IsEmptyResult(HttpResponseMessage responseMessage)
+        protected static void AddFakeAuthentication(IServiceCollection services, String authenticaionSchema) => AddFakeAuthentication(services, authenticaionSchema, "daapi.manage");
+
+        protected static void AddDatabase(IServiceCollection services, String dbName)
         {
-            Assert.True(responseMessage.IsSuccessStatusCode);
-            Assert.Equal(HttpStatusCode.NoContent, responseMessage.StatusCode);
-
-            String content = await responseMessage.Content.ReadAsStringAsync();
-            Assert.True(String.IsNullOrEmpty(content));
-        }
-
-        protected static async Task<T> IsObjectResult<T>(HttpResponseMessage responseMessage)
-        {
-            Assert.True(responseMessage.IsSuccessStatusCode);
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-
-            String rawContent = await responseMessage.Content.ReadAsStringAsync();
-            T result = JsonConvert.DeserializeObject<T>(rawContent);
-
-            return result;
-        }
-
-        protected static async Task<T> IsObjectResult<T>(HttpResponseMessage responseMessage, T expected)
-        {
-            T result = await IsObjectResult<T>(responseMessage);
-
-            Assert.Equal(expected, result);
-            return result;
-        }
-
-        protected static void AddFakeAuthentication(IServiceCollection services, String authenticaionShema)
-        {
-            services.AddAuthentication(authenticaionShema)
-                .AddScheme<FakeAuthenticationSchemeOptions, FakeAuthenticationHandler>(
-                    authenticaionShema, options =>
-                    {
-                        options.ShouldBeAuthenticated = true;
-                        options.AddClaim("scope", "daapi.manage");
-                    });
+            DbContextOptions<StorageContext> contextOptions = DatabaseTestingUtility.GetTestDbContextOptions(dbName);
+            ReplaceService(services, contextOptions);
         }
     }
+
+
 }

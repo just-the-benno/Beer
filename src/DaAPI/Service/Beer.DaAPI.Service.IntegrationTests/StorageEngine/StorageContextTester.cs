@@ -118,7 +118,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -197,7 +197,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -354,7 +354,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -505,7 +505,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -591,7 +591,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -654,7 +654,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -717,7 +717,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -782,7 +782,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -800,7 +800,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -855,7 +855,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -941,7 +941,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -1030,7 +1030,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -1115,7 +1115,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -1185,7 +1185,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
 
@@ -1279,7 +1279,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
             }
             finally
             {
-                File.Delete(preContext.Item2);
+                await context.Database.EnsureDeletedAsync();
             }
         }
     }

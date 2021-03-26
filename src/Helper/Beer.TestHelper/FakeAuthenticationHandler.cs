@@ -23,7 +23,7 @@ namespace Beer.TestHelper
         {
             if (Options.ShouldBeAuthenticated == false)
             {
-                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity()), "")));
+                return Task.FromResult(AuthenticateResult.Fail("user not authenticated"));
             }
 
             String scopesAsList = String.Empty;

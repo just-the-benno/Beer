@@ -27,7 +27,7 @@ namespace Beer.Identity
                 new ApiScope(AuthenticationDefaults.BeerUserCreateScope,"Creates local users"),
                 new ApiScope(AuthenticationDefaults.BeerUserDeleteScope,"Delete local users"),
                 new ApiScope(AuthenticationDefaults.BeerUserResetPasswordScope,"Reset password of local users"),
-
+                new ApiScope(AuthenticationDefaults.ControlCenterManageScope,"Reset password of local users"),
                 new ApiScope(AuthenticationDefaults.DaAPIMangeScope,"manage entities within DaAPI"),
             };
 
@@ -37,6 +37,10 @@ namespace Beer.Identity
                 new ApiResource(AuthenticationDefaults.BeerManageUserApiScopeName, "Administration users that can use beer")
                 {
                     Scopes = { AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope }
+                },
+                new ApiResource(AuthenticationDefaults.ControlCenterApiScopeName, "Basic access to the control center")
+                {
+                    Scopes = { AuthenticationDefaults.ControlCenterManageScope }
                 },
                  new ApiResource(AuthenticationDefaults.DaAPIScopeName, "to manage DHCP and related stuff")
                 {

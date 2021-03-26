@@ -24,5 +24,10 @@ namespace Beer.Identity.Utilities
 
         public const String DaAPIMangeScope = "daapi.manage";
         public const String DaAPIScopeName = "daapi";
+
+        public const String ControlCenterManageScope = "controlcenter.user";
+        public const String ControlCenterApiScopeName = "control-center";
+
+        
     }
 }

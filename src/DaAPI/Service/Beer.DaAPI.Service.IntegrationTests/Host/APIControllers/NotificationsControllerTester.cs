@@ -58,7 +58,7 @@ namespace DaAPI.IntegrationTests.Host.APIControllers
                 builder.ConfigureTestServices(services =>
                 {
                     AddFakeAuthentication(services, "Bearer");
-                    AddSqliteDatabase(services, dbfileName);
+                    AddDatabase(services, dbfileName);
                     ReplaceService(services, actorServiceMock.Object);
 
                     var settings = EventStoreClientSettings.Create("esdb://127.0.0.1:2113?tls=false");
@@ -85,10 +85,10 @@ namespace DaAPI.IntegrationTests.Host.APIControllers
         {
             Random random = new Random();
 
-            String sqlLiteDbFileName = $"{random.Next()}.db";
+            String dbName = $"{random.Next()}";
             String eventStorePrefix = random.GetAlphanumericString();
 
-            var serviceInteractions = GetTestClient(sqlLiteDbFileName, eventStorePrefix);
+            var serviceInteractions = GetTestClient(dbName, eventStorePrefix);
 
             Guid scopeId = Guid.Parse("7ec8da2e-73a8-4205-9dd8-9bde4be5434a");
 
@@ -126,7 +126,7 @@ namespace DaAPI.IntegrationTests.Host.APIControllers
                 await IsEmptyResult(thirdresponse);
 
                 serviceInteractions.Client.Dispose();
-                serviceInteractions = GetTestClient(sqlLiteDbFileName, eventStorePrefix);
+                serviceInteractions = GetTestClient(dbName, eventStorePrefix);
 
                 var resultResponse = await serviceInteractions.Client.GetAsync("/api/notifications/pipelines/");
                 var result = await IsObjectResult<IEnumerable<NotificationPipelineReadModel>>(resultResponse);
@@ -158,8 +158,8 @@ namespace DaAPI.IntegrationTests.Host.APIControllers
             }
             finally
             {
-                File.Delete(sqlLiteDbFileName);
                 await EventStoreClientDisposer.CleanUp(eventStorePrefix, null);
+                await DatabaseTestingUtility.DeleteDatabase(dbName);
             }
         }
     }

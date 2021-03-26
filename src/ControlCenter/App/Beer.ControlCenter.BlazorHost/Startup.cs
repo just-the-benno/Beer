@@ -36,13 +36,17 @@ namespace Beer.ControlCenter.BlazorHost
                 config.OpenIdConnection.PostLogoutRedirectUri = $"{ownUrl}authentication/logout-callback";
             }
 
-            var url = Configuration.GetServiceUri("identity", "https");
-            if (url != null)
+            var identityServiceUrl = Configuration.GetServiceUri("identity", "https");
+            if (identityServiceUrl != null)
             {
-                config.AppUrls["BeerIdentity"] = url.ToString();
+                config.AppUrls["BeerIdentity"] = identityServiceUrl.ToString();
             }
 
-
+            var controlCenterAPIUrl = Configuration.GetServiceUri("ControlCenterApi", "https");
+            if (controlCenterAPIUrl != null)
+            {
+                config.AppUrls["ControlCenterAPI"] = controlCenterAPIUrl.ToString();
+            }
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

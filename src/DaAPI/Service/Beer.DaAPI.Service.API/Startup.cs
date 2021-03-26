@@ -92,7 +92,6 @@ namespace Beer.DaAPI.Service.API
                 services.AddSingleton(settings);
                 services.AddSingleton(settings.JwtTokenAuthenticationOptions);
                 services.AddSingleton(settings.EventStoreSettings);
-
             }
 
             return settings;
