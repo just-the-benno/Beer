@@ -45,7 +45,7 @@
         ],
         "Variables": 
         {
-            "AppSettings__JwtTokenAuthenticationOptions_AuthorityUrl": "https://<$IdentityUrl>",
+            "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "https://<$IdentityUrl>",
             "AppSettings__AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
             "AppSettings__AppURIs__ControlCenter-BlazorApp": "https://<$ControlCenterAppUrl>"
         }
