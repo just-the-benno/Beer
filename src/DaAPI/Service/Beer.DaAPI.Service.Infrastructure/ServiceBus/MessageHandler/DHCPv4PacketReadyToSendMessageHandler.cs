@@ -28,7 +28,7 @@ namespace Beer.DaAPI.Infrastructure.ServiceBus.MessageHandler
 
         public Task Handle(DHCPv4PacketReadyToSendMessage notification, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("received a DHCPv6PacketReadyToSendMessage from the service bus");
+            _logger.LogDebug("received a DHCPv4PacketReadyToSendMessage from the service bus");
             if (notification.Packet != DHCPv4Packet.Empty)
             {
                 _engine.SendPacket(notification.Packet);

@@ -20,7 +20,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         where TPacketArrivedMessage : IMessage
         where TInvalidPacketArrivedMessage : IMessage
     {
-        private readonly ILogger<TEngine> _logger;
+        protected readonly ILogger<TEngine> _logger;
         private readonly Dictionary<TListeners, TServer> _activeSockets = new Dictionary<TListeners, TServer>();
         private readonly Dictionary<TAddress, TServer> _addressSocketMapper = new Dictionary<TAddress, TServer>();
         private readonly Func<TListeners, TServer> _serverFactory;

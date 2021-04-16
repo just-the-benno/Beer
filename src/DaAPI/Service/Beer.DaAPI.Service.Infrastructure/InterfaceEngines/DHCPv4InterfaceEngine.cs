@@ -25,6 +25,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
                 (listener) => new DHCPv4Server(listener.Address, serviceBus, loggerFactory.CreateLogger<DHCPv4Server>()))
         {
             this._storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _logger.LogDebug("DHCPv4InterfaceEngine ctor. {HashValue}", GetHashCode());
         }
 
         public async Task<IEnumerable<DHCPv4Listener>> GetActiveListeners() => await _storage.GetDHCPv4Listener();
