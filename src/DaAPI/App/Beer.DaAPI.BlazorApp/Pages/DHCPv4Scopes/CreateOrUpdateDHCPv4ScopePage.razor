@@ -255,6 +255,11 @@ else
                                                     <MudDivider />
                                                     <MudSelectItem T="Byte" Value="0">@L["OptionalValueCaptionForCustomOption"]</MudSelectItem>
                                                 </MudSelect>
+
+                                                @if (_optionalValues.Properties[temp].IsWellKnown == false)
+                                                {
+                                                    <MudTextField T="Byte" Immediate="false" Placeholder="@L["OptionalValueCaptionForCustomPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_optionalValues.Properties[temp].OptionCode" For="@(() => _optionalValues.Properties[temp].OptionCode)" />
+                                                }
                                             }
                                             else
                                             {
@@ -524,17 +529,17 @@ else
                         </MudSimpleTable>
                     }
 
-                <div class="d-flex justify-end mt-3">
-                    <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(3))">@L["PreviousCaption"]</MudButton>
-                    @if (_isCreateMode == true)
-                    {
-                        <BeerSendingAwareButton DefaultText="@L["CreateScopeButtonCaption"]" InProgressText="@L["CreatingScopeButtonCaption"]" IsExecuting="_submitInProgress" />
-                    }
-                    else
-                    {
-                        <BeerSendingAwareButton DefaultText="@L["UpdateScopeButtonCaption"]" InProgressText="@L["UpdatingScopeButtonCaption"]" IsExecuting="_submitInProgress" />
-                    }
-                </div>
+                    <div class="d-flex justify-end mt-3">
+                        <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(3))">@L["PreviousCaption"]</MudButton>
+                        @if (_isCreateMode == true)
+                        {
+                            <BeerSendingAwareButton DefaultText="@L["CreateScopeButtonCaption"]" InProgressText="@L["CreatingScopeButtonCaption"]" IsExecuting="_submitInProgress" />
+                        }
+                        else
+                        {
+                            <BeerSendingAwareButton DefaultText="@L["UpdateScopeButtonCaption"]" InProgressText="@L["UpdatingScopeButtonCaption"]" IsExecuting="_submitInProgress" />
+                        }
+                    </div>
 
                 </BeerShowCircularLoadingIndicatorWhileNull>
             </EditForm>

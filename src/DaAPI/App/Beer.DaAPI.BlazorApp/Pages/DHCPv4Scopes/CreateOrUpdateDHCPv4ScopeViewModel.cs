@@ -121,6 +121,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         { get; private set; } =
     new Dictionary<Byte, (string DisplayName, DHCPv4ScopePropertyType Type)>
 {
+            { 3,  ("Gateway", DHCPv4ScopePropertyType.AddressList) },
             { 6,  ("DNS-Server", DHCPv4ScopePropertyType.AddressList) },
             { 15,   ("Domain Name", DHCPv4ScopePropertyType.Text) },
             { 42,   ("NTP Servers", DHCPv4ScopePropertyType.AddressList) },
