@@ -270,38 +270,34 @@ namespace Beer.DaAPI.Service.API
                 endpoints.MapControllers();
             });
 
-            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            var storageContext = provider.GetService<StorageContext>();
+            if (storageContext.Database.IsNpgsql() == true)
             {
-                var storageContext = provider.GetService<StorageContext>();
-                if (storageContext.Database.IsNpgsql() == true)
-                {
-                    storageContext.Database.Migrate();
-                }
-
-#if DEBUG
-                //var seeder = new DatabaseSeeder();
-                //seeder.SeedDatabase(false, storageContext).GetAwaiter().GetResult();
-#endif
-                IDHCPv6PacketFilterEngine packetFilterEngine = provider.GetService<IDHCPv6PacketFilterEngine>();
-                packetFilterEngine.AddFilter(provider.GetService<DHCPv6RateLimitBasedFilter>());
-                packetFilterEngine.AddFilter(provider.GetService<DHCPv6PacketConsistencyFilter>());
-
-                var storage = provider.GetService<IDHCPv6ReadStore>();
-                var serverproperties = storage.GetServerProperties().GetAwaiter().GetResult();
-                if (serverproperties != null && serverproperties.ServerDuid != null)
-                {
-                    packetFilterEngine.AddFilter(new DHCPv6PacketServerIdentifierFilter(serverproperties.ServerDuid, provider.GetService<ILogger<DHCPv6PacketServerIdentifierFilter>>()));
-                }
-
-                var dhcpv6InterfaceEngine = provider.GetService<IDHCPv6InterfaceEngine>();
-                dhcpv6InterfaceEngine.Initialize().GetAwaiter().GetResult();
-
-                var dhcpv4InterfaceEngine = provider.GetService<IDHCPv4InterfaceEngine>();
-                dhcpv4InterfaceEngine.Initialize().GetAwaiter().GetResult();
-
-                var notificationEngine = provider.GetService<INotificationEngine>();
-                notificationEngine.Initialize().GetAwaiter().GetResult();
+                storageContext.Database.Migrate();
             }
+#if DEBUG
+            //var seeder = new DatabaseSeeder();
+            //seeder.SeedDatabase(false, storageContext).GetAwaiter().GetResult();
+#endif
+            IDHCPv6PacketFilterEngine packetFilterEngine = provider.GetService<IDHCPv6PacketFilterEngine>();
+            packetFilterEngine.AddFilter(provider.GetService<DHCPv6RateLimitBasedFilter>());
+            packetFilterEngine.AddFilter(provider.GetService<DHCPv6PacketConsistencyFilter>());
+
+            var storage = provider.GetService<IDHCPv6ReadStore>();
+            var serverproperties = storage.GetServerProperties().GetAwaiter().GetResult();
+            if (serverproperties != null && serverproperties.ServerDuid != null)
+            {
+                packetFilterEngine.AddFilter(new DHCPv6PacketServerIdentifierFilter(serverproperties.ServerDuid, provider.GetService<ILogger<DHCPv6PacketServerIdentifierFilter>>()));
+            }
+
+            var dhcpv6InterfaceEngine = provider.GetService<IDHCPv6InterfaceEngine>();
+            dhcpv6InterfaceEngine.Initialize().GetAwaiter().GetResult();
+
+            var dhcpv4InterfaceEngine = provider.GetService<IDHCPv4InterfaceEngine>();
+            dhcpv4InterfaceEngine.Initialize().GetAwaiter().GetResult();
+
+            var notificationEngine = provider.GetService<INotificationEngine>();
+            notificationEngine.Initialize().GetAwaiter().GetResult();
         }
     }
 }
