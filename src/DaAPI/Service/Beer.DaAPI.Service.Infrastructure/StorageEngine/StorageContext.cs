@@ -654,7 +654,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             IQueryable<IPacketHandledEntry<TMessageType>> packets, DateTime? start, DateTime? end, GroupStatisticsResultBy groupedBy) where TMessageType : struct
         {
             var prefilter = GetPrefiltedPackets(packets, start, end);
-            packets = packets.Where(x => x.FilteredBy != null);
+            packets = prefilter.Where(x => x.FilteredBy != null);
             return await GroupPackets(groupedBy, packets);
         }
 
@@ -662,7 +662,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             IQueryable<IPacketHandledEntry<TMessageType>> packets, DateTime? start, DateTime? end, GroupStatisticsResultBy groupedBy) where TMessageType : struct
         {
             var prefilter = GetPrefiltedPackets(packets, start, end);
-            packets = packets.Where(x => x.InvalidRequest == true);
+            packets = prefilter.Where(x => x.InvalidRequest == true);
             return await GroupPackets(groupedBy, packets);
         }
 

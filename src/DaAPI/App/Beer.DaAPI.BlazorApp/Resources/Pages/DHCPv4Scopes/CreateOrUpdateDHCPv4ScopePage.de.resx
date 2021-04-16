@@ -237,6 +237,9 @@
   <data name="OptionalValueCaptionForCustomOption" xml:space="preserve">
     <value>Angepasst</value>
   </data>
+  <data name="OptionalValueCaptionForCustomPlaceholder" xml:space="preserve">
+    <value>Code eingeben, etwa 43</value>
+  </data>
   <data name="OptionalValueHeadingOption" xml:space="preserve">
     <value>Option</value>
   </data>

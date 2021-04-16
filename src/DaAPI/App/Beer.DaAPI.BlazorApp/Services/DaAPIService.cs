@@ -196,11 +196,14 @@ namespace Beer.DaAPI.BlazorApp.Services
         {
             if (start.HasValue == true)
             {
-                url += $"&start={start.Value:o}";
+                DateTime roundedStart = start.Value.Date;
+
+                url += $"&start={roundedStart:o}";
             }
             if (end.HasValue == true)
             {
-                url += $"&end={end.Value:o}";
+                DateTime inclusiveEnd = end.Value.Date.AddDays(+1);
+                url += $"&end={inclusiveEnd:o}";
             }
 
             return url;

@@ -293,8 +293,11 @@ namespace Beer.DaAPI.Service.API
                     packetFilterEngine.AddFilter(new DHCPv6PacketServerIdentifierFilter(serverproperties.ServerDuid, provider.GetService<ILogger<DHCPv6PacketServerIdentifierFilter>>()));
                 }
 
-                var interfaceEngine = provider.GetService<IDHCPv6InterfaceEngine>();
-                interfaceEngine.Initialize().GetAwaiter().GetResult();
+                var dhcpv6InterfaceEngine = provider.GetService<IDHCPv6InterfaceEngine>();
+                dhcpv6InterfaceEngine.Initialize().GetAwaiter().GetResult();
+
+                var dhcpv4InterfaceEngine = provider.GetService<IDHCPv4InterfaceEngine>();
+                dhcpv4InterfaceEngine.Initialize().GetAwaiter().GetResult();
 
                 var notificationEngine = provider.GetService<INotificationEngine>();
                 notificationEngine.Initialize().GetAwaiter().GetResult();
