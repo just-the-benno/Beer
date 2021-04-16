@@ -103,7 +103,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
                 _addressSocketMapper.Add(listener.Address, server);
                 server.SocketErrorOccured += Server_SocketErrorOccured;
 
-                _logger.LogDebug("server is now listing on {address}", listener);
+                _logger.LogDebug("server is now listing on {address}", listener.Address.ToString());
             }
             else
             {
@@ -157,7 +157,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         {
             if (_addressSocketMapper.ContainsKey(packet.Header.ListenerAddress) == false)
             {
-                _logger.LogError("unbale to find a socket for {address}", packet.Header.Source);
+                _logger.LogError("unable to find a socket for {address}", packet.Header.Source);
                 return false;
             }
 
