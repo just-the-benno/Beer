@@ -66,7 +66,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
 
             if (packet.IsValid == false)
             {
-                _logger.LogInformation("received an invalid DHCPv6 packet from [{endpoint}]:{endpointPort} on [{listener}]:{listenerPort}",
+                _logger.LogInformation("received an invalid packet from [{endpoint}]:{endpointPort} on [{listener}]:{listenerPort}",
                     iPEndPoint.Address, iPEndPoint.Port, base.Endpoint.Address, base.Endpoint.Port);
                 _logger.LogInformation("NEXT STEP: drop packet");
 

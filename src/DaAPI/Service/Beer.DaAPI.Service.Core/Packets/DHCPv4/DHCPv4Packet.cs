@@ -296,7 +296,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
                 destionation = IPv4Address.Broadcast;
             }
 
-            Header = new IPv4HeaderInformation(source, destionation);
+            Header = new IPv4HeaderInformation(source, destionation, request.Header.ListenerAddress);
         }
 
         private void SetServerIdentifier(IPv4Address serverAddress)
@@ -315,8 +315,8 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
         IEnumerable<DHCPv4ScopeProperty> scopeProperties)
         {
             List<DHCPv4ScopeProperty> propertiesToInsert = new List<DHCPv4ScopeProperty>(scopeProperties);
-            
-            if(addressProperties != null)
+
+            if (addressProperties != null)
             {
                 propertiesToInsert.Add(new DHCPv4AddressScopeProperty(DHCPv4OptionTypes.SubnetMask, IPv4Address.FromByteArray(addressProperties.Mask.GetBytes())));
             }
@@ -425,6 +425,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             HardwareType = request.HardwareType;
             TransactionId = request.TransactionId;
             OpCode = DHCPv4PacketOperationCodes.BootReply;
+            Hops = request.Hops;
             Flags = request.Flags;
 
             if (request.GatewayIPAdress != IPv4Address.Empty)
@@ -433,6 +434,12 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             }
 
             AddOption(new DHCPv4PacketMessageTypeOption(responseType));
+
+            var clientIdentifier = request.GetClientIdentifier();
+            if(clientIdentifier != null)
+            {
+                AddOption(new DHCPv4PacketClientIdentifierOption(clientIdentifier));
+            }
         }
 
         public static DHCPv4Packet AsDiscoverResponse(
@@ -568,7 +575,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             DHCPv4PacketClientIdentifierOption clientIdentifierOption = _options.OfType<DHCPv4PacketClientIdentifierOption>().FirstOrDefault();
             if (clientIdentifierOption != null)
             {
-                if(clientIdentifierOption.Identifier.HasHardwareAddress() == false)
+                if (clientIdentifierOption.Identifier.HasHardwareAddress() == false)
                 {
                     _clientIdenfier = clientIdentifierOption.Identifier.AddHardwareAddress(ClientHardwareAddress);
                 }
@@ -601,7 +608,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
         private void PrepareStream()
         {
-            if(_byteRepresentation == null)
+            if (_byteRepresentation == null)
             {
                 Byte[] packetAsByteStream = new byte[1500];
                 Int32 written = GetAsStream(packetAsByteStream);

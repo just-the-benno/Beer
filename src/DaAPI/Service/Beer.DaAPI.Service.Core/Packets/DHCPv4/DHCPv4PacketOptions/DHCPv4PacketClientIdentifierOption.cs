@@ -15,7 +15,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
         #region constructor and factories
 
-        private DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier identifier) : 
+        public DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier identifier) : 
             base((Byte)DHCPv4OptionTypes.ClientIdentifier, identifier.DUID != DUID.Empty ? identifier.DUID.GetAsByteStream() : identifier.HwAddress  )
         {
 
