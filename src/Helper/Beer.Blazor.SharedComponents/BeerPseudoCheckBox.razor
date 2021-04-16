@@ -1,0 +1,16 @@
+﻿@if (Checked.HasValue == true)
+{
+    @if (Checked == true)
+    {
+        <MudIcon Icon="@Icons.Material.Filled.CheckBox" />
+    }
+    else
+    {
+        <MudIcon Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" />
+    }
+}
+
+@code {
+
+    [Parameter] public Boolean? Checked { get; set; }
+}

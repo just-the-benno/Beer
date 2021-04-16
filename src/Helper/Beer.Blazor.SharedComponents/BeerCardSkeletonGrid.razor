@@ -1,0 +1,21 @@
+﻿
+<MudGrid>
+    @for (int i = 0; i < AmountOfCards; i++)
+    {
+        <MudItem xs="@xs" sm="@sm" md="@md" lg="@lg" xl="@xl" >
+            <BeerCardSkeleton />
+        </MudItem>
+    }
+</MudGrid>
+
+
+
+@code {
+    [Parameter] public Int32 AmountOfCards { get; set; }
+    [Parameter] public Int32 xs { get; set; }
+    [Parameter] public Int32 sm { get; set; }
+    [Parameter] public Int32 md { get; set; }
+    [Parameter] public Int32 lg { get; set; }
+    [Parameter] public Int32 xl { get; set; }
+
+}

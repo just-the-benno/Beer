@@ -14,7 +14,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
         private class EeasySerialibleVersionOfDHCPv4ScopeProperties
         {
             public IEnumerable<DHCPv4ScopeProperty> Properties { get; set; }
-            public IEnumerable<Byte> ExcludedFromInheritance { get; set; }
+            public IEnumerable<Int32> ExcludedFromInheritance { get; set; }
         }
 
         public override bool CanConvert(Type objectType) => objectType == typeof(DHCPv4ScopeProperties);
@@ -24,9 +24,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
             var info = serializer.Deserialize<EeasySerialibleVersionOfDHCPv4ScopeProperties>(reader);
 
             DHCPv4ScopeProperties result = new DHCPv4ScopeProperties(info.Properties);
-            foreach (var item in info.ExcludedFromInheritance ?? Array.Empty<Byte>())
+            foreach (var item in info.ExcludedFromInheritance ?? Array.Empty<Int32>())
             {
-                result.RemoveFromInheritance(item);
+                result.RemoveFromInheritance((Byte)item);
             }
 
             return result;
@@ -39,7 +39,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
             serializer.Serialize(writer, new EeasySerialibleVersionOfDHCPv4ScopeProperties
             {
                 Properties = item.Properties.Where(x => x != null),
-                ExcludedFromInheritance = item.GetMarkedFromInheritanceOptionCodes(),
+                ExcludedFromInheritance = item.GetMarkedFromInheritanceOptionCodes().Cast<Int32>().ToArray(),
             }) ;
         }
     }

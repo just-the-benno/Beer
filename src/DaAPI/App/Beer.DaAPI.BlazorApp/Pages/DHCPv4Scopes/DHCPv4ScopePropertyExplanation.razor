@@ -1,0 +1,93 @@
+﻿@inject IStringLocalizer<DHCPv4ScopePropertyExplanation> L
+@inherits MudComponentBase
+ 
+ <DaAPILittleHelperComponent Content="@_content" Heading="@_title" Style="@Style" UserAttributes="UserAttributes" ButtonStyle="@ButtonStyle" Tag="@Tag" />
+
+
+@code {
+
+    private String _title;
+    private String _content;
+
+    [Parameter] public DHCPv4ScopePropertyExplanationValues Property { get; set; }
+
+    [Parameter] public String ButtonStyle { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        String keyForTitle = "";
+        String keyForContent = "";
+
+        switch (Property)
+        {
+            case DHCPv4ScopePropertyExplanationValues.HasParent:
+                keyForTitle = "ScopePropertyParentName";
+                keyForContent = "ScopePropertyParentContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.Start:
+                keyForTitle = "ScopePropertyStartName";
+                keyForContent = "ScopePropertyStartContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.End:
+                keyForTitle = "ScopePropertyEndName";
+                keyForContent = "ScopePropertyEndContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.AddressRelated:
+                keyForTitle = "ScopePropertyAddressRelatedName";
+                keyForContent = "ScopePropertyAddressRelatedContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.ExcludedAddresses:
+                keyForTitle = "ScopePropertyExcludedAddressesName";
+                keyForContent = "ScopePropertyExcludedAddressesContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.SubnetMask:
+                keyForTitle = "ScopePropertySubnetMaskName";
+                keyForContent = "ScopePropertySubnetMaskContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.PreferredLifetime:
+                keyForTitle = "ScopePropertyPreferredLifetimeName";
+                keyForContent = "ScopePropertyPreferredLifetimeContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.LeaseTime:
+                keyForTitle = "ScopePropertyValidLifetimeName";
+                keyForContent = "ScopePropertyValidLifetimeContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.SupportDirectUnicast:
+                keyForTitle = "ScopePropertySupportDirectUnicastName";
+                keyForContent = "ScopePropertySupportDirectUnicastContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.AccpetDeclines:
+                keyForTitle = "ScopePropertyAcceptDeclinesName";
+                keyForContent = "ScopePropertyAcceptDeclinesContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.AccpetInforms:
+                keyForTitle = "ScopePropertyAcceptInformsName";
+                keyForContent = "ScopePropertyAcceptInformsContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.ReuseAddress:
+                keyForTitle = "ScopePropertyReuseAddressName";
+                keyForContent = "ScopePropertyReuseAddressContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.AddressAllocationStrategy:
+                keyForTitle = "ScopePropertyAddressAllocationStrategyName";
+                keyForContent = "ScopePropertyAddressAllocationStrategyContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.ScopeOptions:
+                keyForTitle = "ScopePropertyOptionName";
+                keyForContent = "ScopePropertyOptionContent";
+                break;
+            case DHCPv4ScopePropertyExplanationValues.Resolver:
+                keyForTitle = "ScopePropertyResolverName";
+                keyForContent = "ScopePropertyResolverContent";
+                break;
+            default:
+                break;
+        }
+
+        _title = L[keyForTitle];
+        _content = L[keyForContent];
+    }
+
+}

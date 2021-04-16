@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Helper\Beer.Blazor.SharedComponents\Beer.Blazor.SharedComponents.csproj" />
     <ProjectReference Include="..\..\..\Helper\Beer.WASM.Helper\Beer.WASM.Helper.csproj" />
   </ItemGroup>
 

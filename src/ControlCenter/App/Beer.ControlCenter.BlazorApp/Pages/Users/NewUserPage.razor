@@ -33,7 +33,7 @@
                 </MudGrid>
                 @if (_possibleAvatars.Any() == false)
                 {
-                    <CenteredCircularLoading Text="@L["LoadingAvatarMessage"]" /> }
+                    <BeerCenteredCircularLoading Text="@L["LoadingAvatarMessage"]" /> }
                 else
                 {
                     <MudText Typo="Typo.h6" Class="mt-5 mb-3">@L["SelectAvatarHeading"]</MudText>
@@ -56,7 +56,7 @@
 
             </MudCardContent>
             <MudCardActions Class="pb-4 pl-4">
-                <SendingAwareButton DefaultText="@L["CreateNewUserButtonCaption"]" InProgressText="@L["CreatingNewUserButtonCaption"]" IsExecuting="_creatingUserInProgress" />
+                <BeerSendingAwareButton DefaultText="@L["CreateNewUserButtonCaption"]" InProgressText="@L["CreatingNewUserButtonCaption"]" IsExecuting="_creatingUserInProgress" />
             </MudCardActions>
         </MudCard>
     </EditForm>

@@ -1,0 +1,21 @@
+﻿@if (IsIndicatorVisible() == true)
+{
+    <MudSkeleton SkeletonType="@SkeletonType" Animation="@AnimationType" />
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+
+    private Boolean IsIndicatorVisible() => IsSingle == true ? (Item == null) : (Items == null || Items.Any() == false);
+
+    [Parameter] public Object Item { get; set; }
+    [Parameter] public IEnumerable<Object> Items { get; set; }
+    [Parameter] public Boolean IsSingle { get; set; } = true;
+    [Parameter] public SkeletonType SkeletonType { get; set; } = SkeletonType.Rectangle;
+    [Parameter] public Animation AnimationType { get; set; } = Animation.Pulse;
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+}

@@ -1,0 +1,548 @@
+﻿@page "/scopes/dhcpv4/create"
+@page "/scopes/dhcpv4/create/copyFrom/{ScopeId}"
+@page "/scopes/dhcpv4/create/childOf/{ScopeId}"
+@page "/scopes/dhcpv4/update/{ScopeId}"
+
+@using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1.DHCPv4ScopeAddressPropertyReqest
+
+@attribute [Authorize]
+@inject DaAPIService _service
+@inject IStringLocalizer<CreateOrUpdateDHCPv4ScopePage> L
+@inject DHCPv4ScopePropertyTypeNameConverter _scopePropertyTypeNameConverter
+@inject DHCPv4ScopeResolverPropertyValyeTypeNameConverter _scopeResolverPropertyValueTypeNameConverter
+@inject ISnackbar _snackBarService
+@inject NavigationManager _navManager
+
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">
+    @if (_isCreateMode == true)
+    {
+        @L["PageTitle"]
+    }
+    else if (_loadingOfInitialDataNeededCompled == false)
+    {
+        @L["PageTitleForUpdatingModeContentNotLoaded"]
+    }
+    else
+    {
+        @String.Format(@L["PageTitleForUpdating"], _generellPropertiesModel.Name)
+    }
+</MudText>
+
+@if (_loadingOfInitialDataNeededCompled == false)
+{
+    <Beer.Blazor.SharedComponents.BeerCenteredCircularLoading Text="@L["LoadingAdditionalDataText"]" />
+}
+else
+{
+    <MudTabs @ref="_tabs" Elevation="2" Rounded="true" KeepPanelsAlive="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="@L["GenerellSectionHeading"]">
+            <EditForm EditContext="_generellPropertiesContext" OnValidSubmit="@( () =>  NavigateToStep(2))">
+                <FluentValidator />
+                <MudTextField T="string" Immediate="true" Placeholder="@L["NamePlaceholder"]" Label="@L["NameLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_generellPropertiesModel.Name" For="@(() => _generellPropertiesModel.Name)" />
+                <MudTextField Class="mt-6 mb-2" Lines="5" T="string" Immediate="true" Label="@L["DescriptionLabel"]" Placeholder="@L["DescriptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_generellPropertiesModel.Description" For="@(() => _generellPropertiesModel.Description)" />
+                <div class="d-flex flex-row">
+                    <MudCheckBox Label="@L["HasParentLabel"]" @bind-Checked="_generellPropertiesModel.HasParent" Color="Color.Primary" For="() => _generellPropertiesModel.HasParent" />
+                    <DHCPv4ScopePropertyExplanation Property="DHCPv4ScopePropertyExplanationValues.HasParent" />
+                </div>
+
+                @if (_generellPropertiesModel.HasParent == true)
+                {
+                    <BeerShowCircularLoadingIndicatorWhileNull Item="_parents" Text="@L["LoadParentsText"]">
+                        <MudSelect Class="mt-6" T="Guid?" Label="@L["ParentLabel"]" For="@( () => _generellPropertiesModel.ParentId)" @bind-Value="_generellPropertiesModel.ParentId">
+                            @foreach (var item in _parents)
+                            {
+                                <MudSelectItem T="Guid?" Style="@($"margin-left:{item.Depth * 3}px")" Value="@item.Scope.Id"> @item.Scope.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </BeerShowCircularLoadingIndicatorWhileNull>
+                }
+
+                <div class="d-flex justify-end">
+                    <MudButton Class="mt-3" ButtonType="ButtonType.Submit" Color="Color.Primary" EndIcon="@Icons.Material.Filled.NavigateNext" Variant="Variant.Filled" Disabled="@(_generellPropertiesContext.GetValidationMessages().Any() == true)">@L["NextCaption"]</MudButton>
+                </div>
+            </EditForm>
+
+        </MudTabPanel>
+        <MudTabPanel Text="@L["AddressPropertiesSectionHeading"]" Disabled="@(_generellPropertiesContext.GetValidationMessages().Any() == true)">
+            <EditForm EditContext="_addressRelatedPropertiesContext" OnValidSubmit="@( () =>  NavigateToStep(3))">
+                <FluentValidator />
+                <BeerShowCircularLoadingIndicatorWhileNull Item="@_loadingParentInProgress" IsSingle="true" Text="@L["LoadingParentDetails"]">
+                    <MudSimpleTable Class="pa-4" Elevation="3" Hover="true">
+                        <thead>
+                            <tr>
+                                <th>@L["AddressPropertyPropertyHeading"]</th>
+                                @if (_generellPropertiesModel.HasParent == true)
+                                {
+                                    <th>@L["AddressPropertyPropertyParentValue"]</th>
+                                    <th>@L["AddressPropertyPropertyOverrideParentValue"]</th>
+                                }
+                                <th>@L["AddressPropertyPropertyValue"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.Start" PropertyName="@L["StartAddressLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.Start" ForceEditing="true">
+                                <MudTextField T="string" Immediate="true" Placeholder="@L["EndAddressPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_addressRelatedPropertiesModel.Start" For="@(() => _addressRelatedPropertiesModel.Start)" />
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.End" PropertyName="@L["EndAddressLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.End" ForceEditing="true">
+                                <MudTextField T="string" Immediate="true" Placeholder="@L["StartAddressPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_addressRelatedPropertiesModel.End" For="@(() => _addressRelatedPropertiesModel.End)" />
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.ExcludedAddresses" PropertyName="@L["ExcludedAddressLabel"]" ShowParentValue="@HasParent()" ForceEditing="true">
+                                <ParentContent>
+                                    @if (_addressRelatedPropertiesModel.ParentValues.ExcludedAddresses.Any() == false)
+                                    {
+                                        <MudAlert Severity="Severity.Info">@L["NoExcludedAddressFound"]</MudAlert>
+                                    }
+                                    else
+                                    {
+                                        <MudList Dense="true">
+                                            @foreach (var item in _addressRelatedPropertiesModel.ParentValues.ExcludedAddresses)
+                                            {
+                                                <MudListItem Text="@item.Value" />
+                                            }
+                                        </MudList>
+                                    }
+                                </ParentContent>
+                                <ChildContent>
+
+                                    <div class="d-flex justify-end">
+                                        <MudTooltip Text="@L["AddExcludedAddress"]">
+                                            <MudFab Icon="@Icons.Filled.Add" OnClick="AddExcludedAddress" />
+                                        </MudTooltip>
+                                    </div>
+
+                                    @if (_addressRelatedPropertiesModel.ExcludedAddresses.Any() == true)
+                                    {
+                                        <MudList Dense="true" @key="_excludedAddressKey">
+                                            @for (int i = 0; i < _addressRelatedPropertiesModel.ExcludedAddresses.Count; i++)
+                                            {
+                                                Int32 temp = i;
+
+                                                <MudListItem>
+                                                    <div class="d-flex flex-row">
+                                                        <div class="d-flex" style="flex:1 1 auto">
+                                                            <MudTextField T="string" Immediate="true" Placeholder="@L["SingleExcludedAddressPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_addressRelatedPropertiesModel.ExcludedAddresses[temp].Value" For="@(() => _addressRelatedPropertiesModel.ExcludedAddresses[temp].Value)" />
+                                                        </div>
+                                                        <MudTooltip Text="@L["DeleteSingleExcludedAddressTooltipText"]">
+                                                            <MudIconButton Style="flex: 0 0 auto; align-self: center;" Icon="@Icons.Material.Filled.Delete" OnClick="@( () => RemoveExcludedAddress(temp) )" />
+                                                        </MudTooltip>
+                                                    </div>
+                                                </MudListItem>
+                                            }
+                                        </MudList>
+                                    }
+                                </ChildContent>
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.SubnetMask" PropertyName="@L["SubnetMaskLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.SubnetMask.Value.ToString()" @bind-OverrideValue="_addressRelatedPropertiesModel.SubnetMask.OverrideValue">
+                                <MudTextField T="Byte?" Immediate="true" Placeholder="@L["SubnetMaskPlaceHolder"]" Variant="Variant.Outlined" InputType="InputType.Number" @bind-Value="_addressRelatedPropertiesModel.SubnetMask.NullableValue" For="@(() => _addressRelatedPropertiesModel.SubnetMask.NullableValue)" />
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.RenewalTime" PropertyName="@L["RenewalTimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.RenewalTime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.RenewalTime.OverrideValue">
+                                <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.RenewalTime.NullableValue" For="@(() => _addressRelatedPropertiesModel.RenewalTime.NullableValue)" />
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.PreferredLifetime" PropertyName="@L["PreferredLifetimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.PreferredLifetime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.PreferredLifetime.OverrideValue">
+                                <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.PreferredLifetime.NullableValue" For="@(() => _addressRelatedPropertiesModel.PreferredLifetime.NullableValue)" />
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.LeaseTime" PropertyName="@L["LeaseTimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.LeaseTime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.LeaseTime.OverrideValue">
+                                <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.LeaseTime.NullableValue" For="@(() => _addressRelatedPropertiesModel.LeaseTime.NullableValue)" />
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.SupportDirectUnicast" PropertyName="@L["SupportUnicastLabel"]" ShowParentValue="@HasParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.SupportDirectUnicast.OverrideValue">
+                                <ParentContent>
+                                    <BeerPseudoCheckBox Checked="@_addressRelatedPropertiesModel.ParentValues?.SupportDirectUnicast.NullableValue" />
+                                </ParentContent>
+                                <ChildContent>
+                                    <MudCheckBox T="Boolean?" @bind-Checked="_addressRelatedPropertiesModel.SupportDirectUnicast.NullableValue" For="@(() => _addressRelatedPropertiesModel.SupportDirectUnicast.NullableValue)" />
+                                </ChildContent>
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.AccpetDeclines" PropertyName="@L["AccpetDeclinesLabel"]" ShowParentValue="@HasParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.AcceptDecline.OverrideValue">
+                                <ParentContent>
+                                    <BeerPseudoCheckBox Checked="@_addressRelatedPropertiesModel.ParentValues?.AcceptDecline.NullableValue" />
+                                </ParentContent>
+                                <ChildContent>
+                                    <MudCheckBox T="Boolean?" @bind-Checked="_addressRelatedPropertiesModel.AcceptDecline.NullableValue" For="@(() => _addressRelatedPropertiesModel.AcceptDecline.NullableValue)" />
+                                </ChildContent>
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.AccpetInforms" PropertyName="@L["AccpetInformsLabel"]" ShowParentValue="@HasParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.InformsAreAllowd.OverrideValue">
+                                <ParentContent>
+                                    <BeerPseudoCheckBox Checked="@_addressRelatedPropertiesModel.ParentValues?.InformsAreAllowd.NullableValue" />
+                                </ParentContent>
+                                <ChildContent>
+                                    <MudCheckBox T="Boolean?" @bind-Checked="_addressRelatedPropertiesModel.InformsAreAllowd.NullableValue" For="@(() => _addressRelatedPropertiesModel.InformsAreAllowd.NullableValue)" />
+                                </ChildContent>
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.ReuseAddress" PropertyName="@L["ReuseAddressLabel"]" ShowParentValue="@HasParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.ReuseAddressIfPossible.OverrideValue">
+                                <ParentContent>
+                                    <BeerPseudoCheckBox Checked="@_addressRelatedPropertiesModel.ParentValues?.ReuseAddressIfPossible.NullableValue" />
+                                </ParentContent>
+                                <ChildContent>
+                                    <MudCheckBox T="Boolean?" @bind-Checked="_addressRelatedPropertiesModel.ReuseAddressIfPossible.NullableValue" For="@(() => _addressRelatedPropertiesModel.ReuseAddressIfPossible.NullableValue)" />
+                                </ChildContent>
+                            </DHCPv4AddressRelatedPropertyEntry>
+                            <DHCPv4AddressRelatedPropertyEntry Property="DHCPv4ScopePropertyExplanationValues.AddressAllocationStrategy" PropertyName="@L["AddressAllocationStrategyLabel"]" ShowParentValue="@HasParent()" ParentValue="@GetLocalizedAddressAllocationName(_addressRelatedPropertiesModel.ParentValues?.AddressAllocationStrategy.Value)" @bind-OverrideValue="_addressRelatedPropertiesModel.AddressAllocationStrategy.OverrideValue">
+                                <MudSelect T="AddressAllocationStrategies?" For="@( () => _addressRelatedPropertiesModel.AddressAllocationStrategy.NullableValue)" @bind-Value="_addressRelatedPropertiesModel.AddressAllocationStrategy.NullableValue">
+                                    @foreach (var item in GetAddressAllocations())
+                                    {
+                                        <MudSelectItem T="AddressAllocationStrategies?" Value="@item.value">@item.caption</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </DHCPv4AddressRelatedPropertyEntry>
+                        </tbody>
+                    </MudSimpleTable>
+                    <div class="d-flex justify-end">
+                        <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(1))">@L["PreviousCaption"]</MudButton>
+                        <MudButton Class="mt-3" ButtonType="ButtonType.Submit" Color="Color.Primary" EndIcon="@Icons.Material.Filled.NavigateNext" Variant="Variant.Filled" Disabled="@(_addressRelatedPropertiesContext.GetValidationMessages().Any() == true)">@L["NextCaption"]</MudButton>
+                    </div>
+                </BeerShowCircularLoadingIndicatorWhileNull>
+
+            </EditForm>
+
+
+        </MudTabPanel>
+        <MudTabPanel Text="@L["ScopePropertiesSectionHeading"]" Disabled="@(_addressRelatedPropertiesContext.GetValidationMessages().Any() == true)">
+            <EditForm EditContext="_optionalValuesContext" OnValidSubmit="@( () =>  NavigateToStep(4))">
+                <FluentValidator />
+
+                <BeerShowCircularLoadingIndicatorWhileNull Item="@_loadingParentInProgress" IsSingle="true" Text="@L["LoadingParentDetails"]">
+
+                    <div class="d-flex justify-end">
+                        <MudTooltip Text="@L["AddOptionalValuesToolTipText"]">
+                            <MudFab Icon="@Icons.Filled.Add" Color="Color.Primary" OnClick="AddOptionalValue" />
+                        </MudTooltip>
+                    </div>
+
+                    @if (_optionalValues.Properties.Any() == false)
+                    {
+                        <MudAlert Severity="Severity.Info">@L["NoOptionalValuesSetInfoText"]</MudAlert>
+                    }
+                    else
+                    {
+                        <MudSimpleTable Class="pa-4" Elevation="3" Hover="true">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>@L["OptionalValueHeadingOption"]</th>
+                                    <th>@L["OptionalValueHeadingType"]</th>
+
+                                    @if (_optionalValues.PropertiesHasParents() == true)
+                                    {
+                                        <th>@L["OptionalValueHeadingStopInheritance"]</th>
+                                        <th>@L["OptionalValueHeadingOverrideParentValue"]</th>
+                                    }
+                                    <th>@L["OptionalValueHeadingValue"]</th>
+                                </tr>
+                            </thead>
+                            <tbody @key="_optionalValuesKey">
+                                @for (int i = 0; i < _optionalValues.Properties.Count; i++)
+                                {
+
+                                    Int32 temp = i;
+                                    <tr>
+                                        <td>
+                                            @if (_optionalValues.Properties[temp].IsSetByParent == false)
+                                            {
+                                                <MudTooltip Text="@L["DeleteOptionalValuesTooltip"]">
+                                                    <MudIconButton Style="flex: 0 0 auto; align-self: center;" Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="@( () => RemoveOptionalValue(temp))" />
+                                                </MudTooltip>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (_optionalValues.Properties[temp].IsSetByParent == false)
+                                            {
+                                                <MudSelect T="Byte" For="@( () => _optionalValues.Properties[temp].OptionCode)" @bind-Value=" _optionalValues.Properties[temp].OptionCode">
+                                                    @foreach (var item in CreateOrUpdateDHCPv4ScopePropertyModel.WellknowOptions)
+                                                    {
+                                                        <MudSelectItem T="Byte" Value="@item.Key">@item.Value.DisplayName</MudSelectItem>
+                                                    }
+                                                    <MudDivider />
+                                                    <MudSelectItem T="Byte" Value="0">@L["OptionalValueCaptionForCustomOption"]</MudSelectItem>
+                                                </MudSelect>
+                                            }
+                                            else
+                                            {
+                                                <MudText Typo="Typo.body2">
+                                                    @if (_optionalValues.Properties[temp].IsWellKnown == true)
+                                                    {
+                                                        @_optionalValues.Properties[temp].GetWellKnownOptioName()
+                                                    }
+                                                    else
+                                                    {
+                                                        @($"{_optionalValues.Properties[temp].OptionCode} ({L["OptionalValueCaptionForCustomOption"]})")
+                                                    }
+                                                </MudText>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (_optionalValues.Properties[temp].IsWellKnown == true || _optionalValues.Properties[temp].IsSetByParent == true)
+                                            {
+                                                <span>@_scopePropertyTypeNameConverter.GetName(_optionalValues.Properties[temp].PropertyType)</span>
+                                            }
+                                            else
+                                            {
+                                                <MudSelect T="Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4ScopePropertyType" For="@( () => _optionalValues.Properties[temp].PropertyType)" @bind-Value=" _optionalValues.Properties[temp].PropertyType">
+                                                    @foreach (var item in CreateOrUpdateDHCPv4ScopePropertyModel.PropertyTypes)
+                                                    {
+                                                        <MudSelectItem T="Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4ScopePropertyType" Value="@item">@_scopePropertyTypeNameConverter.GetName(item)</MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            }
+                                        </td>
+                                        @if (_optionalValues.PropertiesHasParents() == true)
+                                        {
+                                            <td>
+                                                @if (_optionalValues.Properties[temp].IsSetByParent == true)
+                                                {
+                                                    <MudCheckBox T="Boolean" For="@( () => _optionalValues.Properties[temp].MarkAsRemovedInInheritance)" @bind-Checked="_optionalValues.Properties[temp].MarkAsRemovedInInheritance" />
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (_optionalValues.Properties[temp].IsSetByParent == true)
+                                                {
+                                                    <MudCheckBox T="Boolean" For="@( () => _optionalValues.Properties[temp].OverrideParentValue)" @bind-Checked=" _optionalValues.Properties[temp].OverrideParentValue" />
+                                                }
+                                            </td>
+                                        }
+                                        <td style="@(@_optionalValues.Properties[temp].MarkAsRemovedInInheritance == true ?  "color: var(--mud-palette-error);text-decoration: line-through;" : String.Empty)">
+                                            @if (_optionalValues.Properties[temp].OverrideParentValue == true || _optionalValues.Properties[temp].IsSetByParent == false)
+                                            {
+                                                switch (_optionalValues.Properties[temp].PropertyType)
+                                                {
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Address:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Subnet:
+                                                        <MudTextField T="string" Immediate="true" Placeholder="@L["OptionalValuesAddressOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_optionalValues.Properties[temp].AddressValue.Value" For="@(() => _optionalValues.Properties[temp].AddressValue.Value)" />
+                                                        break;
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Byte:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.UInt16:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.UInt32:
+                                                        <MudTextField T="Int64?" Immediate="true" Placeholder="@L["OptionalValuesNumericOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Number" @bind-Value="_optionalValues.Properties[temp].NumericValue" For="@(() => _optionalValues.Properties[temp].NumericValue)" />
+                                                        break;
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Text:
+                                                        <MudTextField T="string" Immediate="true" Placeholder="@L["OptionalValuesTextOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_optionalValues.Properties[temp].TextValue" For="@(() => _optionalValues.Properties[temp].TextValue)" />
+                                                        break;
+
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Time:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.TimeOffset:
+                                                        <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_optionalValues.Properties[temp].TimeValue" For="@(() => _optionalValues.Properties[temp].TimeValue)" />
+                                                        break;
+
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Boolean:
+                                                        <MudCheckBox T="Boolean?" For="@( () => _optionalValues.Properties[temp].BooleanValue)" @bind-Checked="_optionalValues.Properties[temp].BooleanValue" />
+                                                        break;
+
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.AddressList:
+                                                        <div class="d-flex justify-end">
+                                                            <MudTooltip Text="@L["AddAddressToOptionToolTip"]">
+                                                                <MudFab Icon="@Icons.Filled.Add" OnClick="@( () => AddAddressToOption( _optionalValues.Properties[temp]) )" />
+                                                            </MudTooltip>
+                                                        </div>
+                                                        <MudList Dense="true" @key="_optionalValues.Properties[temp].Key">
+                                                            @for (int j = 0; j < _optionalValues.Properties[temp].AddressesValues.Count; j++)
+                                                            {
+                                                                Int32 tempAddress = j;
+                                                                <MudListItem>
+                                                                    <div class="d-flex flex-row">
+                                                                        <MudTextField T="string" Immediate="true" Placeholder="@L["OptionalValuesAddressOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_optionalValues.Properties[temp].AddressesValues[tempAddress].Value" For="@(() => _optionalValues.Properties[temp].AddressesValues[tempAddress].Value)" />
+                                                                        <div class="d-flex" style="flex: 1 1 auto"></div>
+                                                                        @if (_optionalValues.Properties[temp].AddressesValues.Count > 1)
+                                                                        {
+                                                                            <MudTooltip Text="@L["DeleteAddressFromOptionalValuesTooltip"]">
+                                                                                <MudIconButton Style="flex: 0 0 auto; align-self: center;" Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="@( () => RemoveAddressFromOption(_optionalValues.Properties[temp],tempAddress))" />
+                                                                            </MudTooltip>
+                                                                        }
+                                                                    </div>
+                                                                </MudListItem>
+                                                            }
+                                                        </MudList>
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                switch (_optionalValues.Properties[temp].PropertyType)
+                                                {
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Address:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Subnet:
+                                                        <span>@_optionalValues.Properties[temp].AddressValue.Value</span>
+                                                        break;
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Byte:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.UInt16:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.UInt32:
+                                                        <span>@_optionalValues.Properties[temp].NumericValue</span>
+                                                        break;
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Text:
+                                                        <span>@_optionalValues.Properties[temp].TextValue</span>
+                                                        break;
+
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Time:
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.TimeOffset:
+                                                        <span>@_optionalValues.Properties[temp].TimeValue?.Humanize()</span>
+                                                        break;
+
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.Boolean:
+                                                        <BeerPseudoCheckBox Checked="@_optionalValues.Properties[temp].BooleanValue.Value" />
+                                                        break;
+
+                                                    case Core.Scopes.DHCPv4.DHCPv4ScopePropertyType.AddressList:
+                                                        <MudList Dense="true">
+                                                            @foreach (var address in _optionalValues.Properties[temp].AddressesValues)
+                                                            {
+                                                                <MudListItem Text="@address.Value" />
+                                                            }
+                                                        </MudList>
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+
+                    }
+
+
+                    <div class="d-flex justify-end">
+                        <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(2))">@L["PreviousCaption"]</MudButton>
+                        <MudButton Class="mt-3" ButtonType="ButtonType.Submit" Color="Color.Primary" EndIcon="@Icons.Material.Filled.NavigateNext" Variant="Variant.Filled" Disabled="@(_optionalValuesContext.GetValidationMessages().Any() == true)">@L["NextCaption"]</MudButton>
+                    </div>
+                </BeerShowCircularLoadingIndicatorWhileNull>
+            </EditForm>
+        </MudTabPanel>
+        <MudTabPanel Text="@L["ResolverPropertiesSectionHeading"]" Disabled="@(_optionalValuesContext.GetValidationMessages().Any() == true)">
+            <EditForm EditContext="_resolverContext" OnValidSubmit="@SubmttingForm">
+                <FluentValidator />
+                <BeerShowCircularLoadingIndicatorWhileNull Item="@_possibleResolvers" IsSingle="true" Text="@L["LoadingParentDetails"]">
+                    <div class="d-flex flex-row">
+                        <DHCPv4ScopePropertyExplanation Property="DHCPv4ScopePropertyExplanationValues.Resolver" ButtonStyle="flex: 0 0 auto; align-self: center;" />
+                        <MudSelect T="String" Label="@L["ParentLabel"]" For="@(() => _resolverModel.ResolverType)" @bind-Value="_resolverModel.ResolverType">
+                            @foreach (var item in _possibleResolvers)
+                            {
+                                <MudSelectItem T="String" Value="@item.TypeName">
+                                    <DHCPv4ScopeResolverExplanation ResolverTypeName="@item.TypeName" ResolverPropertyName="@item.TypeName" OnlyTitle="true" />
+                                    @if (item.TypeName != _resolverModel.ResolverType)
+                                    {
+                                        <DHCPv4ScopeResolverExplanation ResolverTypeName="@item.TypeName" ResolverPropertyName="@item.TypeName" OnlyTitle="false" Style="position:relative" />
+                                    }
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+
+                    @if (String.IsNullOrEmpty(_resolverModel.ResolverType) == false && _resolverModel.Properties.Any() == true)
+                    {
+                        <MudSimpleTable Class="pa-4 mt-6" Elevation="3" Hover="true">
+                            <thead>
+                                <tr>
+                                    <th>@L["ResolverPropertyNameColumnHeader"]</th>
+                                    <th>@L["ResolverPropertyTypeColumnHeader"]</th>
+                                    <th>@L["ResolverPropertyValueColumnHeader"]</th>
+                                </tr>
+                            </thead>
+                            <tbody @key="_resolverValuesKey">
+                                @for (int i = 0; i < _resolverModel.Properties.Count; i++)
+                                {
+                                    Int32 temp = i;
+
+                                    <tr>
+                                        <td>
+                                            <DHCPv4ScopeResolverExplanation ResolverTypeName="@_resolverModel.ResolverType" ResolverPropertyName="@_resolverModel.Properties[temp].Name" OnlyTitle="true" />
+                                            <DHCPv4ScopeResolverExplanation ResolverTypeName="@_resolverModel.ResolverType" ResolverPropertyName="@_resolverModel.Properties[temp].Name" OnlyTitle="false" />
+                                        </td>
+                                        <td>
+                                            @_scopeResolverPropertyValueTypeNameConverter.GetName(_resolverModel.Properties[temp].ValueType)
+                                        </td>
+                                        <td>
+                                            @switch (_resolverModel.Properties[temp].ValueType)
+                                            {
+
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.String:
+                                                    <MudTextField T="string" Immediate="true" Placeholder="@L["ResolverPropertyEnterTextValuePlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
+
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4Address:
+                                                    <MudTextField T="string" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4AddressPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
+
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4AddressList:
+                                                    <div class="d-flex justify-end">
+                                                        <MudTooltip Text="@L["AddAddressToResolverPropertyToolTip"]">
+                                                            <MudFab Icon="@Icons.Filled.Add" OnClick="@( () => AddAddressToResolverProperty(_resolverModel.Properties[temp]) )" />
+                                                        </MudTooltip>
+                                                    </div>
+                                                    <MudList Dense="true" @key="_resolverModel.Properties[temp].Key">
+                                                        @for (int j = 0; j < _resolverModel.Properties[temp].Addresses.Count; j++)
+                                                        {
+                                                            Int32 tempAddress = j;
+                                                            <MudListItem>
+                                                                <div class="d-flex flex-row">
+                                                                    <MudTextField T="string" Immediate="true" Placeholder="@L["OptionalValuesAddressOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].Addresses[tempAddress].Value" For="@(() => _resolverModel.Properties[temp].Addresses[tempAddress].Value)" />
+                                                                    <div class="d-flex" style="flex: 1 1 auto"></div>
+                                                                    @if (_resolverModel.Properties[temp].Addresses.Count > 1)
+                                                                    {
+                                                                        <MudTooltip Text="@L["DeleteAddressFromResolverPropertyValuesTooltip"]">
+                                                                            <MudIconButton Style="flex: 0 0 auto; align-self: center;" Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="@( () => RemoveAddressFromResolverProperty(_resolverModel.Properties[temp],tempAddress))" />
+                                                                        </MudTooltip>
+                                                                    }
+                                                                </div>
+                                                            </MudListItem>
+                                                        }
+                                                    </MudList>
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4Subnetmask:
+                                                    <MudTextField T="Int64" Immediate="true" Placeholder="@L["ResolverPropertyEnterNumericValuePlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Number" @bind-Value="_resolverModel.Properties[temp].NumericValue" For="@(() => _resolverModel.Properties[temp].NumericValue)" />
+
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray:
+                                                    <MudTextField T="String" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
+
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.UInt32:
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte:
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.VLANId:
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Numeric:
+                                                    <MudTextField T="Int64" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].NumericValue" For="@(() => _resolverModel.Properties[temp].NumericValue)" />
+                                                    break;
+
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.NullableUInt32:
+                                                    <MudTextField T="Int64?" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].NullableNumericValue" For="@(() => _resolverModel.Properties[temp].NullableNumericValue)" />
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Boolean:
+                                                    <MudCheckBox T="Boolean" For="@( () => _resolverModel.Properties[temp].BooleanValue)" @bind-Checked="_resolverModel.Properties[temp].BooleanValue" />
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </MudSimpleTable>
+                    }
+
+                <div class="d-flex justify-end mt-3">
+                    <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(3))">@L["PreviousCaption"]</MudButton>
+                    @if (_isCreateMode == true)
+                    {
+                        <BeerSendingAwareButton DefaultText="@L["CreateScopeButtonCaption"]" InProgressText="@L["CreatingScopeButtonCaption"]" IsExecuting="_submitInProgress" />
+                    }
+                    else
+                    {
+                        <BeerSendingAwareButton DefaultText="@L["UpdateScopeButtonCaption"]" InProgressText="@L["UpdatingScopeButtonCaption"]" IsExecuting="_submitInProgress" />
+                    }
+                </div>
+
+                </BeerShowCircularLoadingIndicatorWhileNull>
+            </EditForm>
+        </MudTabPanel>
+
+    </MudTabs>
+}
+
+@code {
+
+}

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beer.OIDCOptionHelper", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beer.WASM.Helper", "..\..\Helper\Beer.WASM.Helper\Beer.WASM.Helper.csproj", "{20DF55B1-63E8-48D6-A883-91258377AE84}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beer.Blazor.SharedComponents", "..\..\Helper\Beer.Blazor.SharedComponents\Beer.Blazor.SharedComponents.csproj", "{AE7D4021-E722-4192-834A-13906BCAB41D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{20DF55B1-63E8-48D6-A883-91258377AE84}.Release|x64.Build.0 = Release|Any CPU
 		{20DF55B1-63E8-48D6-A883-91258377AE84}.Release|x86.ActiveCfg = Release|Any CPU
 		{20DF55B1-63E8-48D6-A883-91258377AE84}.Release|x86.Build.0 = Release|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Debug|x64.Build.0 = Debug|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Debug|x86.Build.0 = Debug|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Release|x64.ActiveCfg = Release|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Release|x64.Build.0 = Release|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Release|x86.ActiveCfg = Release|Any CPU
+		{AE7D4021-E722-4192-834A-13906BCAB41D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

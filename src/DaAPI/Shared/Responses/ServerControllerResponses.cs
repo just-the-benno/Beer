@@ -24,7 +24,7 @@ namespace Beer.DaAPI.Shared.Responses
                     OpenIdIsLocal = openIdIsLocal;
                 }
 
-                public static ServerInitilizedResponse NotInitilized => new ServerInitilizedResponse { IsInitialized = false };
+                public static ServerInitilizedResponse NotInitilized => new() { IsInitialized = false };
             }
         }
     }

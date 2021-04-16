@@ -7,127 +7,91 @@
     <title>Beer.DaAPI.BlazorApp</title>
     <base href="/" />
 
-    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
-    <link href="_content/Blazored.Toast/blazored-toast.min.css" rel="stylesheet" />
-    <link href="_content/ChartJs.Blazor/ChartJSBlazor.css" rel="stylesheet" />
-    <link href="_content/BlazorDateRangePicker/daterangepicker.min.css" rel="stylesheet" />
-    <link href="css-app/plugins/fontawesome/css/all.min.css" rel="stylesheet">
-    <link href="css-app/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css?v=5.0.5" rel="stylesheet" />
+    <link href="css/lib/fontawesome/all.min.css" rel="stylesheet" />
 
-    <link href="css-app/adminlte3/adminlte.min.css" rel="stylesheet" />
-    <link href="css-app/app.min.css" rel="stylesheet" />
+    <link href="css/app.min.css" rel="stylesheet" />
 
 </head>
 
-<body data-scrollbar-auto-hide="n" class="hold-transition layout-top-nav">
-    <app>
-        <div class="wrapper d-flex flex-column">
+<body>
+    <div id="app">
+        <style>
+            @keyframes slide {
+                0% {
+                    transform: translateX(-25%);
+                }
 
-            <!-- Navbar -->
-            <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
-                <div class="container">
-                    <a href="/dashboard" class="navbar-brand">
-                        <span class="brand-text font-weight-light">DaAPI</span>
-                    </a>
+                100% {
+                    transform: translateX(25%);
+                }
+            }
 
-                    <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+            .mud-wasm {
+                animation: slide 3s ease-in-out infinite alternate;
+                background-image: linear-gradient(-60deg,#594ae2 50%,#7467ef 50%);
+                bottom: 0;
+                left: -50%;
+                opacity: .5;
+                position: fixed;
+                right: -50%;
+                top: 0;
+                z-index: -1
+            }
 
-                    <div class="collapse navbar-collapse order-3" id="navbarCollapse">
-                        <!-- Left navbar links -->
-                        <!-- SEARCH FORM -->
-
-                    </div>
-
-                    <!-- Right navbar links -->
-                    <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-                    </ul>
-                </div>
-            </nav>
-            <!-- /.navbar -->
-            <div class="content-wrapper d-flex flex-fill">
-                <div class="login-page flex-fill heigth-auto">
-                    <div class="d-flex flex-md-row flex-column justify-content-center">
-                        <div class="card" style="min-width:200px">
-                            <div class="card-header">
-                                <h3 class="card-title" id="title">DaAPI is loading</h3>
-                            </div>
-                            <!-- /.card-header -->
-                            <div class="card-body">
-                                <p class="card-text" id="content">
-                                    We are loading the app in the background...
-                                </p>
-                                <div class="d-flex flex-column align-items-center my-4">
-                                    <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.card-body -->
-                        </div>
-                    </div>
-                </div>
+            .mud-wasm-cont {
+                left: 50%;
+                padding: 10vmin;
+                position: fixed;
+                text-align: center;
+                top: 50%;
+                transform: translate(-50%,-50%)
+            }
+        </style>
+        <div style="height:100%;width:100%;margin:0;position:fixed;">
+            <div class="mud-wasm"></div>
+            <div class="mud-wasm" style="animation-direction:alternate-reverse;animation-duration:4s;"></div>
+            <div class="mud-wasm" style="animation-duration:5s;"></div>
+            <div class="mud-wasm-cont ">
+                <svg width="100%" height="100%" viewBox="0 0 1653 1049" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#7467EF" d="M0.15,572.58V0.16L495.9,286.37v190.81L165.4,286.37v381.62L0.15,572.58z"></path>
+                    <path fill="#594AE2" d="M495.9,286.37L991.65,0.16v572.43l-330.5,190.81l-165.25-95.4l330.5-190.81V286.37L495.9,477.18V286.37z"></path>
+                    <path fill="#7467EF" d="M495.9,667.99V858.8l330.5,190.81V858.8L495.9,667.99z"></path>
+                    <path fill="#594AE2" d="M826.4,1049.6l495.75-286.21V0.37l-165.25,95.4v572.21L826.4,858.8V1049.6z"></path>
+                    <path fill="#7467ef" d="M1495,467.85l-165.25,95.41,157.47,91.52,165.25-95.38Z"></path>
+                    <path fill="#7467EF" d="M1322.15,763.39l-165.25,95.4l330.5,190.81V858.8L1322.15,763.39z"></path>
+                    <path fill="#7467EF" d="M1322.13,0.38l-165.25,95.4l330.29,190.83l165.25-95.38L1322.13,0.38z"></path>
+                    <path fill="#594AE2" d="M1652.43,191.21l-165.25,95.41v762.99l165.25-95.4L1652.43,191.21z"></path>
+                </svg>
             </div>
-
-            <footer class="main-footer">
-                <!-- To the right -->
-                <div class="float-right d-none d-sm-inline">
-                    Version 0.0.1
-                </div>
-                <!-- Default to the left -->
-                <strong><a href="https://github.com/just-the-benno/daapi">DaAPI</a>.</strong> DHCP and API.
-            </footer>
         </div>
-    </app>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-
-
     <script type="text/javascript">
-        var languages =
-        {
-            "de": {
-                "title": "DaAPI wird geladen",
-                "content": "Die App wird im Hintergrund geladen. Es geht gleich los..."
-            },
-        };
 
-        var current = window.navigator.language.substr(0, 2);
-        var language = languages[current];
-        if (language) {
-            document.getElementById("content").textContent = language.content;
-            document.getElementById("title").textContent = language.title;
+        window.getAppCulture = () => window.localStorage["culture"];
+        window.setAppCulture = (value) => window.localStorage["culture"] = value
+
+        if (!window.getAppCulture()) {
+            window.setAppCulture("en");
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const cultureParam = urlParams.get('culture');
+        if (cultureParam) {
+            window.setAppCulture(cultureParam);
         }
 
     </script>
-
-    <!--<script src="js/plugins/bootstrap/bootstrap.bundle.min.js"></script>-->
-    
-    <script src="/js-app/plugins/jquery/jquery.min.js"></script>
-
-    <script src="/js-app/adminlte3/adminlte.min.js"></script>
-    <script src="/js-app/main.min.js"></script>
-
-    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
-    <script src="_content/BlazorDateRangePicker/clickAndPositionHandler.js"></script>
-    <script src="_content/Blazored.Modal/blazored.modal.js"></script>
-    <script src="/js-app/plugins/moment/moment-with-locales.min.js"></script>
-
-    <script src="/js-app/plugins/chartjs/Chart.min.js"></script>
-    <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
-    <script src="_content/Sve.Blazor.DataTable/js/DataTable.js"></script>
-    <script src="_content/Sve.Blazor.DataTable/js/DataTable.js"></script>
-
-    <script src="_content/BlazorStrap/blazorStrap.js"></script>
-    <script src="/js-app/plugins/popper/popper.min.js"></script>
-
     <script src="_framework/blazor.webassembly.js"></script>
-
+    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js?v=5.0.5"></script>
 </body>
 
 </html>
+

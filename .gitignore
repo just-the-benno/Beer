@@ -442,3 +442,4 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 /install/scripts.zip
 /install/install.zip
+/src/.tye/process_store

@@ -1,0 +1,41 @@
+﻿@inherits DaAPIDialogBase
+@inject IStringLocalizer<CreateDHCPv4InterfaceDialog> L
+@inject IStringLocalizer<SharedRessources> LShared
+
+@inject DaAPIService _service
+
+
+<EditForm Model="@_model" @ref="_form" OnValidSubmit="CreateInterface">
+    <FluentValidator />
+    <MudDialog>
+        <DialogContent>
+            @if (_hasErrors == true)
+            {
+                <MudAlert Class="mb-5" Severity="Severity.Error">@L["ErrorMessage"]</MudAlert>
+            }
+
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField T="string" Immediate="true" Placeholder="@L["NamePlaceholder"]" Label="@L["NameLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.Name" For="@(() => _model.Name)" Disabled="_submitInProgress" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Immediate="false" Label="@L["IPAddressLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.IPv4Address" For="@(() => _model.IPv4Address)" Disabled="true" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Immediate="false" Label="@L["InterfaceIdLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.InterfaceId" For="@(() => _model.InterfaceId)" Disabled="true" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">@LShared["CancelCaption"]</MudButton>
+            <BeerSendingAwareButton  DefaultText="@L["CreateNewInterfaceButtonCaption"]" InProgressText="@L["CreatingNewInterfaceButtonCaption"]" IsExecuting="_submitInProgress" />
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+
+
+
+
+}

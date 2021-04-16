@@ -1,0 +1,53 @@
+﻿@inject IStringLocalizer<NavMenu> L
+
+<DaAPIPersonCard Style="background-color: var(--mud-palette-drawer-background);color: var(--mud-palette-drawer-text);" />
+<MudDivider Class="mb-4" />
+<MudNavMenu>
+    @foreach (var item in _sideNavMenu)
+    {
+        @if (item.DisplayCaption == true)
+        {
+            <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 mb-2 mt-5">@item.Caption</MudText>
+        }
+
+        foreach (var child in item.NavItems)
+        {
+            <MudNavLink Href="@child.Link" Match="NavLinkMatch.Prefix" Icon="@child.IconClass">@child.Caption</MudNavLink>
+        }
+    }
+</MudNavMenu>
+
+@code {
+
+    public record NavItemGroupViewModel(String Caption, Boolean DisplayCaption, IEnumerable<NavItemViewModel> NavItems);
+    public record NavItemViewModel(String Link, String IconClass, String Caption, Int32 NotifictionAmount);
+
+    private IEnumerable<NavItemGroupViewModel> _sideNavMenu;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _sideNavMenu = new List<NavItemGroupViewModel>
+        {
+                new NavItemGroupViewModel(L["MenuMainMenuCaption"],false, new List<NavItemViewModel>
+                    {
+                        new NavItemViewModel("Dashboard","fas fa-tachometer-alt",L["MenuMainDashboardCaption"],0),
+                        new NavItemViewModel("pipelines","fas fa-bell",L["MenuMainPipelinesCaption"],0)
+                    }
+                ),
+                new NavItemGroupViewModel(L["DHCPv4MenuMainCaption"],true, new List<NavItemViewModel>
+                    {
+                    new NavItemViewModel("interfaces/dhcpv4","fas fa-network-wired",L["DHCPv4MenuInterfacesCaption"],0),
+                    new NavItemViewModel("scopes/dhcpv4","fas fa-project-diagram",L["DHCPv4MenuScopesCaption"],0)
+                    }
+                ),
+                new NavItemGroupViewModel(L["DHCPv6MenuMainCaption"],true, new List<NavItemViewModel>
+                    {
+                        new NavItemViewModel("interfaces/dhcpv6","fas fa-network-wired",L["DHCPv6MenuInterfacesCaption"],0),
+                        new NavItemViewModel("scopes/dhcpv6","fas fa-project-diagram",L["DHCPv6MenuScopesCaption"],0),
+                    }
+                ),
+        };
+    }
+}

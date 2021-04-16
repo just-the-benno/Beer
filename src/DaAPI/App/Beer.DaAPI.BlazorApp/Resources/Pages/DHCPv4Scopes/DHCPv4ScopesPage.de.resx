@@ -117,26 +117,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BreadcrumbHomeCaption" xml:space="preserve">
-    <value>Start</value>
+  <data name="AddChildScopeToolTip" xml:space="preserve">
+    <value>Einen unterordnetes Bereiche erstellen</value>
   </data>
-  <data name="BreadcrumbSelfCaption" xml:space="preserve">
-    <value>DHCPv4 Bereiche</value>
+  <data name="CopyButtonTooltip" xml:space="preserve">
+    <value>Bereich kopieren</value>
+  </data>
+  <data name="CreateNewScopeToolTipText" xml:space="preserve">
+    <value>Ein neuen Hauptbereich anlegen</value>
+  </data>
+  <data name="DeleteButtonTooltip" xml:space="preserve">
+    <value>Diesen Bereich löschen</value>
+  </data>
+  <data name="DeleteDialogTitle" xml:space="preserve">
+    <value>Den Bereich "{0}" löschen</value>
   </data>
   <data name="DeleteScopeModalHeader" xml:space="preserve">
-    <value>DHCPv4 Bereich {0} löschen</value>
+    <value>Den Bereich "{0}" löschen</value>
+  </data>
+  <data name="DeleteScopesSuccessSnackbarContent" xml:space="preserve">
+    <value>Der Bereich "{0}" wurde erfolgreich gelöscht</value>
   </data>
   <data name="DeleteScopeSuccessCaption" xml:space="preserve">
     <value>Erfolg!</value>
   </data>
   <data name="DeleteScopeSuccessText" xml:space="preserve">
-    <value>DHCPv4 Bereich {0} wurde gelöscht. Übersicht wird neugeladen...</value>
+    <value>Bereich "{0}" gelöscht. Bereiche werden geladen...</value>
   </data>
-  <data name="Headline" xml:space="preserve">
-    <value>DHCPv4 Bereiche</value>
+  <data name="EditButtonTooltip" xml:space="preserve">
+    <value>Bereich bearbeiten</value>
+  </data>
+  <data name="LoadingMessage" xml:space="preserve">
+    <value>Bereiche werden geladen</value>
   </data>
   <data name="NewScopeButtonCaption" xml:space="preserve">
-    <value>Neu</value>
+    <value>Neuer Bereich</value>
+  </data>
+  <data name="NoScopesFound" xml:space="preserve">
+    <value>Keine Bereiche gefunden. Erstellen Sie den ersten Bereich</value>
   </data>
   <data name="PageTitle" xml:space="preserve">
     <value>DHCPv4 Bereiche</value>

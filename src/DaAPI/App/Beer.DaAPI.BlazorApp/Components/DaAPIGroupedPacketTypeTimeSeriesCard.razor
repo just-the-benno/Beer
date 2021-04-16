@@ -1,0 +1,46 @@
+﻿@inject IStringLocalizer<SharedRessources> L
+@inject DHCPPacketResponseCodeHelper _responseCodeHelper
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Label="@($"{L["GroupedByLabel"]} {@GetCurrentGroupingLabel()}")">
+                @if (IsDHCPv6 == true)
+                {
+                    @foreach (var item in _dhcpv6Groupings.Where(x => x.Value != _currentDHCPv6MessageGrouping))
+                    {
+                        <MudMenuItem OnClick="@( async () => { _currentDHCPv6MessageGrouping = @item.Value; await LoadDataSets(); })">@item.Caption</MudMenuItem>
+                    }
+                }
+                else
+                {
+                    @foreach (var item in _dhcpv4Groupings.Where(x => x.Value != _currentDHCPv4MessageGrouping))
+                    {
+                        <MudMenuItem OnClick="@( async () => { _currentDHCPv4MessageGrouping = @item.Value; await LoadDataSets(); })">@item.Caption</MudMenuItem>
+                    }
+                }
+            </MudMenu>
+            <MudDateRangePicker Culture="System.Globalization.CultureInfo.CurrentUICulture" Label="@L["SelectingDatePlaceholder"]" MinDate="DateTime.Now.AddDays(-120)" MaxDate="DateTime.Now" PickerVariant="PickerVariant.Dialog" DateRange="_dateRange" DateRangeChanged="OnDateRangeChanged" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <DaAPIShowSkeletonWhileNull IsSingle="true" Item="_loadingObject">
+            @if (_data.Count != 0)
+            {
+                <MudChart ChartType="ChartType.Donut" InputData="_data.ToArray()" InputLabels="_labels.ToArray()" Width="100%" Height="350px" />
+            }
+            else
+                        {
+                            <MudAlert Severity="Severity.Warning"  >@L["NoDataAvailable"]</MudAlert>
+                        }
+        </DaAPIShowSkeletonWhileNull>
+    </MudCardContent>
+</MudCard>
+
+
+@code {
+
+}

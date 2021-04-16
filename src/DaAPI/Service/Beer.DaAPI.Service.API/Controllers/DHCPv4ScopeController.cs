@@ -183,7 +183,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                     Typename = scope.Resolver.GetDescription().TypeName,
                     PropertiesAndValues = scope.Resolver.GetValues(),
                 },
-                Properties = scopeProperties.Properties.Select(x => GetScopePropertyResponse(x)).ToArray(),
+                Properties = scopeProperties.Properties.Where(x => x != null).Select(x => GetScopePropertyResponse(x)).ToArray(),
                 AddressRelated = new DHCPv4ScopeAddressPropertiesResponse
                 {
                     AcceptDecline = addressProperties.AcceptDecline,
@@ -197,7 +197,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                     PreferredLifetime = addressProperties.PreferredLifetime,
                     LeaseTime = addressProperties.LeaseTime,
                     RenewalTime = addressProperties.RenewalTime,
-                    Mask = (Byte)addressProperties.Mask.GetSlashNotation(),
+                    Mask = addressProperties.Mask == null ? new Byte?() : (Byte)addressProperties.Mask.GetSlashNotation(),
                 }
             };
 

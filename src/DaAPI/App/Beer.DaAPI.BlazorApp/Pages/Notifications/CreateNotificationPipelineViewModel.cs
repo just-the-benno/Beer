@@ -44,8 +44,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
         public ActorPropertyTypes Type { get; }
         public String Name { get; }
 
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [NotificationPipelineActorProperty(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.NotificationPipelineActorProperty))]
+        //[Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
+        //[NotificationPipelineActorProperty(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.NotificationPipelineActorProperty))]
         public String Value { get; set; }
 
         public NotificationPipelineActorPropertyEntry(String name, ActorPropertyTypes type)
@@ -61,19 +61,19 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
     {
         private NotificationPipelineDescriptions _descriptions;
 
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [MaxLength(100, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
-        [MinLength(3, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MinLength))]
-        [Display(Name = nameof(CreateNotificationPipelineViewModelDisplay.Name), ResourceType = typeof(CreateNotificationPipelineViewModelDisplay))]
+        //[Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
+        //[MaxLength(100, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
+        //[MinLength(3, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MinLength))]
+        //[Display(Name = nameof(CreateNotificationPipelineViewModelDisplay.Name), ResourceType = typeof(CreateNotificationPipelineViewModelDisplay))]
         public String Name { get; set; }
 
-        [MaxLength(500, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
-        [Display(Name = nameof(CreateNotificationPipelineViewModelDisplay.Description), ResourceType = typeof(CreateNotificationPipelineViewModelDisplay))]
+        //[MaxLength(500, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
+        //[Display(Name = nameof(CreateNotificationPipelineViewModelDisplay.Description), ResourceType = typeof(CreateNotificationPipelineViewModelDisplay))]
         public String Description { get; set; }
 
         private String _triggerName;
 
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
+        //[Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
         [Display(Name = nameof(CreateNotificationPipelineViewModelDisplay.Trigger), ResourceType = typeof(CreateNotificationPipelineViewModelDisplay))]
         public String TriggerName
         {
@@ -111,7 +111,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
 
         private String _actorName;
 
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
+        //[Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
         [Display(Name = nameof(CreateNotificationPipelineViewModelDisplay.Actor), ResourceType = typeof(CreateNotificationPipelineViewModelDisplay))]
         public String ActorName
         {
@@ -134,7 +134,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
 
         public void AddDescriptions(NotificationPipelineDescriptions descriptions) => _descriptions = descriptions;
 
-        public CreateNotifcationPipelineRequest GetRequest() => new CreateNotifcationPipelineRequest
+        public CreateNotifcationPipelineRequest GetRequest() => new()
         {
             Name = Name,
             Description = Description,

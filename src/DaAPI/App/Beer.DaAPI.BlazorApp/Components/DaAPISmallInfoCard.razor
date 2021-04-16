@@ -1,0 +1,23 @@
+﻿<MudPaper Elevation="25" Class="d-flex flex-row align-center py-6" Style="height:100%">
+    <MudIcon Icon="@($"{Icon} fa-3x")" Color="Color.Primary" Class="ml-4 mr-8"></MudIcon>
+    <div>
+        <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">@Caption</MudText>
+        @foreach (var item in Values)
+        {
+            <MudText Typo="Typo.h5">@item</MudText>
+        }
+    </div>
+</MudPaper>
+
+@code {
+
+    [Parameter]public String Icon { get; set; }
+
+    [Parameter] public Color Color { get; set; } = Color.Primary;
+
+    [Parameter] public String Caption { get; set; } = String.Empty;
+
+    [Parameter] public IEnumerable<String> Values { get; set; } = Array.Empty<String>();
+
+
+}

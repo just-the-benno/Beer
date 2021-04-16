@@ -1,36 +1,44 @@
 @inject IStringLocalizer<App> L
 
-<CascadingBlazoredModal>
-    <CascadingValue Name="Random" Value="@(new Random())">
-        <CascadingAuthenticationState>
-            <Router AppAssembly="@typeof(Program).Assembly">
-                <Found Context="routeData">
-                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                        <NotAuthorized>
-                            @if (!context.User.Identity.IsAuthenticated)
-                            {
-                                <RedirectToLogin />
-                            }
-                            else
-                            {
-                                <p>
-                                    @L["NotAuthorized"]
-                                </p>
-                            }
-                        </NotAuthorized>
-                        <Authorizing>
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            @if (routeData.PageType == typeof(Beer.DaAPI.BlazorApp.Pages.Common.AuthenticationPage))
+            {
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            }
+            else
+            {
+                <AuthorizeView>
+                    <Authorizing>
+                        <LayoutView Layout="typeof(SinglePageLayout)">
+                            <DaAPILoadingComponent Title="@L["LoadingTitle"]" Text="@L["LoadingText"]" />
+                        </LayoutView>
+                    </Authorizing>
+                    <NotAuthorized>
+                        @if (!context.User.Identity.IsAuthenticated)
+                        {
+                            <RedirectToLogin />
+                        }
+                        else
+                        {
                             <LayoutView Layout="typeof(SinglePageLayout)">
-                                <LoadingCentered Title="@L["LoadingTitle"]" Text="@L["LoadingText"]" />
+                                <DaAPIDisplayErrorComponent Text="@L["NotAuthorized"]" />
                             </LayoutView>
-                        </Authorizing>
-                    </AuthorizeRouteView>
-                </Found>
-                <NotFound>
-                    <LayoutView Layout="@typeof(SinglePageLayout)">
-                        <ErrorCentered Text="@L["PageNotFoundErrorContent"]" />
-                    </LayoutView>
-                </NotFound>
-            </Router>
-        </CascadingAuthenticationState>
-    </CascadingValue>
-</CascadingBlazoredModal>
+                        }
+                    </NotAuthorized>
+                    <Authorized>
+                        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                    </Authorized>
+                </AuthorizeView>
+            }
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(SinglePageLayout)">
+                <LayoutView Layout="typeof(SinglePageLayout)">
+                    <DaAPIDisplayErrorComponent Text="@L["PageNotFoundErrorContent"]" />
+                </LayoutView>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

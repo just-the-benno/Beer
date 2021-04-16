@@ -1,0 +1,45 @@
+﻿@inject IStringLocalizer<SharedRessources> L
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Label="@($"{L["GroupedByLabel"]} {@GetCurrentGroupingLabel()}")" >
+                @foreach (var item in _groupings.Where(x => x.Value != GroupedBy))
+                {
+                    <MudMenuItem OnClick="@( async () => { GroupedBy = @item.Value; await LoadDataSets(); })">@item.Caption</MudMenuItem>
+                }
+            </MudMenu>
+            <MudSwitch Color="Color.Primary" @bind-Checked="ShowAsBarChart" Label="@L["ShowAsBarChartLabel"]" />
+            <MudDateRangePicker Culture="System.Globalization.CultureInfo.CurrentUICulture" Label="@L["SelectingDatePlaceholder"]" MinDate="DateTime.Now.AddDays(-120)" MaxDate="DateTime.Now" PickerVariant="PickerVariant.Dialog" DateRange="_dateRange" DateRangeChanged="OnDateRangeChanged"  />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <DaAPIShowSkeletonWhileNull IsSingle="false" Items="@_series">
+            @if (ShowAsBarChart == true)
+            {
+                <MudChart ChartType="ChartType.Bar" ChartSeries="@_series" XAxisLabels="@_labels" Width="100%" Height="350px" ChartOptions="_chartOptions" />
+            }
+            else
+            {
+                <MudChart ChartType="ChartType.Line" ChartSeries="@_series" XAxisLabels="@_labels" Width="100%" Height="350px" ChartOptions="_chartOptions" />
+            }
+        </DaAPIShowSkeletonWhileNull>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    [Parameter] public String Title { get; set; }
+    [Parameter] public Boolean HasRecent { get; set; } = true;
+    [Parameter] public GroupStatisticsResultBy? GroupedBy { get; set; }
+    [Parameter] public Boolean ShowAsBarChart { get; set; } = false;
+    [Parameter] public DateTime? StartDate { get; set; }
+    [Parameter] public DateTime? EndDate { get; set; }
+
+    [Parameter] public IEnumerable<DataSeriesDescription> DataSeriesDescription { get; set; }
+
+    private DateRange _dateRange = new DateRange( DateTime.Now.AddDays(-20).Date, DateTime.Now.Date);
+}

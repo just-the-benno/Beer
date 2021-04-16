@@ -1,5 +1,5 @@
-﻿using Beer.DaAPI.BlazorApp.Resources;
-using Beer.DaAPI.BlazorApp.Resources.Pages.DHCPv6Interfaces;
+﻿using Beer.DaAPI.BlazorApp.ModelHelper;
+using Beer.DaAPI.BlazorApp.Resources;
 using Beer.DaAPI.Shared.Validation;
 using System;
 using System.Collections.Generic;
@@ -11,22 +11,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Interfaces
 {
     public class CreateDHCPv6ListenerViewModel
     {
-
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [MinLength(3, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MinLength))]
-        [MaxLength(100, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
-        [Display(Name = nameof(CreateDHCPv6ListenerDisplay.Name), ResourceType = typeof(CreateDHCPv6ListenerDisplay))]
         public String Name { get; set; }
-
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [IPv6Address(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.IPv6Address))]
-        [Display(Name = nameof(CreateDHCPv6ListenerDisplay.IPv6Address), ResourceType = typeof(CreateDHCPv6ListenerDisplay))]
         public String IPv6Address { get; set; }
-
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [MinLength(3, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MinLength))]
-        [MaxLength(100, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
-        [Display(Name = nameof(CreateDHCPv6ListenerDisplay.InterfaceId), ResourceType = typeof(CreateDHCPv6ListenerDisplay))]
         public String InterfaceId { get; set; }
     }
 }

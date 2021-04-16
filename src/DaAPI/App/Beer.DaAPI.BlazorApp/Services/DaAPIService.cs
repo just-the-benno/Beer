@@ -1,4 +1,5 @@
 ﻿using Beer.DaAPI.BlazorApp.Helper;
+using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Shared.Commands;
 using Beer.DaAPI.Shared.JsonConverters;
@@ -44,9 +45,9 @@ namespace Beer.DaAPI.BlazorApp.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        private StringContent GetStringContentAsJson<T>(T input)
+        private static StringContent GetStringContentAsJson<T>(T input)
         {
-            String serialziedObject = Newtonsoft.Json.JsonConvert.SerializeObject(input, new JsonSerializerSettings
+            String serialziedObject = JsonConvert.SerializeObject(input, new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
             });
@@ -54,9 +55,9 @@ namespace Beer.DaAPI.BlazorApp.Services
                 serialziedObject, Encoding.UTF8, "application/json");
         }
 
-        private JsonSerializerSettings GetDefaultSettings()
+        private static JsonSerializerSettings GetDefaultSettings()
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings
+            JsonSerializerSettings settings = new()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
             };
@@ -138,7 +139,7 @@ namespace Beer.DaAPI.BlazorApp.Services
             }
 
             String content = await response.Content.ReadAsStringAsync();
-            JsonSerializerSettings settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            JsonSerializerSettings settings = new() { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             settings.Converters.Add(new DHCPv6ScopePropertyResponseJsonConverter());
 
             var result = JsonConvert.DeserializeObject<DHCPv6ScopePropertiesResponse>(
@@ -191,7 +192,7 @@ namespace Beer.DaAPI.BlazorApp.Services
             }
         }
 
-        private String AppendTimeRangeToUrl(String url, DateTime? start, DateTime? end)
+        private static String AppendTimeRangeToUrl(String url, DateTime? start, DateTime? end)
         {
             if (start.HasValue == true)
             {
@@ -205,7 +206,7 @@ namespace Beer.DaAPI.BlazorApp.Services
             return url;
         }
 
-        private String AppendGroupingToUrl(String url, DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
+        private static String AppendGroupingToUrl(String url, DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
             AppendTimeRangeToUrl($"{url}?GroupbBy={group}", start, end);
 
         public async Task<IDictionary<DateTime, Int32>> GetActiveDHCPv6Leases(DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
@@ -288,7 +289,7 @@ namespace Beer.DaAPI.BlazorApp.Services
             }
 
             String content = await response.Content.ReadAsStringAsync();
-            JsonSerializerSettings settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            JsonSerializerSettings settings = new() { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             settings.Converters.Add(new DHCPv4ScopePropertyResponseJsonConverter());
 
             var result = JsonConvert.DeserializeObject<DHCPv4ScopePropertiesResponse>(
@@ -299,6 +300,10 @@ namespace Beer.DaAPI.BlazorApp.Services
 
         public async Task<Boolean> UpdateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request, String scopeId) =>
             await ExecuteCommand(() => _client.PutAsync($"api/scopes/dhcpv4/{scopeId}", GetStringContentAsJson(request)));
+
+        public async Task<Boolean> SendDeleteDHCPv4ScopeRequest(DHCPv4ScopeDeleteRequest request) =>
+          await ExecuteCommand(() => _client.DeleteAsync($"/api/scopes/dhcpv4/{request.Id}/?includeChildren={request.IncludeChildren}"));
+
 
         public async Task<Boolean> CreateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request) =>
         await ExecuteCommand(() => _client.PostAsync("api/scopes/dhcpv4/", GetStringContentAsJson(request)));
@@ -312,6 +317,23 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<IEnumerable<THandeled>> GetHandledDHCPv4PacketByScopeId<THandeled>(String scopeId, Int32 amount = 100) where THandeled : DHCPv4PacketHandledEntry =>
             await GetHandledDHCPPacketByScopeId<THandeled>($"/api/Statistics/HandledDHCPv4Packet/{scopeId}?amount={amount}");
 
+        public async Task<IDictionary<DateTime, Int32>> GetActiveDHCPv4Leases(DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
+           await GetSimpleStatisticsData("/api/Statistics/ActiveDHCPv4Leases", start, end, group);
+
+        public async Task<IDictionary<DateTime, Int32>> GetIncomingDHCPv4PacketAmount(DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
+            await GetSimpleStatisticsData("/api/Statistics/IncomingDHCPv4Packets", start, end, group);
+
+        public async Task<IDictionary<DateTime, Int32>> GetErrorDHCPv4Packets(DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
+             await GetSimpleStatisticsData("/api/Statistics/ErrorDHCPv4Packets", start, end, group);
+
+        public async Task<IDictionary<DateTime, Int32>> GetFileredDHCPv4Packets(DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
+             await GetSimpleStatisticsData("/api/Statistics/FileredDHCPv4Packets", start, end, group);
+
+        public async Task<IDictionary<DateTime, IDictionary<DHCPv6PacketTypes, Int32>>> GetIncomingDHCPv4PacketTypes(DateTime? start, DateTime? end, GroupStatisticsResultBy group) =>
+                await GetSimpleStatisticsData<IDictionary<DHCPv6PacketTypes, Int32>>("/api/Statistics/IncomingDHCPv4PacketTypes", start, end, group);
+
+        public async Task<IDictionary<Int32, Int32>> GetErrorCodesPerDHCPv4RequestType(DateTime? start, DateTime? end, DHCPv4MessagesTypes packetType) =>
+           await GetSimpleStatisticsData<Int32, Int32>(AppendTimeRangeToUrl($"/api/Statistics/ErrorCodesPerDHCPv4MessageType?MessageType={packetType}", start, end));
 
         #endregion
 

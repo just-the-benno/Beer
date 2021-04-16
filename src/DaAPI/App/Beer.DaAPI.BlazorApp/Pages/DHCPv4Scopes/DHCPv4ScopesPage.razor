@@ -1,74 +1,56 @@
 ﻿
 @page "/scopes/dhcpv4"
-@layout AdminLayout
 @attribute [Authorize]
 @inject DaAPIService service
-@inject LayoutService _layoutService
-@inject IModalService _modalService
-@inject IToastService _toastService
 @inject IStringLocalizer<DHCPv4ScopesPage> L
+@inject NavigationManager _navManager
+@inject ISnackbar _snackBarService
+@inject IDialogService _dialogService  
 
-<FullWidthLayout>
-    <FullColumn>
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["PageTitle"]</MudText>
 
-        <Card Title="@L["Headline"]">
-            <AddtionalHeaderContent>
-                <a href="scopes/dhcpv4/create" class="btn btn-primary">
-                    <i class="fas fa-plus mr-2"></i>
-                    @L["NewScopeButtonCaption"]
-                </a>
-            </AddtionalHeaderContent>
-            <Body>
-                <LoadingWhileContentNull Item="_scopes">
-                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" data-accordion="false">
-                        @foreach (var item in _scopes)
-                        {
-                            <DHCPv4ScopeTreeItem Item="item" DeleteExecutor="ShowDeleteModal" />
-                        }
-                    </ul>
-                </LoadingWhileContentNull>
-            </Body>
-        </Card>
-    </FullColumn>
-</FullWidthLayout>
-
-
+<BeerShowCircularLoadingIndicatorWhileNull Item="_scopes" Text="@L["LoadingMessage"]">
+    <div class="d-flex justify-end mr-3 mb-2">
+        <MudTooltip Text="@L["CreateNewScopeToolTipText"]">
+            <MudFab Icon="@Icons.Material.Filled.Add" Link="/scopes/dhcpv4/create" Color="Color.Primary" />
+        </MudTooltip>
+    </div>
+    <MudPaper>
+        @if (_items.Count == 0)
+        {
+            <MudAlert Severity="Severity.Info">@L["NoScopesFound"]</MudAlert>
+        }
+        else
+        {
+            <MudTreeView ExpandOnClick="true" Items="_items" CanSelect="false" Class="no-scroll">
+                <ItemTemplate>
+                    <MudTreeViewItem @bind-Expanded="@context.IsExpanded" Value="context" Items="@context.Children" Style="overflow-x: hidden; overflow-y: hidden;">
+                        <Content>
+                            <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" Visible="@context.Children.Any()" />
+                            <MudText Typo="@Typo.body1" Class="mud-treeview-item-label">
+                                @context.Value.Name
+                            </MudText>
+                            <MudTooltip Text="@L["DeleteButtonTooltip"]">
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@( () => ShowDeleteDialog(context.Value))" Color="Color.Error" />
+                            </MudTooltip>
+                            <MudTooltip Text="@L["EditButtonTooltip"]">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"  OnClick="@( () => NavigateToEditScope(context.Value))"  Color="Color.Info" />
+                            </MudTooltip>
+                            <MudTooltip Text="@L["CopyButtonTooltip"]">
+                                <MudIconButton Icon="@Icons.Material.Filled.FileCopy"  OnClick="@( () => NavigateToCreateCopyFromScope(context.Value))"  Color="Color.Primary" />
+                            </MudTooltip>
+                            <MudTooltip Text="@L["AddChildScopeToolTip"]">
+                                <MudIconButton Icon="@Icons.Material.Filled.ChildFriendly" OnClick="@( () => NavigateToCreateNewChildScope(context.Value))" Color="Color.Primary" />
+                            </MudTooltip>
+                        </Content>
+                    </MudTreeViewItem>
+                </ItemTemplate>
+            </MudTreeView>
+        }
+    </MudPaper>
+</BeerShowCircularLoadingIndicatorWhileNull>
 
 @code {
 
-    private IEnumerable<DHCPv4ScopeTreeViewItem> _scopes;
 
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        _layoutService.UpdatePageTitle(L["PageTitle"]);
-        _layoutService.UpdateBreadcrumbs(new BreadcrumbViewModel[] {
-            new BreadcrumbViewModel { Caption = L["BreadcrumbHomeCaption"], Link = "dashboard" },
-            new BreadcrumbViewModel { Caption = L["BreadcrumbSelfCaption"], Link = "scopes/dhcpv6" } });
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        _scopes = await service.GetDHCPv4ScopesAsTree();
-
-        await base.OnInitializedAsync();
-    }
-
-    public async Task ShowDeleteModal(DHCPv4ScopeTreeViewItem item)
-    {
-        var parameters = new ModalParameters();
-        parameters.Add(nameof(DeleteDHCPv6ScopeModal.Entry), item);
-
-        var messageForm = _modalService.Show<DeleteDHCPv6ScopeModal>(String.Format(L["DeleteScopeModalHeader"], item.Name), parameters);
-        var result = await messageForm.Result;
-
-        if (result.Cancelled == false && result.Data is Boolean && (Boolean)result.Data == true)
-        {
-            _toastService.ShowSuccess(String.Format(L["DeleteScopeSuccessText"], item.Name), L["DeleteScopeSuccessCaption"]);
-            _scopes = null;
-            StateHasChanged();
-            _scopes = await service.GetDHCPv4ScopesAsTree();
-            StateHasChanged();
-        }
-    }
 }

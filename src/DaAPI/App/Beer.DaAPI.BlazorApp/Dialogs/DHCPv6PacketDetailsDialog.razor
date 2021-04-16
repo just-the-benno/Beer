@@ -1,0 +1,22 @@
+﻿@inherits DaAPIDialogBase
+@inject DHCPv6PacketOptionCodeToNameConverter _codeToNameConverter
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <MudTreeView ExpandOnClick="true" Items="_items" CanSelect="false">
+                <ItemTemplate>
+                    <MudTreeViewItem @bind-Expanded="@context.IsExpanded" Items="@context.Children" Value="@context"
+                                     Text="@context.Name" EndText="@context.Value" EndTextTypo="@Typo.subtitle1" />
+                </ItemTemplate>
+            </MudTreeView>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Cancel">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+}

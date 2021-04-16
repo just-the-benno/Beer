@@ -12,7 +12,7 @@ namespace Beer.DaAPI.BlazorApp.Helper
 {
     public class DHCPv4ScopePropertyResponseJsonConverter : JsonConverter
     {
-        static readonly JsonSerializerSettings SpecifiedSubclassConversion = new JsonSerializerSettings()
+        static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
         {
             ContractResolver = new BaseSpecifiedConcreteClassConverter<DHCPv4ScopePropertyResponse>()
         };
@@ -25,25 +25,16 @@ namespace Beer.DaAPI.BlazorApp.Helper
             var token = jo["Type"] ?? jo["type"];
             Int32 rawValue = token.Value<Int32>();
 
-            switch ((DHCPv4ScopePropertyType)rawValue)
+            return (DHCPv4ScopePropertyType)rawValue switch
             {
-                case DHCPv4ScopePropertyType.AddressList:
-                    return JsonConvert.DeserializeObject<DHCPv4AddressListScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv4ScopePropertyType.Byte:
-                case DHCPv4ScopePropertyType.UInt16:
-                case DHCPv4ScopePropertyType.UInt32:
-                    return JsonConvert.DeserializeObject<DHCPv4NumericScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv4ScopePropertyType.Text:
-                    return JsonConvert.DeserializeObject<DHCPv4TextScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv4ScopePropertyType.Boolean:
-                    return JsonConvert.DeserializeObject<DHCPv4BooleanScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv4ScopePropertyType.Time:
-                    return JsonConvert.DeserializeObject<DHCPv4TimeScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv4ScopePropertyType.Address:
-                    return JsonConvert.DeserializeObject<DHCPv4AddressScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                default:
-                    throw new NotImplementedException();
-            }
+                DHCPv4ScopePropertyType.AddressList => JsonConvert.DeserializeObject<DHCPv4AddressListScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv4ScopePropertyType.Byte or DHCPv4ScopePropertyType.UInt16 or DHCPv4ScopePropertyType.UInt32 => JsonConvert.DeserializeObject<DHCPv4NumericScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv4ScopePropertyType.Text => JsonConvert.DeserializeObject<DHCPv4TextScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv4ScopePropertyType.Boolean => JsonConvert.DeserializeObject<DHCPv4BooleanScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv4ScopePropertyType.Time => JsonConvert.DeserializeObject<DHCPv4TimeScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv4ScopePropertyType.Address => JsonConvert.DeserializeObject<DHCPv4AddressScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         public override bool CanWrite => false;

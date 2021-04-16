@@ -44,7 +44,7 @@ namespace Beer.DaAPI.Shared.Requests
 
             public class DHCPv4PacketTypeBasedTimeSeriesFilterRequest : TimeSeriesFilterRequest
             {
-                public DHCPv4MessagesTypes PacketType { get; set; }
+                public DHCPv4MessagesTypes MessageType { get; set; }
             }
         }
     }

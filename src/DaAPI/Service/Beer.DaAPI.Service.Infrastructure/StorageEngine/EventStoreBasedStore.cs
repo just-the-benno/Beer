@@ -130,6 +130,7 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
         public async Task<T> GetAggregateRoot<T>(Guid id) where T : AggregateRootWithEvents, new()
         {
             T instance = new();
+            instance.SetId(id);
             await HydrateAggragate(instance);
             return instance;
         }

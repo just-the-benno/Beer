@@ -1,6 +1,5 @@
 ﻿using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Packets.DHCPv6;
-using DaAPI.Host;
 using Beer.DaAPI.Infrastructure.FilterEngines.DHCPv6;
 using Beer.DaAPI.Infrastructure.ServiceBus;
 using Beer.DaAPI.Infrastructure.ServiceBus.Messages;

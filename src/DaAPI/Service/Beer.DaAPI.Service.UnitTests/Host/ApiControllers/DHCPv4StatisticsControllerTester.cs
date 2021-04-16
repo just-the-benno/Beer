@@ -243,7 +243,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             {
                 Start = start,
                 End = end,
-                PacketType = packetType,
+                MessageType = packetType,
             });
 
             var result = actionResult.EnsureOkObjectResult<IDictionary<Int32, Int32>>(true);

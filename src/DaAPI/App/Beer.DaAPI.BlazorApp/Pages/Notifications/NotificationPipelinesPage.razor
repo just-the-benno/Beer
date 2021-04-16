@@ -1,17 +1,12 @@
 ﻿
-@page "/pipelines"
-@layout AdminLayout
+@*@page "/pipelines"
 @attribute [Authorize]
 @inject DaAPIService service
-@inject LayoutService _layoutService
-@inject IModalService _modalService
-@inject IToastService _toastService
 @inject IStringLocalizer<NotificationPipelinesPage> L
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <!-- Default box -->
             <div class="card">
                 <div class="card-header border-0 d-flex flex-row align-items-center">
                     <h3 class="card-title"> @L["Headline"] </h3>
@@ -55,7 +50,6 @@
                     </LoadingWhileContentNull>
                 </div>
             </div>
-            <!-- /.card -->
         </div>
     </div>
 </div>
@@ -83,17 +77,17 @@
 
     public async Task ShowDeleteModal(NotificationPipelineReadModel item)
     {
-        var parameters = new ModalParameters();
-        parameters.Add(nameof(DeleteNotificationPipelineModal.Item), item);
+        //var parameters = new ModalParameters();
+        //parameters.Add(nameof(DeleteNotificationPipelineModal.Item), item);
 
-        var messageForm = _modalService.Show<DeleteNotificationPipelineModal>($"{L["DeletePipelineModalTitle"]} {item.Name}", parameters);
-        var result = await messageForm.Result;
+        //var messageForm = _modalService.Show<DeleteNotificationPipelineModal>($"{L["DeletePipelineModalTitle"]} {item.Name}", parameters);
+        //var result = await messageForm.Result;
 
-        if (result.Cancelled == false && result.Data is Boolean && (Boolean)result.Data == true)
-        {
-            _toastService.ShowSuccess(String.Format(L["DeletePipelineSucessContent"], item.Name), L["DeletePipelineSuccessTitle"]);
-            _items.Remove(item);
-        }
+        //if (result.Cancelled == false && result.Data is Boolean && (Boolean)result.Data == true)
+        //{
+        //    _toastService.ShowSuccess(String.Format(L["DeletePipelineSucessContent"], item.Name), L["DeletePipelineSuccessTitle"]);
+        //    _items.Remove(item);
+        //}
     }
 
-}
+}*@

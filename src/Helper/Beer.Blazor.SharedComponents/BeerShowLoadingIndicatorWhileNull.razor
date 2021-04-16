@@ -1,0 +1,29 @@
+﻿@if (IsIndicatorVisible() == true)
+{
+    @LoadingContent
+}
+else
+{
+    @ChildContent
+}
+
+
+@code {
+    private Boolean IsIndicatorVisible() => IsSingle == true ? (Item == null) : (Items == null || Items.Any() == false);
+
+    [Parameter] public Object Item { get; set; }
+    [Parameter] public IEnumerable<Object> Items { get; set; }
+    [Parameter] public Boolean IsSingle { get; set; } = true;
+
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment LoadingContent { get; set; } = (builder) =>
+    {
+        builder.OpenComponent(1, typeof(MudSkeleton));
+        builder.AddAttribute(2, nameof(MudSkeleton.SkeletonType), SkeletonType.Rectangle);
+        builder.AddAttribute(3, nameof(MudSkeleton.Animation), Animation.Pulse);
+        builder.CloseComponent();
+    };
+
+}

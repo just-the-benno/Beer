@@ -1,0 +1,23 @@
+﻿@inherits DaAPIDialogBase
+@inject IStringLocalizer<DeleteDHCPv6InterfaceDialog> L
+@inject IStringLocalizer<SharedRessources> LShared
+
+@inject DaAPIService _service
+
+
+<MudDialog>
+    <DialogContent>
+        @if (_hasErrors == true)
+        {
+            <MudAlert Class="mb-5" Severity="Severity.Error">@L["DeleteErrorMessage"]</MudAlert>
+        }
+
+        <MudText Typo="Typo.body1">@L["DeleteQuestion"]</MudText>
+        <MudText Typo="Typo.h6">@($"{Entry.Name} ({Entry.IPv6Address})")</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@LShared["NoCaption"]</MudButton>
+        <BeerSendingAwareButton ButtonType="ButtonType.Button" OnClick="DeleteListener" DefaultText="@LShared["YesCaption"]" InProgressText="@L["DeletingInterfaceButtonCaption"]" IsExecuting="_sendingInProgress" />
+    </DialogActions>
+</MudDialog>
+

@@ -12,7 +12,7 @@ namespace Beer.DaAPI.BlazorApp.Helper
 {
     public class DHCPv6ScopePropertyResponseJsonConverter : JsonConverter
     {
-        static readonly JsonSerializerSettings SpecifiedSubclassConversion = new JsonSerializerSettings()
+        static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
         {
             ContractResolver = new BaseSpecifiedConcreteClassConverter<DHCPv6ScopePropertyResponse>()
         };
@@ -25,20 +25,13 @@ namespace Beer.DaAPI.BlazorApp.Helper
             var token = jo["Type"] ?? jo["type"];
             Int32 rawValue = token.Value<Int32>();
 
-            switch ((DHCPv6ScopePropertyType)rawValue)
+            return (DHCPv6ScopePropertyType)rawValue switch
             {
-                case DHCPv6ScopePropertyType.AddressList:
-                    return JsonConvert.DeserializeObject<DHCPv6AddressListScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv6ScopePropertyType.Byte:
-                case DHCPv6ScopePropertyType.UInt16:
-                case DHCPv6ScopePropertyType.UInt32:
-                    return JsonConvert.DeserializeObject<DHCPv6NumericScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion);
-                case DHCPv6ScopePropertyType.Text:
-                    throw new NotImplementedException();
-
-                default:
-                    throw new NotImplementedException();
-            }
+                DHCPv6ScopePropertyType.AddressList => JsonConvert.DeserializeObject<DHCPv6AddressListScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv6ScopePropertyType.Byte or DHCPv6ScopePropertyType.UInt16 or DHCPv6ScopePropertyType.UInt32 => JsonConvert.DeserializeObject<DHCPv6NumericScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
+                DHCPv6ScopePropertyType.Text => throw new NotImplementedException(),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         public override bool CanWrite => false;

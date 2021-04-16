@@ -11,5 +11,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
     public class DHCPv4LeaseEntryViewModel : DHCPv4LeaseEntry
     {
         public DHCPv4ScopeItem Scope { get; set; }
+
+        public String GetAsSeachString() => $"{Scope.Name} {Address}";
     }
 }

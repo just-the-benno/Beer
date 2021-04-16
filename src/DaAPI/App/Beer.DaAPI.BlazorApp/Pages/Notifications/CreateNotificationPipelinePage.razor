@@ -1,12 +1,9 @@
-﻿@inherits AdvancedFormComponent<CreateNotificationPipelineViewModel>
+﻿@*@inherits AdvancedFormComponent<CreateNotificationPipelineViewModel>
 @implements IDisposable
 
 @page "/pipelines/create"
-@layout AdminLayout
 @attribute [Authorize]
 @inject DaAPIService _service
-@inject LayoutService _layoutService
-@inject IToastService _toastService
 @inject NavigationManager _navigator
 @inject IJSRuntime _jsRuntime
 @inject IStringLocalizer<CreateNotificationPipelinePage> L
@@ -56,10 +53,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- /.login-card-body -->
                     </div>
                 </div>
-                @*End of column*@
             </div>
             <LoadingWhileContentNull Item="_pipelineDescriptions">
                 <div class="row">
@@ -85,11 +80,8 @@
                                 </div>
 
                             </div>
-                            @*End of card body*@
                         </div>
-                        @*End of card*@
                     </div>
-                    @*End of col*@
                     <div class="col-4">
                         <div class="card">
                             <div class="card-header">
@@ -144,9 +136,7 @@
                                     </div>
                                 }
                             </div>
-                            @*End of card body*@
                         </div>
-                        @*End of card*@
                     </div>
                     <div class="col-4">
                         <div class="card">
@@ -185,12 +175,9 @@
 
                                 }
                             </div>
-                            @*End of card body*@
                         </div>
-                        @*End of card*@
                     </div>
                 </div>
-                @*End of row*@
 
                 <div class="d-flex flex-row">
                     <div class="d-flex flex-fill"> </div>
@@ -199,7 +186,6 @@
 
             </LoadingWhileContentNull>
         </div>
-        @*End of container*@
     </EditForm>
 </CascadingValue>
 
@@ -279,10 +265,10 @@
         _sendingRequestInProgress = false;
         if (serviceResult == true)
         {
-            _toastService.ShowSuccess($"pipeline {Model.Name} created", "Success");
+            //_toastService.ShowSuccess($"pipeline {Model.Name} created", "Success");
             _navigator.NavigateTo("/pipelines");
         }
     }
 
     #endregion
-}
+}*@
