@@ -5,7 +5,7 @@
 
 @inject IStringLocalizer<SharedRessources> sharedLocalizer
 @inject IControlCenterService ccService
-@inject NavigationManager Navigation
+@inject NavigationManager _navigationManager
 @inject SignOutSessionStateManager SignOutManager
 
 <MudThemeProvider Theme="@_default" />
@@ -59,13 +59,13 @@
         <MudDivider />
         <MudGrid Class="flex-min px-3">
             <MudItem xs="4" Class="d-flex justify-center">
-                <MudIconButtonWithContent Icon="@Icons.Material.Filled.Message" Link="@UrlManager.MessageCenter">@sharedLocalizer["AppMenuMessageCaption"]</MudIconButtonWithContent>
+                <BeerIconButtonWithContent Icon="@Icons.Material.Filled.Message" Link="@UrlManager.MessageCenter">@sharedLocalizer["AppMenuMessageCaption"]</BeerIconButtonWithContent>
             </MudItem>
             <MudItem xs="4" Class="d-flex justify-center">
-                <MudIconButtonWithContent Icon="@Icons.Material.Filled.Settings" Link="@UrlManager.Settings">@sharedLocalizer["AppMenuSettingsCaption"]</MudIconButtonWithContent>
+                <BeerIconButtonWithContent Icon="@Icons.Material.Filled.Settings" Link="@UrlManager.Settings">@sharedLocalizer["AppMenuSettingsCaption"]</BeerIconButtonWithContent>
             </MudItem>
             <MudItem xs="4" Class="d-flex justify-center">
-                <MudIconButtonWithContent Icon="@Icons.Material.Filled.Logout" OnClick="BeginSignOut">@sharedLocalizer["LogoutCaption"]</MudIconButtonWithContent>
+                <BeerIconButtonWithContent Icon="@Icons.Material.Filled.Logout" OnClick="BeginSignOut">@sharedLocalizer["LogoutCaption"]</BeerIconButtonWithContent>
             </MudItem>
         </MudGrid>
     </MudDrawer>
@@ -86,7 +86,7 @@
         Palette = new Palette
         {
             Background = "#fafafa",
-        }
+        },
     };
 
     void DrawerToggle()
@@ -97,7 +97,7 @@
     private async Task BeginSignOut(MouseEventArgs args)
     {
         await SignOutManager.SetSignOutState();
-        Navigation.NavigateTo("authentication/logout");
+        _navigationManager.NavigateTo("authentication/logout");
     }
 
     private IDictionary<String, String> _urls = new Dictionary<String, String>();

@@ -1,8 +1,9 @@
-﻿@inject IStringLocalizer<DHCPv6ScopeResolverExplanation> L
+﻿@inject IStringLocalizer<DHCPv4ScopeResolverExplanation> L
+@inherits MudComponentBase
 
 @if (OnlyTitle == false)
 {
-    <ToolTipButton Content="@_content" Title="@($"{(ResolverTypeName == ResolverPropertyName ? L["ResolverCaption"]  : L["PropertyCaption"])}: {_title}")" />
+    <DaAPILittleHelperComponent Content="@_content" Heading="@($"{(ResolverTypeName == ResolverPropertyName ? L["ResolverCaption"]  : L["PropertyCaption"])}: {_title}")" Style="@Style" ButtonStyle="@ButtonStyle" UserAttributes="@UserAttributes"  />
 }
 else
 {
@@ -14,6 +15,7 @@ else
     private String _title;
     private String _content;
 
+    [Parameter] public String ButtonStyle { get; set; }
     [Parameter] public String ResolverTypeName { get; set; }
     [Parameter] public String ResolverPropertyName { get; set; }
     [Parameter] public Boolean OnlyTitle { get; set; } = false;

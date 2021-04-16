@@ -54,7 +54,6 @@ namespace Beer.DaAPI.Shared.Requests
                     Next = 2,
                 }
 
-                public Boolean? ReuseAddressIfPossible { get; set; }
 
                 [Required]
                 [StringLength(50, MinimumLength = 3)]
@@ -74,7 +73,8 @@ namespace Beer.DaAPI.Shared.Requests
 
                 [Range(0, 32)]
                 public Byte? MaskLength { get; set; }
-
+                
+                public Boolean? ReuseAddressIfPossible { get; set; }
                 public Boolean? SupportDirectUnicast { get; set; }
                 public Boolean? AcceptDecline { get; set; }
                 public Boolean? InformsAreAllowd { get; set; }

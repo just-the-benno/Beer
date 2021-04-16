@@ -1,0 +1,64 @@
+﻿
+<tr>
+    <td>
+        @PropertyName
+        <DHCPv4ScopePropertyExplanation Property="Property" />
+    </td>
+    @if (ShowParentValue == true)
+    {
+        <td>
+            @if (String.IsNullOrEmpty(ParentValue) == false)
+            {
+                @ParentValue
+            }
+            else
+            {
+                @ParentContent
+            }
+        </td>
+        <td>
+            @if (ForceEditing == false)
+            {
+                <MudCheckBox T="Boolean" CheckedChanged="CheckChanged" Checked="OverrideValue" Color="Color.Primary" />
+            }
+        </td>
+    }
+    <td>
+        @if (OverrideValue == true || ForceEditing == true || ShowParentValue == false)
+        {
+            @ChildContent
+        }
+    </td>
+</tr>
+
+
+@code {
+
+    private void CheckChanged(Boolean value)
+    {
+        OverrideValue = value;
+        OverrideValueChanged.InvokeAsync(OverrideValue);
+
+        if (value == false && Context != null)
+        {
+            Context.Validate();
+        }
+
+    }
+
+    [Parameter] public Boolean OverrideValue { get; set; }
+    [CascadingParameter] public EditContext Context { get; set; }
+
+    [Parameter] public EventCallback<Boolean> OverrideValueChanged { get; set; }
+
+    [Parameter] public String PropertyName { get; set; }
+    [Parameter] public Boolean ShowParentValue { get; set; }
+    [Parameter] public String ParentValue { get; set; }
+    [Parameter] public Boolean ForceEditing { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ParentContent { get; set; }
+
+    [Parameter] public DHCPv4ScopePropertyExplanationValues Property { get; set; }
+
+}

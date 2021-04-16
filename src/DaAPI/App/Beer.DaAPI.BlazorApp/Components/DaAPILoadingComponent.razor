@@ -1,0 +1,22 @@
+﻿<MudCard Class="pa-10 d-flex flex-column align-center">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <div class="d-flex justify-center">
+            <MudProgressCircular Class="mb-5" Color="Color.Primary" Indeterminate="true" />
+        </div>
+        <MudText Typo="Typo.body1">@Text</MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    [Parameter]
+    public String Text { get; set; }
+
+    [Parameter]
+    public String Title { get; set; }
+}

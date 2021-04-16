@@ -25,6 +25,9 @@ namespace DaAPI.IntegrationTests.Host
             DbContextOptions<StorageContext> contextOptions = DatabaseTestingUtility.GetTestDbContextOptions(dbName);
             ReplaceService(services, contextOptions);
         }
+
+        protected static StringContent GetContent<T>(T input) => new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+
     }
 
 

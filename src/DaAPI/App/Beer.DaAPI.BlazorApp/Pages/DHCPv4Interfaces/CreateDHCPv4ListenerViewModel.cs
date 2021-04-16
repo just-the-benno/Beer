@@ -1,31 +1,12 @@
-﻿using Beer.DaAPI.BlazorApp.Resources;
-using Beer.DaAPI.BlazorApp.Resources.Pages.DHCPv4Interfaces;
-using Beer.DaAPI.Shared.Validation;
+﻿using Beer.DaAPI.BlazorApp.ModelHelper;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Interfaces
+namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Interfaces
 {
     public class CreateDHCPv4ListenerViewModel
     {
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [MinLength(3, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MinLength))]
-        [MaxLength(100, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
-        [Display(Name = nameof(CreateDHCPv4ListenerDisplay.Name), ResourceType = typeof(CreateDHCPv4ListenerDisplay))]
         public String Name { get; set; }
-
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [IPv4Address(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.IPv4Address))]
-        [Display(Name = nameof(CreateDHCPv4ListenerDisplay.IPv4Address), ResourceType = typeof(CreateDHCPv4ListenerDisplay))]
         public String IPv4Address { get; set; }
-
-        [Required(ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.Required))]
-        [MinLength(3, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MinLength))]
-        [MaxLength(100, ErrorMessageResourceType = typeof(ValidationErrorMessages), ErrorMessageResourceName = nameof(ValidationErrorMessages.MaxLength))]
-        [Display(Name = nameof(CreateDHCPv4ListenerDisplay.InterfaceId), ResourceType = typeof(CreateDHCPv4ListenerDisplay))]
         public String InterfaceId { get; set; }
     }
 }

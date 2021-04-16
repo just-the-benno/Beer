@@ -32,7 +32,7 @@ namespace Beer.OIDCOptionHelper
                 post_logout_redirect_uri = value.PostLogoutRedirectUri,
                 response_type = value.ResponseType,
                 response_mode = value.ResponseMode,
-                scope = scopes.Substring(0, scopes.Length - 1),
+                scope = scopes[0..^1],
             };
 
             writer.WriteStartObject();

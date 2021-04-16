@@ -63,7 +63,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
                 LeaseTime = item.LeaseTime,
                 RenewalTime = item.RenewalTime,
                 ExcludedAddresses = item.ExcludedAddresses,
-                NetworkMask = (Byte)item.Mask.GetSlashNotation(),
+                NetworkMask = item.Mask == null ? new Byte?() : (Byte)item.Mask.GetSlashNotation(),
             });
         }
     }

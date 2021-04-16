@@ -1,0 +1,21 @@
+﻿
+<BeerShowLoadingIndicatorWhileNull Item="@Item" Items="@Items" IsSingle="@IsSingle" ChildContent="@ChildContent">
+    <LoadingContent>
+        <BeerCardSkeletonGrid AmountOfCards="@AmountOfCards" xs="@xs" sm="@sm" md="@md" lg="@lg" xl="@xl" />
+    </LoadingContent>
+</BeerShowLoadingIndicatorWhileNull>
+
+@code {
+    [Parameter] public Object Item { get; set; }
+    [Parameter] public IEnumerable<Object> Items { get; set; }
+    [Parameter] public Boolean IsSingle { get; set; } = true;
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public Int32 AmountOfCards { get; set; } = 4;
+    [Parameter] public Int32 xs { get; set; } = 12;
+    [Parameter] public Int32 sm { get; set; } = 4;
+    [Parameter] public Int32 md { get; set; } = 3;
+    [Parameter] public Int32 lg { get; set; } = 3;
+    [Parameter] public Int32 xl { get; set; } = 3;
+}

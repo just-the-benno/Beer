@@ -60,6 +60,16 @@ namespace Beer.DaAPI.Core.Common
         {
         }
 
+        public void SetId(Guid id)
+        {
+            if(Id != Guid.Empty)
+            {
+                throw new InvalidOperationException("only allowed when root is not initilized");
+            }
+
+            Id = id;
+        }
+
         #endregion
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Notifications.Triggers;
 using Beer.DaAPI.Core.Services;
-using DaAPI.Host;
 using Beer.DaAPI.Infrastructure.ServiceBus;
 using Beer.DaAPI.Infrastructure.ServiceBus.Messages;
 using MediatR;
@@ -39,7 +38,6 @@ namespace DaAPI.IntegrationTests.Host.APIControllers
             _factory = factory;
         }
 
-        private StringContent GetContent<T>(T input) => new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
 
         private (HttpClient Client, IServiceBus ServiceBus, Mock<INxOsDeviceConfigurationService> ActorServiceMock) GetTestClient(String dbfileName, String eventStorePrefix)
         {

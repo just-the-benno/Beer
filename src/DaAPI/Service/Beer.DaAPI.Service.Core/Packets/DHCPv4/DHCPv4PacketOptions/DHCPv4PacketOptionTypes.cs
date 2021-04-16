@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Beer.DaAPI.Core.Packets.DHCPv4
 {
-    public enum DHCPv4OptionTypes
+    public enum DHCPv4OptionTypes : Byte
     {
         SubnetMask = 1,
         TimeOffset = 2,

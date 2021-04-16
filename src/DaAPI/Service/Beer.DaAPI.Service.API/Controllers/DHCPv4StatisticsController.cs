@@ -54,14 +54,14 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             return base.Ok(response);
         }
 
-        [HttpGet("/api/Statistics/ErrorDHCPv6Packets")]
+        [HttpGet("/api/Statistics/ErrorDHCPv4Packets")]
         public async Task<IActionResult> GetErrorDHCPv4Packets([FromQuery] GroupedTimeSeriesFilterRequest request)
         {
             var response = await _storage.GetErrorDHCPv4Packets(request.Start, request.End, request.GroupbBy);
             return base.Ok(response);
         }
 
-        [HttpGet("/api/Statistics/IncomingDHCPv6Packets")]
+        [HttpGet("/api/Statistics/IncomingDHCPv4Packets")]
         public async Task<IActionResult> GetIncomingDHCPv4PacketAmount([FromQuery] GroupedTimeSeriesFilterRequest request)
         {
             var response = await _storage.GetIncomingDHCPv4PacketAmount(request.Start, request.End, request.GroupbBy);
@@ -75,10 +75,10 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             return base.Ok(response);
         }
 
-        [HttpGet("/api/Statistics/ErrorCodesPerDHCPV4MessageType")]
+        [HttpGet("/api/Statistics/ErrorCodesPerDHCPv4MessageType")]
         public async Task<IActionResult> GetErrorCodesPerDHCPv4MessageTypes([FromQuery] DHCPv4PacketTypeBasedTimeSeriesFilterRequest request)
         {
-            var response = await _storage.GetErrorCodesPerDHCPv4DHCPv4MessagesTypes(request.Start, request.End, request.PacketType);
+            var response = await _storage.GetErrorCodesPerDHCPv4DHCPv4MessagesTypes(request.Start, request.End, request.MessageType);
             return base.Ok(response);
         }
     }

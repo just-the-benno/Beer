@@ -117,61 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ActiveInterfaceTableHeadInterface" xml:space="preserve">
-    <value>Schnittstelle</value>
+  <data name="ActiveLabel" xml:space="preserve">
+    <value>Nimmt Pakete an</value>
   </data>
-  <data name="ActiveInterfaceTableHeadIP" xml:space="preserve">
-    <value>IP</value>
+  <data name="AddListenerToolTipText" xml:space="preserve">
+    <value>Diese Schnittstelle aktvieren</value>
   </data>
-  <data name="ActiveInterfaceTableHeadMAC" xml:space="preserve">
-    <value>MAC</value>
+  <data name="CreateInterfaceDialogHeader" xml:space="preserve">
+    <value>Die Schnittstelle "{0}" für DaAPI aktivieren</value>
   </data>
-  <data name="ActiveInterfaceTableHeadName" xml:space="preserve">
-    <value>Name</value>
+  <data name="CreateInterfaceSuccessSnackbarContent" xml:space="preserve">
+    <value>Die Schnittstellen mir der IP Adresse "{0}" verarbeitet jetzt DHCPv4 Pakete</value>
   </data>
-  <data name="BreadcrumbCaption" xml:space="preserve">
-    <value>DHCPv4 Schnittstellen</value>
-  </data>
-  <data name="BreadcrumbHomeCaption" xml:space="preserve">
-    <value>Start</value>
-  </data>
-  <data name="CreateButtonCaption" xml:space="preserve">
-    <value>Erstellen</value>
-  </data>
-  <data name="CreateInterfaceModalHeader" xml:space="preserve">
-    <value>Aktive die Schnittstelle {0} für DaAPI</value>
-  </data>
-  <data name="CreateToastSuccessContent" xml:space="preserve">
-    <value>Die Schnittstelle mit der IP Adresse {0} verarbeitet nun  DHCPv4 Pakete</value>
-  </data>
-  <data name="DeleteModalTitle" xml:space="preserve">
+  <data name="DeleteDialogTitle" xml:space="preserve">
     <value>Schnittstelle löschen</value>
   </data>
-  <data name="DeleteToastSuccessContent" xml:space="preserve">
-    <value>Schnittstelle {0} gesperrt</value>
-  </data>
-  <data name="NoActiveInterfacesContent" xml:space="preserve">
-    <value>Keine aktive Schnittstellen gefunden!</value>
+  <data name="DeleteInterfaceSuccessSnackbarContent" xml:space="preserve">
+    <value>Die Schnittstellen "{0}" wird nicht mehr für DaAPI verwendet</value>
+    <comment> </comment>
   </data>
   <data name="PageTitle" xml:space="preserve">
     <value>DHCPv4 Schnittstellen</value>
   </data>
-  <data name="PossibleInterfaceTableHeadInterface" xml:space="preserve">
-    <value>Schnittstelle</value>
-  </data>
-  <data name="PossibleInterfaceTableHeadIP" xml:space="preserve">
-    <value>IP</value>
-  </data>
-  <data name="PossibleInterfaceTableHeadMAC" xml:space="preserve">
-    <value>MAC</value>
-  </data>
-  <data name="TitleForPossibleInterfaces" xml:space="preserve">
-    <value>Mögliche Schnittstellen</value>
-  </data>
-  <data name="TitleForUsedInterfaces" xml:space="preserve">
-    <value>Aktive Schnittstellen</value>
-  </data>
-  <data name="ToastSuccessTitle" xml:space="preserve">
-    <value>Erfolg</value>
+  <data name="RemoveListenerToolTipText" xml:space="preserve">
+    <value>Schnittstelle entfernen</value>
   </data>
 </root>

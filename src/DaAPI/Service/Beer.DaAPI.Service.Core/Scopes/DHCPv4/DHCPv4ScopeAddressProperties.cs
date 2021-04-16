@@ -101,7 +101,6 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         #endregion
 
-
         #region queries
 
         public override bool IsAddressInRange(IPv4Address address) => Start <= address && address <= End;

@@ -14,7 +14,7 @@ namespace Beer.DaAPI.Shared.Helper
                 String newKey = property.Key;
                 if (Char.IsLower(property.Key[0]) == true)
                 {
-                    newKey = Char.ToUpper(property.Key[0]) + newKey.Substring(1);
+                    newKey = Char.ToUpper(property.Key[0]) + newKey[1..];
                 }
 
                 normelizedResolverProperties.Add(newKey, property.Value);

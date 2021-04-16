@@ -135,10 +135,10 @@ namespace Beer.DaAPI.Service.API
             });
 
             services.AddDbContext<StorageContext>((x) => x.UseNpgsql(Configuration.GetConnectionString("DaAPIDb"), option =>
-    option.MigrationsAssembly(typeof(StorageContext).Assembly.FullName)), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
+    option.MigrationsAssembly(typeof(StorageContext).Assembly.FullName)), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
             services.AddSingleton<IServiceBus, MediaRBasedServiceBus>();
-            services.AddTransient<ISerializer, JSONBasedSerializer>();
+            services.AddSingleton<ISerializer, JSONBasedSerializer>();
 
             services.AddSingleton(sp =>
             {
@@ -153,8 +153,8 @@ namespace Beer.DaAPI.Service.API
             services.AddTransient<IDHCPv6LeaseEngine, DHCPv6LeaseEngine>();
 
             services.AddSingleton<IDHCPv6InterfaceEngine, DHCPv6InterfaceEngine>();
-            services.AddSingleton<IDHCPv6StorageEngine, DHCPv6StorageEngine>();
-            services.AddSingleton<IDHCPv6ReadStore, StorageContext>();
+            services.AddTransient<IDHCPv6StorageEngine, DHCPv6StorageEngine>();
+            services.AddTransient<IDHCPv6ReadStore, StorageContext>();
 
             var esdbSettings = EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"));
             esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.Username, appSettings.EventStoreSettings.Password);
@@ -206,8 +206,8 @@ namespace Beer.DaAPI.Service.API
             services.AddTransient<IDHCPv4LeaseEngine, DHCPv4LeaseEngine>();
 
             services.AddSingleton<IDHCPv4InterfaceEngine, DHCPv4InterfaceEngine>();
-            services.AddSingleton<IDHCPv4StorageEngine, DHCPv4StorageEngine>();
-            services.AddSingleton<IDHCPv4ReadStore, StorageContext>();
+            services.AddTransient<IDHCPv4StorageEngine, DHCPv4StorageEngine>();
+            services.AddTransient<IDHCPv4ReadStore, StorageContext>();
             services.AddSingleton<IDHCPv4EventStore, EventStoreBasedStore>();
 
             services.AddTransient<INotificationHandler<DHCPv4PacketArrivedMessage>>(sp => new DHCPv4PacketArrivedMessageHandler(

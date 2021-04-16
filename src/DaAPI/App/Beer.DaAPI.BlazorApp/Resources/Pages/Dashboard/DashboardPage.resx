@@ -124,7 +124,7 @@
     <value>Active Leases</value>
   </data>
   <data name="ActiveLeaseTableHeaderForExpectedEnd" xml:space="preserve">
-    <value>Expected End</value>
+    <value>Valid</value>
   </data>
   <data name="ActiveLeaseTableHeaderForLeasedAddress" xml:space="preserve">
     <value>Address</value>
@@ -137,6 +137,9 @@
   </data>
   <data name="ActiveLeaseTableHeaderForStarted" xml:space="preserve">
     <value>Started</value>
+  </data>
+  <data name="ActiveLeaseTableHeaderForType" xml:space="preserve">
+    <value>Type</value>
   </data>
   <data name="BoxCaptionForInterfaces" xml:space="preserve">
     <value>Interfaces</value>
@@ -156,6 +159,18 @@
   <data name="DashboardPageTitle" xml:space="preserve">
     <value>Dashboard</value>
   </data>
+  <data name="DHCPv4PacketDetailsDialogTitle" xml:space="preserve">
+    <value>DHCPv4 Packet Content</value>
+  </data>
+  <data name="DHCPv4ResponseCodeCardTitle" xml:space="preserve">
+    <value>DHCPv4 Reponse Codes</value>
+  </data>
+  <data name="DHCPv6PacketDetailsDialogTitle" xml:space="preserve">
+    <value>DHCPv6 Packet Content</value>
+  </data>
+  <data name="DHCPv6ResponseCodeCardTitle" xml:space="preserve">
+    <value>DHCPv6 Reponse Codes</value>
+  </data>
   <data name="FilteredPacketCardTitle" xml:space="preserve">
     <value>Filtered Packets</value>
   </data>
@@ -168,10 +183,37 @@
   <data name="InvalidPacketCardTitle" xml:space="preserve">
     <value>Invalid Packets</value>
   </data>
+  <data name="LatestPacketNoResponseAvailable" xml:space="preserve">
+    <value>- No response -</value>
+  </data>
+  <data name="LatestPacketTableHeaderForRequestType" xml:space="preserve">
+    <value>Request</value>
+  </data>
+  <data name="LatestPacketTableHeaderForResponse" xml:space="preserve">
+    <value>Response</value>
+  </data>
+  <data name="LatestPacketTableHeaderForResult" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="LatestPacketTableHeaderForSourceAddress" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="LatestPacketTableHeaderForType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="LeaseRunningOutOfTime" xml:space="preserve">
+    <value>Not valid anymore</value>
+  </data>
   <data name="LeasesToExpireCaption" xml:space="preserve">
     <value>Leases to expire</value>
   </data>
+  <data name="LoadingDashboardMessage" xml:space="preserve">
+    <value>Data is loading</value>
+  </data>
   <data name="ResponseCardCardTitle" xml:space="preserve">
     <value>Responses Codes</value>
+  </data>
+  <data name="ShowPacketDetailsTooltipText" xml:space="preserve">
+    <value>Show Packet Details</value>
   </data>
 </root>

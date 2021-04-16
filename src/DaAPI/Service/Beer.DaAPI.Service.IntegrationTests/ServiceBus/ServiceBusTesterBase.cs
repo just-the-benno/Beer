@@ -1,5 +1,4 @@
-﻿using DaAPI.Host;
-using Beer.DaAPI.Infrastructure.ServiceBus;
+﻿using Beer.DaAPI.Infrastructure.ServiceBus;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;

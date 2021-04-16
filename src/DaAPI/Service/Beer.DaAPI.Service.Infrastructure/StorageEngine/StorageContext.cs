@@ -419,7 +419,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             String content = await Helpers.AsQueryable().Where(x => x.Name == _DHCPv6ServerConfigKey).Select(x => x.Content).FirstOrDefaultAsync();
             if (String.IsNullOrEmpty(content) == true)
             {
-                return new DHCPv6ServerProperties { IsInitilized = false };
+                return new DHCPv6ServerProperties { 
+                    IsInitilized = true, 
+                    LeaseLifeTime = TimeSpan.FromDays(15), 
+                    HandledLifeTime = TimeSpan.FromDays(15), 
+                    MaximumHandldedCounter = 100_000, 
+                    ServerDuid = new UUIDDUID(Guid.Parse("bbd541ea-8499-44b4-ad9d-d398c4643e79")) 
+                };
             }
 
             var result = JsonConvert.DeserializeObject<DHCPv6ServerProperties>(content, new DUIDJsonConverter());
@@ -509,9 +515,20 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     Timestamp = item.Timestamp,
                 };
 
+                if(String.IsNullOrEmpty(item.RequestSource) == true)
+                {
+                    Console.WriteLine($"{item.RequestSize} | {item.ScopeId}");
+                }
+
+                if (String.IsNullOrEmpty(item.RequestDestination) == true)
+                {
+                    Console.WriteLine($"{item.RequestSize} | {item.ScopeId}");
+                }
+
                 DHCPv6Packet requestPacket = DHCPv6Packet.FromByteArray(
                       item.RequestStream, new IPv6HeaderInformation(
-                          IPv6Address.FromString(item.RequestSource), IPv6Address.FromString(item.RequestDestination)));
+                          IPv6Address.FromString(item.RequestSource), 
+                          IPv6Address.FromString(item.RequestDestination)));
 
                 entry.Request = new DHCPv6PacketInformation(requestPacket);
 

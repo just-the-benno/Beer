@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beer.Helper.API", "Beer.Hel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beer.TestHelper", "Beer.TestHelper\Beer.TestHelper.csproj", "{9795D7A7-5B51-4B4D-AE1F-0824CD643B94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beer.Blazor.SharedComponents", "Beer.Blazor.SharedComponents\Beer.Blazor.SharedComponents.csproj", "{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{9795D7A7-5B51-4B4D-AE1F-0824CD643B94}.Release|x64.Build.0 = Release|Any CPU
 		{9795D7A7-5B51-4B4D-AE1F-0824CD643B94}.Release|x86.ActiveCfg = Release|Any CPU
 		{9795D7A7-5B51-4B4D-AE1F-0824CD643B94}.Release|x86.Build.0 = Release|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Debug|x64.Build.0 = Debug|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Debug|x86.Build.0 = Debug|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Release|x64.ActiveCfg = Release|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Release|x64.Build.0 = Release|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFB3840A-94BC-4C56-9ADE-14EFAFEA176D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -117,61 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ActiveInterfaceTableHeadInterface" xml:space="preserve">
-    <value>Interface</value>
+  <data name="ActiveLabel" xml:space="preserve">
+    <value>Actively listening</value>
   </data>
-  <data name="ActiveInterfaceTableHeadIP" xml:space="preserve">
-    <value>IP</value>
+  <data name="AddListenerToolTipText" xml:space="preserve">
+    <value>Add this interface</value>
   </data>
-  <data name="ActiveInterfaceTableHeadMAC" xml:space="preserve">
-    <value>MAC</value>
+  <data name="CreateInterfaceDialogHeader" xml:space="preserve">
+    <value>Enabling interface '{0}' for DaAPI</value>
   </data>
-  <data name="ActiveInterfaceTableHeadName" xml:space="preserve">
-    <value>Name</value>
+  <data name="CreateInterfaceSuccessSnackbarContent" xml:space="preserve">
+    <value>Interface with IPv6 Address '{0}' is processing DHCPv6 packets</value>
   </data>
-  <data name="BreadcrumbCaption" xml:space="preserve">
-    <value>DHCPv6 Interfaces</value>
-  </data>
-  <data name="BreadcrumbHomeCaption" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="CreateButtonCaption" xml:space="preserve">
-    <value>Create</value>
-  </data>
-  <data name="CreateInterfaceModalHeader" xml:space="preserve">
-    <value>Enabling interface {0} for DaAPI</value>
-  </data>
-  <data name="CreateToastSuccessContent" xml:space="preserve">
-    <value>Interface with IP Address {0} is processing DHCPv6 packets</value>
-  </data>
-  <data name="DeleteModalTitle" xml:space="preserve">
+  <data name="DeleteDialogTitle" xml:space="preserve">
     <value>Delete interface</value>
   </data>
-  <data name="DeleteToastSuccessContent" xml:space="preserve">
-    <value>interface {0} disabled</value>
-  </data>
-  <data name="NoActiveInterfacesContent" xml:space="preserve">
-    <value>No active interfaces found!</value>
+  <data name="DeleteInterfaceSuccessSnackbarContent" xml:space="preserve">
+    <value>interface '{0}' is not used by DaAPI anymore</value>
   </data>
   <data name="PageTitle" xml:space="preserve">
     <value>DHCPv6 Interfaces</value>
   </data>
-  <data name="PossibleInterfaceTableHeadInterface" xml:space="preserve">
-    <value>Interface</value>
-  </data>
-  <data name="PossibleInterfaceTableHeadIP" xml:space="preserve">
-    <value>IP</value>
-  </data>
-  <data name="PossibleInterfaceTableHeadMAC" xml:space="preserve">
-    <value>MAC</value>
-  </data>
-  <data name="TitleForPossibleInterfaces" xml:space="preserve">
-    <value>Possible interfaces</value>
-  </data>
-  <data name="TitleForUsedInterfaces" xml:space="preserve">
-    <value>Active interfaces</value>
-  </data>
-  <data name="ToastSuccessTitle" xml:space="preserve">
-    <value>Success</value>
+  <data name="RemoveListenerToolTipText" xml:space="preserve">
+    <value>Remove interface</value>
   </data>
 </root>

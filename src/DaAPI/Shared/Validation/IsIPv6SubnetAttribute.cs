@@ -27,7 +27,7 @@ namespace Beer.DaAPI.Shared.Validation
                 try
                 {
                     var address = IPv6Address.FromString(value as String);
-                    IPv6SubnetMask mask = new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(subnetLength));
+                    IPv6SubnetMask mask = new(new IPv6SubnetMaskIdentifier(subnetLength));
                     isValid = mask.IsIPv6AdressANetworkAddress(address);
                 }
                 catch (Exception)

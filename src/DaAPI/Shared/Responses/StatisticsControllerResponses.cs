@@ -24,7 +24,18 @@ namespace Beer.DaAPI.Shared.Responses
                 Expired = 11,
             }
 
-            public class DHCPv6LeaseEntry
+            public interface ILeaseEntry
+            {
+                Guid LeaseId { get; set; }
+                String Address { get; set; }
+                DateTime Start { get; set; }
+                DateTime End { get; set; }
+                Guid ScopeId { get; set; }
+                ReasonToEndLease EndReason { get; set; }
+                DateTime Timestamp { get; set; }
+            }
+
+            public class DHCPv6LeaseEntry : ILeaseEntry
             {
                 public Guid LeaseId { get; set; }
                 public String Address { get; set; }
@@ -170,7 +181,7 @@ namespace Beer.DaAPI.Shared.Responses
                 public Int32 AmountOfPipelines { get; set; }
             }
 
-            public class DHCPv4LeaseEntry
+            public class DHCPv4LeaseEntry : ILeaseEntry
             {
                 public Guid LeaseId { get; set; }
                 public String Address { get; set; }

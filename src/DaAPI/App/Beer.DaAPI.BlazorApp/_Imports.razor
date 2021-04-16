@@ -11,7 +11,15 @@
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Localization
 
+@using MudBlazor
+
+@using Humanizer
+
+@using Beer.Blazor.SharedComponents
+
 @*Imports from Components *@
+@using Beer.DaAPI.BlazorApp.Components
+@using Beer.DaAPI.BlazorApp.Dialogs
 
 @* own components *@
 @using Beer.DaAPI.BlazorApp
@@ -24,58 +32,19 @@
 @using Beer.DaAPI.BlazorApp.Pages.Common
 @using Beer.DaAPI.BlazorApp.Pages.Dashboard
 @using Beer.DaAPI.BlazorApp.Pages.DHCPv6Interfaces
-@using Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 @using Beer.DaAPI.BlazorApp.Pages.Notifications
 
 @* services *@
 @using Beer.DaAPI.BlazorApp.Services
 
-@* modals *@
-@using Beer.DaAPI.BlazorApp.Modals
-
-@* modals *@
+@* helper *@
 @using Beer.DaAPI.BlazorApp.Helper
 
 @* shared components *@
 @using Beer.DaAPI.BlazorApp.Shared
-@using Beer.DaAPI.BlazorApp.Shared.Components
-@using Beer.DaAPI.BlazorApp.Shared.Components.Breadcrumb
-@using Beer.DaAPI.BlazorApp.Shared.Components.Nav
-@using Beer.DaAPI.BlazorApp.Shared.Components.Forms
 
-@* shared forms *@
-@using Beer.DaAPI.BlazorApp.Shared.Layout
-
-@* shared forms *@
-@using Beer.DaAPI.BlazorApp.Shared.Forms
 
 @* other components *@
-
-@using Blazored
-@using Blazored.Modal
-@using Blazored.Modal.Services
-
-@using Blazored.Toast
-@using Blazored.Toast.Services
-
-@using BlazorDateRangePicker
-
-@using ChartJs.Blazor
-@using ChartJs.Blazor.Common.Enums
-@using ChartJs.Blazor.Common.Axes
-@using ChartJs.Blazor.Common.Axes.Ticks
-@using ChartJs.Blazor.Common
-@using ChartJs.Blazor.Common.Time
-@using ChartJs.Blazor.LineChart
-@using ChartJs.Blazor.BarChart
-@using ChartJs.Blazor.PieChart
-@using ChartJs.Blazor.BarChart.Axes
-@using ChartJs.Blazor.Interop
-@using ChartJs.Blazor.Util
-
-@using Sve.Blazor.DataTable.Components
-
-@using BlazorStrap
 
 @* requests and responses *@
 

@@ -11,6 +11,7 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
     {
         Task<TRootScope> GetRootScope();
         Task<T> GetAggregateRoot<T>(Guid id) where T : AggregateRootWithEvents, new();
+
         Task<Boolean> Save(AggregateRootWithEvents root);
         Task<Boolean> CheckIfAggrerootExists<T>(Guid id) where T : AggregateRootWithEvents, new();
     }

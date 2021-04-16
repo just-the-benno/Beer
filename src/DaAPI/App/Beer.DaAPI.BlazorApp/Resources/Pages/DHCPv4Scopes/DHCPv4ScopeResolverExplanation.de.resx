@@ -117,143 +117,95 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DHCPv6ClientDUIDResolver_ClientDuid_Caption" xml:space="preserve">
-    <value>Client DUID</value>
+  <data name="DHCPv4Option82Resolver_DHCPv4Option82Resolver_Caption" xml:space="preserve">
+    <value>Benutzerdefinierte Option82</value>
   </data>
-  <data name="DHCPv6ClientDUIDResolver_ClientDuid_Content" xml:space="preserve">
-    <value>Die Bytefolge (ohne weitere Zeichen und ohne 0x) der DUID des Clients. Diese muss auch mit dem DUID Identifizierungsfolge, etwa 0003 für L2 Adresse starten</value>
+  <data name="DHCPv4Option82Resolver_DHCPv4Option82Resolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann verwendet werden, wenn eine spezielle Option82 zugeordnet werden soll.  Der Wert muss als Byte Sequenz eingegeben werden.</value>
   </data>
-  <data name="DHCPv6ClientDUIDResolver_DHCPv6ClientDUIDResolver_Caption" xml:space="preserve">
-    <value>Client DUID</value>
-  </data>
-  <data name="DHCPv6ClientDUIDResolver_DHCPv6ClientDUIDResolver_Content" xml:space="preserve">
-    <value>Prüft ob die Nachricht von einem bestimmten DHCPv6 Client aus versendet wurde. Der Client wir dabei anhand seiner DUID identifiziert. Dies kann genutzt werden um dem selben Client immer die selbe Adresse zuzuweisen</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_DHCPv6MilegateResolver_Caption" xml:space="preserve">
-    <value>DHCPv6 Milegate</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_DHCPv6MilegateResolver_Content" xml:space="preserve">
-    <value>Dieser Zuordner kann für Milegate Geräte des Herstellers Keymile verwendet werden. Diese Geräte erlauben es einen Text einzugeben, der dann in die remote-id Option geschrieben wird. Dieser Zuordner prüft ob eine eingehende Nachricht exakt diesen Wert aufweist.</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_Index_Caption" xml:space="preserve">
-    <value>Relay-Agent-Index</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_Index_Content" xml:space="preserve">
-    <value>Dieser Wert gibt an, dass eine Übereinstimmung an der Stelle eines bestimmten Relay Agent zutreffen muss. Der Relay Agent mit dem Index 0 ist der dem Client am nächsten. Ein Relay Agent mit dem Index 1 ist der zweite Relay Agent auf dem zum Server</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_IsCaseSenstiveMatch_Caption" xml:space="preserve">
-    <value>Übereinstimmung soll Groß- und Kleinschreibung prüfen</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_IsCaseSenstiveMatch_Content" xml:space="preserve">
-    <value>Diese Option wird als Text interpretiert. Wenn diese Eigenschaft  aktiviert ist und ene Option den Wert "eth1/001 INTERface 1" hat, wird dies nicht mit dem eingehenden Wert von "eth1/001 interface 1" übereinstimmen. Wenn diese Option jedoch nicht aktiv ist, wird die Groß- und Kleinschreibung ignoriert.</value>
-  </data>
-  <data name="DHCPv6MilegateResolver_Value_Caption" xml:space="preserve">
+  <data name="DHCPv4Option82Resolver_Value_Caption" xml:space="preserve">
     <value>Wert</value>
   </data>
-  <data name="DHCPv6MilegateResolver_Value_Content" xml:space="preserve">
-    <value>Hierbei handet es sich um den eigentlich Wert der eigefügten Option. Für gewöhnlich ist dies etwa "eth1/001 interface 1". Es kann jedoch auch jeder anderer Wert gewählt werden.</value>
+  <data name="DHCPv4Option82Resolver_Value_Content" xml:space="preserve">
+    <value>Geben Sie hier den exakten erwarteten Wert der Option82 an ohne 0x or andere Zeichen</value>
   </data>
-  <data name="DHCPv6PeerAddressResolver_DHCPv6PeerAddressResolver_Caption" xml:space="preserve">
-    <value>Peer Adresse</value>
+  <data name="DHCPv4RelayAgentResolver_AgentAddresses_Caption" xml:space="preserve">
+    <value>Relay Agenten Adressen</value>
   </data>
-  <data name="DHCPv6PeerAddressResolver_DHCPv6PeerAddressResolver_Content" xml:space="preserve">
-    <value>Diese Zuordner prüft ob der Wert der Eigenschaft "peer address" in irgendeinem Relay Packet den eingegeben Wert hat.</value>
+  <data name="DHCPv4RelayAgentResolver_AgentAddresses_Content" xml:space="preserve">
+    <value>Auflistung der IPv4 Adressen, die als gültiger Relayagent gesehen werden sollen. Es kann auch nur eine einzige Adresse angegeben werden.</value>
   </data>
-  <data name="DHCPv6PeerAddressResolver_IsUnique_Caption" xml:space="preserve">
-    <value>Ist einzigartig</value>
+  <data name="DHCPv4RelayAgentResolver_DHCPv4RelayAgentResolver_Caption" xml:space="preserve">
+    <value>Relay Agenten</value>
   </data>
-  <data name="DHCPv6PeerAddressResolver_IsUnique_Content" xml:space="preserve">
-    <value>Wenn diese Eigenshaft aktiviert ist, wird die Peer Adress als einzigartig betrachtet. Dies in Verbindung mit der Option "Wiederverwenden der Adresse" führt dazu, dass ein Lease von der selben Peer Adress auch dann neuvergeben wird, wenn es eine andere Client DUID hat. Ist die Eigenschaft deaktiviert, wird ein neues Lease generiert.</value>
+  <data name="DHCPv4RelayAgentResolver_DHCPv4RelayAgentResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner prüft, ob das "Relay Agent Address" Feld im DHCPv4 Packet eines der gelistet Agenten entspricht</value>
   </data>
-  <data name="DHCPv6PeerAddressResolver_PeerAddress_Caption" xml:space="preserve">
-    <value>Eigenschaft: Peer Adresse</value>
+  <data name="DHCPv4RelayAgentSubnetResolver_DHCPv4RelayAgentSubnetResolver_Caption" xml:space="preserve">
+    <value>Relay Agent Subnet </value>
   </data>
-  <data name="DHCPv6PeerAddressResolver_PeerAddress_Content" xml:space="preserve">
-    <value>Die Peer Adresse (in den meisten Fällen, die Link Lokale Adresse) die einen Treffer für diesen Zuordner bedeutet. Jegliche gültige IPv6 Adresse kann hier eingetragen werden</value>
+  <data name="DHCPv4RelayAgentSubnetResolver_DHCPv4RelayAgentSubnetResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner prüft ob das "Relay Agent Address" Feld im DHCPv4 Packet einem Subnetz entspricht</value>
   </data>
-  <data name="DHCPv6PseudoResolver_DHCPv6PseudoResolver_Caption" xml:space="preserve">
-    <value>Pseudo Zuordner</value>
-  </data>
-  <data name="DHCPv6PseudoResolver_DHCPv6PseudoResolver_Content" xml:space="preserve">
-    <value>Der Pseudo-Zuordner wird immer als gültig betrachetet, egal für welches Paket. Er kann genutzt werden um Bereiche mit gleichen Eigenschaften zu gruppieren. Im Gegensatz zu anderen DHCP Servern, kann man bei DaAPI keine globalen Eigenschaften setzen. Stattdessen, kann ein Wurzelbereich erstellt werden. Werden diesem dann Kindbereiche zugeordnet, werden die Eigenschaften vererbt. Da der Pseudo-Zuordner immer wahr ist, können spezifischere Zuordner für Kindbereiche gewählt werden. Um mehr über das Konzept des Bereichtsbaum zu erfahren, lesen sie in der DaAPI documentation nach.</value>
-  </data>
-  <data name="DHCPv6RelayAgentResolver_DHCPv6RelayAgentResolver_Caption" xml:space="preserve">
-    <value>Relay Agent Adress</value>
-  </data>
-  <data name="DHCPv6RelayAgentResolver_DHCPv6RelayAgentResolver_Content" xml:space="preserve">
-    <value>Der Relay Agent Adress Zuordnen prüft ob die Nachricht exakt von der genannten Adressse verschickt wurde</value>
-  </data>
-  <data name="DHCPv6RelayAgentResolver_RelayAgentAddress_Caption" xml:space="preserve">
-    <value>Relay Agent Adress</value>
-  </data>
-  <data name="DHCPv6RelayAgentResolver_RelayAgentAddress_Content" xml:space="preserve">
-    <value>Die Adresse des erwarteten Realy Agent</value>
-  </data>
-  <data name="DHCPv6RelayAgentSubnetResolver_DHCPv6RelayAgentSubnetResolver_Caption" xml:space="preserve">
-    <value>Relay Agent Subnetz</value>
-  </data>
-  <data name="DHCPv6RelayAgentSubnetResolver_DHCPv6RelayAgentSubnetResolver_Content" xml:space="preserve">
-    <value>Diese Zuordner prüft ob die Quelle der DHCPv6 Nachricht in einem bestimmten Subnetz liegt</value>
-  </data>
-  <data name="DHCPv6RelayAgentSubnetResolver_NetworkAddress_Caption" xml:space="preserve">
-    <value>Netzwerkadresse</value>
-  </data>
-  <data name="DHCPv6RelayAgentSubnetResolver_NetworkAddress_Content" xml:space="preserve">
-    <value>Das Subnetz von dem gewünschten Relay Agent</value>
-  </data>
-  <data name="DHCPv6RelayAgentSubnetResolver_SubnetMask_Caption" xml:space="preserve">
+  <data name="DHCPv4RelayAgentSubnetResolver_Mask_Caption" xml:space="preserve">
     <value>Subnetzmaske</value>
   </data>
-  <data name="DHCPv6RelayAgentSubnetResolver_SubnetMask_Content" xml:space="preserve">
-    <value>Die Subnetzmaske (0...128) für das korrespondierende Netz</value>
+  <data name="DHCPv4RelayAgentSubnetResolver_Mask_Content" xml:space="preserve">
+    <value>Die Subnetzmaske (0... 32) des Netzes</value>
   </data>
-  <data name="DHCPv6RemoteIdentifierEnterpriseNumberResolver_DHCPv6RemoteIdentifierEnterpriseNumberResolver_Caption" xml:space="preserve">
-    <value>DHCPv6 Remote identifier Enterprise Number</value>
+  <data name="DHCPv4RelayAgentSubnetResolver_NetworkAddress_Caption" xml:space="preserve">
+    <value>Netzaddresse</value>
   </data>
-  <data name="DHCPv6RemoteIdentifierEnterpriseNumberResolver_DHCPv6RemoteIdentifierEnterpriseNumberResolver_Content" xml:space="preserve">
-    <value>Prüft ob die Enterprise Nummer in der remote identifier Option den angegebene Wert hat. Eine einfaches Anwendungszenario dafür zu prüfen, ob ein Gerät von einer bestimmten Organisation hergestellt wurde. Für weitere Details nehmen Sie die Dokumentation zur Hand.</value>
+  <data name="DHCPv4RelayAgentSubnetResolver_NetworkAddress_Content" xml:space="preserve">
+    <value>Die Adresse, die das Subnetz beschreibt.  Als Beispiel ist dies die 192.168.100.0/24 (ohne die Maske)</value>
   </data>
-  <data name="DHCPv6RemoteIdentifierEnterpriseNumberResolver_EnterpriseNumber_Caption" xml:space="preserve">
-    <value>Enterprise Nummer</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_DeviceMacAddress_Caption" xml:space="preserve">
+    <value>Geräte MAC Address</value>
   </data>
-  <data name="DHCPv6RemoteIdentifierEnterpriseNumberResolver_EnterpriseNumber_Content" xml:space="preserve">
-    <value>Füge die Nummer der Organisation ein, die von der IANA zugewiesen wurde.</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_DeviceMacAddress_Content" xml:space="preserve">
+    <value>Die MAC Adresse des Switches der SG Reihe, bei dem die Option 82 hinzugefügt wird. Hier ist nicht die MAC Adresse des Kunden bzw. Benutzers einzutragen.</value>
   </data>
-  <data name="DHCPv6RemoteIdentifierEnterpriseNumberResolver_RelayAgentIndex_Caption" xml:space="preserve">
-    <value>Relay Agent Index</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_DHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
+    <value>Cisco SG Switch</value>
   </data>
-  <data name="DHCPv6RemoteIdentifierEnterpriseNumberResolver_RelayAgentIndex_Content" xml:space="preserve">
-    <value>Dieser Wert gibt an, dass eine Übereinstimmung an der Stelle eines bestimmten Relay Agent zutreffen muss. Der Relay Agent mit dem Index 0 ist der dem Client am nächsten. Ein Relay Agent mit dem Index 1 ist der zweite Relay Agent auf dem zum Server</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_DHCPv4SimpleCiscoSGSeriesResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann verwendet werden, wenn  Cisco SG Switch wie die SG300 und SG350 Reihe mit aktivieren DHCP Snooping und Einfügen der Option 82 verwenden werden. Die Verknüpfung wird dabei über die VLAN ID und Port des Kunden, sowie die MAC Adresse des Gerätes hergestellt.</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_DeviceMacAddress_Caption" xml:space="preserve">
-    <value>MAC Adresse des Gerätes</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_DeviceMacAddress_Content" xml:space="preserve">
-    <value>Fügen Sie die MAC Adresse des Zyxel Gerätes ohne 0x oder andere Zeichen ein. Um die MAC Adresse auszulesen schauen Sie auf die System Informations Seite oder benutzen Sie die CLI</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Port (1 ... 48) an dem der Kunde bzw. Nutzer angeschlossen ist.</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_DHCPv6SimpleZyxelIESResolver_Caption" xml:space="preserve">
-    <value>Einfaches Zyxel IES</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Caption" xml:space="preserve">
+    <value>VLAN ID</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_DHCPv6SimpleZyxelIESResolver_Content" xml:space="preserve">
-    <value>Dieser Zuordner kann benutzt werden wenn Zyxel Geräte der  Reihe IES5x oder IES6x von Zyxel as "Layer 2 Relay Agent" (LDRA) verwendet werden. Diese Zuordner erwartet dass die Variablen "%slotid/%portid" als "interface option" und die Variable "%dmac3" als "remote-id" verwendet werden. Für mehr Informationen und ein Konfigurationsbeispiel schauen Sie in der DaAPI Dokumentation nach.</value>
+  <data name="DHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Content" xml:space="preserve">
+    <value>Die VLAN ID des Kunden bzw. Benutzers für den dieser Zuordner gelten soll. Es kann jede ID zwischen 1 und 4094 angegeben werden.</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_Index_Caption" xml:space="preserve">
-    <value>Relay Agent Index</value>
+  <data name="DHCPv4SimpleZyxelIESResolver_DeviceMacAddress_Caption" xml:space="preserve">
+    <value>Geräte MAC Address</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_Index_Content" xml:space="preserve">
-    <value>Dieser Wert gibt an, dass eine Übereinstimmung an der Stelle eines bestimmten Relay Agent zutreffen muss. Der Relay Agent mit dem Index 0 ist der dem Client am nächsten. Ein Relay Agent mit dem Index 1 ist der zweite Relay Agent auf dem zum Server</value>
+  <data name="DHCPv4SimpleZyxelIESResolver_DeviceMacAddress_Content" xml:space="preserve">
+    <value>Eingabe der MAC Adresse des Zyxel ohne 0x or ähnliches. Die MAC Adresse kann der Informationsseite entnommen werden.</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_PortId_Caption" xml:space="preserve">
-    <value>Portnummer</value>
+  <data name="DHCPv4SimpleZyxelIESResolver_DHCPv4SimpleZyxelIESResolver_Caption" xml:space="preserve">
+    <value>Zyxel IES MSAN</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_PortId_Content" xml:space="preserve">
-    <value>Nummer des Ports, an dem das Gerät bzw. der Kunde angeschlossen sind</value>
+  <data name="DHCPv4SimpleZyxelIESResolver_DHCPv4SimpleZyxelIESResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann verwendet werden when ein  Zyxel MSAN der Reihen IES5x.. oder IES6x eingesetzt werden und diese als  "Layer2 relay agent" betrieben werden.  Der Resolver nimmt an, dass die Variable "%slotid/%pid" für die Einstellung "opt82-circuit-id" verwenden wird, sowie dass %dmac3 die Variable für die Einstellung "opt82-remote-id" ist. In der Dokumentation finden sich mehr über diese Einstellungen.</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_SlotId_Caption" xml:space="preserve">
-    <value>Schachtnummer</value>
+  <data name="DHCPv4SimpleZyxelIESResolver_LinecardNumber_Caption" xml:space="preserve">
+    <value>Linecard</value>
   </data>
-  <data name="DHCPv6SimpleZyxelIESResolver_SlotId_Content" xml:space="preserve">
-    <value>Die Nummer des Schachtes in dem sich die Schnittstellenkarte befinden, an der das Geräte bzw. der Kunde angeschlossen sind.</value>
+  <data name="DHCPv4SimpleZyxelIESResolver_LinecardNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Einschubs  (1 to 10) der mit dem entsprechend Port verbunden ist</value>
+  </data>
+  <data name="DHCPv4SimpleZyxelIESResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="DHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Ports (1 ... 80) mit dem Kunden verbunden wurde</value>
   </data>
   <data name="PropertyCaption" xml:space="preserve">
     <value>Eigenschaft</value>

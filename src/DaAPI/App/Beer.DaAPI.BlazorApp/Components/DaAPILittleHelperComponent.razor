@@ -1,0 +1,44 @@
+﻿@inject IStringLocalizer<SharedRessources> L
+@inherits MudComponentBase
+
+<MudToggleIconButton @bind-Toggled="@_isOpen" Icon="@Icons.Outlined.Help" Color="@Color.Primary" ToggledIcon="@Icons.Outlined.Lightbulb" ToggledColor="@Color.Secondary" Style="@GetButtonStyle()" />
+
+<MudPopover Open="@_isOpen" Class="px-4 pt-4" Style="@GetStyle()" OffsetX="true" Direction="Direction.Bottom">
+    <div class="d-flex flex-column">
+        @if (String.IsNullOrEmpty(Heading) == false)
+        {
+            <MudText Typo="Typo.h6">@Heading</MudText>
+        }
+        <MudText Typo="Typo.body1">@Content</MudText>
+        <MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Primary">@L["OkayCaption"]</MudButton>
+    </div>
+</MudPopover>
+
+@code {
+
+    private String GetStyle() => new MudBlazor.Utilities.StyleBuilder()
+        .AddStyle("max-width:", $"{MaxWidth}px")
+        .AddStyle("width", "inherit")
+        .AddStyle("top", "inherit")
+        .AddStyle(Style).ToString();
+
+    private String GetButtonStyle() => new MudBlazor.Utilities.StyleBuilder()
+        .AddStyle(ButtonStyle).ToString();
+
+    [Parameter] public String Heading { get; set; }
+    [Parameter] public String Content { get; set; }
+
+    [Parameter] public String ButtonStyle { get; set; }
+
+    [Parameter] public Double MaxWidth { get; set; } = 350.0;
+
+    public bool _isOpen;
+
+    public void ToggleOpen()
+    {
+        if (_isOpen)
+            _isOpen = false;
+        else
+            _isOpen = true;
+    }
+}

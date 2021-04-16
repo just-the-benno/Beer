@@ -118,78 +118,225 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1" xml:space="preserve">
-    <value>Client Identifier</value>
+    <value>Subnet Mask</value>
+  </data>
+  <data name="10" xml:space="preserve">
+    <value>Impress Serve</value>
+  </data>
+  <data name="11" xml:space="preserve">
+    <value>Resource Location Server</value>
   </data>
   <data name="12" xml:space="preserve">
-    <value>Server Unicast Address</value>
+    <value>Host Name</value>
+  </data>
+  <data name="13" xml:space="preserve">
+    <value>Boot File Size</value>
   </data>
   <data name="14" xml:space="preserve">
-    <value>Rapit Commit</value>
+    <value>Merit Dump File</value>
   </data>
   <data name="15" xml:space="preserve">
-    <value>User Class</value>
+    <value>Domain Name</value>
   </data>
   <data name="16" xml:space="preserve">
-    <value>Vendor Class</value>
+    <value>Swap Server</value>
   </data>
   <data name="17" xml:space="preserve">
-    <value>Vendor Options</value>
+    <value>Root Path</value>
   </data>
   <data name="18" xml:space="preserve">
-    <value>Interface Id</value>
+    <value>Extensions Path</value>
   </data>
   <data name="19" xml:space="preserve">
-    <value>Reconfigure</value>
+    <value>IP Forwarding Enable</value>
   </data>
   <data name="2" xml:space="preserve">
-    <value>Server Identifier</value>
+    <value>Time Offset</value>
   </data>
   <data name="20" xml:space="preserve">
-    <value>Reconfigure Accpeted</value>
+    <value>Non-Local Source Routing Enable</value>
   </data>
   <data name="21" xml:space="preserve">
-    <value>SIP Server Domain List</value>
+    <value>Policy Filter</value>
   </data>
   <data name="22" xml:space="preserve">
-    <value>SIP Servers</value>
+    <value>Maximum Datagram Reassembly Size</value>
   </data>
   <data name="23" xml:space="preserve">
-    <value>DNS Servers</value>
+    <value>Default IP Time-to-live</value>
   </data>
   <data name="24" xml:space="preserve">
-    <value>Domain Search List</value>
+    <value>Path MTU Aging Timeout</value>
   </data>
   <data name="25" xml:space="preserve">
-    <value>IA Prefix</value>
+    <value>Path MTU Plateau Table</value>
+  </data>
+  <data name="26" xml:space="preserve">
+    <value>Interface MTU</value>
+  </data>
+  <data name="27" xml:space="preserve">
+    <value>All Subnets are Local</value>
+  </data>
+  <data name="28" xml:space="preserve">
+    <value>Broadcast Address</value>
+  </data>
+  <data name="29" xml:space="preserve">
+    <value>Perform Mask Discovery</value>
   </data>
   <data name="3" xml:space="preserve">
-    <value>IA NonTemporary</value>
+    <value>Router</value>
+  </data>
+  <data name="30" xml:space="preserve">
+    <value>Mask Supplier</value>
+  </data>
+  <data name="31" xml:space="preserve">
+    <value>Perform Router Discovery</value>
   </data>
   <data name="32" xml:space="preserve">
-    <value>Information Refresh Time</value>
+    <value>Router Solicitation Address</value>
+  </data>
+  <data name="33" xml:space="preserve">
+    <value>Static Route</value>
+  </data>
+  <data name="34" xml:space="preserve">
+    <value>Trailer Encapsulation</value>
+  </data>
+  <data name="35" xml:space="preserve">
+    <value>ARP Cache Timeout</value>
+  </data>
+  <data name="36" xml:space="preserve">
+    <value>Ethernet Encapsulation</value>
   </data>
   <data name="37" xml:space="preserve">
-    <value>Remote Identifier</value>
+    <value>TCP Default TTL</value>
+  </data>
+  <data name="38" xml:space="preserve">
+    <value>TCP Keepalive Interval</value>
+  </data>
+  <data name="39" xml:space="preserve">
+    <value>TCP Keepalive Garbage</value>
   </data>
   <data name="4" xml:space="preserve">
-    <value>IA Temporary</value>
+    <value>Time Server</value>
+  </data>
+  <data name="40" xml:space="preserve">
+    <value>Network Information Service Domain</value>
+  </data>
+  <data name="41" xml:space="preserve">
+    <value>Network Information Servers</value>
+  </data>
+  <data name="42" xml:space="preserve">
+    <value>Network Time Protocol Servers</value>
+  </data>
+  <data name="43" xml:space="preserve">
+    <value>Vendor Specific Information</value>
+  </data>
+  <data name="44" xml:space="preserve">
+    <value>NetBIOS over TCP/IP Name Server</value>
+  </data>
+  <data name="45" xml:space="preserve">
+    <value>NetBIOS over TCP/IP Datagram Distribution Server</value>
+  </data>
+  <data name="46" xml:space="preserve">
+    <value>NetBIOS over TCP/IP Node Type</value>
+  </data>
+  <data name="47" xml:space="preserve">
+    <value>NetBIOS over TCP/IP Scope</value>
+  </data>
+  <data name="48" xml:space="preserve">
+    <value>X Window System Font Server</value>
+  </data>
+  <data name="49" xml:space="preserve">
+    <value>X Window System Display Manager</value>
   </data>
   <data name="5" xml:space="preserve">
-    <value>Requested Options</value>
+    <value>Name Server</value>
+  </data>
+  <data name="50" xml:space="preserve">
+    <value>Requested IP Address</value>
+  </data>
+  <data name="51" xml:space="preserve">
+    <value>IP Address Lease Time</value>
+  </data>
+  <data name="52" xml:space="preserve">
+    <value>Option Overload</value>
+  </data>
+  <data name="53" xml:space="preserve">
+    <value>DHCP Message Type</value>
+  </data>
+  <data name="54" xml:space="preserve">
+    <value>Server Identifier</value>
+  </data>
+  <data name="55" xml:space="preserve">
+    <value>Parameter Request List</value>
+  </data>
+  <data name="56" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="57" xml:space="preserve">
+    <value>Maximum DHCP Message Size</value>
+  </data>
+  <data name="58" xml:space="preserve">
+    <value>Renewal (T1) Time Value</value>
+  </data>
+  <data name="59" xml:space="preserve">
+    <value>Rebinding (T2) Time Value</value>
+  </data>
+  <data name="6" xml:space="preserve">
+    <value>Domain Name Server</value>
+  </data>
+  <data name="60" xml:space="preserve">
+    <value>Vendor class identifier</value>
+  </data>
+  <data name="61" xml:space="preserve">
+    <value>Client-identifier</value>
+  </data>
+  <data name="64" xml:space="preserve">
+    <value>Network Information Service+ Domain</value>
+  </data>
+  <data name="65" xml:space="preserve">
+    <value>Network Information Service+ Servers</value>
+  </data>
+  <data name="66" xml:space="preserve">
+    <value>TFTP server name</value>
+  </data>
+  <data name="67" xml:space="preserve">
+    <value>Bootfile name</value>
+  </data>
+  <data name="68" xml:space="preserve">
+    <value>Mobile IP Home Agent</value>
+  </data>
+  <data name="69" xml:space="preserve">
+    <value>Simple Mail Transport Protocol (SMTP) Server</value>
   </data>
   <data name="7" xml:space="preserve">
-    <value>Preference</value>
+    <value>Log Server</value>
+  </data>
+  <data name="70" xml:space="preserve">
+    <value>Post Office Protocol (POP3) Server</value>
+  </data>
+  <data name="71" xml:space="preserve">
+    <value>Network News Transport Protocol (NNTP) Server</value>
+  </data>
+  <data name="72" xml:space="preserve">
+    <value>Default World Wide Web (WWW) Server</value>
+  </data>
+  <data name="73" xml:space="preserve">
+    <value>Default Finger Server</value>
+  </data>
+  <data name="74" xml:space="preserve">
+    <value>Default Internet Relay Chat (IRC) Server</value>
+  </data>
+  <data name="75" xml:space="preserve">
+    <value>StreetTalk Server</value>
+  </data>
+  <data name="76" xml:space="preserve">
+    <value>StreetTalk Directory Assistance (STDA) Server</value>
   </data>
   <data name="8" xml:space="preserve">
-    <value>Elapsed Time</value>
-  </data>
-  <data name="82" xml:space="preserve">
-    <value>SOL_MAX_RT</value>
-  </data>
-  <data name="83" xml:space="preserve">
-    <value>INF_MAX_RT</value>
+    <value>Cookie Server</value>
   </data>
   <data name="9" xml:space="preserve">
-    <value>Relay Message</value>
+    <value>LPR Server</value>
   </data>
 </root>
