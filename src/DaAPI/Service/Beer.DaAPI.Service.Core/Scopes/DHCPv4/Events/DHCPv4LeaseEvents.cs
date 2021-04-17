@@ -99,8 +99,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             #region Properties
 
             public IPv4Address Address { get; set; }
-            public Byte[] HardwareAddress  { get; set; }
-            public DUID ClientDUID { get; set; }
+            public Byte[] ClientIdenfier { get; set; }
             public DateTime StartedAt { get; set; }
             public DateTime ValidUntil { get; set; }
             public Byte[] UniqueIdentifier { get; set; }

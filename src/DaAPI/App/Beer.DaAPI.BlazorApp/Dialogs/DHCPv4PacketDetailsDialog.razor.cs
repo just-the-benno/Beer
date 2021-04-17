@@ -101,12 +101,18 @@ namespace Beer.DaAPI.BlazorApp.Dialogs
 
                             if(castedOption.Identifier.DUID != null)
                             {
+                                identifierChilds.Add(new TreeItemData { Name = "IaId", Value = castedOption.Identifier.IaId.ToString() });
                                 identifierChilds.Add(new TreeItemData { Name = "DUID", Value = castedOption.Identifier.DUID.ToFriendlyString() });
                             }
-                            
-                            if(castedOption.Identifier.HwAddress != null && castedOption.Identifier.HwAddress.Any())
+
+                            if (castedOption.Identifier.HwAddress != null && castedOption.Identifier.HwAddress.Any())
                             {
-                                identifierChilds.Add(new TreeItemData { Name = "DUID", Value = ByteHelper.ToString(castedOption.Identifier.HwAddress,'-') });
+                                identifierChilds.Add(new TreeItemData { Name = "HW", Value = ByteHelper.ToString(castedOption.Identifier.HwAddress,'-') });
+                            }
+
+                            if ( String.IsNullOrEmpty(castedOption.Identifier.IdentifierValue) == false)
+                            {
+                                identifierChilds.Add(new TreeItemData { Name = "Identifier", Value = castedOption.Identifier.IdentifierValue });
                             }
 
                             options.Add(new TreeItemData { Name = name, Children = identifierChilds });

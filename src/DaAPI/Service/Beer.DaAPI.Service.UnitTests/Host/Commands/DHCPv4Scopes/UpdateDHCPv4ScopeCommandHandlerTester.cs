@@ -76,8 +76,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
                     EntityId = leaseId,
                     Address = start - 100,
                     ScopeId = scopeId,
-                    ClientDUID = new UUIDDUID(random.NextGuid()),
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromDuid(1,new UUIDDUID(random.NextGuid()), random.NextBytes(6)).GetBytes(),
             },
             new DHCPv4LeaseActivatedEvent
             {

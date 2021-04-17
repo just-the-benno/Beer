@@ -84,7 +84,7 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                 IPv4Address address = IPv4Address.FromString(item.IPv4Address);
                 var bytes = address.GetBytes();
 
-                if(bytes[0] == 127 || (bytes[0] == 169 && bytes[1] == 254))
+                if (bytes[0] == 127 || (bytes[0] == 169 && bytes[1] == 254))
                 {
                     continue;
                 }
@@ -135,7 +135,7 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                         continue;
                     }
                 }
-                
+
                 Assert.NotNull(usedInterface);
 
                 var interfaceAddress = IPv4Address.FromString(usedInterface.IPv4Address);
@@ -170,7 +170,7 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                         }
                     }
                 }));
-                 
+
                 Guid scopeId = await IsObjectResult<Guid>(createScopeResult);
                 Assert.NotEqual(Guid.Empty, scopeId);
 
@@ -187,7 +187,8 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                 headerInformation, random.NextBytes(6), (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover),
-                new DHCPv4PacketRawByteOption(82, opt82Value));
+                new DHCPv4PacketRawByteOption(82, opt82Value),
+                new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromIdentifierValue("my custom client")));
 
                 byte[] packetStream = packet.GetAsStream();
                 await client.SendAsync(packetStream, packetStream.Length, serverEndPoint);
@@ -208,6 +209,13 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                 var subnetOption = response.GetOptionByIdentifier(DHCPv4OptionTypes.SubnetMask) as DHCPv4PacketAddressOption;
                 Assert.NotNull(subnetOption);
                 Assert.Equal(IPv4Address.FromString("255.255.255.0"), subnetOption.Address);
+
+                var clientIdentifierOption = response.GetOptionByIdentifier(DHCPv4OptionTypes.ClientIdentifier) as DHCPv4PacketClientIdentifierOption;
+                Assert.NotNull(clientIdentifierOption);
+                Assert.Equal("my custom client", clientIdentifierOption.Identifier.IdentifierValue);
+                Assert.Equal(DUID.Empty, clientIdentifierOption.Identifier.DUID);
+                Assert.Equal((UInt32)0, clientIdentifierOption.Identifier.IaId);
+                Assert.Empty(clientIdentifierOption.Identifier.HwAddress);
             }
             finally
             {

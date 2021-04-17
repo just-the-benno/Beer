@@ -42,8 +42,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             {
                 EntityId = id,
                 Address = address,
-                HardwareAddress = identifier.HwAddress ?? Array.Empty<Byte>(),
-                ClientDUID = identifier.DUID,
+                ClientIdenfier = identifier.GetBytes(),
                 UniqueIdentifier = uniqueIdentifier,
                 StartedAt = DateTime.UtcNow,
                 ValidUntil = DateTime.UtcNow + lifetime,
@@ -65,7 +64,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                         e.Address,
                         e.StartedAt,
                         e.ValidUntil,
-                        e.ClientDUID != DUID.Empty ? DHCPv4ClientIdentifier.FromDuid(e.ClientDUID, e.HardwareAddress) : DHCPv4ClientIdentifier.FromHwAddress(e.HardwareAddress),
+                        e.ClientIdenfier == null ? DHCPv4ClientIdentifier.Empty : DHCPv4ClientIdentifier.FromOptionData(e.ClientIdenfier),
                         e.UniqueIdentifier,
                         e.AncestorId,
                         _additonalApplier
@@ -95,7 +94,6 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         }
 
         internal DHCPv4Lease GetLeaseByClientIdentifier(DHCPv4ClientIdentifier clientIdentifier) => GetLeaseByExpression(x => x.Identifier == clientIdentifier);
-
 
         #endregion
 

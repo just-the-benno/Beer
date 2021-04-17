@@ -16,9 +16,9 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
         #region constructor and factories
 
         public DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier identifier) : 
-            base((Byte)DHCPv4OptionTypes.ClientIdentifier, identifier.DUID != DUID.Empty ? identifier.DUID.GetAsByteStream() : identifier.HwAddress  )
+            base((Byte)DHCPv4OptionTypes.ClientIdentifier, identifier.GetBytes())
         {
-
+            Identifier = identifier;
         }
 
         public DHCPv4PacketClientIdentifierOption FromByteArray(Byte[] data)
@@ -39,28 +39,9 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             }
 
             Int32 lenght = data[offset + 1];
+            Byte[] identifierValue = ByteHelper.CopyData(data, offset + 2, lenght);
 
-            Byte thirdByte = data[offset + 2];
-            if (thirdByte == 255)
-            {
-                // try to convert in option RFC 4361
-                if(lenght > 7)
-                {
-                    //UInt32 iaid = ByteHelper.ConvertToUInt32FromByte(data, offset + 3);
-                    try
-                    {
-                        DUID duid = DUIDFactory.GetDUID(data, offset + 7);
-                        return new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromDuid(duid));
-                    }
-                    catch (Exception)
-                    {
-                    }
-                 
-                }
-            }
-
-            Byte[] hwAddress = ByteHelper.CopyData(data, offset + 2, lenght);
-            return new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromHwAddress(hwAddress));
+            return new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromOptionData(identifierValue));
         }
 
         #endregion

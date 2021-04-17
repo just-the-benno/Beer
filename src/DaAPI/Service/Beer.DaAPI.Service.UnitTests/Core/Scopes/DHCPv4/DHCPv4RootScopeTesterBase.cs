@@ -89,7 +89,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 
             Assert.Equal(scopeId, createdEvent.ScopeId);
             Assert.Equal(expectedAdress, createdEvent.Address);
-            Assert.Equal(clientMacAdress, createdEvent.HardwareAddress);
+
+            var clientIdentifier = DHCPv4ClientIdentifier.FromOptionData(createdEvent.ClientIdenfier);
+
+            Assert.Equal(clientMacAdress, clientIdentifier.HwAddress);
             Assert.Equal(lease.Id, createdEvent.EntityId);
             if (uniqueIdentifier == null)
             {

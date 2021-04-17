@@ -435,10 +435,10 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
             AddOption(new DHCPv4PacketMessageTypeOption(responseType));
 
-            var clientIdentifier = request.GetClientIdentifier();
-            if(clientIdentifier != null)
+            var clientIdentifierOption = request.GetOptionByIdentifier(DHCPv4OptionTypes.ClientIdentifier);
+            if (clientIdentifierOption != null)
             {
-                AddOption(new DHCPv4PacketClientIdentifierOption(clientIdentifier));
+                AddOption(new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromOptionData(clientIdentifierOption.OptionData)));
             }
         }
 
@@ -582,7 +582,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             }
             else
             {
-                _clientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(ClientHardwareAddress);
+                _clientIdenfier = DHCPv4ClientIdentifier.FromHwAddress((Byte)HardwareType, ClientHardwareAddress);
             }
         }
 
@@ -697,7 +697,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
             // add "end" option
             stream[writtenBytes++] = 255;
-            stream[writtenBytes++] = 0;
+            //stream[writtenBytes++] = 0;
 
             return writtenBytes;
         }
