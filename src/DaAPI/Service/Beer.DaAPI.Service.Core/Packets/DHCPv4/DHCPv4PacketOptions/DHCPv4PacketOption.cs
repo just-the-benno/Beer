@@ -75,6 +75,8 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             return $"type: {OptionType} | length: {OptionData.Length} | data : {ByteHelper.ToString(OptionData, ' ')}";
         }
 
+        internal DHCPv4PacketClientIdentifierOption GetCopy() => DHCPv4PacketClientIdentifierOption.FromByteArray(GetByteStream(),0);
+
         #endregion
     }
 }

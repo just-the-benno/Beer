@@ -69,7 +69,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     EntityId = leaseId,
                     UniqueIdentifier = identifier,
                     Address = random.GetIPv4Address(),
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                 });
 
                 expectedResults.Add(leaseId, matches);
@@ -113,7 +113,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     ScopeId = scopeId,
                     EntityId = leaseId,
                     Address = random.GetIPv4Address(),
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                 });
 
                 DomainEvent eventToAdd = null;
@@ -183,7 +183,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     ScopeId = scopeId,
                     EntityId = leaseId,
                     Address = random.GetIPv4Address(),
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                 });
 
                 Boolean addressIsInPending = random.NextDouble() > 0.5;
@@ -233,7 +233,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     ScopeId = scopeId,
                     EntityId = leaseId,
                     Address = random.GetIPv4Address(),
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                 }) ;
 
                 Boolean addressIsActive = random.NextDouble() > 0.5;
@@ -285,7 +285,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     ScopeId = scopeId,
                     EntityId = leaseId,
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                     Address = random.GetIPv4Address(),
                 });
 

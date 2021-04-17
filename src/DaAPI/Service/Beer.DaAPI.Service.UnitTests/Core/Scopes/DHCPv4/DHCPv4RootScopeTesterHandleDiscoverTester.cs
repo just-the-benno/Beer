@@ -338,7 +338,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = clientMacAdress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(clientMacAdress).GetBytes(),
                     ScopeId = scopeId,
                     StartedAt = leaseCreatedAt,
                     ValidUntil = DateTime.UtcNow.AddDays(1),
@@ -416,7 +416,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = clientMacAdress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(clientMacAdress).GetBytes(),
                     ScopeId = scopeId,
                     StartedAt = leaseCreatedAt,
                     ValidUntil = DateTime.UtcNow.AddDays(1),
@@ -498,7 +498,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = clientMacAdress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(clientMacAdress).GetBytes(),
                     ScopeId = scopeId,
                     StartedAt = leaseCreatedAt,
                     ValidUntil = DateTime.UtcNow.AddDays(1),
@@ -585,7 +585,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = uniqueIdentifier,
                     StartedAt = leaseCreatedAt,
@@ -672,7 +672,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = uniqueIdentifier,
                     StartedAt = leaseCreatedAt,
@@ -758,7 +758,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = uniqueIdentifier,
                     StartedAt = leaseCreatedAt,
@@ -843,7 +843,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = null,
                     StartedAt = leaseCreatedAt,
@@ -921,7 +921,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = random.NextGuid(),
                     Address = IPv4Address.FromString("192.168.178.3"),
-                    HardwareAddress = random.NextBytes(6),
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = null,
                     StartedAt = DateTime.UtcNow.AddDays(-1),

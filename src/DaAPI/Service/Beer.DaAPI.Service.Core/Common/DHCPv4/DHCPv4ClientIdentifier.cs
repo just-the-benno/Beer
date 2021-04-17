@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
 
 namespace Beer.DaAPI.Core.Common
 {
@@ -12,7 +13,11 @@ namespace Beer.DaAPI.Core.Common
         #region Properties
 
         public Byte[] HwAddress { get; init; } = Array.Empty<Byte>();
-        public DUID DUID { get; init; }
+        public Byte HardwareAddressType { get; init; } = 0;
+        public DUID DUID { get; init; } = DUID.Empty;
+        public UInt32 IaId { get; init; } = 0;
+        public String IdentifierValue { get; init; } = String.Empty;
+
 
         #endregion
 
@@ -23,7 +28,9 @@ namespace Beer.DaAPI.Core.Common
 
         }
 
-        public static DHCPv4ClientIdentifier FromDuid(DUID duid)
+        public static DHCPv4ClientIdentifier Empty => new();
+
+        public static DHCPv4ClientIdentifier FromDuid(UInt32 iaid, DUID duid)
         {
             if (duid == null || duid == DUID.Empty)
             {
@@ -33,11 +40,11 @@ namespace Beer.DaAPI.Core.Common
             return new DHCPv4ClientIdentifier
             {
                 DUID = duid,
-                HwAddress = Array.Empty<Byte>(),
+                IaId = iaid,
             };
         }
 
-        public static DHCPv4ClientIdentifier FromDuid(DUID duid, Byte[] hwAddres)
+        public static DHCPv4ClientIdentifier FromDuid(UInt32 iaid, DUID duid, Byte[] hwAddres)
         {
             if (duid == null || duid == DUID.Empty)
             {
@@ -52,25 +59,52 @@ namespace Beer.DaAPI.Core.Common
             return new DHCPv4ClientIdentifier
             {
                 DUID = duid,
+                IaId = iaid,
+                HardwareAddressType = (Byte)DHCPv4PacketHardwareAddressTypes.Ethernet,
                 HwAddress = ByteHelper.CopyData(hwAddres)
             };
         }
 
-        public static DHCPv4ClientIdentifier FromOptionData(byte[] identifierRawVaue)
+        public byte[] GetBytes()
         {
-            if (identifierRawVaue.Length == 7 &&
-                identifierRawVaue[0] == (Byte)DHCPv4Packet.DHCPv4PacketHardwareAddressTypes.Ethernet)
+            if (DUID != DUID.Empty)
             {
-                return DHCPv4ClientIdentifier.FromHwAddress(ByteHelper.CopyData(identifierRawVaue, 1));
+                return ByteHelper.ConcatBytes(new Byte[] { 255 }, ByteHelper.GetBytes(IaId), DUID.GetAsByteStream());
+            }
+            else if (String.IsNullOrEmpty(IdentifierValue) == false)
+            {
+                return ByteHelper.ConcatBytes(new Byte[] { 0 }, ASCIIEncoding.ASCII.GetBytes(IdentifierValue));
             }
             else
             {
-                return DHCPv4ClientIdentifier.FromDuid(
-                    DUIDFactory.GetDUID(identifierRawVaue));
+                return ByteHelper.ConcatBytes(new Byte[] { HardwareAddressType }, HwAddress);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static DHCPv4ClientIdentifier FromOptionData(byte[] identifierRawVaue)
+        {
+            Byte subOptionIdentifier = identifierRawVaue[0];
+            if (subOptionIdentifier == 0xff)
+            {
+                return DHCPv4ClientIdentifier.FromDuid(ByteHelper.ConvertToUInt32FromByte(identifierRawVaue, 1),
+                  DUIDFactory.GetDUID(ByteHelper.CopyData(identifierRawVaue, 5)));
+            }
+            else if (subOptionIdentifier == 0)
+            {
+                String identifierValue = new ASCIIEncoding().GetString(ByteHelper.CopyData(identifierRawVaue, 1));
+                return DHCPv4ClientIdentifier.FromIdentifierValue(identifierValue);
+            }
+            else
+            {
+                return DHCPv4ClientIdentifier.FromHwAddress(subOptionIdentifier, ByteHelper.CopyData(identifierRawVaue, 1));
             }
         }
 
-        public static DHCPv4ClientIdentifier FromHwAddress(Byte[] hwAddres)
+        public static DHCPv4ClientIdentifier FromHwAddress(Byte[] hwAddress) => FromHwAddress((Byte)DHCPv4PacketHardwareAddressTypes.Ethernet, hwAddress);
+
+        public static DHCPv4ClientIdentifier FromHwAddress(Byte hwAddressType, Byte[] hwAddres)
         {
             if (hwAddres == null || hwAddres.Length == 0)
             {
@@ -80,6 +114,7 @@ namespace Beer.DaAPI.Core.Common
             return new DHCPv4ClientIdentifier
             {
                 DUID = DUID.Empty,
+                HardwareAddressType = hwAddressType,
                 HwAddress = ByteHelper.CopyData(hwAddres)
             };
         }
@@ -89,9 +124,17 @@ namespace Beer.DaAPI.Core.Common
             return new DHCPv4ClientIdentifier
             {
                 DUID = this.DUID,
+                IaId = IaId,
+                IdentifierValue = IdentifierValue,
+                HardwareAddressType = (Byte)DHCPv4PacketHardwareAddressTypes.Ethernet,
                 HwAddress = this.HwAddress.Length > 0 ? ByteHelper.CopyData(this.HwAddress) : ByteHelper.CopyData(clientHardwareAddress),
             };
         }
+
+        public static DHCPv4ClientIdentifier FromIdentifierValue(String value) => new DHCPv4ClientIdentifier
+        {
+            IdentifierValue = value
+        };
 
         #endregion
 
@@ -116,8 +159,15 @@ namespace Beer.DaAPI.Core.Common
             {
                 return this.DUID.Equals(other.DUID);
             }
+            else if (String.IsNullOrEmpty(IdentifierValue) == false)
+            {
+                return this.IdentifierValue == other.IdentifierValue;
+            }
+            else
+            {
+                return ByteHelper.AreEqual(this.HwAddress, other.HwAddress);
 
-            return ByteHelper.AreEqual(this.HwAddress, other.HwAddress);
+            }
         }
 
         public static bool operator ==(DHCPv4ClientIdentifier left, DHCPv4ClientIdentifier right) => Equals(left, right);
@@ -129,19 +179,29 @@ namespace Beer.DaAPI.Core.Common
             {
                 return DUID.GetHashCode();
             }
-
-            return this.HwAddress.Sum(x => x);
+            else if (this.HwAddress.Length > 0)
+            {
+                return this.HwAddress.Sum(x => x);
+            }
+            else
+            {
+                return IdentifierValue.GetHashCode();
+            }
         }
 
         public string AsUniqueString()
         {
-            Byte[] appendix = HwAddress;
+            String appendix = IdentifierValue;
             if (DUID != DUID.Empty)
             {
-                appendix = DUID.GetAsByteStream();
+                appendix = SimpleByteToStringConverter.Convert(DUID.GetAsByteStream());
+            }
+            else if (HwAddress.Length > 0)
+            {
+                appendix = SimpleByteToStringConverter.Convert(HwAddress);
             }
 
-            String result = $"DHCPv4Client-{SimpleByteToStringConverter.Convert(appendix)}";
+            String result = $"DHCPv4Client-{appendix}";
             return result;
         }
 

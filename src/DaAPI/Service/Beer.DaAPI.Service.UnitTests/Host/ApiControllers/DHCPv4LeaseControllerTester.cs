@@ -96,7 +96,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = expiredLeaseWithPrefix.Id,
                     Address = IPv4Address.FromString(expiredLeaseWithPrefix.Address.ToString()),
-                    HardwareAddress =  expiredLeaseWithPrefix.MacAddress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(expiredLeaseWithPrefix.MacAddress).GetBytes(),
                     ScopeId = scopeId,
                     StartedAt = expiredLeaseWithPrefix.Started,
                     ValidUntil = expiredLeaseWithPrefix.ExpectedEnd,
@@ -116,7 +116,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = activeLeaseWithoutPrefix.Id,
                     Address = IPv4Address.FromString(activeLeaseWithoutPrefix.Address.ToString()),
-                    HardwareAddress = activeLeaseWithoutPrefix.MacAddress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(activeLeaseWithoutPrefix.MacAddress).GetBytes(),
                     ScopeId = scopeId,
                     StartedAt = activeLeaseWithoutPrefix.Started,
                     ValidUntil = activeLeaseWithoutPrefix.ExpectedEnd,
@@ -207,7 +207,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = expiredLeaseWithPrefix.Id,
                     Address = IPv4Address.FromString(expiredLeaseWithPrefix.Address.ToString()),
-                    HardwareAddress = expiredLeaseWithPrefix.MacAddress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(expiredLeaseWithPrefix.MacAddress).GetBytes(),
                     ScopeId = grantParentId,
                     StartedAt = expiredLeaseWithPrefix.Started,
                     ValidUntil = expiredLeaseWithPrefix.ExpectedEnd,
@@ -227,7 +227,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = activeLeaseWithoutPrefix.Id,
                     Address = IPv4Address.FromString(activeLeaseWithoutPrefix.Address),
-                    HardwareAddress = activeLeaseWithoutPrefix.MacAddress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(activeLeaseWithoutPrefix.MacAddress).GetBytes(),
                     ScopeId = childId,
                     StartedAt = activeLeaseWithoutPrefix.Started,
                     ValidUntil = activeLeaseWithoutPrefix.ExpectedEnd,

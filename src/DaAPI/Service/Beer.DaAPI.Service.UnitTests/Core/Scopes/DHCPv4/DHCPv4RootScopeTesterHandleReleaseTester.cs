@@ -118,7 +118,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = clientMacAdress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(clientMacAdress).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = null,
                     StartedAt = leaseCreatedAt,
@@ -192,7 +192,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = clientMacAdress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(clientMacAdress).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = null,
                     StartedAt = leaseCreatedAt,
@@ -261,7 +261,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 {
                     EntityId = leaseId,
                     Address = leasedAddress,
-                    HardwareAddress = clientMacAdress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(clientMacAdress).GetBytes(),
                     ScopeId = scopeId,
                     UniqueIdentifier = null,
                     StartedAt = leaseCreatedAt,

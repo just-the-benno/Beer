@@ -90,7 +90,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
                 { (Byte)DHCPv4OptionTypes.RenewalTimeValue, (data) => DHCPv4PacketTimeSpanOption.FromByteArray(data,0,false) },
                 { (Byte)DHCPv4OptionTypes.RebindingTimeValue, (data) => DHCPv4PacketTimeSpanOption.FromByteArray(data,0,false) },
                 { (Byte)DHCPv4OptionTypes.VendorClassIdentifier, (data) =>  DHCPv4PacketRawByteOption.FromByteArray(data,0)  },
-                { (Byte)DHCPv4OptionTypes.ClientIdentifier, (data) =>  DHCPv4PacketRawByteOption.FromByteArray(data,0) },
+                { (Byte)DHCPv4OptionTypes.ClientIdentifier, (data) =>  DHCPv4PacketClientIdentifierOption.FromByteArray(data,0) },
                 { (Byte)DHCPv4OptionTypes.Option82, (data) => DHCPv4PacketRawByteOption.FromByteArray(data,0) },
             };
         }
