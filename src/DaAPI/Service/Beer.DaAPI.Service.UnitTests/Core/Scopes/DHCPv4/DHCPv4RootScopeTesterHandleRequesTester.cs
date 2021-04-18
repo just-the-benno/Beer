@@ -137,6 +137,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, IPv4Address.FromString("192.168.178.0")),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
@@ -211,6 +212,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, IPv4Address.FromString("192.168.178.0")),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
@@ -288,6 +290,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, IPv4Address.FromString("192.168.178.0")),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
@@ -350,6 +353,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, leasedAddress,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request)
             );
 
@@ -649,6 +653,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, leasedAddress,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request)
             );
 
@@ -725,6 +730,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
             );
@@ -806,6 +812,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
             );
@@ -893,6 +900,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
             );
@@ -979,6 +987,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
             );
@@ -1082,6 +1091,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
             );
@@ -1170,6 +1180,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet requestPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request),
                 new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, leasedAddress)
             );

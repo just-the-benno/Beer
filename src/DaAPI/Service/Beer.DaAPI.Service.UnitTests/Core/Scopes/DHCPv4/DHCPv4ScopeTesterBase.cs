@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
+using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
 using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4PacketHandledEvents;
 
 namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
@@ -45,6 +46,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 IPv4Address.Empty,
                 IPv4Address.Empty,
                 clientAddress,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Inform)
                 );
 

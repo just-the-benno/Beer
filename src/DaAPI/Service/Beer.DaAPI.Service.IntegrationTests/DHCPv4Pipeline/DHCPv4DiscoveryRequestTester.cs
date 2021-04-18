@@ -36,6 +36,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
 using static Beer.DaAPI.Shared.Responses.DHCPv4InterfaceResponses.V1;
 
 namespace DaAPI.IntegrationTests.DHCPv4Pipeline
@@ -185,7 +186,7 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
 
                 DHCPv4Packet packet = new DHCPv4Packet(
                 headerInformation, random.NextBytes(6), (UInt32)random.Next(),
-                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty, DHCPv4PacketFlags.Broadcast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover),
                 new DHCPv4PacketRawByteOption(82, opt82Value),
                 new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromIdentifierValue("my custom client")));
@@ -216,6 +217,8 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                 Assert.Equal(DUID.Empty, clientIdentifierOption.Identifier.DUID);
                 Assert.Equal((UInt32)0, clientIdentifierOption.Identifier.IaId);
                 Assert.Empty(clientIdentifierOption.Identifier.HwAddress);
+
+                Assert.Equal(DHCPv4PacketFlags.Broadcast, response.Flags & DHCPv4PacketFlags.Broadcast);
             }
             finally
             {
