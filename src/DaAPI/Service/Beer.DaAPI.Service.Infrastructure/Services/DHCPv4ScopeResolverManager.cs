@@ -16,6 +16,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             ISerializer serializer,
             ILogger<DHCPv4ScopeResolverManager> logger) : base(serializer, logger)
         {
+            AddOrUpdateScopeResolver(nameof(DHCPv4PseudoResolver), () => new DHCPv4PseudoResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4RelayAgentResolver), () => new DHCPv4RelayAgentResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4RelayAgentSubnetResolver), () => new DHCPv4RelayAgentSubnetResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4SimpleZyxelIESResolver), () => new DHCPv4SimpleZyxelIESResolver());

@@ -126,7 +126,7 @@ namespace Beer.DaAPI.BlazorApp.Components
                 });
             }
 
-            Double max = _series.Any() == true ? _series.Select(x => x.Data.Any() == true ? x.Data.Max() : 0.0).Max() : 0.0;
+            Double max = _series.Any() == true ? _series.Select(x => x.Data.Any() == true ? x.Data.Max() : 10.0).Max() : 10.0;
 
             Double tick = GetNearestTickValue(max,10);
             _chartOptions.YAxisTicks = (Int32)tick;

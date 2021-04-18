@@ -129,6 +129,12 @@
   <data name="DHCPv4Option82Resolver_Value_Content" xml:space="preserve">
     <value>Enter the exact value of the expected option 82  without 0x or any other characters.</value>
   </data>
+  <data name="DHCPv4PseudoResolver_DHCPv4PseudoResolver_Caption" xml:space="preserve">
+    <value>pseudo resolver</value>
+  </data>
+  <data name="DHCPv4PseudoResolver_DHCPv4PseudoResolver_Content" xml:space="preserve">
+    <value>The pseudo resolver is a match for every message and should be used to group scopes with common properties. Unlike other DHCP servers, DaAPI doesn't allow to have global properties. Instead, you can create a root scope with the pseudo resolvers. Each child scope derivate from this root scope will inheritance the root properties, and hence, the pseudo resolver resolves to true for each packet, you can set a more specific resolver for the child scopes. To learn more about how to create scope tress referrers to the DaAPI documentation.</value>
+  </data>
   <data name="DHCPv4RelayAgentResolver_AgentAddresses_Caption" xml:space="preserve">
     <value>Relay Agent Addresses</value>
   </data>
