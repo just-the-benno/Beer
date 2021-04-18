@@ -747,7 +747,6 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public async Task<IDictionary<DateTime, Int32>> GetActiveDHCPLeases(IQueryable<ILeaseEntry> set, DateTime? start, DateTime? end, GroupStatisticsResultBy groupedBy)
         {
-
             start ??= await set.OrderBy(x => x.Timestamp).Select(x => x.Timestamp).FirstOrDefaultAsync();
             if (start.Value == default)
             {
@@ -757,7 +756,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             end ??= DateTime.UtcNow;
             DateTime currentStart;
 
-            var preResult = await set.Where(x => start.Value < x.End && end.Value >= x.Start)
+            var preResult = await set.Where(x => start.Value < x.End && end.Value >= x.Start && x.EndReason == ReasonToEndLease.Nothing)
                 .Select(x => new DateTimeRange { RangeStart = x.Start, RangeEnd = x.End }).ToListAsync();
 
             if (preResult.Count == 0)
