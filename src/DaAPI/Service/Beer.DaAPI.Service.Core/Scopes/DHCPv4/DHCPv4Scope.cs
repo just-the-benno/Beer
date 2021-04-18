@@ -90,8 +90,9 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 if (addressProperties.ReuseAddressIfPossible == true)
                 {
                     currentLease.Renew(addressProperties.LeaseTime.Value, true);
-                    leaseAddress = IPv4Address.FromAddress(currentLease.Address);
                     newLeaseNeeded = false;
+
+                    leaseAddress = IPv4Address.FromAddress(currentLease.Address);
                 }
                 else
                 {
@@ -345,7 +346,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 return DHCPv4Packet.Empty;
             }
 
-            if(lease.State == LeaseStates.Suspended)
+            if (lease.State == LeaseStates.Suspended)
             {
                 base.Apply(new DHCPv4DeclineHandledEvent(this.Id, packet, DHCPv4DeclineHandledEvent.DeclineErros.AddressAlreadySuspended));
                 return DHCPv4Packet.Empty;

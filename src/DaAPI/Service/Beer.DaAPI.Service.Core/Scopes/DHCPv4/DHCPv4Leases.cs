@@ -80,6 +80,13 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 case DHCPv4LeaseRemovedEvent e:
                     RemoveEntry(e.EntityId);
                     break;
+                case DHCPv4LeaseCanceledEvent e:
+                    lease = GetLeaseById(e.EntityId);
+                    if(e.ForceRemove == true)
+                    {
+                        RemoveEntry(e.EntityId);
+                    }
+                    break;
                 case DHCPv4ScopeRelatedEvent e:
                     lease = GetLeaseById(e.EntityId);
                     break;

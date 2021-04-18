@@ -57,6 +57,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         public class DHCPv4LeaseCanceledEvent : DHCPv4ScopeRelatedEvent
         {
             public LeaseCancelReasons Reason { get; set; }
+            public Boolean ForceRemove { get; set; }
 
             public DHCPv4LeaseCanceledEvent()
             {

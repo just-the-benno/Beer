@@ -184,15 +184,15 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                 IPv4HeaderInformation headerInformation =
                     new IPv4HeaderInformation(IPv4Address.FromString(address.ToString()), IPv4Address.Broadcast);
 
-                DHCPv4Packet packet = new DHCPv4Packet(
+                DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, random.NextBytes(6), (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty, DHCPv4PacketFlags.Broadcast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover),
                 new DHCPv4PacketRawByteOption(82, opt82Value),
                 new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromIdentifierValue("my custom client")));
 
-                byte[] packetStream = packet.GetAsStream();
-                await client.SendAsync(packetStream, packetStream.Length, serverEndPoint);
+                byte[] discoverPacketStream = discoverPacket.GetAsStream();
+                await client.SendAsync(discoverPacketStream, discoverPacketStream.Length, serverEndPoint);
 
                 await Task.Delay(2000);
 

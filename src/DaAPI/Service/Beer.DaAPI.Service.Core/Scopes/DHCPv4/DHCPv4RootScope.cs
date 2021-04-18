@@ -158,12 +158,20 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         public override Boolean UpdateAddressProperties(Guid id, DHCPv4ScopeAddressProperties addressProperties)
         {
             CheckUpdateAddressProperties(id, addressProperties);
-            var leases = GetScopeById(id).Leases.GetAllLeasesNotInRange(addressProperties.Start, addressProperties.End);
+            var leases = GetScopeById(id).Leases.GetAllLeasesNotInRange(addressProperties.Start, addressProperties.End).ToList();
+            foreach (var item in addressProperties.ExcludedAddresses)
+            {
+                var leaseExcluded = GetScopeById(id).Leases.GetLeaseByAddress(item);
+                if(leaseExcluded != DHCPv4Lease.Empty)
+                {
+                    leases.Add(leaseExcluded);
+                }
+            }
 
             base.Apply(new DHCPv4ScopeAddressPropertiesUpdatedEvent(id, addressProperties));
             foreach (var item in leases)
             {
-                base.Apply(new DHCPv4LeaseCanceledEvent(item.Id, id, LeaseCancelReasons.AddressRangeChanged));
+                base.Apply(new DHCPv4LeaseCanceledEvent(item.Id, id, LeaseCancelReasons.AddressRangeChanged) { ForceRemove = true }); ;
             }
 
             return true;
