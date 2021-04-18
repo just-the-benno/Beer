@@ -129,6 +129,12 @@
   <data name="DHCPv4Option82Resolver_Value_Content" xml:space="preserve">
     <value>Geben Sie hier den exakten erwarteten Wert der Option82 an ohne 0x or andere Zeichen</value>
   </data>
+  <data name="DHCPv4PseudoResolver_DHCPv4PseudoResolver_Caption" xml:space="preserve">
+    <value>Pseudo Zuordner</value>
+  </data>
+  <data name="DHCPv4PseudoResolver_DHCPv4PseudoResolver_Content" xml:space="preserve">
+    <value>Der Pseudo-Zuordner wird immer als gültig betrachetet, egal für welches Paket. Er kann genutzt werden um Bereiche mit gleichen Eigenschaften zu gruppieren. Im Gegensatz zu anderen DHCP Servern, kann man bei DaAPI keine globalen Eigenschaften setzen. Stattdessen, kann ein Wurzelbereich erstellt werden. Werden diesem dann Kindbereiche zugeordnet, werden die Eigenschaften vererbt. Da der Pseudo-Zuordner immer wahr ist, können spezifischere Zuordner für Kindbereiche gewählt werden. Um mehr über das Konzept des Bereichtsbaum zu erfahren, lesen sie in der DaAPI documentation nach.</value>
+  </data>
   <data name="DHCPv4RelayAgentResolver_AgentAddresses_Caption" xml:space="preserve">
     <value>Relay Agenten Adressen</value>
   </data>
