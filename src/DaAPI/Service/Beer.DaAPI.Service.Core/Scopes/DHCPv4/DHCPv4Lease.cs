@@ -38,7 +38,10 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         internal override void Renew(TimeSpan value, Boolean reset)
         {
-            CanRenew(value);
+            if (reset == false)
+            {
+                CanRenew(value);
+            }
             base.Apply(new DHCPv4LeaseRenewedEvent(this.Id, DateTime.UtcNow + value, reset));
         }
 

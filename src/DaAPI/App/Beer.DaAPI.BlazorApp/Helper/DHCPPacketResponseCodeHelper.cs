@@ -84,41 +84,41 @@ namespace Beer.DaAPI.BlazorApp.Helper
             _dhcpv4ResponseCodesMapper = new Dictionary<DHCPv4MessagesTypes, Dictionary<Int32, (String Name, String Color)>>
 {
                 { DHCPv4MessagesTypes.Discover, new Dictionary<Int32, (String Name, String Color)> {
-                        { 0, (_localizer["Discover_0"],"#28a745") },
-                        { 1, (_localizer["Discover_1"],"#ffc107") },
-                        { 2, (_localizer["Discover_2"],"#dc3545") },
+                        { 0, (_localizer["DHCPv4_Discover_0"],"#28a745") },
+                        { 1, (_localizer["DHCPv4_Discover_1"],"#ffc107") },
+                        { 2, (_localizer["DHCPv4_Discover_2"],"#dc3545") },
                     }
                 },
                 { DHCPv4MessagesTypes.Request, new Dictionary<Int32, (String Name, String Color)> {
-                        { 0, (_localizer["Request_0"],"#28a745") },
-                        { 1, (_localizer["Request_1"],"#ffc107") },
-                        { 3, (_localizer["Request_3"],"#d81b60") },
-                        { 4, (_localizer["Request_4"],"#f012be") },
-                        { 5, (_localizer["Request_5"],"#6f42c1") },
-                        { 6, (_localizer["Request_5"],"#dc3545") },
-                        { 7, (_localizer["Request_5"],"#001f3f") },
+                        { 0, (_localizer["DHCPv4_Request_0"],"#28a745") },
+                        { 1, (_localizer["DHCPv4_Request_1"],"#ffc107") },
+                        { 3, (_localizer["DHCPv4_Request_3"],"#d81b60") },
+                        { 4, (_localizer["DHCPv4_Request_4"],"#f012be") },
+                        { 5, (_localizer["DHCPv4_Request_5"],"#6f42c1") },
+                        { 6, (_localizer["DHCPv4_Request_5"],"#dc3545") },
+                        { 7, (_localizer["DHCPv4_Request_5"],"#001f3f") },
                     }
                 },
                 { DHCPv4MessagesTypes.Release, new Dictionary<Int32, (String Name, String Color)> {
-                        { 0, (_localizer["Release_0"],"#28a745") },
-                        { 1, (_localizer["Release_1"],"#d81b60") },
-                        { 2, (_localizer["Release_2"],"#f012be") },
+                        { 0, (_localizer["DHCPv4_Release_0"],"#28a745") },
+                        { 1, (_localizer["DHCPv4_Release_1"],"#d81b60") },
+                        { 2, (_localizer["DHCPv4_Release_2"],"#f012be") },
                     }
                 },
                 { DHCPv4MessagesTypes.Inform, new Dictionary<Int32, (String Name, String Color)> {
-                        { 0, (_localizer["Inform_0"],"#28a745") },
-                        { 1, (_localizer["Inform_1"],"#d81b60") },
-                        { 2, (_localizer["Inform_2"],"#f012be") },
+                        { 0, (_localizer["DHCPv4_Inform_0"],"#28a745") },
+                        { 1, (_localizer["DHCPv4_Inform_1"],"#d81b60") },
+                        { 2, (_localizer["DHCPv4_Inform_2"],"#f012be") },
                     }
                 },
                 { DHCPv4MessagesTypes.Decline, new Dictionary<Int32, (String Name, String Color)> {
-                        { 0, (_localizer["Decline_0"],"#28a745") },
-                        { 1, (_localizer["Decline_1"],"#ffc107") },
-                        { 2, (_localizer["Decline_2"],"#d81b60") },
-                        { 3, (_localizer["Decline_3"],"#f012be") },
-                        { 4, (_localizer["Decline_4"],"#6f42c1") },
-                        { 5, (_localizer["Decline_5"],"#dc3545") },
-                        { 6, (_localizer["Decline_6"],"#001f3f") },
+                        { 0, (_localizer["DHCPv4_Decline_0"],"#28a745") },
+                        { 1, (_localizer["DHCPv4_Decline_1"],"#ffc107") },
+                        { 2, (_localizer["DHCPv4_Decline_2"],"#d81b60") },
+                        { 3, (_localizer["DHCPv4_Decline_3"],"#f012be") },
+                        { 4, (_localizer["DHCPv4_Decline_4"],"#6f42c1") },
+                        { 5, (_localizer["DHCPv4_Decline_5"],"#dc3545") },
+                        { 6, (_localizer["DHCPv4_Decline_6"],"#001f3f") },
                     }
                 },
             };

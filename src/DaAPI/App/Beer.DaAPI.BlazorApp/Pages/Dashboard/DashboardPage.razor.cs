@@ -78,7 +78,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 
         private String GetTimeRemainingOfLease(ILeaseEntry entry)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             var diff = entry.End - now;
             if (diff.TotalSeconds < 0)
             {
@@ -88,9 +88,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
             return diff.Humanize();
         }
 
-        private static String GetAgeOfLease(ILeaseEntry entry) => $"{(DateTime.Now - entry.Start).Humanize()}";
+        private static String GetAgeOfLease(ILeaseEntry entry) => $"{(DateTime.UtcNow - entry.Start).Humanize()}";
 
-        private static Color GetColorBasedOnLifetime(ILeaseEntry entry) => (entry.End - DateTime.Now) switch
+        private static Color GetColorBasedOnLifetime(ILeaseEntry entry) => (entry.End - DateTime.UtcNow) switch
         {
             TimeSpan n when n.TotalSeconds < 0 => Color.Dark,
             TimeSpan n when n.TotalSeconds < 120 => Color.Error,

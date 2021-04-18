@@ -51,7 +51,7 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
             }
             catch (Exception ex)
             {
-                Logger.LogError("unable to handle packet", ex);
+                Logger.LogError(ex, "unable to handle packet");
             }
             finally
             {

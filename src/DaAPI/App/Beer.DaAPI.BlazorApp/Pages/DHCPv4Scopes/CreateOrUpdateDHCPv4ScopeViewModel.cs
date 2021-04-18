@@ -604,6 +604,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             InformsAreAllowd.UpdateNullableValue(addressRelatedProperties.InformsAreAllowd, ParentValues != null);
             ReuseAddressIfPossible.UpdateNullableValue(addressRelatedProperties.ReuseAddressIfPossible, ParentValues != null);
             AddressAllocationStrategy.UpdateNullableValue(addressRelatedProperties.AddressAllocationStrategy, ParentValues != null, (v1,v2) => v1 == v2);
+
+            foreach (var item in  properties.AddressRelated.ExcludedAddresses)
+            {
+                ExcludedAddresses.Add(new ExcludedAddressItem(item, this));
+            }
         }
     }
 
