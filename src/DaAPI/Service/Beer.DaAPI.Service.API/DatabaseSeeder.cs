@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading.Tasks;
+using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
 using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4PacketHandledEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents.DHCPv6DeclineHandledEvent;
@@ -167,6 +168,7 @@ namespace Beer.DaAPI.Service.API
                     var request =
                     new DHCPv4Packet(new IPv4HeaderInformation(IPv4Address.FromString("192.168.0.1"), IPv4Address.FromString("10.10.10.10")),
                         hwAddress, (UInt32)random.Next(), IPv4Address.FromString("0.0.0.0"), IPv4Address.FromString("192.168.0.5"), IPv4Address.FromString("0.0.0.0"),
+                        DHCPv4PacketFlags.Unicast,
                         new DHCPv4PacketParameterRequestListOption(new DHCPv4OptionTypes[] { DHCPv4OptionTypes.NetworkTimeProtocolServers, DHCPv4OptionTypes.DNSServers, DHCPv4OptionTypes.Router, DHCPv4OptionTypes.DomainName }),
                         new DHCPv4PacketRawByteOption((Byte)DHCPv4OptionTypes.Option82, option82Value)
                         );
@@ -203,6 +205,7 @@ namespace Beer.DaAPI.Service.API
 
                                 var response = new DHCPv4Packet(new IPv4HeaderInformation(IPv4Address.FromString("10.10.10.10"), IPv4Address.FromString("192.168.0.1")),
                             hwAddress, (UInt32)random.Next(), IPv4Address.FromString("0.0.0.0"), IPv4Address.FromString("192.168.0.5"), IPv4Address.FromString("192.168.0.15"),
+                            DHCPv4PacketFlags.Unicast,
                             new DHCPv4PacketAddressListOption(DHCPv4OptionTypes.DNSServers, new[] { IPv4Address.FromString("1.1.1.1"), IPv4Address.FromString("8.8.8.8") }),
                             new DHCPv4PacketAddressOption(DHCPv4OptionTypes.Router, IPv4Address.FromString("192.168.0.253"))
                             );

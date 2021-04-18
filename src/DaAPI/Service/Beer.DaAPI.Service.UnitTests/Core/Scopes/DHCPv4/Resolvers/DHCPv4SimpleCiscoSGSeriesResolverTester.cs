@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
 using static Beer.DaAPI.Core.Scopes.ScopeResolverPropertyDescription;
 
 namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4.Resolvers
@@ -232,6 +233,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4.Resolvers
                 IPv4Address.Empty,
                 IPv4Address.Empty,
                 IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketRawByteOption(82, option82InsidePacket)
                 );
 

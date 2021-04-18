@@ -92,6 +92,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -158,6 +159,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -224,6 +226,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -296,6 +299,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -370,6 +374,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -454,6 +459,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -537,6 +543,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -627,6 +634,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -714,6 +722,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -798,6 +807,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 
@@ -880,6 +890,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet discoverPacket = new DHCPv4Packet(
                 headerInformation, clientMacAdress, (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
             );
 

@@ -137,8 +137,9 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
            IPv4Address yourIPAddress,
            IPv4Address gwIPAddress,
            IPv4Address clientIPAddress,
+           DHCPv4PacketFlags flags = DHCPv4PacketFlags.Unicast,
            params DHCPv4PacketOption[] options
-           ) : this(ipv4Header, hwAddress, transactionId, yourIPAddress, gwIPAddress, clientIPAddress, options.ToList())
+           ) : this(ipv4Header, hwAddress, transactionId, yourIPAddress, gwIPAddress, clientIPAddress, flags, options.ToList())
         {
         }
 
@@ -149,6 +150,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
         IPv4Address yourIPAddress,
         IPv4Address gwIPAddress,
         IPv4Address clientIPAddress,
+        DHCPv4PacketFlags flags,
         IEnumerable<DHCPv4PacketOption> options
         ) : this()
         {
@@ -160,6 +162,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             ClientIPAdress = IPv4Address.FromByteArray(clientIPAddress.GetBytes());
             GatewayIPAdress = IPv4Address.FromByteArray(gwIPAddress.GetBytes());
             Header = ipv4Header;
+            Flags = flags;
 
             _options = new List<DHCPv4PacketOption>();
 
@@ -287,12 +290,10 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             {
                 destionation = IPv4Address.FromAddress(request.Header.Source);
                 source = IPv4Address.FromAddress(request.Header.Destionation);
-                Flags = DHCPv4PacketFlags.Unicast;
             }
 
             if (MessageType == DHCPv4MessagesTypes.NotAcknowledge && request.GatewayIPAdress == IPv4Address.Empty)
             {
-                Flags = DHCPv4PacketFlags.Unicast;
                 destionation = IPv4Address.Broadcast;
             }
 

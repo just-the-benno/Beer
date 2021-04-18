@@ -17,6 +17,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
+using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
 using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4LeaseEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4PacketHandledEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6LeaseEvents;
@@ -139,18 +140,21 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 DHCPv4Packet requestPacket = new DHCPv4Packet(
                headerInformation, random.NextBytes(6), (UInt32)random.Next(),
                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+               DHCPv4PacketFlags.Unicast,
                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover),
                new DHCPv4PacketRawByteOption(82, opt82Value));
 
                 DHCPv4Packet releasePacket = new DHCPv4Packet(
                 headerInformation, random.NextBytes(6), (UInt32)random.Next(),
                 IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
                 new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Release),
                 new DHCPv4PacketRawByteOption(82, opt82Value));
 
                 DHCPv4Packet responsePacket = new DHCPv4Packet(
                new IPv4HeaderInformation(headerInformation.Destionation, headerInformation.Source), random.NextBytes(6), (UInt32)random.Next(),
                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+               DHCPv4PacketFlags.Unicast,
                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Offer),
                new DHCPv4PacketRawByteOption(82, opt82Value));
 
@@ -377,12 +381,14 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 DHCPv4Packet requestPacket = new DHCPv4Packet(
                headerInformation, random.NextBytes(6), (UInt32)random.Next(),
                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+               DHCPv4PacketFlags.Unicast,
                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover),
                new DHCPv4PacketRawByteOption(82, opt82Value));
 
                 DHCPv4Packet responsePacket = new DHCPv4Packet(
                new IPv4HeaderInformation(headerInformation.Destionation, headerInformation.Source), random.NextBytes(6), (UInt32)random.Next(),
                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+               DHCPv4PacketFlags.Unicast,
                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover),
                new DHCPv4PacketRawByteOption(82, opt82Value));
 
