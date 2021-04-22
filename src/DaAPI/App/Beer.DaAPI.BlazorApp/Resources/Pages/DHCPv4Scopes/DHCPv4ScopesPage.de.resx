@@ -147,6 +147,9 @@
   <data name="EditButtonTooltip" xml:space="preserve">
     <value>Bereich bearbeiten</value>
   </data>
+  <data name="ExcludedAddressLabel" xml:space="preserve">
+    <value>Exklusive</value>
+  </data>
   <data name="LoadingMessage" xml:space="preserve">
     <value>Bereiche werden geladen</value>
   </data>

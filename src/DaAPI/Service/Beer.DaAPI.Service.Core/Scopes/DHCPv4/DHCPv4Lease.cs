@@ -36,20 +36,26 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         #region Methods
 
-        internal override void Renew(TimeSpan value, Boolean reset)
+        internal override void Renew(TimeSpan lifetime, TimeSpan renewalTime, TimeSpan preferredLifetime, Boolean reset)
         {
             if (reset == false)
             {
-                CanRenew(value);
+                CanRenew(lifetime);
             }
-            base.Apply(new DHCPv4LeaseRenewedEvent(this.Id, DateTime.UtcNow + value, reset));
+
+            DateTime now = DateTime.UtcNow;
+
+            base.Apply(new DHCPv4LeaseRenewedEvent(this.Id,
+                now + lifetime, now + renewalTime, now + preferredLifetime,
+                reset));
         }
 
-        internal override void Reactived(TimeSpan value)
+        internal override void Reactived(TimeSpan lifetime, TimeSpan renewalTime, TimeSpan preferredLifetime)
         {
-            CanReactived(value);
+            CanReactived(lifetime);
+            DateTime now = DateTime.UtcNow;
 
-            base.Apply(new DHCPv4LeaseRenewedEvent(this.Id, DateTime.UtcNow + value, false));
+            base.Apply(new DHCPv4LeaseRenewedEvent(this.Id, now + lifetime, now + renewalTime, now + preferredLifetime, false));
         }
 
         internal override void Revoke() => base.Apply(new DHCPv4LeaseRevokedEvent(this.Id));

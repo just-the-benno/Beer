@@ -223,7 +223,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                 Guid scopeId = Guid.NewGuid();
                 Guid leaseId = Guid.NewGuid();
-
+                
                 var createdEvent = new DHCPv6LeaseCreatedEvent
                 {
                     Address = IPv6Address.FromString("fe80::2"),
@@ -234,6 +234,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     HasPrefixDelegation = true,
                     DelegatedNetworkAddress = IPv6Address.FromString("2000::0"),
                     PrefixLength = 64,
+                    RenewalTime = TimeSpan.FromHours(1),
+                    PreferredLifetime = TimeSpan.FromHours(2),
                 };
                 {
                     Boolean actual = await context.Project(new[] { createdEvent });
@@ -255,6 +257,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                      EntityId = leaseId,
                      ScopeId = scopeId,
                      End = expectedEndTime,
+                     PreferredLifetime = expectedEndTime.AddHours(-2),
+                     RenewalTime = expectedEndTime.AddHours(-4),
                     } });
 
                     Assert.True(actual);
@@ -262,6 +266,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     DHCPv6LeaseEntryDataModel dataModel = await context.DHCPv6LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     CheckLeaseEntry(scopeId, leaseId, dataModel);
                     Assert.Equal(expectedEndTime, dataModel.End);
+                    Assert.Equal(expectedEndTime.AddHours(-2), dataModel.EndOfPreferredLifetime);
+                    Assert.Equal(expectedEndTime.AddHours(-4), dataModel.EndOfRenewalTime);
                 }
                 {
                     Boolean actual = await context.Project(new[] {
@@ -396,11 +402,14 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 Guid leaseId = Guid.NewGuid();
 
                 IPv4Address leaseAddress = IPv4Address.FromString("192.178.10.30");
+                DateTime startedAt = DateTime.UtcNow.AddHours(-random.Next(3, 10));
                 var createdEvent = new DHCPv4LeaseCreatedEvent
                 {
                     Address = leaseAddress,
-                    StartedAt = DateTime.UtcNow.AddHours(-random.Next(3, 10)),
+                    StartedAt = startedAt,
                     ValidUntil = DateTime.UtcNow.AddHours(random.Next(3, 10)),
+                    PreferredLifetime = TimeSpan.FromHours(2),
+                    RenewalTime = TimeSpan.FromHours(1),
                     ScopeId = scopeId,
                     EntityId = leaseId,
                 };
@@ -414,7 +423,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                     Assert.Equal(createdEvent.ValidUntil, dataModel.End);
                     Assert.True((DateTime.UtcNow - dataModel.Timestamp).TotalSeconds < 20);
-
+                    Assert.Equal(startedAt + TimeSpan.FromHours(2), dataModel.EndOfPreferredLifetime);
+                    Assert.Equal(startedAt + TimeSpan.FromHours(1), dataModel.EndOfRenewalTime);
                 }
                 {
                     DateTime expectedEndTime = DateTime.UtcNow.AddHours(random.Next(50, 100));
@@ -424,6 +434,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                      EntityId = leaseId,
                      ScopeId = scopeId,
                      End = expectedEndTime,
+                     PreferredLifetime = expectedEndTime.AddHours(-2),
+                     RenewalTime = expectedEndTime.AddHours(-3),
                     } });
 
                     Assert.True(actual);
@@ -431,6 +443,9 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     CheckLeaseEntry(scopeId, leaseId, dataModel, leaseAddress);
                     Assert.Equal(expectedEndTime, dataModel.End);
+
+                    Assert.Equal(expectedEndTime.AddHours(-3), dataModel.EndOfRenewalTime);
+                    Assert.Equal(expectedEndTime.AddHours(-2), dataModel.EndOfPreferredLifetime);
                 }
                 {
                     DateTime timesstamp = DateTime.UtcNow.AddHours(random.NextDouble());
@@ -526,6 +541,12 @@ namespace DaAPI.IntegrationTests.StorageEngine
             Assert.Equal(ReasonToEndLease.Nothing, dataModel.EndReason);
             Assert.Equal("2000::", dataModel.Prefix);
             Assert.Equal(64, dataModel.PrefixLength);
+
+            Assert.NotEqual(default, dataModel.EndOfRenewalTime);
+            Assert.NotEqual(default, dataModel.EndOfPreferredLifetime);
+
+            Assert.True(dataModel.EndOfRenewalTime < dataModel.EndOfPreferredLifetime);
+            Assert.True(dataModel.EndOfPreferredLifetime < dataModel.End);
         }
 
         private static void CheckLeaseEntry(Guid scopeId, Guid leaseId, DHCPv4LeaseEntryDataModel dataModel, IPv4Address address)

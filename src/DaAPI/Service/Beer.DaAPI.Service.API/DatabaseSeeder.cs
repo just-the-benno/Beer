@@ -251,6 +251,13 @@ namespace Beer.DaAPI.Service.API
                     Int32 leaseDiff = (Int32)(end.AddDays(4) - entryDataModel.Start).TotalMinutes;
                     entryDataModel.End = entryDataModel.Start.AddMinutes(random.Next(10, leaseDiff));
 
+                    TimeSpan lifetime = entryDataModel.End - entryDataModel.Start;
+                    TimeSpan renewalTime = lifetime / 2;
+                    TimeSpan rebindingTime = lifetime * (2.0 / 3.0);
+
+                    entryDataModel.EndOfRenewalTime = entryDataModel.Start + renewalTime;
+                    entryDataModel.EndOfPreferredLifetime = entryDataModel.Start + rebindingTime;
+
                     if (random.NextDouble() > 0.5)
                     {
                         entryDataModel.Prefix = IPv6Address.FromByteArray(prefixBytes).ToString();
@@ -279,6 +286,13 @@ namespace Beer.DaAPI.Service.API
 
                     Int32 leaseDiff = (Int32)(end.AddDays(4) - entryDataModel.Start).TotalMinutes;
                     entryDataModel.End = entryDataModel.Start.AddMinutes(random.Next(10, leaseDiff));
+
+                    TimeSpan lifetime = entryDataModel.End - entryDataModel.Start;
+                    TimeSpan renewalTime = lifetime / 2;
+                    TimeSpan rebindingTime = lifetime * (2.0 / 3.0);
+
+                    entryDataModel.EndOfRenewalTime = entryDataModel.Start + renewalTime;
+                    entryDataModel.EndOfPreferredLifetime = entryDataModel.Start + rebindingTime;
 
                     dhcpv4LeaseEntries.Add(entryDataModel);
                 }

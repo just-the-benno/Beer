@@ -196,6 +196,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.255"),
                         new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(18),
                         reuseAddressIfPossible: true,
                         acceptDecline: true,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
@@ -238,10 +240,6 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.Equal(leaseId, lease.Id);
 
             Assert.Equal(leasedAddress, discoveryResult.YourIPAdress);
-
-            //CheckEventAmount(2, rootScope);
-            //CheckLeaseRenewdEvent(scopeId, rootScope, lease);
-            //CheckHandeledEvent(1, discoverPacket, result, rootScope, scopeId);
         }
 
         [Fact]

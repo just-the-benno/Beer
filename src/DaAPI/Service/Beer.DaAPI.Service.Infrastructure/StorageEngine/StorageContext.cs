@@ -46,7 +46,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public DbSet<DHCPv4PacketHandledEntryDataModel> DHCPv4PacketEntries { get; set; }
         public DbSet<DHCPv4LeaseEntryDataModel> DHCPv4LeaseEntries { get; set; }
 
-        public DbSet<NotificationPipelineOverviewEntry> NotificationPipelines { get;  set; }
+        public DbSet<NotificationPipelineOverviewEntry> NotificationPipelines { get; set; }
 
         #endregion
 
@@ -130,7 +130,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         RequestStream = e.Request.GetAsStream(),
                     };
 
-                    if(e.Response != null)
+                    if (e.Response != null)
                     {
                         entry.ResponseSize = e.Response.GetSize();
                         entry.ResponseType = e.Response.GetInnerPacket().PacketType;
@@ -153,6 +153,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             Address = e.Address.ToString(),
                             Start = e.StartedAt,
                             End = e.ValidUntil,
+                            EndOfRenewalTime = e.StartedAt + e.RenewalTime,
+                            EndOfPreferredLifetime = e.StartedAt + e.PreferredLifetime,
                             LeaseId = e.EntityId,
                             ScopeId = e.ScopeId,
                             Prefix = e.HasPrefixDelegation == true ? e.DelegatedNetworkAddress.ToString() : null,
@@ -167,6 +169,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
                 case DHCPv6LeaseExpiredEvent e:
                     hasChanges = await UpdateEndToDHCPv6LeaseEntry(e, ReasonToEndLease.Expired);
+                    break;
+
+                case DHCPv6LeaseActivatedEvent e:
+                    hasChanges = await UpdateLastestDHCPv6LeaseEntry(e, (leaseEntry) =>
+                    {
+                        leaseEntry.IsActive = true;
+                    });
                     break;
 
                 case DHCPv6LeasePrefixAddedEvent e:
@@ -189,12 +198,25 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     hasChanges = await UpdateLastestDHCPv6LeaseEntry(e, (leaseEntry) =>
                     {
                         leaseEntry.End = e.End;
+
+                        if (e.Reset == true)
+                        {
+                            leaseEntry.IsActive = false;
+                        }
+
+                        leaseEntry.EndOfRenewalTime = e.RenewalTime;
+                        leaseEntry.EndOfPreferredLifetime = e.PreferredLifetime;
                     });
                     break;
 
                 case DHCPv6LeaseRevokedEvent e:
                     hasChanges = await UpdateEndToDHCPv6LeaseEntry(e, ReasonToEndLease.Revoked);
                     break;
+
+                case DHCPv6LeaseRemovedEvent e:
+                    hasChanges = await RemoveDHCPv6LeaseEntry(e);
+                    break;
+
                 default:
                     hasChanges = null;
                     break;
@@ -226,7 +248,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         Timestamp = e.Timestamp,
                     };
 
-                    if(e.Response != null)
+                    if (e.Response != null)
                     {
                         entry.ResponseSize = e.Response.GetSize();
                         entry.ResponseType = e.Response.MessageType;
@@ -252,6 +274,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             LeaseId = e.EntityId,
                             ScopeId = e.ScopeId,
                             Timestamp = e.Timestamp,
+                            IsActive = false,
+                            EndOfRenewalTime = e.StartedAt + e.RenewalTime,
+                            EndOfPreferredLifetime = e.StartedAt + e.PreferredLifetime,
                         };
 
                         DHCPv4LeaseEntries.Add(leaseEntry);
@@ -261,6 +286,10 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
                 case DHCPv4LeaseExpiredEvent e:
                     hasChanges = await UpdateEndToDHCPv4LeaseEntry(e, ReasonToEndLease.Expired);
+                    break;
+
+                case DHCPv4LeaseActivatedEvent e:
+                    hasChanges = await UpdateLastestDHCPv4LeaseEntry(e, e => e.IsActive = true);
                     break;
 
                 case DHCPv4LeaseCanceledEvent e:
@@ -275,12 +304,24 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     hasChanges = await UpdateLastestDHCPv4LeaseEntry(e, (leaseEntry) =>
                     {
                         leaseEntry.End = e.End;
+                        if (e.Reset == true)
+                        {
+                            leaseEntry.IsActive = false;
+                        }
+
+                        leaseEntry.EndOfRenewalTime = e.RenewalTime;
+                        leaseEntry.EndOfPreferredLifetime = e.PreferredLifetime;
                     });
                     break;
 
                 case DHCPv4LeaseRevokedEvent e:
                     hasChanges = await UpdateEndToDHCPv4LeaseEntry(e, ReasonToEndLease.Revoked);
                     break;
+
+                case DHCPv4LeaseRemovedEvent e:
+                    hasChanges = await RemoveDHCPv4LeaseEntry(e);
+                    break;
+
                 default:
                     hasChanges = null;
                     break;
@@ -305,7 +346,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         });
                         break;
                     case NotificationPipelineDeletedEvent e:
-                        var existingPipeline= await NotificationPipelines.AsQueryable().FirstAsync(x => x.Id == e.Id);
+                        var existingPipeline = await NotificationPipelines.AsQueryable().FirstAsync(x => x.Id == e.Id);
                         NotificationPipelines.Remove(existingPipeline);
                         break;
                     case DHCPv6ListenerCreatedEvent e:
@@ -382,7 +423,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         private async Task<Boolean> UpdateLastestDHCPv6LeaseEntry(DHCPv6ScopeRelatedEvent e, Action<DHCPv6LeaseEntryDataModel> updater)
         {
-            var entry = await DHCPv6LeaseEntries.AsQueryable().Where(x => x.LeaseId == e.EntityId).OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync();
+            DHCPv6LeaseEntryDataModel entry = await GetLatestDHCPv6LeaseEntry(e);
             if (entry != null)
             {
                 updater(entry);
@@ -390,6 +431,18 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             }
 
             return false;
+        }
+
+        private async Task<DHCPv6LeaseEntryDataModel> GetLatestDHCPv6LeaseEntry(DHCPv6ScopeRelatedEvent e) =>
+        await DHCPv6LeaseEntries.AsQueryable().Where(x => x.LeaseId == e.EntityId).OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync();
+
+        private async Task<Boolean> RemoveDHCPv6LeaseEntry(DHCPv6ScopeRelatedEvent e)
+        {
+            DHCPv6LeaseEntryDataModel entry = await GetLatestDHCPv6LeaseEntry(e);
+            if (entry != null) { return false; }
+
+            DHCPv6LeaseEntries.Remove(entry);
+            return true;
         }
 
         private async Task<Boolean> UpdateEndToDHCPv4LeaseEntry(DHCPv4ScopeRelatedEvent e, ReasonToEndLease reason) =>
@@ -397,11 +450,12 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
              {
                  leaseEntry.End = e.Timestamp;
                  leaseEntry.EndReason = reason;
+                 leaseEntry.IsActive = false;
              });
 
         private async Task<Boolean> UpdateLastestDHCPv4LeaseEntry(DHCPv4ScopeRelatedEvent e, Action<DHCPv4LeaseEntryDataModel> updater)
         {
-            var entry = await DHCPv4LeaseEntries.AsQueryable().Where(x => x.LeaseId == e.EntityId).OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync();
+            DHCPv4LeaseEntryDataModel entry = await GetLatestDHCPv4LeaseEntry(e);
             if (entry != null)
             {
                 updater(entry);
@@ -411,6 +465,17 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return false;
         }
 
+        private async Task<DHCPv4LeaseEntryDataModel> GetLatestDHCPv4LeaseEntry(DHCPv4ScopeRelatedEvent e) =>
+            await DHCPv4LeaseEntries.AsQueryable().Where(x => x.LeaseId == e.EntityId).OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync();
+
+        private async Task<Boolean> RemoveDHCPv4LeaseEntry(DHCPv4ScopeRelatedEvent e)
+        {
+            DHCPv4LeaseEntryDataModel entry = await GetLatestDHCPv4LeaseEntry(e);
+            if (entry != null) { return false; }
+
+            DHCPv4LeaseEntries.Remove(entry);
+            return true;
+        }
 
         private const String _DHCPv6ServerConfigKey = "DHCPv6ServerConfig";
 
@@ -419,12 +484,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             String content = await Helpers.AsQueryable().Where(x => x.Name == _DHCPv6ServerConfigKey).Select(x => x.Content).FirstOrDefaultAsync();
             if (String.IsNullOrEmpty(content) == true)
             {
-                return new DHCPv6ServerProperties { 
-                    IsInitilized = true, 
-                    LeaseLifeTime = TimeSpan.FromDays(15), 
-                    HandledLifeTime = TimeSpan.FromDays(15), 
-                    MaximumHandldedCounter = 100_000, 
-                    ServerDuid = new UUIDDUID(Guid.Parse("bbd541ea-8499-44b4-ad9d-d398c4643e79")) 
+                return new DHCPv6ServerProperties
+                {
+                    IsInitilized = true,
+                    LeaseLifeTime = TimeSpan.FromDays(15),
+                    HandledLifeTime = TimeSpan.FromDays(15),
+                    MaximumHandldedCounter = 100_000,
+                    ServerDuid = new UUIDDUID(Guid.Parse("bbd541ea-8499-44b4-ad9d-d398c4643e79"))
                 };
             }
 
@@ -515,7 +581,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     Timestamp = item.Timestamp,
                 };
 
-                if(String.IsNullOrEmpty(item.RequestSource) == true)
+                if (String.IsNullOrEmpty(item.RequestSource) == true)
                 {
                     Console.WriteLine($"{item.RequestSize} | {item.ScopeId}");
                 }
@@ -527,7 +593,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
                 DHCPv6Packet requestPacket = DHCPv6Packet.FromByteArray(
                       item.RequestStream, new IPv6HeaderInformation(
-                          IPv6Address.FromString(item.RequestSource), 
+                          IPv6Address.FromString(item.RequestSource),
                           IPv6Address.FromString(item.RequestDestination)));
 
                 entry.Request = new DHCPv6PacketInformation(requestPacket);
@@ -572,7 +638,6 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public async Task<DashboardResponse> GetDashboardOverview()
         {
-
             DateTime now = DateTime.UtcNow;
 
             DashboardResponse response = new DashboardResponse
@@ -580,7 +645,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 DHCPv6 = new DHCPOverview<DHCPv6LeaseEntry, DHCPv6PacketHandledEntry>
                 {
                     ActiveInterfaces = await DHCPv6Interfaces.AsQueryable().CountAsync(),
-                    ActiveLeases = await DHCPv6LeaseEntries.AsQueryable().Where(x => now >= x.Start && now <= x.End).OrderByDescending(x => x.End).Select(x => new DHCPv6LeaseEntry
+                    ActiveLeases = await DHCPv6LeaseEntries.AsQueryable().Where(x => now >= x.Start && now <= x.End && x.EndReason == ReasonToEndLease.Nothing).OrderByDescending(x => x.End).Select(x => new DHCPv6LeaseEntry
                     {
                         Address = x.Address,
                         End = x.End,
@@ -591,13 +656,15 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         ScopeId = x.ScopeId,
                         Start = x.Start,
                         Timestamp = x.Timestamp,
+                        ExpectedRenewalAt = x.EndOfRenewalTime,
+                        ExpectedRebindingAt = x.EndOfPreferredLifetime
                     }).Take(1000).ToListAsync(),
                     Packets = await GetDHCPv6PacketsFromHandledEvents(100, null),
                 },
                 DHCPv4 = new DHCPOverview<DHCPv4LeaseEntry, DHCPv4PacketHandledEntry>
                 {
                     ActiveInterfaces = await DHCPv4Interfaces.AsQueryable().CountAsync(),
-                    ActiveLeases = await DHCPv4LeaseEntries.AsQueryable().Where(x => now >= x.Start && now <= x.End).OrderByDescending(x => x.End).Select(x => new DHCPv4LeaseEntry
+                    ActiveLeases = await DHCPv4LeaseEntries.AsQueryable().Where(x => now >= x.Start && now <= x.End && x.EndReason == ReasonToEndLease.Nothing).OrderByDescending(x => x.End).Select(x => new DHCPv4LeaseEntry
                     {
                         Address = x.Address,
                         End = x.End,
@@ -606,6 +673,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         ScopeId = x.ScopeId,
                         Start = x.Start,
                         Timestamp = x.Timestamp,
+                        ExpectedRenewalAt = x.EndOfRenewalTime,
+                        ExpectedRebindingAt = x.EndOfPreferredLifetime
                     }).Take(1000).ToListAsync(),
                     Packets = await GetDHCPv4PacketsFromHandledEvents(100, null),
                 },
@@ -756,7 +825,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             end ??= DateTime.UtcNow;
             DateTime currentStart;
 
-            var preResult = await set.Where(x => start.Value < x.End && end.Value >= x.Start && x.EndReason == ReasonToEndLease.Nothing)
+            var preResult = await set.Where(x => start.Value < x.End && end.Value >= x.Start)
                 .Select(x => new DateTimeRange { RangeStart = x.Start, RangeEnd = x.End }).ToListAsync();
 
             if (preResult.Count == 0)
@@ -845,7 +914,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public async Task<Boolean> LogInvalidDHCPv4Packet(DHCPv4Packet packet) => await AddDHCPv4PacketHandledEntryDataModel(packet, (x) => x.InvalidRequest = true);
         public async Task<Boolean> LogFilteredDHCPv4Packet(DHCPv4Packet packet, String filterName) => await AddDHCPv4PacketHandledEntryDataModel(packet, (x) => x.FilteredBy = filterName);
 
-        private async Task<IList<TEntry>> GetPacketsFromHandledEvents<TEntry, TDHCPMessagesTypes>(IQueryable<IPacketHandledEntry<TDHCPMessagesTypes>> input, Int32 amount, Guid? scopeId, Func<IPacketHandledEntry<TDHCPMessagesTypes>, TEntry> activator )
+        private async Task<IList<TEntry>> GetPacketsFromHandledEvents<TEntry, TDHCPMessagesTypes>(IQueryable<IPacketHandledEntry<TDHCPMessagesTypes>> input, Int32 amount, Guid? scopeId, Func<IPacketHandledEntry<TDHCPMessagesTypes>, TEntry> activator)
             where TDHCPMessagesTypes : struct
         {
             if (scopeId.HasValue == true)
@@ -863,7 +932,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 var parsedItem = activator(item);
 
                 result.Add(parsedItem);
-               
+
             }
 
             return result;
@@ -871,36 +940,36 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         private async Task<IList<DHCPv4PacketHandledEntry>> GetDHCPv4PacketsFromHandledEvents(Int32 amount, Guid? scopeId)
         {
-            return await GetPacketsFromHandledEvents(DHCPv4PacketEntries, amount, scopeId,  (item) =>
-            {
-                DHCPv4PacketHandledEntry entry = new DHCPv4PacketHandledEntry
-                {
-                    FilteredBy = item.FilteredBy,
-                    InvalidRequest = item.InvalidRequest,
-                    RequestType = item.RequestType,
-                    ResponseType = item.ResponseType,
-                    ResultCode = item.ErrorCode,
-                    ScopeId = item.ScopeId,
-                    Timestamp = item.Timestamp,
-                };
+            return await GetPacketsFromHandledEvents(DHCPv4PacketEntries, amount, scopeId, (item) =>
+           {
+               DHCPv4PacketHandledEntry entry = new DHCPv4PacketHandledEntry
+               {
+                   FilteredBy = item.FilteredBy,
+                   InvalidRequest = item.InvalidRequest,
+                   RequestType = item.RequestType,
+                   ResponseType = item.ResponseType,
+                   ResultCode = item.ErrorCode,
+                   ScopeId = item.ScopeId,
+                   Timestamp = item.Timestamp,
+               };
 
-                DHCPv4Packet requestPacket = DHCPv4Packet.FromByteArray(
-                      item.RequestStream, new IPv4HeaderInformation(
-                          IPv4Address.FromString(item.RequestSource), IPv4Address.FromString(item.RequestDestination)));
+               DHCPv4Packet requestPacket = DHCPv4Packet.FromByteArray(
+                     item.RequestStream, new IPv4HeaderInformation(
+                         IPv4Address.FromString(item.RequestSource), IPv4Address.FromString(item.RequestDestination)));
 
-                entry.Request = new DHCPv4PacketInformation(requestPacket);
+               entry.Request = new DHCPv4PacketInformation(requestPacket);
 
-                if (item.ResponseSize.HasValue == true)
-                {
-                    DHCPv4Packet responsePacket = DHCPv4Packet.FromByteArray(
-                        item.ResponseStream, new IPv4HeaderInformation(
-                            IPv4Address.FromString(item.ResponseSource), IPv4Address.FromString(item.ResponseDestination)));
+               if (item.ResponseSize.HasValue == true)
+               {
+                   DHCPv4Packet responsePacket = DHCPv4Packet.FromByteArray(
+                       item.ResponseStream, new IPv4HeaderInformation(
+                           IPv4Address.FromString(item.ResponseSource), IPv4Address.FromString(item.ResponseDestination)));
 
-                    entry.Response = new DHCPv4PacketInformation(responsePacket);
-                }
+                   entry.Response = new DHCPv4PacketInformation(responsePacket);
+               }
 
-                return entry;
-            });
+               return entry;
+           });
         }
 
         public async Task<IDictionary<DateTime, IDictionary<DHCPv4MessagesTypes, Int32>>> GetIncomingDHCPv4PacketTypes(DateTime? start, DateTime? end, GroupStatisticsResultBy groupedBy)

@@ -22,6 +22,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             Guid id,
             IPv6Address address,
             TimeSpan lifetime,
+            TimeSpan renewalTime,
+            TimeSpan preferredLifetime,
             UInt32 identityAssociationId,
             DUID clientIdentifier,
             Byte[] uniqueIdentifier,
@@ -52,6 +54,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                 DelegatedNetworkAddress = prefixDelegation.NetworkAddress,
                 IdentityAssocationIdForPrefix = prefixDelegation.IdentityAssociation,
                 AncestorId = ancestor != null && ancestor.IsActive() ? ancestor.Id : new Guid?(),
+                RenewalTime = renewalTime,
+                PreferredLifetime = preferredLifetime,
             });
 
             var lease = GetLeaseById(id);

@@ -288,6 +288,9 @@
   <data name="ResolverPropertiesSectionHeading" xml:space="preserve">
     <value>Resolver</value>
   </data>
+  <data name="ResolverPropertyEnterByteArrayPlaceholer" xml:space="preserve">
+    <value>Enter a byte sequence here like 0a23dab3</value>
+  </data>
   <data name="ResolverPropertyEnterIPv4AddressPlaceholer" xml:space="preserve">
     <value>Enter a valid IPv4 address here</value>
   </data>

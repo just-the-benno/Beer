@@ -15,5 +15,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         public Guid ScopeId { get; set; }
         public ReasonToEndLease EndReason { get; set; }
         public DateTime Timestamp { get; set; }
+        public Boolean IsActive { get; set; }
+        public DateTime EndOfRenewalTime { get; set; }
+        public DateTime EndOfPreferredLifetime { get; set; }
     }
 }

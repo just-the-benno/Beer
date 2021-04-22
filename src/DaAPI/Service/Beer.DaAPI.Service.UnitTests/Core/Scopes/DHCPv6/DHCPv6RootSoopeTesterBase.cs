@@ -151,6 +151,11 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             Assert.Equal(expectedPrefixReset, createdEvent.ResetPrefix);
 
             Assert.Equal(lease.End, createdEvent.End);
+
+            var addressProperties = rootScope.GetScopeById(scopeId).AddressRelatedProperties;
+
+            Assert.True(Math.Abs(((DateTime.UtcNow + (addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value)) - createdEvent.RenewalTime).TotalSeconds) < 20);
+            Assert.True(Math.Abs(((DateTime.UtcNow + (addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value)) - createdEvent.PreferredLifetime).TotalSeconds) < 20);
         }
 
         protected static DHCPv6Lease CheckLease(
@@ -274,6 +279,11 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             }
             Assert.Equal(lease.Start, createdEvent.StartedAt);
             Assert.Equal(lease.End, createdEvent.ValidUntil);
+
+            var addressProperties = rootScope.GetScopeById(scopeId).AddressRelatedProperties;
+
+            Assert.Equal(addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value, createdEvent.RenewalTime);
+            Assert.Equal(addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value, createdEvent.PreferredLifetime);
 
             if (lease.PrefixDelegation == DHCPv6PrefixDelegation.None)
             {

@@ -251,6 +251,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                        Guid.NewGuid(),
                        leaseAddress,
                        addressProperties.ValidLeaseTime.Value,
+                       addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value,
+                       addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value,
                        identityAssociationId,
                        clientIdentifier,
                        Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
@@ -447,7 +449,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                   
                     if (identityAssociationId.HasValue == true)
                     {
-                        lease.Renew(addressProperties.ValidLeaseTime.Value, false, resetPrefix);
+                        lease.Renew(addressProperties.ValidLeaseTime.Value, addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value,
+                       addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value, false, resetPrefix);
                     }
 
                     leaseUsedToGenerateResponse = lease;
@@ -499,6 +502,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                               Guid.NewGuid(),
                               leaseAddress,
                               addressProperties.ValidLeaseTime.Value,
+                              addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value,
+                              addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value,
                               identityAssociationId.Value,
                               clientIdentifier,
                               Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,

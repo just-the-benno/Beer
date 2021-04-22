@@ -89,7 +89,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             {
                 if (addressProperties.ReuseAddressIfPossible == true)
                 {
-                    currentLease.Renew(addressProperties.LeaseTime.Value, true);
+                    currentLease.Renew(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, true);
                     newLeaseNeeded = false;
 
                     leaseAddress = IPv4Address.FromAddress(currentLease.Address);
@@ -136,6 +136,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                     Guid.NewGuid(),
                     leaseAddress,
                     addressProperties.LeaseTime.Value,
+                    addressProperties.RenewalTime.Value,
+                    addressProperties.PreferredLifetime.Value,
                     clientIdentifier,
                     Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
                     null
@@ -220,7 +222,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                         {
                             if (addressProperties.ReuseAddressIfPossible == true)
                             {
-                                lease.Renew(addressProperties.LeaseTime.Value, false);
+                                lease.Renew(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, false);
                                 leaseAddress = lease.Address;
                             }
                             else
@@ -251,7 +253,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                     {
                         if (addressProperties.ReuseAddressIfPossible == true)
                         {
-                            lease.Renew(addressProperties.LeaseTime.Value, false);
+                            lease.Renew(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, false);
                             leaseAddress = lease.Address;
                         }
                         else
@@ -271,7 +273,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                             }
                             else
                             {
-                                lease.Reactived(addressProperties.LeaseTime.Value);
+                                lease.Reactived(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value);
                                 leaseAddress = lease.Address;
                             }
                         }
@@ -304,6 +306,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                             Guid.NewGuid(),
                             leaseAddress,
                             addressProperties.LeaseTime.Value,
+                            addressProperties.RenewalTime.Value,
+                            addressProperties.PreferredLifetime.Value,
                             identifier,
                             Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
                             null

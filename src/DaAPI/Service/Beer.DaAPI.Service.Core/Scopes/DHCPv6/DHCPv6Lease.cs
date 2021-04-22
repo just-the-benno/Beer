@@ -41,25 +41,26 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
         #endregion
 
-        internal override void Renew(TimeSpan value, Boolean reset) => Renew(value, reset, true);
+        internal override void Renew(TimeSpan lifetime, TimeSpan renewalTime, TimeSpan preferredLifetime, Boolean reset) => Renew(lifetime, renewalTime, preferredLifetime, reset, true);
 
-        internal void Renew(TimeSpan value, Boolean reset, Boolean resetPrefix)
+        internal void Renew(TimeSpan lifetime, TimeSpan renewalTime, TimeSpan preferredLifetime, Boolean reset, Boolean resetPrefix)
         {
-            CanRenew(value);
+            CanRenew(lifetime);
 
             if (resetPrefix == true && PrefixDelegation == DHCPv6PrefixDelegation.None)
             {
                 resetPrefix = false;
             }
-
-            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, DateTime.UtcNow + value, reset, resetPrefix));
+            DateTime now = DateTime.UtcNow;
+            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime, now + renewalTime, now + preferredLifetime, reset, resetPrefix));
         }
 
-        internal override void Reactived(TimeSpan value)
+        internal override void Reactived(TimeSpan lifetime, TimeSpan renewalTime, TimeSpan preferredLifetime)
         {
-            CanReactived(value);
+            CanReactived(lifetime);
+            DateTime now = DateTime.UtcNow;
 
-            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, DateTime.UtcNow + value, false, true));
+            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime, now + renewalTime, now + preferredLifetime, false, true));
         }
 
         internal override void Revoke() => base.Apply(new DHCPv6LeaseRevokedEvent(this.Id));
@@ -161,7 +162,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                     HandleExpire();
                     break;
                 case DHCPv6LeasePrefixAddedEvent e:
-                    PrefixDelegation = new DHCPv6PrefixDelegation(e.NetworkAddress, e.PrefixLength, e.PrefixAssociationId,e.Started);
+                    PrefixDelegation = new DHCPv6PrefixDelegation(e.NetworkAddress, e.PrefixLength, e.PrefixAssociationId, e.Started);
                     break;
                 default:
                     break;

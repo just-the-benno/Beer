@@ -74,7 +74,7 @@ namespace Beer.DaAPI.Core.Scopes
 
         public Boolean HasAncestor() => AncestorId.HasValue == true;
 
-        internal abstract void Renew(TimeSpan value, Boolean reset);
+        internal abstract void Renew(TimeSpan value, TimeSpan renewalTime, TimeSpan preferredLifetime, Boolean reset);
 
         protected void CanRenew(TimeSpan value)
         {
@@ -89,7 +89,7 @@ namespace Beer.DaAPI.Core.Scopes
             }
         }
 
-        internal abstract void Reactived(TimeSpan value);
+        internal abstract void Reactived(TimeSpan value,TimeSpan renewalTime, TimeSpan preferredLifetime);
 
         protected void CanReactived(TimeSpan value)
         {

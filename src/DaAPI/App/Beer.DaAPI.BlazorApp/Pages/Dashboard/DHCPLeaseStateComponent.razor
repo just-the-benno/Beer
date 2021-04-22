@@ -1,0 +1,36 @@
+﻿@inject IStringLocalizer<DHCPLeaseStateComponent> L
+
+<MudTooltip Text="@GetToolTip()">
+    <MudAvatar Color="GetColor()">@GetShortName()</MudAvatar>
+</MudTooltip>
+
+@code {
+
+    [Parameter]
+    public DHCPLeaseStates State { get; set; }
+
+    private Color GetColor() => State switch
+    {
+        DHCPLeaseStates.Active => Color.Success,
+        DHCPLeaseStates.Renewing => Color.Warning,
+        DHCPLeaseStates.Rebinding => Color.Error,
+        _ => Color.Default,
+    };
+
+    private String GetShortName() => State switch
+    {
+        DHCPLeaseStates.Active => "A",
+        DHCPLeaseStates.Renewing => "RN",
+        DHCPLeaseStates.Rebinding => "RB",
+        _ => String.Empty,
+    };
+
+    private String GetToolTip() => State switch
+    {
+        DHCPLeaseStates.Active => L["ActiveToolTip"],
+        DHCPLeaseStates.Renewing => L["RenewingToolTip"],
+        DHCPLeaseStates.Rebinding => L["RebindingToolTip"],
+        _ => String.Empty,
+    };
+
+}

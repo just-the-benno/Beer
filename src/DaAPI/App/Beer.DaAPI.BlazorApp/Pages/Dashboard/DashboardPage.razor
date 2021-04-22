@@ -33,15 +33,87 @@
                                                                                                      new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetActiveDHCPv4Leases} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false" />
         </MudItem>
         <MudItem xs="12">
-            <DaAPIGroupedTimeSeriesCard Title="@L["IncomingPacketsCardTitle"]" DataSeriesDescription="@(new DataSeriesDescription[] {
-                                                                                                            new DataSeriesDescription { Name = "DHCPv6", DatasetLoader = _service.GetIncomingDHCPv6PacketAmount},
-                                                                                                            new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetIncomingDHCPv4PacketAmount} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false" />
+            <MudCard Elevation="25" Style="height:100%;">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@L["LeasesDueToRenewCaption"]</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="px-0">
+                    @if (_vm.GetLeasesDueToRenew().Any() == false)
+                    {
+                        <MudAlert Severity="Severity.Success">@L["NoLeasesDueForRenewMessage"]</MudAlert>
+                    }
+                    else
+                    {
+                        <MudSimpleTable Elevation="0" Hover="true">
+                            <thead>
+                                <tr>
+                                    <th>@L["ActiveLeaseTableHeaderForType"]</th>
+                                    <th>@L["ActiveLeaseTableHeaderForStatus"]</th>
+                                    <th>@L["ActiveLeaseTableHeaderForLeasedAddress"]</th>
+                                    <th>@L["ActiveLeaseTableHeaderForScope"]</th>
+                                    <th>@L["ActiveLeaseTableHeaderForRenew"]</th>
+                                    <th>@L["ActiveLeaseTableHeaderForRebinding"]</th>
+                                    <th>@L["ActiveLeaseTableHeaderForExpectedEnd"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in _vm.GetLeasesDueToRenew())
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (item is DHCPv6LeaseEntryViewModel)
+                                            {
+                                                <MudChip Label="true" Color="Color.Primary" Variant="Variant.Outlined">IPv6</MudChip>
+                                            }
+                                            else
+                                            {
+                                                <MudChip Label="true" Color="Color.Dark" Variant="Variant.Outlined">IPv4</MudChip>
+                                            }
+                                        </td>
+                                        <td>
+                                            <DHCPLeaseStateComponent State="@item.State" />
+                                        </td>
+                                        <td>
+                                            @if (item is DHCPv6LeaseEntryViewModel castedResult)
+                                            {
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.subtitle2">@item.Address</MudText>
+                                                    <MudText Typo="Typo.body2">@($"{castedResult.Prefix}/{castedResult.PrefixLength}")</MudText>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <MudText Typo="Typo.subtitle2">@item.Address</MudText>
+                                            }
+                                        </td>
+                                        <td><MudLink Href="@GetScopeLink(item)">@GetScopeName(item)</MudLink></td>
+                                        <td>
+                                            @if (item.State == DHCPLeaseStates.Renewing)
+                                            {
+                                                <MudChip Label="true" Color="@GetColorBasedOnLifetime(item)" Size="Size.Small" Class="mud-elevation-25">@GetTimeRemainingOfRenew(item)</MudChip>
+                                            }
+                                        </td>
+                                        <td>
+                                            <MudChip Label="true" Color="@GetColorBasedOnLifetime(item)" Size="Size.Small" Class="mud-elevation-25">@GetTimeRemainingOfRebinding(item)</MudChip>
+                                        </td>
+                                        <td>
+                                            <MudChip Label="true" Color="@GetColorBasedOnLifetime(item)" Size="Size.Small" Class="mud-elevation-25">@GetTimeRemainingOfLease(item)</MudChip>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    }
+                </MudCardContent>
+            </MudCard>
         </MudItem>
         <MudItem xs="12">
             <MudCard Elevation="25" Style="height:100%;">
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudText Typo="Typo.h6">@L["LeasesToExpireCaption"]</MudText>
+                        <MudText Typo="Typo.h6">@L["ActiveLeasesCaption"]</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
                         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" @bind-Text="_activeLeaseSearchterm" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
@@ -51,53 +123,114 @@
                     <MudSimpleTable Elevation="0" Hover="true">
                         <thead>
                             <tr>
-                                <th>@L["ActiveLeaseTableHeaderForType"]</th>
+                                <th>
+                                    <div class="d-flex flex-row align-center">
+                                        <span> @L["ActiveLeaseTableHeaderForType"]</span>
+                                        <MudMenu Icon="@Icons.Material.Filled.FilterAlt">
+                                            <MudRadioGroup SelectedOption="@LeaseTypeFilter" T="TypeFilter" SelectedOptionChanged="LeaseTypeSelectedOptionChanged">
+                                                <MudRadio Option="@(TypeFilter.IPv4)">IPv4</MudRadio>
+                                                <MudRadio Option="@(TypeFilter.IPv6)">IPv6</MudRadio>
+                                                <MudRadio Option="@(TypeFilter.Both)" Color="Color.Primary">@L["TypeFilterLabelBoth"]</MudRadio>
+                                            </MudRadioGroup>
+                                        </MudMenu>
+                                    </div>
+                                </th>
+                                <th>@L["ActiveLeaseTableHeaderForStatus"]</th>
+                                <th>@L["ActiveLeaseTableHeaderTimestamp"]</th>
                                 <th>@L["ActiveLeaseTableHeaderForLeasedAddress"]</th>
-                                <th>@L["ActiveLeaseTableHeaderForScope"]</th>
-                                <th>@L["ActiveLeaseTableHeaderForExpectedEnd"]</th>
+                                <th>
+                                    <div class="d-flex flex-row align-center">
+                                        <span>     @L["ActiveLeaseTableHeaderForScope"]</span>
+                                        <MudMenu Icon="@Icons.Material.Filled.FilterAlt">
+                                            <div class="d-flex flex-column">
+                                                @{
+                                                    Boolean showDivider = false;
+                                                }
+                                                @if (LeaseTypeFilter == TypeFilter.Both || LeaseTypeFilter == TypeFilter.IPv4)
+                                                {
+                                                    foreach (var scope in _vm.DHCPv4Scopes.Values)
+                                                    {
+                                                        <MudCheckBox T="Boolean" Checked="IsScopeVisibleFoFilter(scope.Id)" CheckedChanged="@((e) => FilteredScopeChanged(e,scope.Id))" Label="@scope.Name" />
+                                                        showDivider = true;
+                                                    }
+                                                }
+
+                                                @if (LeaseTypeFilter == TypeFilter.Both || LeaseTypeFilter == TypeFilter.IPv6 && _vm.DHCPv6Scopes.Values.Any())
+                                                {
+                                                    @if (showDivider == true)
+                                                    {
+                                                        <MudDivider />
+                                                    }
+
+                                                    foreach (var scope in _vm.DHCPv6Scopes.Values)
+                                                    {
+                                                        <MudCheckBox T="Boolean" Checked="IsScopeVisibleFoFilter(scope.Id)" CheckedChanged="@((e) => FilteredScopeChanged(e,scope.Id))" Label="@scope.Name" />
+                                                    }
+                                                }
+                                            </div>
+                                        </MudMenu>
+                                    </div>
+                                </th>
+                                <th> @L["ActiveLeaseTableHeaderForExpectedEnd"]</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in _vm.GetLeases(_activeLeaseSearchterm))
                             {
 
-                                <tr>
-                                    <td>
-                                        @if (item is DHCPv6LeaseEntryViewModel)
-                                        {
-                                            <MudChip Label="true" Color="Color.Primary" Variant="Variant.Outlined">IPv6</MudChip>
-                                        }
-                                        else
-                                        {
-                                            <MudChip Label="true" Color="Color.Dark" Variant="Variant.Outlined">IPv4</MudChip>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (item is DHCPv6LeaseEntryViewModel castedResult)
-                                        {
-                                            <div class="d-flex flex-column">
-                                                <MudText Typo="Typo.subtitle2">@item.Address</MudText>
-                                                <MudText Typo="Typo.body2">@($"{castedResult.Prefix}/{castedResult.PrefixLength}")</MudText>
-                                            </div>
-                                        }
-                                        else
-                                        {
+                            <tr>
+                                <td>
+                                    @if (item is DHCPv6LeaseEntryViewModel)
+                                    {
+                                        <MudChip Label="true" Color="Color.Primary" Variant="Variant.Outlined">IPv6</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip Label="true" Color="Color.Dark" Variant="Variant.Outlined">IPv4</MudChip>
+                                    }
+                                </td>
+                                <td>
+                                    <DHCPLeaseStateComponent State="@item.State" />
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1">
+                                        @(item.Timestamp.ToString("HH:mm:ss"))
+                                        <br />
+                                        @(item.Timestamp.ToString("dd.MM.yy"))
+                                    </MudText>
+                                </td>
+                                <td>
+                                    @if (item is DHCPv6LeaseEntryViewModel castedResult)
+                                    {
+                                        <div class="d-flex flex-column">
                                             <MudText Typo="Typo.subtitle2">@item.Address</MudText>
-                                        }
-                                    </td>
-                                    <td><MudLink Href="@GetScopeLink(item)">@GetScopeName(item)</MudLink></td>
-                                    <td>
-                                        <div class="d-flex flex-column align-start">
-                                            <MudChip Label="true" Color="@GetColorBasedOnLifetime(item)" Size="Size.Small" Class="mud-elevation-25">@GetTimeRemainingOfLease(item)</MudChip>
-                                            <MudText Typo="Typo.body2">@($"{LShared["LeaseStartedAtLabel"]}: {GetAgeOfLease(item)}")</MudText>
+                                            <MudText Typo="Typo.body2">@($"{castedResult.Prefix}/{castedResult.PrefixLength}")</MudText>
                                         </div>
-                                    </td>
-                                </tr>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.subtitle2">@item.Address</MudText>
+                                    }
+                                </td>
+                                <td><MudLink Href="@GetScopeLink(item)">@GetScopeName(item)</MudLink></td>
+                                <td>
+                                    <div class="d-flex flex-column align-start">
+                                        <MudChip Label="true" Color="@GetColorBasedOnLifetime(item)" Size="Size.Small" Class="mud-elevation-25">@GetTimeRemainingOfLease(item)</MudChip>
+                                        <MudText Typo="Typo.body2">@($"{LShared["LeaseStartedAtLabel"]}: {GetAgeOfLease(item)}")</MudText>
+                                    </div>
+                                </td>
+                            </tr>
                             }
                         </tbody>
                     </MudSimpleTable>
                 </MudCardContent>
             </MudCard>
+        </MudItem>
+
+        <MudItem xs="12">
+            <DaAPIGroupedTimeSeriesCard Title="@L["IncomingPacketsCardTitle"]" DataSeriesDescription="@(new DataSeriesDescription[] {
+                                                                                                            new DataSeriesDescription { Name = "DHCPv6", DatasetLoader = _service.GetIncomingDHCPv6PacketAmount},
+                                                                                                            new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetIncomingDHCPv4PacketAmount} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false" />
         </MudItem>
         <MudItem xs="12">
             <MudCard Elevation="25" Style="height:100%;">
@@ -110,7 +243,19 @@
                     <MudSimpleTable Elevation="0" Hover="true">
                         <thead>
                             <tr>
-                                <th>@L["LatestPacketTableHeaderForType"]</th>
+                                <th>
+                                    <div class="d-flex flex-row align-center">
+                                        <span> @L["LatestPacketTableHeaderForType"]</span>
+                                        <MudMenu Icon="@Icons.Material.Filled.FilterAlt">
+                                            <MudRadioGroup SelectedOption="@PacketTypeFilter" T="TypeFilter" SelectedOptionChanged="PacketTypeSelectedOptionChanged">
+                                                <MudRadio Option="@(TypeFilter.IPv4)">IPv4</MudRadio>
+                                                <MudRadio Option="@(TypeFilter.IPv6)">IPv6</MudRadio>
+                                                <MudRadio Option="@(TypeFilter.Both)" Color="Color.Primary">@L["TypeFilterLabelBoth"]</MudRadio>
+                                            </MudRadioGroup>
+                                        </MudMenu>
+                                    </div>
+                                </th>
+                                <th>@L["LatestPacketTableHeaderForTimestamp"]</th>
                                 <th>@L["LatestPacketTableHeaderForRequestType"]</th>
                                 <th>@L["LatestPacketTableHeaderForSourceAddress"]</th>
                                 <th>@L["LatestPacketTableHeaderForResult"]</th>
@@ -130,6 +275,13 @@
                                         {
                                             <MudChip Label="true" Color="Color.Dark" Variant="Variant.Outlined">IPv4</MudChip>
                                         }
+                                    </td>
+                                    <td>
+                                        <MudText Typo="Typo.body1">
+                                            @(item.Timestamp.ToString("HH:mm:ss"))
+                                            <br />
+                                            @(item.Timestamp.ToString("dd.MM.yy"))
+                                        </MudText>
                                     </td>
                                     <td>
                                         <div class="flex-row d-flex">
@@ -192,12 +344,20 @@
         <MudItem xs="12">
             <DaAPIGroupedTimeSeriesCard Title="@L["FilteredPacketCardTitle"]" DataSeriesDescription="@(new DataSeriesDescription[] {
                                                                                                      new DataSeriesDescription { Name = "DHCPv6", DatasetLoader = _service.GetFileredDHCPv6Packets},
-                                                                                                     new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetFileredDHCPv4Packets} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false" />
+                                                                                                     new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetFileredDHCPv4Packets} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false">
+                <Explanation>
+                    <DaAPILittleHelperComponent Content="@L["FileteredPacketHelperContent"]" Heading="@L["FileteredPacketHelperTitle"]" />
+                </Explanation>
+            </DaAPIGroupedTimeSeriesCard>
         </MudItem>
         <MudItem xs="12">
             <DaAPIGroupedTimeSeriesCard Title="@L["InvalidPacketCardTitle"]" DataSeriesDescription="@(new DataSeriesDescription[] {
                                                                                                             new DataSeriesDescription { Name = "DHCPv6", DatasetLoader = _service.GetErrorDHCPv6Packets},
-                                                                                                            new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetErrorDHCPv4Packets} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false" />
+                                                                                                            new DataSeriesDescription { Name = "DHCPv4", DatasetLoader = _service.GetErrorDHCPv4Packets} })" GroupedBy="GroupStatisticsResultBy.Day" HasRecent="false">
+                <Explanation>
+                    <DaAPILittleHelperComponent Content="@L["InvalidPacketHelperContent"]" Heading="@L["InvalidPacketHelperTitle"]" />
+                </Explanation>
+            </DaAPIGroupedTimeSeriesCard>
         </MudItem>
         <MudItem xs="12" sm="6">
             <DaAPIGroupedPacketTypeTimeSeriesCard Title="@L["DHCPv6ResponseCodeCardTitle"]" IsDHCPv6="true" DHCPv6DataSetLoader="_service.GetErrorCodesPerDHCPV6RequestType" />
@@ -206,7 +366,7 @@
             <DaAPIGroupedPacketTypeTimeSeriesCard Title="@L["DHCPv4ResponseCodeCardTitle"]" IsDHCPv6="false" DHCPv4DataSetLoader="_service.GetErrorCodesPerDHCPv4RequestType" />
         </MudItem>
     </MudGrid>
-    
+
     @*<div class="row">
             <div class="col-12">
                 <GroupedStackedTimeSeriesCard Title="@L["IncomingPacketTypesCardTitle"]" GroupedBy="GroupStatisticsResultBy.Day" GroupedDatasetLoad="_service.GetIncomingDHCPv6PacketTypes" />

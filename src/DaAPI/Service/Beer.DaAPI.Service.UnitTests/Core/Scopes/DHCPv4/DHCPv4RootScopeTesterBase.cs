@@ -102,9 +102,16 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             {
                 Assert.Equal(uniqueIdentifier, createdEvent.UniqueIdentifier);
             }
+
             Assert.Equal(lease.Start, createdEvent.StartedAt);
             Assert.Equal(lease.End, createdEvent.ValidUntil);
+
+            var addressProperties = rootScope.GetScopeById(scopeId).AddressRelatedProperties;
+
+            Assert.Equal(addressProperties.RenewalTime.Value, createdEvent.RenewalTime);
+            Assert.Equal(addressProperties.PreferredLifetime.Value, createdEvent.PreferredLifetime);
         }
+
         protected static void DHCPv4ScopeAddressesAreExhaustedEvent(int index, DHCPv4RootScope rootScope, Guid scopeId)
         {
             IEnumerable<DomainEvent> changes = rootScope.GetChanges();

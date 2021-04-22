@@ -29,6 +29,8 @@ namespace Beer.DaAPI.Shared.Responses
                 Guid LeaseId { get; set; }
                 String Address { get; set; }
                 DateTime Start { get; set; }
+                DateTime ExpectedRenewalAt { get; set; }
+                DateTime ExpectedRebindingAt { get; set; }
                 DateTime End { get; set; }
                 Guid ScopeId { get; set; }
                 ReasonToEndLease EndReason { get; set; }
@@ -42,6 +44,8 @@ namespace Beer.DaAPI.Shared.Responses
                 public String Prefix { get; set; }
                 public Byte PrefixLength { get; set; }
                 public DateTime Start { get; set; }
+                public DateTime ExpectedRenewalAt { get; set; }
+                public DateTime ExpectedRebindingAt { get; set; }
                 public DateTime End { get; set; }
                 public Guid ScopeId { get; set; }
                 public ReasonToEndLease EndReason { get; set; }
@@ -186,6 +190,8 @@ namespace Beer.DaAPI.Shared.Responses
                 public Guid LeaseId { get; set; }
                 public String Address { get; set; }
                 public DateTime Start { get; set; }
+                public DateTime ExpectedRenewalAt { get; set; }
+                public DateTime ExpectedRebindingAt { get; set; }
                 public DateTime End { get; set; }
                 public Guid ScopeId { get; set; }
                 public ReasonToEndLease EndReason { get; set; }

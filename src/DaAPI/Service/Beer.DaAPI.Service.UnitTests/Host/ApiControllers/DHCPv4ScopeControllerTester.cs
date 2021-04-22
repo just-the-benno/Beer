@@ -43,13 +43,28 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Guid scopeId = Guid.NewGuid();
                 IPv4Address start = random.GetIPv4Address();
                 IPv4Address end = start + 100;
+                var excluded = new[] { start + 1, start + 3 };
+
+                DHCPv4ScopeProperties properties = null;
+                if (random.NextBoolean() == true)
+                {
+                    DHCPv4AddressListScopeProperty gwAddress = new(
+                        DHCPv4OptionTypes.Router, new[] { start + 0, start + 30 });
+                    properties = new DHCPv4ScopeProperties(gwAddress);
+                }
+                else
+                {
+                    properties = new();
+                }
 
                 events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
                 {
                     Id = scopeId,
                     Name = random.GetAlphanumericString(),
-                    AddressProperties = new DHCPv4ScopeAddressProperties(start, end),
                     ParentId = directParentId,
+                    AddressProperties = new DHCPv4ScopeAddressProperties(start, end, excluded,
+                    maskLength: random.NextBoolean() == true ? (Byte)random.Next(0, 32) : null),
+                    ScopeProperties = properties
                 }));
 
                 List<Guid> newParentList = new List<Guid>(parents)
@@ -76,12 +91,27 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Guid scopeId = Guid.NewGuid();
                 IPv4Address start = random.GetIPv4Address();
                 IPv4Address end = start + 100;
+                var excluded = new[] { start + 1, start + 3 };
+
+                DHCPv4ScopeProperties properties = null;
+                if (random.NextBoolean() == true)
+                {
+                    DHCPv4AddressListScopeProperty gwAddress = new(
+                        DHCPv4OptionTypes.Router, new[] { start + 0, start + 30 });
+                    properties = new DHCPv4ScopeProperties(gwAddress);
+                }
+                else
+                {
+                    properties = new();
+                }
 
                 events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
                 {
                     Id = scopeId,
                     Name = random.GetAlphanumericString(),
-                    AddressProperties = new DHCPv4ScopeAddressProperties(start, end),
+                    AddressProperties = new DHCPv4ScopeAddressProperties(start, end, excluded,
+                    maskLength: random.NextBoolean() == true ? (Byte)random.Next(0, 32) : null),
+                    ScopeProperties = properties
                 }));
 
                 rootScopeIds.Add(scopeId);
@@ -116,6 +146,8 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Assert.Equal(@event.Instructions.Id, scope.Id);
                 Assert.Equal(@event.Instructions.AddressProperties.Start.ToString(), scope.StartAddress);
                 Assert.Equal(@event.Instructions.AddressProperties.End.ToString(), scope.EndAddress);
+                Assert.Equal(@event.Instructions.AddressProperties.ExcludedAddresses.Select(x => x.ToString()).ToArray(), scope.ExcludedAddresses);
+                Assert.Equal((@event.Instructions.ScopeProperties?.Properties ?? Array.Empty<DHCPv4ScopeProperty>()).Where(x => x.OptionIdentifier == (Byte)DHCPv4OptionTypes.Router).Cast<DHCPv4AddressListScopeProperty>().Select(x => x.Addresses.First().ToString()).FirstOrDefault(), scope.FirstGatewayAddress);
             }
         }
 
@@ -125,6 +157,8 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             Assert.Equal(item.Id, viewItem.Id);
             Assert.Equal(item.AddressRelatedProperties.Start.ToString(), viewItem.StartAddress);
             Assert.Equal(item.AddressRelatedProperties.End.ToString(), viewItem.EndAddress);
+            Assert.Equal(item.AddressRelatedProperties.ExcludedAddresses.Select(x => x.ToString()).ToArray(), viewItem.ExcludedAddresses);
+            Assert.Equal((item.Properties?.Properties ?? Array.Empty<DHCPv4ScopeProperty>()).Where(x => x.OptionIdentifier == (Byte)DHCPv4OptionTypes.Router).Cast<DHCPv4AddressListScopeProperty>().Select(x => x.Addresses.First().ToString()).FirstOrDefault(), viewItem.FirstGatewayAddress);
 
             if (item.GetChildScopes().Any() == true)
             {
@@ -157,12 +191,27 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Guid scopeId = Guid.NewGuid();
                 IPv4Address start = random.GetIPv4Address();
                 IPv4Address end = start + 100;
+                var excluded = new[] { start + 1, start + 3 };
+
+                DHCPv4ScopeProperties properties = null;
+                if (random.NextBoolean() == true)
+                {
+                    DHCPv4AddressListScopeProperty gwAddress = new(
+                        DHCPv4OptionTypes.Router, new[] { start + 0, start + 30 });
+                    properties = new DHCPv4ScopeProperties(gwAddress);
+                }
+                else
+                {
+                    properties = new();
+                }
 
                 events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
                 {
                     Id = scopeId,
                     Name = random.GetAlphanumericString(),
-                    AddressProperties = new DHCPv4ScopeAddressProperties(start, end),
+                    AddressProperties = new DHCPv4ScopeAddressProperties(start, end, excluded,
+                    maskLength: random.NextBoolean() == true ? (Byte)random.Next(0, 32) : null),
+                    ScopeProperties = properties
                 }));
 
                 rootScopeIds.Add(scopeId);

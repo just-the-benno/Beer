@@ -288,6 +288,9 @@
   <data name="ResolverPropertiesSectionHeading" xml:space="preserve">
     <value>Zuordner</value>
   </data>
+  <data name="ResolverPropertyEnterByteArrayPlaceholer" xml:space="preserve">
+    <value>Geben Sie eine Bytefolge hier ein 0a23dab3</value>
+  </data>
   <data name="ResolverPropertyEnterIPv4AddressPlaceholer" xml:space="preserve">
     <value>Geben Sie eine gültige IPv4 Adresse an</value>
   </data>

@@ -1,9 +1,11 @@
 ﻿using Beer.DaAPI.BlazorApp.Helper;
 using Beer.DaAPI.BlazorApp.ModelHelper;
+using Beer.DaAPI.Core.Common;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1;
 
@@ -12,6 +14,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
     public partial class DHCPv4ScopesPage
     {
         private IEnumerable<DHCPv4ScopeTreeViewItem> _scopes;
+        private Dictionary<DHCPv4ScopeTreeViewItem, DHCPv4ScopeTreeViewItem> _parentMapper;
 
         private readonly HashSet<TreeItemData<DHCPv4ScopeTreeViewItem>> _items = new();
 
@@ -20,11 +23,12 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             TreeItemData<DHCPv4ScopeTreeViewItem> treeItem = new() { Value = item, IsExpanded = true, Name = item.Name, Children = new() };
 
             parent.Add(treeItem);
-
             if (item.ChildScopes.Any() == true)
             {
                 foreach (var child in item.ChildScopes)
                 {
+                    _parentMapper.Add(child, item);
+
                     GenerateTree(child, treeItem.Children);
                 }
             }
@@ -33,6 +37,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         private async Task LoadItems()
         {
             _scopes = await service.GetDHCPv4ScopesAsTree();
+            _parentMapper = _scopes.ToDictionary(x => x, null);
+
             foreach (var item in _scopes)
             {
                 GenerateTree(item, _items);
@@ -64,6 +70,34 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 _items.Clear();
                 StateHasChanged();
                 await LoadItems();
+            }
+        }
+
+        private String GetScopeAddressRangeAsString(DHCPv4ScopeTreeViewItem item)
+        {
+            if(item.StartAddress == item.EndAddress)
+            {
+                return item.StartAddress;
+            }
+            else
+            {
+                StringBuilder builder = new(300);
+                builder.Append($"{item.StartAddress} - {item.EndAddress}");
+
+                Int32 offset = 0;
+
+                if(item.ExcludedAddresses.Any() == true)
+                {
+                    builder.Append($" | {L["ExcludedAddressLabel"]} ");
+                    offset = 2;
+
+                    foreach (var excludedAddress in item.ExcludedAddresses)
+                    {
+                        builder.Append($"{excludedAddress}, ");
+                    }
+                }
+
+                return builder.ToString(0, builder.Length - offset);
             }
         }
     }

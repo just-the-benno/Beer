@@ -147,6 +147,9 @@
   <data name="EditButtonTooltip" xml:space="preserve">
     <value>Edit this Scope</value>
   </data>
+  <data name="ExcludedAddressLabel" xml:space="preserve">
+    <value>Excl</value>
+  </data>
   <data name="LoadingMessage" xml:space="preserve">
     <value>Scopes are loading...</value>
   </data>
