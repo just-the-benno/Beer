@@ -97,6 +97,9 @@ namespace Beer.DaAPI.Shared.Responses
                 public Guid Id { get; set; }
                 public String StartAddress { get; set; }
                 public String EndAddress { get; set; }
+                public IEnumerable<String> ExcludedAddresses { get; set; } = Array.Empty<String>();
+                public Byte? SubnetMask { get; set; }
+                public String FirstGatewayAddress { get; set; }
             }
 
             public class DHCPv4ScopeTreeViewItem : DHCPv4ScopeItem

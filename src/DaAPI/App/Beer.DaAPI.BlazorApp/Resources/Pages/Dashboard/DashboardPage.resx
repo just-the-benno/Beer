@@ -120,6 +120,9 @@
   <data name="ActiveLeaseNotFoundContent" xml:space="preserve">
     <value>No data found</value>
   </data>
+  <data name="ActiveLeasesCaption" xml:space="preserve">
+    <value>Active Leases</value>
+  </data>
   <data name="ActiveLeasesCardTitle" xml:space="preserve">
     <value>Active Leases</value>
   </data>
@@ -132,14 +135,26 @@
   <data name="ActiveLeaseTableHeaderForLeasedPrefix" xml:space="preserve">
     <value>Prefix</value>
   </data>
+  <data name="ActiveLeaseTableHeaderForRebinding" xml:space="preserve">
+    <value>Rebinding due</value>
+  </data>
+  <data name="ActiveLeaseTableHeaderForRenew" xml:space="preserve">
+    <value>Renew due</value>
+  </data>
   <data name="ActiveLeaseTableHeaderForScope" xml:space="preserve">
     <value>Scope</value>
   </data>
   <data name="ActiveLeaseTableHeaderForStarted" xml:space="preserve">
     <value>Started</value>
   </data>
+  <data name="ActiveLeaseTableHeaderForStatus" xml:space="preserve">
+    <value>State</value>
+  </data>
   <data name="ActiveLeaseTableHeaderForType" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="ActiveLeaseTableHeaderTimestamp" xml:space="preserve">
+    <value>Timestamp</value>
   </data>
   <data name="BoxCaptionForInterfaces" xml:space="preserve">
     <value>Interfaces</value>
@@ -171,6 +186,12 @@
   <data name="DHCPv6ResponseCodeCardTitle" xml:space="preserve">
     <value>DHCPv6 Reponse Codes</value>
   </data>
+  <data name="FileteredPacketHelperContent" xml:space="preserve">
+    <value>There are multiple reasons why DaAPI filters packets. A filtered packet is a packet that has been recognized as a valid DHCP packet but didn't pass specific criteria like the received message was intended for a client or the source has sent to much packets in a time period.</value>
+  </data>
+  <data name="FileteredPacketHelperTitle" xml:space="preserve">
+    <value>Filtered Packets</value>
+  </data>
   <data name="FilteredPacketCardTitle" xml:space="preserve">
     <value>Filtered Packets</value>
   </data>
@@ -181,6 +202,12 @@
     <value>Incoming Packet Types</value>
   </data>
   <data name="InvalidPacketCardTitle" xml:space="preserve">
+    <value>Invalid Packets</value>
+  </data>
+  <data name="InvalidPacketHelperContent" xml:space="preserve">
+    <value>A packet is marked as invalid when the byte sequence can't be recognized or the resulting packet is not formatted according to the RFCs. Receiving invalid packets can be caused by defective clients or indicating related network issues.</value>
+  </data>
+  <data name="InvalidPacketHelperTitle" xml:space="preserve">
     <value>Invalid Packets</value>
   </data>
   <data name="LatestPacketNoResponseAvailable" xml:space="preserve">
@@ -198,11 +225,17 @@
   <data name="LatestPacketTableHeaderForSourceAddress" xml:space="preserve">
     <value>Source</value>
   </data>
+  <data name="LatestPacketTableHeaderForTimestamp" xml:space="preserve">
+    <value>Timestamp</value>
+  </data>
   <data name="LatestPacketTableHeaderForType" xml:space="preserve">
     <value>Type</value>
   </data>
   <data name="LeaseRunningOutOfTime" xml:space="preserve">
     <value>Not valid anymore</value>
+  </data>
+  <data name="LeasesDueToRenewCaption" xml:space="preserve">
+    <value>Leses Due For Renew</value>
   </data>
   <data name="LeasesToExpireCaption" xml:space="preserve">
     <value>Leases to expire</value>
@@ -210,10 +243,16 @@
   <data name="LoadingDashboardMessage" xml:space="preserve">
     <value>Data is loading</value>
   </data>
+  <data name="NoLeasesDueForRenewMessage" xml:space="preserve">
+    <value>No Leases are due to renew</value>
+  </data>
   <data name="ResponseCardCardTitle" xml:space="preserve">
     <value>Responses Codes</value>
   </data>
   <data name="ShowPacketDetailsTooltipText" xml:space="preserve">
     <value>Show Packet Details</value>
+  </data>
+  <data name="TypeFilterLabelBoth" xml:space="preserve">
+    <value>Both</value>
   </data>
 </root>

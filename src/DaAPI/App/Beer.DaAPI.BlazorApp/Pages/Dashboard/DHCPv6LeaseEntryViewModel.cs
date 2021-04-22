@@ -8,7 +8,30 @@ using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1;
 
 namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 {
-    public class DHCPv6LeaseEntryViewModel : DHCPv6LeaseEntry
+    public interface IViewModelLeaseEntry : ILeaseEntry
+    {
+        DHCPLeaseStates State
+        {
+            get
+            {
+                DateTime now = DateTime.UtcNow;
+                if (now > ExpectedRebindingAt)
+                {
+                    return DHCPLeaseStates.Rebinding;
+                }
+                else if (now > ExpectedRenewalAt)
+                {
+                    return DHCPLeaseStates.Renewing;
+                }
+                else
+                {
+                    return DHCPLeaseStates.Active;
+                }
+            }
+        }
+    }
+
+    public class DHCPv6LeaseEntryViewModel : DHCPv6LeaseEntry, IViewModelLeaseEntry
     {
         public DHCPv6ScopeItem Scope { get; set; }
 

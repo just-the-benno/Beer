@@ -16,6 +16,17 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         #region Constructor
 
+        private DHCPv4AddressListScopeProperty()
+        {
+
+        }
+
+        public DHCPv4AddressListScopeProperty(DHCPv4OptionTypes optionIdentifier, IEnumerable<IPv4Address> addresses)
+            : this((Byte)optionIdentifier, addresses)
+        {
+
+        }
+
         public DHCPv4AddressListScopeProperty(Byte optionIdentifier, IEnumerable<IPv4Address> addresses) : base(
             optionIdentifier,DHCPv4ScopePropertyType.AddressList)
         {

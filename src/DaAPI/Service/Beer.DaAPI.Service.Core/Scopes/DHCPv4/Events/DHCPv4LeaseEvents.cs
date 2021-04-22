@@ -105,6 +105,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             public DateTime ValidUntil { get; set; }
             public Byte[] UniqueIdentifier { get; set; }
             public Guid? AncestorId { get; set; }
+            public TimeSpan RenewalTime { get; set; }
+            public TimeSpan PreferredLifetime { get; set; }
 
             #endregion
 
@@ -133,18 +135,23 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         public class DHCPv4LeaseRenewedEvent : DHCPv4ScopeRelatedEvent
         {
             public DateTime End { get; set; }
-            public Boolean Reset { get; set; }
+            public DateTime RenewalTime { get; set; }
+            public DateTime PreferredLifetime { get; set; }
 
+            public Boolean Reset { get; set; }
+            
             public DHCPv4LeaseRenewedEvent()
             {
 
             }
 
-            public DHCPv4LeaseRenewedEvent(Guid leaseId, DateTime end, Boolean reset)
+            public DHCPv4LeaseRenewedEvent(Guid leaseId, DateTime end, DateTime renewalTime, DateTime preferredLifetime,  Boolean reset)
             {
                 EntityId = leaseId;
                 End = end;
                 Reset = reset;
+                RenewalTime = renewalTime;
+                PreferredLifetime = preferredLifetime;
             }
         }
 

@@ -3,7 +3,13 @@
 <MudCard>
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">@Title</MudText>
+            <div class="d-flex flex-row align-center">
+                <MudText Typo="Typo.h6">@Title</MudText>
+                @if (Explanation != null)
+                {
+                    @Explanation
+                }
+            </div>
         </CardHeaderContent>
         <CardHeaderActions>
             <MudMenu Label="@($"{L["GroupedByLabel"]} {@GetCurrentGroupingLabel()}")" >
@@ -40,6 +46,8 @@
     [Parameter] public DateTime? EndDate { get; set; }
 
     [Parameter] public IEnumerable<DataSeriesDescription> DataSeriesDescription { get; set; }
+
+    [Parameter] public RenderFragment Explanation { get; set; }
 
     private DateRange _dateRange = new DateRange( DateTime.Now.AddDays(-20).Date, DateTime.Now.Date);
 }

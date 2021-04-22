@@ -8,7 +8,7 @@ using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1;
 
 namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 {
-    public class DHCPv4LeaseEntryViewModel : DHCPv4LeaseEntry
+    public class DHCPv4LeaseEntryViewModel : DHCPv4LeaseEntry, IViewModelLeaseEntry
     {
         public DHCPv4ScopeItem Scope { get; set; }
 

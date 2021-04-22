@@ -41,6 +41,7 @@ namespace Beer.DaAPI.Core.Common
 
         public bool Equals(DUID other)
         {
+            if (other is null == true) { return false; }
             return ByteHelper.AreEqual(this.Value, other.Value);
         }
 

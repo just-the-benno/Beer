@@ -32,10 +32,10 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
             {
                 new DHCPv6AndResolver().GetDescription(),
                 new DHCPv6OrResolver().GetDescription(),
+                new DHCPv6PseudoResolver().GetDescription(),
                 new DHCPv6RemoteIdentifierEnterpriseNumberResolver(Mock.Of<ILogger<DHCPv6RemoteIdentifierEnterpriseNumberResolver>>()).GetDescription(),
                 new DHCPv6RelayAgentSubnetResolver().GetDescription(),
                 new DHCPv6RelayAgentResolver().GetDescription(),
-                new DHCPv6PseudoResolver().GetDescription(),
                 new DHCPv6MilegateResolver().GetDescription(),
                 new DHCPv6PeerAddressResolver().GetDescription(),
                 new DHCPv6ClientDUIDResolver().GetDescription(),

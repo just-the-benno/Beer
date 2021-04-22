@@ -27,17 +27,29 @@
                     <MudTreeViewItem @bind-Expanded="@context.IsExpanded" Value="context" Items="@context.Children" Style="overflow-x: hidden; overflow-y: hidden;">
                         <Content>
                             <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" Visible="@context.Children.Any()" />
-                            <MudText Typo="@Typo.body1" Class="mud-treeview-item-label">
+                            <MudText Typo="@Typo.h6" Class="mud-treeview-item-label">
                                 @context.Value.Name
                             </MudText>
+                            <MudText Typo="@Typo.body1" Class="mud-treeview-item-label mr-4" Style="text-align:right">
+                                @GetScopeAddressRangeAsString(context.Value)
+                                @if (context.Value.SubnetMask.HasValue == true)
+                                {
+                                     @($"/{context.Value.SubnetMask}")
+                                }
+                                @if (String.IsNullOrEmpty(context.Value.FirstGatewayAddress) == false)
+                                {
+                                    @($" GW: {context.Value.FirstGatewayAddress} ")
+                                }
+                            </MudText>
+                       
                             <MudTooltip Text="@L["DeleteButtonTooltip"]">
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@( () => ShowDeleteDialog(context.Value))" Color="Color.Error" />
                             </MudTooltip>
                             <MudTooltip Text="@L["EditButtonTooltip"]">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit"  OnClick="@( () => NavigateToEditScope(context.Value))"  Color="Color.Info" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@( () => NavigateToEditScope(context.Value))" Color="Color.Info" />
                             </MudTooltip>
                             <MudTooltip Text="@L["CopyButtonTooltip"]">
-                                <MudIconButton Icon="@Icons.Material.Filled.FileCopy"  OnClick="@( () => NavigateToCreateCopyFromScope(context.Value))"  Color="Color.Primary" />
+                                <MudIconButton Icon="@Icons.Material.Filled.FileCopy" OnClick="@( () => NavigateToCreateCopyFromScope(context.Value))" Color="Color.Primary" />
                             </MudTooltip>
                             <MudTooltip Text="@L["AddChildScopeToolTip"]">
                                 <MudIconButton Icon="@Icons.Material.Filled.ChildFriendly" OnClick="@( () => NavigateToCreateNewChildScope(context.Value))" Color="Color.Primary" />

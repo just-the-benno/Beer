@@ -44,6 +44,9 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                 EndAddress = scope.AddressRelatedProperties.End.ToString(),
                 Name = scope.Name,
                 ChildScopes = childItems,
+                ExcludedAddresses = scope.AddressRelatedProperties.ExcludedAddresses.Select(x => x.ToString()).ToArray(),
+                SubnetMask = scope.AddressRelatedProperties.Mask == null ? new Byte?() : (Byte)scope.AddressRelatedProperties.Mask.GetSlashNotation(),
+                FirstGatewayAddress = (scope.Properties?.Properties ?? Array.Empty<DHCPv4ScopeProperty>()).OfType<DHCPv4AddressListScopeProperty>().Where(x => x.OptionIdentifier == (Byte)DHCPv4OptionTypes.Router).Select(x => x.Addresses.First().ToString()).FirstOrDefault(),
             };
 
             parentChildren.Add(node);
@@ -75,9 +78,12 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             var node = new DHCPv4ScopeItem
             {
                 Id = scope.Id,
+                Name = scope.Name,
                 StartAddress = scope.AddressRelatedProperties.Start.ToString(),
                 EndAddress = scope.AddressRelatedProperties.End.ToString(),
-                Name = scope.Name,
+                ExcludedAddresses = scope.AddressRelatedProperties.ExcludedAddresses.Select(x => x.ToString()).ToArray(),
+                SubnetMask = scope.AddressRelatedProperties.Mask == null ? new Byte?() : (Byte)scope.AddressRelatedProperties.Mask.GetSlashNotation(),
+                FirstGatewayAddress = (scope.Properties?.Properties ?? Array.Empty<DHCPv4ScopeProperty>()).OfType<DHCPv4AddressListScopeProperty>().Where(x => x.OptionIdentifier == (Byte)DHCPv4OptionTypes.Router).Select(x => x.Addresses.First().ToString()).FirstOrDefault(),
             };
 
             collection.Add(node);
@@ -241,7 +247,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         {
             request.Resolver.PropertiesAndValues = Shared.Helper.DictionaryHelper.NormelizedProperties(request.Resolver.PropertiesAndValues);
 
-            var command =  new UpdateDHCPv4ScopeCommand(scopeId,
+            var command = new UpdateDHCPv4ScopeCommand(scopeId,
                 request.Name, request.Description, request.ParentId, request.AddressProperties, request.Resolver, request.Properties);
 
             return await ExecuteCommand(command);

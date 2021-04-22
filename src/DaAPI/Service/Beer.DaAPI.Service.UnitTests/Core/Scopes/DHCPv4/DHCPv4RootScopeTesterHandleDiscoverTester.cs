@@ -20,7 +20,6 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 {
     public class DHCPv4RootScopeTesterHandleDiscoverTester : DHCPv4RootScopeTesterBase
     {
-
         private void CheckPacket(IPv4Address expectedAdress, DHCPv4Packet result)
         {
             Assert.NotNull(result);
@@ -33,7 +32,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 
         private static void CheckLeaseRenewdEvent(
     Guid scopeId,
-    DHCPv4RootScope rootScope, DHCPv4Lease lease)
+    DHCPv4RootScope rootScope, DHCPv4Lease lease, TimeSpan renewalTime, TimeSpan preferredLifetime)
         {
             IEnumerable<DomainEvent> changes = rootScope.GetChanges();
             Assert.NotNull(changes);
@@ -51,6 +50,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.True(createdEvent.Reset);
 
             Assert.Equal(lease.End, createdEvent.End);
+            Assert.True(Math.Abs(((DateTime.UtcNow + renewalTime) - createdEvent.RenewalTime).TotalSeconds) < 20);
+            Assert.True(Math.Abs(((DateTime.UtcNow + preferredLifetime) - createdEvent.PreferredLifetime).TotalSeconds) < 20);
         }
 
         private void CheckHandeledEvent(Int32 index, DHCPv4Packet discoverPacket, DHCPv4Packet result, DHCPv4RootScope rootScope, Guid scopeId)
@@ -78,7 +79,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.Equal(scopeId, handeledEvent.ScopeId);
             Assert.False(handeledEvent.WasSuccessfullHandled);
         }
-     
+
         [Fact]
         public void HandleDiscover_NoLeaseFound_AddressAvaiable()
         {
@@ -121,6 +122,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.255"),
                         new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         maskLength: 24,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
                     ResolverInformation = resolverInformations,
@@ -188,6 +191,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.10"),
                         new List<IPv4Address>(),
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         maskLength: 24,
                         addressAllocationStrategy: allocationStrategy),
                     ResolverInformation = resolverInformations,
@@ -266,6 +271,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         excludedAddress,
                         leaseTime: TimeSpan.FromDays(1),
                         maskLength: 24,
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         addressAllocationStrategy: allocationStrategy),
                     ResolverInformation = resolverInformations,
                     Name = "Testscope",
@@ -273,7 +280,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 })
             });
 
-            IPv4Address expectedAdress = IPv4Address.FromBytes(192,168,178,avaiableAddress);
+            IPv4Address expectedAdress = IPv4Address.FromBytes(192, 168, 178, avaiableAddress);
 
             DHCPv4Packet result = rootScope.HandleDiscover(discoverPacket);
             CheckPacket(expectedAdress, result);
@@ -289,7 +296,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
         [Fact]
         public void HandleDiscover_LeaseFound_ReuseEnabled()
         {
-            Random random = new Random();
+            Random random = new();
 
             IPv4HeaderInformation headerInformation =
                 new IPv4HeaderInformation(IPv4Address.Empty, IPv4Address.Broadcast);
@@ -322,6 +329,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 
             IPv4Address leasedAddress = IPv4Address.FromString("192.168.178.10");
             DateTime leaseCreatedAt = DateTime.UtcNow.AddHours(-1);
+            TimeSpan renewalTime = TimeSpan.FromHours(12);
+            TimeSpan preferredLifetime = TimeSpan.FromHours(18);
             DHCPv4RootScope rootScope = GetRootScope(scopeResolverMock);
             rootScope.Load(new List<DomainEvent>{ new DHCPv4ScopeEvents.DHCPv4ScopeAddedEvent(
                 new DHCPv4ScopeCreateInstruction
@@ -331,6 +340,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.255"),
                         new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: renewalTime,
+                        preferredLifetime: preferredLifetime,
                         reuseAddressIfPossible: true,
                         maskLength: 24,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
@@ -357,7 +368,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.Equal(leaseId, lease.Id);
 
             CheckEventAmount(2, rootScope);
-            CheckLeaseRenewdEvent(scopeId, rootScope, lease);
+            CheckLeaseRenewdEvent(scopeId, rootScope, lease, renewalTime, preferredLifetime);
             CheckHandeledEvent(1, discoverPacket, result, rootScope, scopeId);
         }
 
@@ -407,9 +418,11 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.1"),
                         IPv4Address.FromString("192.168.178.255"),
                         new List<IPv4Address>{
-                            IPv4Address.FromString("192.168.178.1") 
+                            IPv4Address.FromString("192.168.178.1")
                         },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         maskLength: 24,
                         reuseAddressIfPossible: false,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
@@ -495,6 +508,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         leaseTime: TimeSpan.FromDays(1),
                         maskLength: 24,
                         reuseAddressIfPossible: false,
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
                     ResolverInformation = resolverInformations,
                     Name = "Testscope",
@@ -581,6 +596,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                             IPv4Address.FromString("192.168.178.2"),
                         },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         maskLength: 24,
                         reuseAddressIfPossible: false,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
@@ -669,6 +686,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.255"),
                         new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         maskLength: 24,
                         reuseAddressIfPossible: false,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
@@ -756,6 +775,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         IPv4Address.FromString("192.168.178.255"),
                         new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
                         leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         reuseAddressIfPossible: true,
                         maskLength: 24,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
@@ -843,6 +864,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                         new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
                         leaseTime: TimeSpan.FromDays(1),
                         reuseAddressIfPossible: true,
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(20),
                         maskLength: 24,
                         addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
                     ResolverInformation = resolverInformations,

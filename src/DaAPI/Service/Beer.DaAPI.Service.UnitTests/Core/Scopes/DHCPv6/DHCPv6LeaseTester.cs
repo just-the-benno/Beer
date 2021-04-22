@@ -398,7 +398,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                             @event = new DHCPv6LeaseReleasedEvent(leaseId, false);
                             break;
                         case 2:
-                            @event = new DHCPv6LeaseRenewedEvent(leaseId, DateTime.UtcNow.AddHours(3), false, false);
+                            @event = new DHCPv6LeaseRenewedEvent(leaseId, DateTime.UtcNow.AddHours(3), DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddHours(2), false, false);
                             break;
                         case 3:
                             @event = new DHCPv6LeaseExpiredEvent(leaseId);
@@ -419,7 +419,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                             @event = new DHCPv6LeaseRevokedEvent(leaseId);
                             break;
                         case 2:
-                            @event = new DHCPv6AddressSuspendedEvent(leaseId, random.GetIPv6Address(),DateTime.UtcNow.AddHours(3));
+                            @event = new DHCPv6AddressSuspendedEvent(leaseId, random.GetIPv6Address(), DateTime.UtcNow.AddHours(3));
                             break;
                         default:
                             break;

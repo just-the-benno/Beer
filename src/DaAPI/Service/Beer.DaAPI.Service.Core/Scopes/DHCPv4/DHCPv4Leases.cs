@@ -24,6 +24,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             Guid id,
             IPv4Address address,
             TimeSpan lifetime,
+            TimeSpan renewalTime,
+            TimeSpan preferredLifetime,
             DHCPv4ClientIdentifier identifier,
             Byte[] uniqueIdentifier,
             DHCPv4Lease ancestor
@@ -46,6 +48,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 UniqueIdentifier = uniqueIdentifier,
                 StartedAt = DateTime.UtcNow,
                 ValidUntil = DateTime.UtcNow + lifetime,
+                PreferredLifetime = preferredLifetime,
+                RenewalTime = renewalTime,
                 AncestorId = ancestor != null && ancestor.IsActive() ? ancestor.Id : new Guid?(),
             });
 

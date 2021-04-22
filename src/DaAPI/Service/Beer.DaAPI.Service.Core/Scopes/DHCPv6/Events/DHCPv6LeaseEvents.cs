@@ -138,6 +138,9 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             public DUID ClientIdentifier { get; set; }
             public DateTime StartedAt { get; set; }
             public DateTime ValidUntil { get; set; }
+            public TimeSpan RenewalTime { get; set; }
+            public TimeSpan PreferredLifetime { get; set; }
+
             public Byte[] UniqueIdentiifer { get; set; }
             public UInt32 IdentityAssocationId { get; set; }
             public Boolean HasPrefixDelegation { get; set; }
@@ -179,18 +182,22 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             public DateTime End { get; set; }
             public Boolean Reset { get; set; }
             public Boolean ResetPrefix { get; set; }
+            public DateTime RenewalTime { get; set; }
+            public DateTime PreferredLifetime { get; set; }
 
             public DHCPv6LeaseRenewedEvent()
             {
 
             }
 
-            public DHCPv6LeaseRenewedEvent(Guid leaseId, DateTime end, Boolean reset, Boolean resetPrefix)
+            public DHCPv6LeaseRenewedEvent(Guid leaseId, DateTime end,DateTime renewalTime, DateTime preferredLifetime, Boolean reset, Boolean resetPrefix)
             {
                 EntityId = leaseId;
                 End = end;
                 Reset = reset;
                 ResetPrefix = resetPrefix;
+                RenewalTime = renewalTime;
+                PreferredLifetime = preferredLifetime;
             }
         }
 
@@ -207,7 +214,6 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
             }
         }
-
 
         public class DHCPv6LeaseRemovedEvent : DHCPv6ScopeRelatedEvent
         {

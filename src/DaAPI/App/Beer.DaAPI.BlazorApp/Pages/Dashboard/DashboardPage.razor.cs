@@ -8,6 +8,8 @@ using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Common;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 {
@@ -16,6 +18,30 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
         private readonly DashboardPageViewModel _vm = new();
         private String _activeLeaseSearchterm = String.Empty;
 
+        public TypeFilter LeaseTypeFilter { get; set; } = TypeFilter.Both;
+
+        private void LeaseTypeSelectedOptionChanged(TypeFilter filter)
+        {
+            LeaseTypeFilter = filter;
+            _vm.SetLeaseFilter(filter);
+        }
+
+        private Dictionary<Guid, Boolean> _filteredScopes = new();
+
+        private void FilteredScopeChanged(Boolean value, Guid id)
+        {
+            _filteredScopes[id] = value;
+        }
+
+        private Boolean IsScopeVisibleFoFilter(Guid id) => _filteredScopes[id];
+
+        public TypeFilter PacketTypeFilter { get; set; } = TypeFilter.Both;
+
+        private void PacketTypeSelectedOptionChanged(TypeFilter filter)
+        {
+            PacketTypeFilter = filter;
+            _vm.SePacketFilter(filter);
+        }
 
         private String GetPacketHandledError(IPacketEntry entry) =>
          entry switch
@@ -57,10 +83,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
                 DialogParameters parameters = new();
                 parameters.Add(nameof(DHCPv6PacketDetailsDialog.Packet), packet);
 
-                _dialogService.Show<DHCPv6PacketDetailsDialog>(L["DHCPv6PacketDetailsDialogTitle"], parameters, 
+                _dialogService.Show<DHCPv6PacketDetailsDialog>(L["DHCPv6PacketDetailsDialogTitle"], parameters,
                     new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = false });
             }
-            else if(entry is DHCPv4PacketHandledEntry dhcpv4Entry)
+            else if (entry is DHCPv4PacketHandledEntry dhcpv4Entry)
             {
                 DHCPv4Packet packet = DHCPv4Packet.FromByteArray(isResponse == false ? dhcpv4Entry.Request.Content : dhcpv4Entry.Response.Content,
                    new IPv4HeaderInformation(
@@ -88,6 +114,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
             return diff.Humanize();
         }
 
+        private String GetTimeRemainingOfRenew(ILeaseEntry entry) => (DateTime.UtcNow - entry.ExpectedRenewalAt).Humanize();
+        private String GetTimeRemainingOfRebinding(ILeaseEntry entry) => (DateTime.UtcNow - entry.ExpectedRebindingAt).Humanize();
+
         private static String GetAgeOfLease(ILeaseEntry entry) => $"{(DateTime.UtcNow - entry.Start).Humanize()}";
 
         private static Color GetColorBasedOnLifetime(ILeaseEntry entry) => (entry.End - DateTime.UtcNow) switch
@@ -108,6 +137,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 
             _vm.SetDHCPv6Scopes(dhcpv6Scopes);
             _vm.SetDHCPv4Scopes(dhcpv4Scopes);
+
+            _filteredScopes = _vm.DHCPv4Scopes.Keys.Union(_vm.DHCPv6Scopes.Keys).ToDictionary(x => x, x => false);
+            _vm.SetLeaseFilter(_filteredScopes);
 
             await base.OnInitializedAsync();
         }

@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="RenewalTimeContent" xml:space="preserve">
-    <value>Die Zeit die vergeht, bist ein Client versucht das Lease zu verlängern.</value>
-  </data>
-  <data name="RenewalTimeName" xml:space="preserve">
-    <value>Verlängerungszeit</value>
-  </data>
   <data name="ScopePropertyAcceptDeclinesContent" xml:space="preserve">
     <value>Wenn diese Option aktiviert wird, akzeptiert DaAPI DHCPv6 DECLINE Nachrichten. In der Folge wird die entsprechende Adresse gesperrt und kann nicht mehr an andere Clients zugewiesen werden. Diese Sperre hält eine begrenzte Zeit. DECLINE Nachrichten sollten von Clients verwendet werden, wenn beispielsweise die Adresse bereits verwendet wird. Es kann jedoch auch genutzt werden, um eine Entleerung des Adresspools zu erreichen.</value>
   </data>
@@ -176,6 +170,12 @@
   </data>
   <data name="ScopePropertyPreferredLifetimeName" xml:space="preserve">
     <value>Eigenschaft: Bevorzuge Lebenszeit</value>
+  </data>
+  <data name="ScopePropertyRenewalTimeContent" xml:space="preserve">
+    <value>Die Zeit die vergeht, bist ein Client versucht das Lease zu verlängern.</value>
+  </data>
+  <data name="ScopePropertyRenewalTimeName" xml:space="preserve">
+    <value>Verlängerungszeit</value>
   </data>
   <data name="ScopePropertyResolverContent" xml:space="preserve">
     <value>ellen. Vereinfacht, prüft ein Zuordnern, ob ein Packet seine Bedingungen erfüllt. Die Quelladresse eines Relay Agent kann zum Beispiel ein solcher Zuordner sein.
