@@ -120,4 +120,7 @@
   <data name="IPv4Address_NotValid" xml:space="preserve">
     <value>Keine gültige IPv4 Addresse</value>
   </data>
+  <data name="IPv6Address_NotValid" xml:space="preserve">
+    <value>Keine gültige IPv6 Addresse</value>
+  </data>
 </root>

@@ -29,7 +29,7 @@ namespace Beer.DaAPI.BlazorApp.Helper
             {
                 DHCPv6ScopePropertyType.AddressList => JsonConvert.DeserializeObject<DHCPv6AddressListScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
                 DHCPv6ScopePropertyType.Byte or DHCPv6ScopePropertyType.UInt16 or DHCPv6ScopePropertyType.UInt32 => JsonConvert.DeserializeObject<DHCPv6NumericScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
-                DHCPv6ScopePropertyType.Text => throw new NotImplementedException(),
+                DHCPv6ScopePropertyType.Text => JsonConvert.DeserializeObject<DHCPv6TextScopePropertyResponse>(jo.ToString(), SpecifiedSubclassConversion),
                 _ => throw new NotImplementedException(),
             };
         }

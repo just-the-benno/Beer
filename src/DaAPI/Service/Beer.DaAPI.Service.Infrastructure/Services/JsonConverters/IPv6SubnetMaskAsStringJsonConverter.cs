@@ -12,8 +12,19 @@ namespace Beer.DaAPI.Infrastructure.Services.JsonConverters
 
         public override object ReadJson(JsonReader reader, Type objectType,  object existingValue, JsonSerializer serializer)
         {
-            String value = reader.Value as String;
-            return new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(Convert.ToByte(value)));
+            if(reader.Value is not String value)
+            {
+                if (reader.Value is Int64 numberValue)
+                {
+                    return new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(Convert.ToByte(numberValue)));
+                }
+
+                return new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(0));
+            }
+            else
+            {
+                return new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(Convert.ToByte(value)));
+            }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

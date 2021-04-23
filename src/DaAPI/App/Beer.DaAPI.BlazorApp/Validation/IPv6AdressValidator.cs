@@ -1,4 +1,5 @@
 ﻿using Beer.DaAPI.BlazorApp.ModelHelper;
+using Beer.DaAPI.Core.Common.DHCPv6;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 using System;
@@ -22,14 +23,16 @@ namespace Beer.DaAPI.BlazorApp.Validation
            {
                if (x == null) { return false; }
 
-               if (IPAddress.TryParse((String)x, out IPAddress address) == true)
+               try
                {
-                   return address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork;
+                   IPv6Address.FromString(x);
+                   return true;
                }
-               else
+               catch (Exception)
                {
                    return false;
                }
+               
            }).WithMessage(localizer["IPv6Address_NotValid"]).WithName(propertyName);
         }
     }

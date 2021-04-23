@@ -117,49 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddChildScopeToolTip" xml:space="preserve">
-    <value>Add a child Scope</value>
+  <data name="Address" xml:space="preserve">
+    <value>Single Address</value>
   </data>
-  <data name="CopyButtonTooltip" xml:space="preserve">
-    <value>Copy this Scope</value>
+  <data name="AddressAndMask" xml:space="preserve">
+    <value>Address and Mask</value>
   </data>
-  <data name="CreateNewScopeToolTipText" xml:space="preserve">
-    <value>Create a new root Scope</value>
+  <data name="AddressList" xml:space="preserve">
+    <value>Multiple Adresses</value>
   </data>
-  <data name="DeleteButtonTooltip" xml:space="preserve">
-    <value>Delete this Scope</value>
+  <data name="Boolean" xml:space="preserve">
+    <value>True/False</value>
   </data>
-  <data name="DeleteDialogTitle" xml:space="preserve">
-    <value>Delete the scope {0}</value>
+  <data name="Byte" xml:space="preserve">
+    <value>unsigned integer (1 Byte)</value>
   </data>
-  <data name="DeleteScopeModalHeader" xml:space="preserve">
-    <value>Delete scope {0}</value>
+  <data name="ByteArray" xml:space="preserve">
+    <value>Byte sequence</value>
   </data>
-  <data name="DeleteScopesSuccessSnackbarContent" xml:space="preserve">
-    <value>The scope '{0}' has been successfully deleted</value>
+  <data name="Subnet" xml:space="preserve">
+    <value>Subent</value>
   </data>
-  <data name="DeleteScopeSuccessCaption" xml:space="preserve">
-    <value>Success!</value>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
   </data>
-  <data name="DeleteScopeSuccessText" xml:space="preserve">
-    <value>scope {0} deleted. Reloading scopes...</value>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
   </data>
-  <data name="EditButtonTooltip" xml:space="preserve">
-    <value>Edit this Scope</value>
+  <data name="TimeOffset" xml:space="preserve">
+    <value>Time offset</value>
   </data>
-  <data name="ExcludedAddressLabel" xml:space="preserve">
-    <value>Without</value>
+  <data name="UInt16" xml:space="preserve">
+    <value>unsigned integer (2 Byte)</value>
   </data>
-  <data name="LoadingMessage" xml:space="preserve">
-    <value>Scopes are loading...</value>
-  </data>
-  <data name="NewScopeButtonCaption" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="NoScopesFound" xml:space="preserve">
-    <value>No scopes found. You can create a scope</value>
-  </data>
-  <data name="PageTitle" xml:space="preserve">
-    <value>DHCPv4 Scopes</value>
+  <data name="UInt32" xml:space="preserve">
+    <value>unsigned integer (4 Byte)</value>
   </data>
 </root>

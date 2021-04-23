@@ -30,8 +30,8 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
 
             List<ScopeResolverDescription> descriptions = new List<ScopeResolverDescription>
             {
-                new DHCPv6AndResolver().GetDescription(),
-                new DHCPv6OrResolver().GetDescription(),
+                //new DHCPv6AndResolver().GetDescription(),
+                //new DHCPv6OrResolver().GetDescription(),
                 new DHCPv6PseudoResolver().GetDescription(),
                 new DHCPv6RemoteIdentifierEnterpriseNumberResolver(Mock.Of<ILogger<DHCPv6RemoteIdentifierEnterpriseNumberResolver>>()).GetDescription(),
                 new DHCPv6RelayAgentSubnetResolver().GetDescription(),

@@ -7,21 +7,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Beer.DaAPI.BlazorApp.Helper;
 using static Beer.DaAPI.Core.Scopes.ScopeResolverPropertyDescription;
-using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1;
+using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1;
 using Beer.DaAPI.Shared.Requests;
-using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
+using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
+using Beer.DaAPI.Core.Common.DHCPv6;
 
-namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
+namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 {
-    public class IPv4AddressForScopeReosolverPropertyViewModel : ValueObjectWithParent<String, CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel>
+    public class IPv6AddressForScopeResolverPropertyViewModel : ValueObjectWithParent<String, CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel>
     {
-        public IPv4AddressForScopeReosolverPropertyViewModel(String value, CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel parent) : base(
+        public IPv6AddressForScopeResolverPropertyViewModel(String value, CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel parent) : base(
               value ?? String.Empty, parent)
         {
         }
     }
 
-    public class CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel
+    public class CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel
     {
         public Boolean IsListValue { get; }
         public Boolean IsTextValue { get; }
@@ -34,7 +35,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         public ScopeResolverPropertyValueTypes ValueType { get; }
         public String Name { get; }
 
-        public CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel(
+        public CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel(
             String propertyName, ScopeResolverPropertyValueTypes valueType)
         {
             ValueType = valueType;
@@ -42,11 +43,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
             switch (valueType)
             {
-                case ScopeResolverPropertyValueTypes.IPv4Address:
-                case ScopeResolverPropertyValueTypes.String:
                 case ScopeResolverPropertyValueTypes.IPv6Address:
+                case ScopeResolverPropertyValueTypes.String:
+                case ScopeResolverPropertyValueTypes.IPv4Address:
                 case ScopeResolverPropertyValueTypes.IPv6NetworkAddress:
-                case ScopeResolverPropertyValueTypes.IPv6Subnet:
                 case ScopeResolverPropertyValueTypes.ByteArray:
                     IsTextValue = true;
                     break;
@@ -55,6 +55,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 case ScopeResolverPropertyValueTypes.Byte:
                 case ScopeResolverPropertyValueTypes.VLANId:
                 case ScopeResolverPropertyValueTypes.IPv4Subnetmask:
+                case ScopeResolverPropertyValueTypes.IPv6Subnet:
                     IsNumericValue = true;
                     break;
                 case ScopeResolverPropertyValueTypes.NullableUInt32:
@@ -62,7 +63,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                     break;
                 case ScopeResolverPropertyValueTypes.IPv4AddressList:
                     IsListValue = true;
-                    Addresses = new List<IPv4AddressForScopeReosolverPropertyViewModel>();
+                    Addresses = new List<IPv6AddressForScopeResolverPropertyViewModel>();
                     AddEmptyValue();
                     break;
                 case ScopeResolverPropertyValueTypes.Boolean:
@@ -74,7 +75,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         }
 
-        public CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel(
+        public CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel(
              String propertyName, ScopeResolverPropertyValueTypes valueType,
             String rawValue) : this(propertyName, valueType)
         {
@@ -103,8 +104,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             }
             else if (IsListValue == true)
             {
-                Addresses = new List<IPv4AddressForScopeReosolverPropertyViewModel>();
-                foreach (var item in System.Text.Json.JsonSerializer.Deserialize<List<String>>(rawValue).Select(x => new IPv4AddressForScopeReosolverPropertyViewModel(x, this)))
+                Addresses = new List<IPv6AddressForScopeResolverPropertyViewModel>();
+                foreach (var item in System.Text.Json.JsonSerializer.Deserialize<List<String>>(rawValue).Select(x => new IPv6AddressForScopeResolverPropertyViewModel(x, this)))
                 {
                     Addresses.Add(item);
                 }
@@ -115,11 +116,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         public Int64? NullableNumericValue { get; set; }
         public Int64 NumericValue { get; set; }
         public Boolean BooleanValue { get; set; }
-        public IList<IPv4AddressForScopeReosolverPropertyViewModel> Addresses { get; private set; } = new List<IPv4AddressForScopeReosolverPropertyViewModel>();
+        public IList<IPv6AddressForScopeResolverPropertyViewModel> Addresses { get; private set; } = new List<IPv6AddressForScopeResolverPropertyViewModel>();
 
         public void AddEmptyValue()
         {
-            Addresses.Add(new IPv4AddressForScopeReosolverPropertyViewModel("0.0.0.0", this));
+            Addresses.Add(new IPv6AddressForScopeResolverPropertyViewModel("::1", this));
             Key = Guid.NewGuid();
         }
 
@@ -170,7 +171,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         }
     }
 
-    public class CreateOrUpdateDHCPv4ScopeResolverRelatedViewModel
+    public class CreateOrUpdateDHCPv6ScopeResolverRelatedViewModel
     {
         private String _resolverType;
 
@@ -188,9 +189,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             }
         }
 
-        public IList<CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel> Properties { get; set; } = new List<CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel>();
+        public IList<CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel> Properties { get; set; } = new List<CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel>();
 
-        public void SetPropertiesToDefault(DHCPv4ScopeResolverDescription description)
+        public void SetPropertiesToDefault(DHCPv6ScopeResolverDescription description)
         {
             if (description == null) { return; }
 
@@ -198,7 +199,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
             foreach (var item in description.Properties)
             {
-                Properties.Add(new CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel(item.PropertyName, item.PropertyValueType));
+                Properties.Add(new CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel(item.PropertyName, item.PropertyValueType));
             }
         }
 
@@ -210,7 +211,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                         x => x.GetSerializedValue()),
             };
 
-        internal void LoadFromResponse(DHCPv4ScopePropertiesResponse properties,DHCPv4ScopeResolverDescription description)
+        internal void LoadFromResponse(DHCPv6ScopePropertiesResponse properties,DHCPv6ScopeResolverDescription description)
         {
             if (description == null) { return; }
 
@@ -220,14 +221,14 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 var propertyType = description.Properties.FirstOrDefault(x => x.PropertyName.ToLower() == item.Key.ToLower());
                 if(propertyType == null) { continue; }
 
-                Properties.Add(new CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel(propertyType.PropertyName, propertyType.PropertyValueType, item.Value));
+                Properties.Add(new CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel(propertyType.PropertyName, propertyType.PropertyValueType, item.Value));
             }
         }
     }
 
-    public class CreateOrUpdateDHCPv4ScopeResolverRelatedViewModelValidator : AbstractValidator<CreateOrUpdateDHCPv4ScopeResolverRelatedViewModel>
+    public class CreateOrUpdateDHCPv6ScopeResolverRelatedViewModelValidator : AbstractValidator<CreateOrUpdateDHCPv6ScopeResolverRelatedViewModel>
     {
-        public CreateOrUpdateDHCPv4ScopeResolverRelatedViewModelValidator(IStringLocalizer<CreateOrUpdateDHCPv4ScopePage> localizer)
+        public CreateOrUpdateDHCPv6ScopeResolverRelatedViewModelValidator(IStringLocalizer<CreateOrUpdateDHCPv6ScopePage> localizer)
         {
             RuleFor(x => x.ResolverType).NotNull().NotEmpty();
 
@@ -246,16 +247,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 element.RuleFor(x => x.SingleValue).NotNull().NotEmpty().When(x => x.IsTextValue);
 
                 element.RuleFor(x => x.SingleValue).Matches(@"^[0-9a-fA-F]+$").WithMessage(localizer["ValidationNotAValidByteSequnce"]).When(x => x.ValueType == ScopeResolverPropertyValueTypes.ByteArray);
-                element.RuleFor(x => x.SingleValue).Must(x => x.AsIPv4Address() != IPv4Address.Empty).WithMessage(localizer["ValidationNotIPv4Address"]).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv4Address);
-
-                element.RuleFor(x => x.Addresses).Must(x => x.Count > 0).WithMessage(localizer["ValidationOptionalPropertiesAddressesArtEmpty"]).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv4AddressList);
-
-                element.RuleForEach(x => x.Addresses).ChildRules(element2 =>
-                {
-                    element2.RuleFor(x => x.Value).Cascade(CascadeMode.Stop).InjectIPv4AdressValidator(localizer["SingleAddtionalOptionAddressLabel"]);
-                    element2.RuleFor(x => x.Value)
-                    .Must((properties, address) => properties.Parent.Addresses.Count(y => y.Value == address) == 1).WithMessage(localizer["ValidationAddressAlreadyExists"]);
-                }).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv4AddressList);
+                element.RuleFor(x => x.SingleValue).Must(x => x.AsIPv6Address() != IPv6Address.Empty).WithMessage(localizer["ValidationNotIPv6Address"]).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv6Address || x.ValueType == ScopeResolverPropertyValueTypes.IPv6NetworkAddress);
+                element.RuleFor(x => x.NumericValue).NotNull().LessThanOrEqualTo(128).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv6Subnet);
             });
         }
     }

@@ -148,7 +148,7 @@
     <value>Bereich bearbeiten</value>
   </data>
   <data name="ExcludedAddressLabel" xml:space="preserve">
-    <value>Exklusive</value>
+    <value>Ohne</value>
   </data>
   <data name="LoadingMessage" xml:space="preserve">
     <value>Bereiche werden geladen</value>

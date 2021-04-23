@@ -240,6 +240,9 @@
   <data name="ParentStartAddressLabel" xml:space="preserve">
     <value>Parent Start</value>
   </data>
+  <data name="PrefixDelegationLabel" xml:space="preserve">
+    <value>Prefix Delegation</value>
+  </data>
   <data name="PrefixPlaceholder" xml:space="preserve">
     <value>Enter a prefix here</value>
   </data>
@@ -261,6 +264,9 @@
   <data name="StartAddressPlaceholder" xml:space="preserve">
     <value>Start address of scope</value>
   </data>
+  <data name="String1" xml:space="preserve">
+    <value>with</value>
+  </data>
   <data name="SubmitButtionSendingCaption" xml:space="preserve">
     <value>Sending...</value>
   </data>
@@ -281,5 +287,8 @@
   </data>
   <data name="UpdatePageTitleWhenLoadingFinished" xml:space="preserve">
     <value>Update DHCPv6 Scope {0}</value>
+  </data>
+  <data name="ValidLifetimeLabel" xml:space="preserve">
+    <value>Valid Lifetime</value>
   </data>
 </root>

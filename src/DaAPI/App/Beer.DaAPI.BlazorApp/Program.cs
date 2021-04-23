@@ -20,6 +20,7 @@ using System.Globalization;
 using FluentValidation;
 using MudBlazor;
 using Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes;
+using Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes;
 
 namespace Beer.DaAPI.BlazorApp
 {
@@ -49,11 +50,13 @@ namespace Beer.DaAPI.BlazorApp
                 client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
                  .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
-            builder.Services.AddSingleton<DHCPv6PacketOptionCodeToNameConverter>();
             builder.Services.AddSingleton<DHCPPacketResponseCodeHelper>();
 
+            builder.Services.AddSingleton<DHCPv6PacketOptionCodeToNameConverter>();
+            builder.Services.AddSingleton<DHCPv6ScopePropertyTypeNameConverter>();
+            builder.Services.AddSingleton<DHCPv6ScopeResolverPropertyValyeTypeNameConverter>();
+
             builder.Services.AddSingleton<DHCPv4PacketOptionCodeToNameConverter>();
-            builder.Services.AddSingleton<DHCPPacketResponseCodeHelper>();
             builder.Services.AddSingleton<DHCPv4ScopePropertyTypeNameConverter>();
             builder.Services.AddSingleton<DHCPv4ScopeResolverPropertyValyeTypeNameConverter>();
 

@@ -44,8 +44,7 @@ namespace Beer.DaAPI.Service.API.Infrastrucutre
                 case DHCPv6ScopePropertyType.UInt32:
                     return JsonConvert.DeserializeObject<DHCPv6NumericScopePropertyRequest>(jo.ToString(), SpecifiedSubclassConversion);
                 case DHCPv6ScopePropertyType.Text:
-                    throw new NotImplementedException();
-
+                    return JsonConvert.DeserializeObject<DHCPv6TextScopePropertyRequest>(jo.ToString(), SpecifiedSubclassConversion);
                 default:
                     throw new NotImplementedException();
             }

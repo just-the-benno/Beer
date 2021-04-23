@@ -1,0 +1,474 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccpetDeclinesLabel" xml:space="preserve">
+    <value>Akzeptiere Decline Nachrichten</value>
+  </data>
+  <data name="AccpetInformsLabel" xml:space="preserve">
+    <value>Akzeptiere  Inform Nachrichten</value>
+  </data>
+  <data name="AddAddressToOptionToolTip" xml:space="preserve">
+    <value>Füge eine weitere IPv6 Adresse hinzu</value>
+  </data>
+  <data name="AddAddressToResolverPropertyToolTip" xml:space="preserve">
+    <value>Füge eine IPv6 Adresse hinzu</value>
+  </data>
+  <data name="AddExcludedAddress" xml:space="preserve">
+    <value>Füge eine ausgeschlossene Adresse hinzu</value>
+  </data>
+  <data name="AddOptionalValuesToolTipText" xml:space="preserve">
+    <value>Klicken Sie hier um eine neuen optional Wert hinzuzufügen</value>
+  </data>
+  <data name="AddressAllocationStrategies_Next_Label" xml:space="preserve">
+    <value>Nächste</value>
+  </data>
+  <data name="AddressAllocationStrategies_Random_Label" xml:space="preserve">
+    <value>Zufällig</value>
+  </data>
+  <data name="AddressAllocationStrategyLabel" xml:space="preserve">
+    <value>Adressvergabe Prinzip</value>
+  </data>
+  <data name="AddressPropertiesSectionHeading" xml:space="preserve">
+    <value>Addressbezogene Eigenschaften</value>
+  </data>
+  <data name="AddressPropertyPropertyHeading" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AddressPropertyPropertyOverrideParentValue" xml:space="preserve">
+    <value>Überschreiben?</value>
+  </data>
+  <data name="AddressPropertyPropertyParentValue" xml:space="preserve">
+    <value>Wert von übergeordneten Element</value>
+  </data>
+  <data name="AddressPropertyPropertyValue" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="CreateScopeButtonCaption" xml:space="preserve">
+    <value>Bereich erstellen</value>
+  </data>
+  <data name="CreateScopeFailedSnackbarContent" xml:space="preserve">
+    <value>Fehler beim erstellen des Bereiches</value>
+  </data>
+  <data name="CreateScopeSuccessSnackbarContent" xml:space="preserve">
+    <value>Der Bereich "{0}"  wurde erfolgreich erstellt</value>
+  </data>
+  <data name="CreatingScopeButtonCaption" xml:space="preserve">
+    <value>Bereich wird erstellt...</value>
+  </data>
+  <data name="DeleteAddressFromOptionalValuesTooltip" xml:space="preserve">
+    <value>Entferne diese Adresse</value>
+  </data>
+  <data name="DeleteAddressFromResolverPropertyValuesTooltip" xml:space="preserve">
+    <value>Entferne diese IPv6 Addresse von der Liste </value>
+  </data>
+  <data name="DeleteOptionalValuesTooltip" xml:space="preserve">
+    <value>Entferne diesen optionalen Wert</value>
+  </data>
+  <data name="DeleteSingleExcludedAddressTooltipText" xml:space="preserve">
+    <value>Entferne diese ausgeschlosseene Addresse</value>
+  </data>
+  <data name="DescriptionLabel" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="DescriptionPlaceholder" xml:space="preserve">
+    <value>(optional) Fügen Sie hier eine Beschreibung für den Bereich ein</value>
+  </data>
+  <data name="EnablePrefixDelegationLabel" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="EndAddressLabel" xml:space="preserve">
+    <value>Letzte Adresse des Bereichs</value>
+  </data>
+  <data name="EndAddressPlaceholder" xml:space="preserve">
+    <value>Letzte (eingeschlossene) IPv6 Addresse des Bereichs</value>
+  </data>
+  <data name="ExcludedAddressLabel" xml:space="preserve">
+    <value>Augeschlosseene Adressen</value>
+  </data>
+  <data name="GenerellSectionHeading" xml:space="preserve">
+    <value>Allgemein</value>
+  </data>
+  <data name="HasParentLabel" xml:space="preserve">
+    <value>Hat übergeordenten Bereich</value>
+  </data>
+  <data name="LeaseTimeLabel" xml:space="preserve">
+    <value>ValidLifetimeTimeLabel</value>
+  </data>
+  <data name="LoadingAdditionalDataText" xml:space="preserve">
+    <value>Zusätzliche Daten werden geladen</value>
+  </data>
+  <data name="LoadingParentDetails" xml:space="preserve">
+    <value>Laden Details der Eltern</value>
+  </data>
+  <data name="LoadParentsText" xml:space="preserve">
+    <value>Lade der verfügbaren Bereiche</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NamePlaceholder" xml:space="preserve">
+    <value>Geben Sie den Namen des Bereichs an. z.B. "Mein besonderer Kunde"</value>
+  </data>
+  <data name="NextCaption" xml:space="preserve">
+    <value>Nächster Schritt</value>
+  </data>
+  <data name="NoExcludedAddressFound" xml:space="preserve">
+    <value>Keine Adressen sind ausgeschlossen</value>
+  </data>
+  <data name="NoOptionalValuesSetInfoText" xml:space="preserve">
+    <value>Keine optionalen Werte existieren. Sie können jedoch, welche hinzufügen</value>
+  </data>
+  <data name="OptionalPropertiesValueLabel" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="OptionalValueCaptionForCustomOption" xml:space="preserve">
+    <value>Angepasst</value>
+  </data>
+  <data name="OptionalValueCaptionForCustomPlaceholder" xml:space="preserve">
+    <value>Code eingeben, etwa 43</value>
+  </data>
+  <data name="OptionalValueHeadingOption" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="OptionalValueHeadingOverrideParentValue" xml:space="preserve">
+    <value>Überschreiben?</value>
+  </data>
+  <data name="OptionalValueHeadingStopInheritance" xml:space="preserve">
+    <value>Vererbung beenden?</value>
+  </data>
+  <data name="OptionalValueHeadingType" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="OptionalValueHeadingValue" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="OptionalValuesAddressOptionPlaceholder" xml:space="preserve">
+    <value>Eine Adresse hier eingeben</value>
+  </data>
+  <data name="OptionalValuesNumericOptionPlaceholder" xml:space="preserve">
+    <value>Eine Nummer hier eingeben</value>
+  </data>
+  <data name="OptionalValuesTextOptionPlaceholder" xml:space="preserve">
+    <value>Ein Text hier eingeben</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Ein neuen Bereich erstellen</value>
+  </data>
+  <data name="PageTitleForUpdating" xml:space="preserve">
+    <value>Den Bereich {0} bearbeiten</value>
+  </data>
+  <data name="PageTitleForUpdatingModeContentNotLoaded" xml:space="preserve">
+    <value>Bereich aktualiseren. Daten werden geladen...</value>
+  </data>
+  <data name="ParentLabel" xml:space="preserve">
+    <value>Übergeordnetner Bereich</value>
+  </data>
+  <data name="PreferredLifetimeLabel" xml:space="preserve">
+    <value>Preferred Lifetime</value>
+  </data>
+  <data name="PrefixAssignHelperLabel" xml:space="preserve">
+    <value>Mit</value>
+  </data>
+  <data name="PrefixDelegationAssingedLengthLabel" xml:space="preserve">
+    <value>Länge der zugewiesenen Präfixe</value>
+  </data>
+  <data name="PrefixDelegationAssingedLengthPlaceholder" xml:space="preserve">
+    <value>/64</value>
+  </data>
+  <data name="PrefixDelegationLabel" xml:space="preserve">
+    <value>Präfix Delegation</value>
+  </data>
+  <data name="PrefixDelegationLengthLabel" xml:space="preserve">
+    <value>Länge des Präfix</value>
+  </data>
+  <data name="PrefixDelegationLengthPlaceholder" xml:space="preserve">
+    <value>/50</value>
+  </data>
+  <data name="PrefixDelegationNetworkLabel" xml:space="preserve">
+    <value>Präfix</value>
+  </data>
+  <data name="PrefixDelegationNetworkPlaceholder" xml:space="preserve">
+    <value>Geben Sie hier das Netzwerk an 2200:4000::0</value>
+  </data>
+  <data name="PreviousCaption" xml:space="preserve">
+    <value>Vorheriger Schritt</value>
+  </data>
+  <data name="RapitCommitEnabledLabel" xml:space="preserve">
+    <value>Rapit Commit</value>
+  </data>
+  <data name="ResolverPropertiesSectionHeading" xml:space="preserve">
+    <value>Zuordner</value>
+  </data>
+  <data name="ResolverPropertyEnterByteArrayPlaceholer" xml:space="preserve">
+    <value>Geben Sie eine Bytefolge hier ein 0a23dab3</value>
+  </data>
+  <data name="ResolverPropertyEnterIPv4AddressPlaceholer" xml:space="preserve">
+    <value>Geben Sie eine gültige IPv6 Adresse an</value>
+  </data>
+  <data name="ResolverPropertyEnterIPv4SubnetmaskPlaceholer" xml:space="preserve">
+    <value>Geben Sie das Subnetz (als Nummer) an. Bspw /40</value>
+  </data>
+  <data name="ResolverPropertyEnterIPv6AddressPlaceholer" xml:space="preserve">
+    <value>Geben Sie eine gültige IPv6 Adresse ein</value>
+  </data>
+  <data name="ResolverPropertyEnterNumericValuePlaceholer" xml:space="preserve">
+    <value>Eine Zahl hier eingeben</value>
+  </data>
+  <data name="ResolverPropertyEnterTextValuePlaceholer" xml:space="preserve">
+    <value>Einen Text hier eingeben</value>
+  </data>
+  <data name="ResolverPropertyEnterVLANIdPlaceholer" xml:space="preserve">
+    <value>Eine VLAN Nummer hier eingeben</value>
+  </data>
+  <data name="ResolverPropertyNameColumnHeader" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ResolverPropertyTypeColumnHeader" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="ResolverPropertyValueColumnHeader" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="ReuseAddressLabel" xml:space="preserve">
+    <value>Adresse wiederverwenden</value>
+  </data>
+  <data name="ScopeCopyPrefix" xml:space="preserve">
+    <value>Kopie von</value>
+  </data>
+  <data name="ScopePropertiesSectionHeading" xml:space="preserve">
+    <value>Optionale Werte</value>
+  </data>
+  <data name="SingleAddtionalOptionAddressLabel" xml:space="preserve">
+    <value>IPv6 Adresse</value>
+  </data>
+  <data name="SingleExcludedAddressLabel" xml:space="preserve">
+    <value>Ausgeschlossene IPv6 Adresse</value>
+  </data>
+  <data name="SingleExcludedAddressPlaceholder" xml:space="preserve">
+    <value>Geben Sie eine ausgeschlossene IPv6 Adresse hier ein</value>
+  </data>
+  <data name="StartAddressLabel" xml:space="preserve">
+    <value>Start Adresse</value>
+  </data>
+  <data name="StartAddressPlaceholder" xml:space="preserve">
+    <value>Geben Sie die Startadresse des Bereichs ein</value>
+  </data>
+  <data name="SupportUnicastLabel" xml:space="preserve">
+    <value>Client dürfen Unicast packe schicken</value>
+  </data>
+  <data name="T1Label" xml:space="preserve">
+    <value>T1</value>
+  </data>
+  <data name="T2Label" xml:space="preserve">
+    <value>T2</value>
+  </data>
+  <data name="UpdateScopeButtonCaption" xml:space="preserve">
+    <value>Bereich bearbeiten</value>
+  </data>
+  <data name="UpdateScopeFailedSnackbarContent" xml:space="preserve">
+    <value>Fehler beim aktualiseren des Bereichs</value>
+  </data>
+  <data name="UpdateScopeSuccessSnackbarContent" xml:space="preserve">
+    <value>Der Bereich "{0}"  wurde erfolgreich geupdated </value>
+  </data>
+  <data name="UpdatingScopeButtonCaption" xml:space="preserve">
+    <value>Bereich wird geupdated....</value>
+  </data>
+  <data name="ValidationAddressAlreadyExists" xml:space="preserve">
+    <value>Diese Adresse wird bereits benutzt</value>
+  </data>
+  <data name="ValidationAssingedPrefixLengthSmallerThanPrefixLength" xml:space="preserve">
+    <value>Die zugewiesene Präfixlänge muss kleiner oder gleich der Präfixlänge sein</value>
+  </data>
+  <data name="ValidationEndAddressBiggerThenEndInParentRange" xml:space="preserve">
+    <value>Die letzte Adresse des Bereichs muss kleiner oder gleich der der letzten Adresse des übergeordenten Bereich sein </value>
+  </data>
+  <data name="ValidationEndAddressSmallerThenStartInParentRange" xml:space="preserve">
+    <value>Die letzte Adresse des Bereichs muss größer oder gleich der Startadresse des übergeordenten Bereich sein</value>
+  </data>
+  <data name="ValidationEndGreaterThenStart" xml:space="preserve">
+    <value>Die Endadresse muss größer oder gleich der Startadresse sein End needs to be smaller then start</value>
+  </data>
+  <data name="ValidationExcludedAddressAlreadyExists" xml:space="preserve">
+    <value>Diese Adresse wird bereits ausgeschlossen</value>
+  </data>
+  <data name="ValidationExcludedAddressGreaterThenEnd" xml:space="preserve">
+    <value>Diese Addresse ist nicht im Adressebereich dieses Bereichs </value>
+  </data>
+  <data name="ValidationExcludedAddressSmallerThenStart" xml:space="preserve">
+    <value>Diese Addresse ist nicht im Adressebereich dieses Bereichs</value>
+  </data>
+  <data name="ValidationLifetimeSmallerThanPreferredLifetimeOfParent" xml:space="preserve">
+    <value>Die gültige Lebenszeit kan nicht kleiner sein als die bevorzugte Lebenszeit des überrgeordneten Bereichs</value>
+  </data>
+  <data name="ValidationNotAValidByteSequnce" xml:space="preserve">
+    <value>Dieser Werte wurde nicht als Bytefolge erkannt. Dieser wert darf nur  Hexadezimale Werde wie AABC0234 enthalten</value>
+  </data>
+  <data name="ValidationNotAValidNetwork" xml:space="preserve">
+    <value>Diese Netz ist kein gültiges IPv6 Netz für die gegebene Maske</value>
+  </data>
+  <data name="ValidationNotIPv4Address" xml:space="preserve">
+    <value>Keine gültige IPv6 Adresse</value>
+  </data>
+  <data name="ValidationNotValidIPv4Subnetmask" xml:space="preserve">
+    <value>Kein Gültiges Subnetz. Der wert muss zwischen 0 und 32 liegen</value>
+  </data>
+  <data name="ValidationOptionalAddressAlreadyExists" xml:space="preserve">
+    <value>Diese Adresse wird bereits benutzt</value>
+  </data>
+  <data name="ValidationOptionalPropertiesAddressesArtEmpty" xml:space="preserve">
+    <value>Es muss mindestens eine gültige IPv6 Adresse angegeben sein</value>
+  </data>
+  <data name="ValidationPreferredLifetimeGreaterThanValidLifetime" xml:space="preserve">
+    <value>Die Bevorzugte Lebenszeit kann nicht kleiner sein als die gültige Lebenszeit.</value>
+  </data>
+  <data name="ValidationPreferredLifetimeGreaterThanValidLifetimeOfParent" xml:space="preserve">
+    <value>Die Bevorzugte Lebenszeit kann nicht kleiner sein als die gültige Lebenszeit des überrgeordneten Bereichs</value>
+  </data>
+  <data name="ValidationPrefixLengthGreaterThanAssingedPrefixLength" xml:space="preserve">
+    <value>Die Präfixlänge muss gleich oder größer der zugewiesenen Präfixlänge sein</value>
+  </data>
+  <data name="ValidationStartAddressGreaterThenInParentRangeEnd" xml:space="preserve">
+    <value>Startadresse muss größer sein als die Endadresse des übergeordnenten Bereichs</value>
+  </data>
+  <data name="ValidationStartAddressSmallerThenInParentRange" xml:space="preserve">
+    <value>Die Startadresse darf nicht kleiner sein als die Startadresse des übergeordnenten Bereichs</value>
+  </data>
+  <data name="ValidationStartSmallerThenEnd" xml:space="preserve">
+    <value>Die Startadresse muss größer sein als die Endadresse</value>
+  </data>
+  <data name="ValidationT1BiggerThanT2" xml:space="preserve">
+    <value>T1 kann nicht größer sein als T2</value>
+  </data>
+  <data name="ValidationT1BiggerThanT2OfParent" xml:space="preserve">
+    <value>T1 kann nicht größer sein als T2 des überrgeordneten Bereichs</value>
+  </data>
+  <data name="ValidationT2SmallerThanT1" xml:space="preserve">
+    <value>T2 kann nicht kleiner sein als T1</value>
+  </data>
+  <data name="ValidationT2SmallerThanT1OfParent" xml:space="preserve">
+    <value>T2 kann nicht kleiner sein als T1 des überrgeordneten Bereichs</value>
+  </data>
+  <data name="ValidationValidLifetimeSmallerThanPreferredLifetime" xml:space="preserve">
+    <value>Die gültige Lebenszeit kan nicht kleiner sein als die bevorzugte Lebenszeit. </value>
+  </data>
+  <data name="ValidLifetimeLabel" xml:space="preserve">
+    <value>Lebenszeit</value>
+  </data>
+</root>

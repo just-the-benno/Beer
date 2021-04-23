@@ -235,7 +235,7 @@
     <value>Abgelaufen</value>
   </data>
   <data name="LeasesDueToRenewCaption" xml:space="preserve">
-    <value>Leases die erneuerten werden müssen</value>
+    <value>Leases mit abgelaufener Renewtime</value>
   </data>
   <data name="LeasesToExpireCaption" xml:space="preserve">
     <value>Leases die bald ablaufen</value>
