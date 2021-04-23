@@ -75,30 +75,26 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         private String GetScopeAddressRangeAsString(DHCPv4ScopeTreeViewItem item)
         {
-            if(item.StartAddress == item.EndAddress)
+            if (item.StartAddress == item.EndAddress)
             {
                 return item.StartAddress;
             }
             else
             {
-                StringBuilder builder = new(300);
-                builder.Append($"{item.StartAddress} - {item.EndAddress}");
-
-                Int32 offset = 0;
-
-                if(item.ExcludedAddresses.Any() == true)
-                {
-                    builder.Append($" | {L["ExcludedAddressLabel"]} ");
-                    offset = 2;
-
-                    foreach (var excludedAddress in item.ExcludedAddresses)
-                    {
-                        builder.Append($"{excludedAddress}, ");
-                    }
-                }
-
-                return builder.ToString(0, builder.Length - offset);
+                return $"{item.StartAddress} - {item.EndAddress}";
             }
+        }
+
+        private String GetExcludedAddressAsString(DHCPv4ScopeTreeViewItem item)
+        {
+            StringBuilder builder = new(300);
+
+            foreach (var excludedAddress in item.ExcludedAddresses)
+            {
+                builder.Append($"{excludedAddress}, ");
+            }
+
+            return builder.ToString(0, builder.Length - 2);
         }
     }
 }

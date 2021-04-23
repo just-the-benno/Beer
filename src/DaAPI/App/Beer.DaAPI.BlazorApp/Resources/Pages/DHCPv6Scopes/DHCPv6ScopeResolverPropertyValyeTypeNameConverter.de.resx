@@ -117,49 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddChildScopeToolTip" xml:space="preserve">
-    <value>Add a child Scope</value>
+  <data name="Boolean" xml:space="preserve">
+    <value>Wahr/Falsch</value>
   </data>
-  <data name="CopyButtonTooltip" xml:space="preserve">
-    <value>Copy this Scope</value>
+  <data name="Byte" xml:space="preserve">
+    <value>postive Ganzzahl (1 Byte)</value>
   </data>
-  <data name="CreateNewScopeToolTipText" xml:space="preserve">
-    <value>Create a new root Scope</value>
+  <data name="ByteArray" xml:space="preserve">
+    <value>Byte Folge</value>
   </data>
-  <data name="DeleteButtonTooltip" xml:space="preserve">
-    <value>Delete this Scope</value>
+  <data name="IPv4Address" xml:space="preserve">
+    <value>IPv4 Adresse</value>
   </data>
-  <data name="DeleteDialogTitle" xml:space="preserve">
-    <value>Delete the scope {0}</value>
+  <data name="IPv4AddressList" xml:space="preserve">
+    <value>IPv4 Adressen</value>
   </data>
-  <data name="DeleteScopeModalHeader" xml:space="preserve">
-    <value>Delete scope {0}</value>
+  <data name="IPv4Subnetmask" xml:space="preserve">
+    <value>IPv4 Subnetzmaske</value>
   </data>
-  <data name="DeleteScopesSuccessSnackbarContent" xml:space="preserve">
-    <value>The scope '{0}' has been successfully deleted</value>
+  <data name="IPv6Address" xml:space="preserve">
+    <value>IPv6 Adresse</value>
   </data>
-  <data name="DeleteScopeSuccessCaption" xml:space="preserve">
-    <value>Success!</value>
+  <data name="IPv6NetworkAddress" xml:space="preserve">
+    <value>IPv6 Netzwerkadresse</value>
   </data>
-  <data name="DeleteScopeSuccessText" xml:space="preserve">
-    <value>scope {0} deleted. Reloading scopes...</value>
+  <data name="IPv6Subnet" xml:space="preserve">
+    <value>IPv6 Subnetz</value>
   </data>
-  <data name="EditButtonTooltip" xml:space="preserve">
-    <value>Edit this Scope</value>
+  <data name="NotSpecified" xml:space="preserve">
+    <value>Nicht angegeben</value>
   </data>
-  <data name="ExcludedAddressLabel" xml:space="preserve">
-    <value>Without</value>
+  <data name="NullableUInt32" xml:space="preserve">
+    <value>postive Ganzzahl  (4 Byte) mit null werten</value>
   </data>
-  <data name="LoadingMessage" xml:space="preserve">
-    <value>Scopes are loading...</value>
+  <data name="Numeric" xml:space="preserve">
+    <value>Zahl</value>
   </data>
-  <data name="NewScopeButtonCaption" xml:space="preserve">
-    <value>New</value>
+  <data name="Resolvers" xml:space="preserve">
+    <value>Zuordner</value>
   </data>
-  <data name="NoScopesFound" xml:space="preserve">
-    <value>No scopes found. You can create a scope</value>
+  <data name="String" xml:space="preserve">
+    <value>Zeichenktte</value>
   </data>
-  <data name="PageTitle" xml:space="preserve">
-    <value>DHCPv4 Scopes</value>
+  <data name="UInt32" xml:space="preserve">
+    <value>postive Ganzzahl (4 Byte)</value>
+  </data>
+  <data name="VLANId" xml:space="preserve">
+    <value>VLAN ID</value>
   </data>
 </root>

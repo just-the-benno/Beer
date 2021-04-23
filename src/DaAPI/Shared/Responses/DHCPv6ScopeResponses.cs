@@ -36,6 +36,11 @@ namespace Beer.DaAPI.Shared.Responses
                 public NumericScopePropertiesValueTypes NumericType { get; set; }
             }
 
+            public class DHCPv6TextScopePropertyResponse : DHCPv6ScopePropertyResponse
+            {
+                public String Value { get; set; }
+            }
+
             public class DHCPv6ScopePropertiesResponse
             {
                 public String Name { get; set; }

@@ -136,6 +136,11 @@ namespace Beer.DaAPI.Shared.Requests
                 public NumericScopePropertiesValueTypes NumericType { get; set; }
             }
 
+            public class DHCPv6TextScopePropertyRequest : DHCPv6ScopePropertyRequest
+            {
+                public String Value { get; set; }
+            }
+
             public class DHCPv6ScopeDeleteRequest
             { 
                 [Required]

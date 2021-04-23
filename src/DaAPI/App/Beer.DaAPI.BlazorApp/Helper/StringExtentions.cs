@@ -1,4 +1,5 @@
 ﻿using Beer.DaAPI.Core.Common;
+using Beer.DaAPI.Core.Common.DHCPv6;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,18 @@ namespace Beer.DaAPI.BlazorApp.Helper
             catch (Exception)
             {
                 return IPv4Address.Empty;
+            }
+        }
+
+        public static IPv6Address AsIPv6Address(this String input)
+        {
+            try
+            {
+                return IPv6Address.FromString(input);
+            }
+            catch (Exception)
+            {
+                return IPv6Address.Empty;
             }
         }
     }

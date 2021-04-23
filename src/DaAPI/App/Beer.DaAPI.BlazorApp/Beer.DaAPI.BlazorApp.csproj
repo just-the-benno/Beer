@@ -108,7 +108,6 @@
 
   <ItemGroup>
     <Folder Include="FrontendAssets\temp\" />
-    <Folder Include="Pages\DHCPv6Scopes\" />
     <Folder Include="Resources\Components\" />
     <Folder Include="Resources\Shared\Layout\" />
     <Folder Include="wwwroot\css\lib\" />

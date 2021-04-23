@@ -240,6 +240,12 @@
   <data name="ParentStartAddressLabel" xml:space="preserve">
     <value>Erste Adresse des Elternteils</value>
   </data>
+  <data name="PrefixAssigneHelperLabel" xml:space="preserve">
+    <value>mit</value>
+  </data>
+  <data name="PrefixDelegationLabel" xml:space="preserve">
+    <value>Prefix Delegation</value>
+  </data>
   <data name="PrefixPlaceholder" xml:space="preserve">
     <value>Geben Sie hier ein Präfix ein</value>
   </data>
@@ -281,5 +287,8 @@
   </data>
   <data name="UpdatePageTitleWhenLoadingFinished" xml:space="preserve">
     <value> DHCPv6 Bereich {0} bearbeiten</value>
+  </data>
+  <data name="ValidLifetimeLabel" xml:space="preserve">
+    <value>Lebenszeit</value>
   </data>
 </root>

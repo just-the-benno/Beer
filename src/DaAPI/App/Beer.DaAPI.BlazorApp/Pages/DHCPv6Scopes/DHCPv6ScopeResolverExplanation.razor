@@ -1,0 +1,34 @@
+﻿@inject IStringLocalizer<DHCPv6ScopeResolverExplanation> L
+@inherits MudComponentBase
+
+@if (OnlyTitle == false)
+{
+    <DaAPILittleHelperComponent Content="@_content" Heading="@($"{(ResolverTypeName == ResolverPropertyName ? L["ResolverCaption"]  : L["PropertyCaption"])}: {_title}")" Style="@Style" ButtonStyle="@ButtonStyle" UserAttributes="@UserAttributes" />
+}
+else
+{
+    @_title;
+}
+
+@code {
+
+    private String _title;
+    private String _content;
+
+    [Parameter] public String ResolverTypeName { get; set; }
+    [Parameter] public String ResolverPropertyName { get; set; }
+    [Parameter] public Boolean OnlyTitle { get; set; } = false;
+    [Parameter] public String ButtonStyle { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        String keyForTitle = $"{ResolverTypeName}_{ResolverPropertyName}_Caption";
+        String keyForContent = $"{ResolverTypeName}_{ResolverPropertyName}_Content";
+
+        _title = L[keyForTitle];
+        _content = L[keyForContent];
+    }
+
+}

@@ -1,8 +1,8 @@
 ﻿
-@page "/scopes/dhcpv4"
+@page "/scopes/dhcpv6"
 @attribute [Authorize]
 @inject DaAPIService service
-@inject IStringLocalizer<DHCPv4ScopesPage> L
+@inject IStringLocalizer<DHCPv6ScopesPage> L
 @inject NavigationManager _navManager
 @inject ISnackbar _snackBarService
 @inject IDialogService _dialogService
@@ -12,7 +12,7 @@
 <BeerShowCircularLoadingIndicatorWhileNull Item="_scopes" Text="@L["LoadingMessage"]">
     <div class="d-flex justify-end mr-3 mb-2">
         <MudTooltip Text="@L["CreateNewScopeToolTipText"]">
-            <MudFab Icon="@Icons.Material.Filled.Add" Link="/scopes/dhcpv4/create" Color="Color.Primary" />
+            <MudFab Icon="@Icons.Material.Filled.Add" Link="/scopes/dhcpv6/create" Color="Color.Primary" />
         </MudTooltip>
     </div>
     <MudPaper>
@@ -33,12 +33,12 @@
                             <MudText Typo="@Typo.body1" Class="mud-treeview-item-label mr-4" Style="text-align:right">
                                 <span>@GetScopeAddressRangeAsString(context.Value)</span>
 
-                                @if (context.Value.SubnetMask.HasValue == true)
+                                @*@if (context.Value.SubnetMask.HasValue == true)
                                 {
                                     <span> @($"/{context.Value.SubnetMask}")</span>
-                                }
+                                }*@
 
-                                @if (String.IsNullOrEmpty(context.Value.FirstGatewayAddress) == false)
+                                @*@if (String.IsNullOrEmpty(context.Value.FirstGatewayAddress) == false)
                                 {
                                     <span>@($" GW: {context.Value.FirstGatewayAddress} ")</span>
                                 }
@@ -46,7 +46,7 @@
                                 @if (context.Value.ExcludedAddresses.Any() == true)
                                 {
                                     <span>@L["ExcludedAddressLabel"] @GetExcludedAddressAsString(context.Value)</span>
-                                }
+                                }*@
                             </MudText>
 
                             <MudTooltip Text="@L["DeleteButtonTooltip"]">
