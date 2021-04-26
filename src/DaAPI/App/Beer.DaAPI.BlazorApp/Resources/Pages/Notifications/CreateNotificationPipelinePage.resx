@@ -120,29 +120,47 @@
   <data name="ActorCaption" xml:space="preserve">
     <value>Actor</value>
   </data>
+  <data name="ActorGenerellValuePlaceholder" xml:space="preserve">
+    <value>Enter a value here</value>
+  </data>
+  <data name="ActorGenerellValuePlaceLabel" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="ActorLabel" xml:space="preserve">
+    <value>Actor</value>
+  </data>
   <data name="ActorNotSelectedLabel" xml:space="preserve">
     <value>-- No actor selected --</value>
   </data>
-  <data name="BreadcrumbHomeCaption" xml:space="preserve">
-    <value>Home</value>
+  <data name="ActorPropertieNameHeading" xml:space="preserve">
+    <value>Name</value>
   </data>
-  <data name="BreadcrumbPipelineCaption" xml:space="preserve">
-    <value>Pipelines</value>
-  </data>
-  <data name="BreadcrumbSelfCaption" xml:space="preserve">
-    <value>new</value>
+  <data name="ActorPropertieValueHeading" xml:space="preserve">
+    <value>Value</value>
   </data>
   <data name="ConditionCaption" xml:space="preserve">
     <value>Condition</value>
   </data>
+  <data name="ConditionLabel" xml:space="preserve">
+    <value>Condition</value>
+  </data>
   <data name="ConditionNotSelectedLabel" xml:space="preserve">
     <value>-- No condition selected --</value>
+  </data>
+  <data name="ConditionPropertieNameHeading" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ConditionPropertieValueHeading" xml:space="preserve">
+    <value>Value</value>
   </data>
   <data name="CreateButtonCaption" xml:space="preserve">
     <value>Create</value>
   </data>
   <data name="CreateInProgressButtonCaption" xml:space="preserve">
     <value>Sending...</value>
+  </data>
+  <data name="CreatePipelineSuccessMessage" xml:space="preserve">
+    <value>pipeline '{0}' has been successfully created</value>
   </data>
   <data name="ErrorCaption" xml:space="preserve">
     <value>Error</value>
@@ -153,19 +171,46 @@
   <data name="GenerellPropertiesCaption" xml:space="preserve">
     <value>Generell Properties</value>
   </data>
+  <data name="LoadingText" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="NextCaption" xml:space="preserve">
+    <value>Next</value>
+  </data>
   <data name="PageTitle" xml:space="preserve">
     <value>Create a pipeline</value>
+  </data>
+  <data name="PipelineDescriptionLabel" xml:space="preserve">
+    <value>Description</value>
   </data>
   <data name="PipelineDescriptionPlaceholder" xml:space="preserve">
     <value>Enter a description for the pipeline (optional)</value>
   </data>
+  <data name="PipelineNameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="PipelineNamePlaceholder" xml:space="preserve">
     <value>Enter a pipeline name here</value>
+  </data>
+  <data name="PreviousCaption" xml:space="preserve">
+    <value>Previous</value>
   </data>
   <data name="TriggerCaption" xml:space="preserve">
     <value>Trigger</value>
   </data>
+  <data name="TriggerLabel" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
   <data name="TriggerNotSelectedLabel" xml:space="preserve">
     <value>-- No trigger selected --</value>
+  </data>
+  <data name="ValidationAtLeastOneScopeSelected" xml:space="preserve">
+    <value>At least one scopes needs to be selected</value>
+  </data>
+  <data name="ValidationNotAValidUrl" xml:space="preserve">
+    <value>Not a valid URL</value>
+  </data>
+  <data name="ValidationNotEmpty" xml:space="preserve">
+    <value>A value is needed</value>
   </data>
 </root>

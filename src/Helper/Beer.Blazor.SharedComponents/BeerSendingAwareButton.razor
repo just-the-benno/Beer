@@ -1,6 +1,6 @@
 ﻿@if (IsExecuting == false)
 {
-    <MudButton ButtonType="@ButtonType" OnClick="OnClick" Variant="@Variant" Color="@Color" Class="ml-auto">@DefaultText</MudButton>
+    <MudButton ButtonType="@ButtonType" Disabled="@Disabled" OnClick="OnClick" Variant="@Variant" Color="@Color" Class="ml-auto">@DefaultText</MudButton>
 }
 else
 {
@@ -15,6 +15,8 @@ else
     [Parameter] public Boolean IsExecuting { get; set; } = false;
     [Parameter] public String DefaultText { get; set; }
     [Parameter] public String InProgressText { get; set; }
+
+    [Parameter] public Boolean Disabled { get; set; } = false;
 
     [Parameter] public Variant Variant { get; set; } = Variant.Filled;
     [Parameter] public Color Color { get; set; } = Color.Primary;

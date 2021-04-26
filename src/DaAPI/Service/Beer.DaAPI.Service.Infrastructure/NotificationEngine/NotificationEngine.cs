@@ -73,7 +73,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
             {
                 Id = x.Id,
                 Name = x.Name,
-                TriigerName = x.TriggerIdentifier,
+                TrigerName = x.TriggerIdentifier,
                 ActorName = x.Actor.GetType().Name,
                 ConditionName = x.Condition == null ? "None" : x.Condition.GetType().Name,
             }).ToList();
@@ -122,7 +122,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
 
             var mapping = new[]
             {
-                new NotificationPipelineTriggerMapperEnry
+                new NotificationPipelineTriggerMapperEntry
                 {
                  TriggerName = nameof(PrefixEdgeRouterBindingUpdatedTrigger),
                  CompactibleConditions = new[] { nameof(DHCPv6ScopeIdNotificationCondition) },

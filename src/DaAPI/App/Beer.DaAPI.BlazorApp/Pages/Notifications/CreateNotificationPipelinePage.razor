@@ -1,274 +1,163 @@
-﻿@*@inherits AdvancedFormComponent<CreateNotificationPipelineViewModel>
-@implements IDisposable
+﻿@implements IDisposable
 
 @page "/pipelines/create"
 @attribute [Authorize]
 @inject DaAPIService _service
 @inject NavigationManager _navigator
-@inject IJSRuntime _jsRuntime
 @inject IStringLocalizer<CreateNotificationPipelinePage> L
+@inject ISnackbar snackBarService
 
+<MudTabs @ref="_tabs" Elevation="2" Rounded="true" KeepPanelsAlive="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="@L["GenerellPropertiesCaption"]">
+        <EditForm EditContext="_generellPropertiesContext" OnValidSubmit="@( () =>  NavigateToStep(2))">
+            <FluentValidator />
+            <MudTextField T="string" Immediate="true" Placeholder="@L["PipelineNamePlaceholder"]" Label="@L["PipelineNameLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_generellPropertiesModel.Name" For="@(() => _generellPropertiesModel.Name)" />
+            <MudTextField Class="mt-6 mb-2" Lines="5" T="string" Immediate="true" Label="@L["PipelineDescriptionLabel"]" Placeholder="@L["PipelineDescriptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_generellPropertiesModel.Description" For="@(() => _generellPropertiesModel.Description)" />
+            <div class="d-flex justify-end">
+                <MudButton Class="mt-3" ButtonType="ButtonType.Submit" Color="Color.Primary" EndIcon="@Icons.Material.Filled.NavigateNext" Variant="Variant.Filled" Disabled="@(_generellPropertiesContext.GetValidationMessages().Any() == true)">@L["NextCaption"]</MudButton>
+            </div>
+        </EditForm>
+    </MudTabPanel>
 
-<CascadingValue Name="DisableFormElements" Value="@_sendingRequestInProgress">
+    <MudTabPanel Text="@L["TriggerCaption"]" Disabled="@(_generellPropertiesContext.GetValidationMessages().Any() == true)">
+        <EditForm EditContext="_triggerContext" OnValidSubmit="@( () =>  NavigateToStep(3))">
+            <FluentValidator />
 
-    <EditForm EditContext="@EditContext" OnValidSubmit="SendCreateUserRequest">
-        <ObjectGraphDataAnnotationsValidator />
-        <div class="container-fluid">
-            <div class="row">
+            <BeerShowCircularLoadingIndicatorWhileNull Item="_pipelineDescriptions" Text="@L["LoadingText"]">
+                <MudSelect Class="mt-6" T="String" Label="@L["TriggerLabel"]" For="@( () => _triggerPropertiesModel.TriggerName)" @bind-Value="_triggerPropertiesModel.TriggerName">
+                    <MudSelectItem T="string" Value="@null">@L["TriggerNotSelectedLabel"]</MudSelectItem>
+                    @foreach (var item in _pipelineDescriptions.MapperEnries)
+                    {
+                        <MudSelectItem T="string" Value="@item.TriggerName"><NotificationTriggerDisplay Typename="@item.TriggerName" /></MudSelectItem>
+                    }
+                </MudSelect>
+            </BeerShowCircularLoadingIndicatorWhileNull>
 
-                @if (_serviceErrorOccured == true)
+            <div class="d-flex justify-end">
+                <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(1))">@L["PreviousCaption"]</MudButton>
+                <MudButton Class="mt-3" ButtonType="ButtonType.Submit" Color="Color.Primary" EndIcon="@Icons.Material.Filled.NavigateNext" Variant="Variant.Filled" Disabled="@(_triggerContext.GetValidationMessages().Any() == true)">@L["NextCaption"]</MudButton>
+            </div>
+        </EditForm>
+    </MudTabPanel>
+
+    <MudTabPanel Text="@L["ConditionCaption"]" Disabled="@(_triggerContext.GetValidationMessages().Any() == true)">
+        <EditForm EditContext="_conditionContext" OnValidSubmit="@( () =>  NavigateToStep(4))">
+            <FluentValidator />
+
+            <MudSelect Class="mt-6" T="String" Label="@L["ConditionLabel"]" For="@( () => _conditionPropertiesModel.ConditionName)" @bind-Value="_conditionPropertiesModel.ConditionName">
+                <MudSelectItem T="string" Value="@null">@L["ConditionNotSelectedLabel"]</MudSelectItem>
+                @foreach (var item in PossibleCondtions)
                 {
-                    <div class="col-12">
-                        <div class="alert alert-danger">
-                            <h5><i class="icon fas fa-ban"></i> @L["ErrorCaption"]</h5>
-                            @L["ErrorText"]
-                        </div>
-                    </div>
+                    <MudSelectItem T="string" Value="@item"><NotificationConditionDisplay ContiditionName="@item" /></MudSelectItem>
                 }
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">@L["GenerellPropertiesCaption"]</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <CustomLabel For="@(() => Model.Name)" class="col-sm-2 col-form-label" />
-                                <div class="col-sm-10">
-                                    <BootstrapInputText @bind-Value="Model.Name" class="form-control" placeholder="@L["PipelineNamePlaceholder"]" />
-                                    <div class="invalid-feedback mb-3">
-                                        <ValidationMessage For="@(() => Model.Name)" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <CustomLabel For="@(() => Model.Description)" class="col-sm-2 col-form-label" />
-                                <div class="col-sm-10">
-                                    <BootstrapInputTextArea @bind-Value="Model.Description" class="form-control" placeholder="@L["PipelineDescriptionPlaceholder"]" />
-                                    <div class="invalid-feedback mb-3">
-                                        <ValidationMessage For="@(() => Model.Description)" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <LoadingWhileContentNull Item="_pipelineDescriptions">
-                <div class="row">
-                    <div class="col-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">@L["TriggerCaption"]</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group row">
-                                    <CustomLabel For="@(() => Model.TriggerName)" />
-
-                                    <BootstrapInputSelect @bind-Value=Model.TriggerName class="form-control">
-                                        <option value="null">@L["TriggerNotSelectedLabel"]</option>
-                                        @foreach (var item in _pipelineDescriptions.MapperEnries)
-                                        {
-                                            <option value="@item.TriggerName"><NotificationTriggerDisplay Typename="@item.TriggerName" /></option>
-                                        }
-                                    </BootstrapInputSelect>
-                                    <div class="invalid-feedback mb-3">
-                                        <ValidationMessage For="@(() => Model.TriggerName)" />
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">@L["ConditionCaption"]</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group row">
-                                    <CustomLabel For="@(() => Model.ConditionName)" />
-
-                                    <BootstrapInputSelect @bind-Value=Model.ConditionName class="form-control">
-                                        <option value="null">@L["ConditionNotSelectedLabel"]</option>
-                                        @foreach (var item in Model.PossibleCondtions)
-                                        {
-                                            <option value="@item"><NotificationConditionDisplay ContiditionName="@item" /></option>
-                                        }
-                                    </BootstrapInputSelect>
-                                    <div class="invalid-feedback mb-3">
-                                        <ValidationMessage For="@(() => Model.ConditionName)" />
-                                    </div>
-                                </div>
-
-                                @for (int i = 0; i < Model.ConditionsProperties.Count; i++)
-                                {
-                                    var index = i;
-                                    var item = Model.ConditionsProperties[i];
-                                    String inputid = $"conditions-property-{@i}";
-
-                                    <div class="form-group row">
-                                        @if (item.Type != NotificationCondititonDescription.ConditionsPropertyTypes.Boolean)
-                                        {
-                                            <label for="@inputid"><NotificationCondititonDescriptionDisplay ConditionName="@Model.ConditionName" PropertyName="@item.Name" /></label>
-                                        }
-
-                                        @if (item.Type == NotificationCondititonDescription.ConditionsPropertyTypes.Boolean)
-                                        {
-                                            <div class="icheck-primary">
-                                                <BootstrapInputCheckbox @bind-Value="Model.ConditionsProperties[index].ValueAsBoolean" id="@inputid" />
-                                                <label for="@inputid"><NotificationCondititonDescriptionDisplay ConditionName="@Model.ConditionName" PropertyName="@item.Name" /></label>
-                                            </div>
-                                        }
-                                        else if (item.Type == NotificationCondititonDescription.ConditionsPropertyTypes.DHCPv6ScopeList)
-                                        {
-                                            <LoadingWhileContentNull Item="_scopes">
-                                                <BootstrapInputMultipleSelect @bind-Value=Model.ConditionsProperties[index].Values class="select2" data-placeholder="Select scopes" style="width: 100%;">
-                                                    @foreach (var item in _scopes)
-                                                    {
-                                                        <option value="@item.Id.ToString()">@item.Name</option>
-                                                    }
-                                                </BootstrapInputMultipleSelect>
-                                            </LoadingWhileContentNull>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">@L["ActorCaption"]</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group row">
-                                    <CustomLabel For="@(() => Model.ActorName)" />
-
-                                    <BootstrapInputSelect @bind-Value=Model.ActorName class="form-control">
-                                        <option value="null">@L["ActorNotSelectedLabel"]</option>
-                                        @foreach (var item in Model.PossibleActors)
-                                        {
-                                            <option value="@item"><NotificationActorDisplay ActorName="@item" /></option>
-                                        }
-                                    </BootstrapInputSelect>
-                                    <div class="invalid-feedback mb-3">
-                                        <ValidationMessage For="@(() => Model.ActorName)" />
-                                    </div>
-                                </div>
-
-                                @for (int i = 0; i < Model.ActorProperties.Count; i++)
-                                {
-                                    var index = i;
-                                    var item = Model.ActorProperties[i];
-                                    String inputid = $"actor-property-{@i}";
-
-                                    <div class="form-group row">
-                                        <label for="@inputid"><NotificationActorPropertyDisplay ActorName="@Model.ActorName" PropertyName="@item.Name" /></label>
-                                        <BootstrapInputText @bind-Value="Model.ActorProperties[index].Value" id="@inputid" class="form-control" type="@(item.Type == NotifcationActorDescription.ActorPropertyTypes.Password ? "password" : "text"  )" />
-                                        <div class="invalid-feedback mb-3">
-                                            <ValidationMessage For="@(() => Model.ActorProperties[index].Value)" />
-                                        </div>
-                                    </div>
-
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-row">
-                    <div class="d-flex flex-fill"> </div>
-                    <SendingAwareSubmitFormButton Caption="@L["CreateButtonCaption"]" ExecutingCaption="@L["CreateInProgressButtonCaption"]" FormIsSending="_sendingRequestInProgress" FormIsValid="FormIsValid" />
-                </div>
-
-            </LoadingWhileContentNull>
-        </div>
-    </EditForm>
-</CascadingValue>
-
-@code {
-    #region Fields
-
-    private Boolean _sendingRequestInProgress = false;
-    private Boolean _serviceErrorOccured = false;
-    private NotificationPipelineDescriptions _pipelineDescriptions;
-    private IEnumerable<DHCPv6ScopeItem> _scopes;
-
-    #endregion
-
-    #region Properties
-
-    #endregion
-
-    #region Lifecycles
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        _layoutService.UpdatePageTitle(L["PageTitle"]);
-        _layoutService.UpdateBreadcrumbs(new BreadcrumbViewModel[]
-        {
-            new BreadcrumbViewModel { Caption = L["BreadcrumbHomeCaption"], Link = "dashboard" },
-            new BreadcrumbViewModel { Caption = L["BreadcrumbPipelineCaption"], Link = "pipelines" },
-            new BreadcrumbViewModel { Caption = L["BreadcrumbSelfCaption"], Link = "pipelines/create" }
-                                                                                                                                                                                                                                                            });
-
-        base.EditContext.OnFieldChanged += OnFieldChanged;
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-
-        _pipelineDescriptions = await _service.GetpipelineDescriptions();
-        Model.AddDescriptions(_pipelineDescriptions);
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        EditContext.OnFieldChanged -= OnFieldChanged;
-    }
-
-    #endregion
-
-    #region Methods
-
-    private async void OnFieldChanged(object sender, FieldChangedEventArgs args)
-    {
-        if (args.FieldIdentifier.FieldName == nameof(CreateNotificationPipelineViewModel.TriggerName))
-        {
-
-        }
-        else if (args.FieldIdentifier.FieldName == nameof(CreateNotificationPipelineViewModel.ConditionName))
-        {
-            if (_scopes == null &&
-                Model.ConditionsProperties.Count(x => x.Type == NotificationCondititonDescription.ConditionsPropertyTypes.DHCPv6ScopeList) > 0)
+            </MudSelect>
+            @if (_conditionPropertiesModel.Entries != null)
             {
-                _scopes = await _service.GetDHCPv6ScopesAsList();
-                base.StateHasChanged();
+                <MudSimpleTable Class="pa-4" Elevation="3" Hover="true">
+                    <thead>
+                        <tr>
+                            <th>@L["ConditionPropertieNameHeading"]</th>
+                            <th>@L["ConditionPropertieValueHeading"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < _conditionPropertiesModel.Entries.Count; i++)
+                        {
+                            var index = i;
+                            var item = _conditionPropertiesModel.Entries[i];
+
+                            <tr>
+                                <td><NotificationCondititonDescriptionDisplay ConditionName="@_conditionPropertiesModel.ConditionName" PropertyName="@item.Name" /></td>
+                                <td>
+                                    @switch (item.Type)
+                                    {
+                                        case NotificationCondititonDescription.ConditionsPropertyTypes.Boolean:
+                                            <MudCheckBox T="Boolean" @bind-Checked="_conditionPropertiesModel.Entries[index].ValueAsBoolean" For="@( () => _conditionPropertiesModel.Entries[index].ValueAsBoolean )" />
+                                            break;
+                                        case NotificationCondititonDescription.ConditionsPropertyTypes.DHCPv6ScopeList:
+                                            <BeerShowCircularLoadingIndicatorWhileNull Item="_scopes" Text="@L["LoadingText"]">
+                                                <div class="d-flex flex-column">
+                                                    @for (int j = 0; j < _scopes.Count; j++)
+                                                    {
+                                                        var temp2 = j;
+
+                                                        <MudCheckBox T="Boolean" Label="@_scopes[temp2].Name" @bind-Checked="_conditionPropertiesModel.Entries[index].Values[temp2].IsSelected" For="@( () => _conditionPropertiesModel.Entries[index].Values[temp2].IsSelected )" />
+                                                    }
+                                                    <ValidationMessage style="color: var(--mud-palette-error) !important;" For="@(() => _conditionPropertiesModel.Entries[index].Values)" />
+
+                                                </div>
+                                            </BeerShowCircularLoadingIndicatorWhileNull>
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </MudSimpleTable>
             }
-        }
-    }
+            <div class="d-flex justify-end">
+                <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(2))">@L["PreviousCaption"]</MudButton>
+                <MudButton Class="mt-3" ButtonType="ButtonType.Submit" Color="Color.Primary" EndIcon="@Icons.Material.Filled.NavigateNext" Variant="Variant.Filled" Disabled="@(_conditionContext.GetValidationMessages().Any() == true)">@L["NextCaption"]</MudButton>
+            </div>
+        </EditForm>
+    </MudTabPanel>
 
-    public async Task SendCreateUserRequest()
-    {
-        var request = Model.GetRequest();
-        _serviceErrorOccured = false;
-        _sendingRequestInProgress = true;
+    <MudTabPanel Text="@L["ActorCaption"]" Disabled="@(_conditionContext.GetValidationMessages().Any() == true)">
+        <EditForm EditContext="_actorContext" OnValidSubmit="CreatePipeline">
+            <FluentValidator />
 
-        Boolean serviceResult = await _service.CreateNotificationPipeline(request);
-        _serviceErrorOccured = !serviceResult;
-        _sendingRequestInProgress = false;
-        if (serviceResult == true)
-        {
-            //_toastService.ShowSuccess($"pipeline {Model.Name} created", "Success");
-            _navigator.NavigateTo("/pipelines");
-        }
-    }
+            <MudSelect Class="mt-6" T="String" Label="@L["ActorLabel"]" For="@( () => _actorPropertiesModel.ActorName)" @bind-Value="_actorPropertiesModel.ActorName">
+                <MudSelectItem T="string" Value="@null">@L["ActorNotSelectedLabel"]</MudSelectItem>
+                @foreach (var item in PossibleActors)
+                {
+                    <MudSelectItem T="string" Value="@item"><NotificationActorDisplay ActorName="@item" /> </MudSelectItem>
+                }
+            </MudSelect>
 
-    #endregion
-}*@
+            @if (_actorPropertiesModel.Entries != null)
+            {
+                <MudSimpleTable Class="pa-4" Elevation="3" Hover="true">
+                    <thead>
+                        <tr>
+                            <th>@L["ActorPropertieNameHeading"]</th>
+                            <th>@L["ActorPropertieValueHeading"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < _actorPropertiesModel.Entries.Count; i++)
+                        {
+                            var index = i;
+                            var item = _actorPropertiesModel.Entries[i];
+
+                            <tr>
+                                <td><NotificationActorPropertyDisplay ActorName="@_actorPropertiesModel.ActorName" PropertyName="@item.Name" /></td>
+                                <td>
+                                    @switch (item.Type)
+                                    {
+                                        case NotifcationActorDescription.ActorPropertyTypes.Endpoint:
+                                        case NotifcationActorDescription.ActorPropertyTypes.Username:
+                                        case NotifcationActorDescription.ActorPropertyTypes.Password:
+                                            <MudTextField T="string" Immediate="true" Placeholder="@L["ActorGenerellValuePlaceholder"]" Variant="Variant.Outlined" InputType="@( item.Type == NotifcationActorDescription.ActorPropertyTypes.Password ? InputType.Password : InputType.Text)" @bind-Value="_actorPropertiesModel.Entries[index].Value" For="@(() => _actorPropertiesModel.Entries[index].Value)" />
+
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </MudSimpleTable>
+            }
+
+            <div class="d-flex justify-end">
+                <MudButton Class="mt-3 mr-3" ButtonType="ButtonType.Button" Color="Color.Default" StartIcon="@Icons.Material.Filled.NavigateBefore" Variant="Variant.Filled" OnClick="@( () =>  NavigateToStep(2))">@L["PreviousCaption"]</MudButton>
+                <BeerSendingAwareButton DefaultText="@L["CreateButtonCaption"]" InProgressText="@L["CreateInProgressButtonCaption"]" IsExecuting="_submitInProgress" Disabled="@(_actorContext.GetValidationMessages().Any() == true)" />
+            </div>
+        </EditForm>
+    </MudTabPanel>
+</MudTabs>

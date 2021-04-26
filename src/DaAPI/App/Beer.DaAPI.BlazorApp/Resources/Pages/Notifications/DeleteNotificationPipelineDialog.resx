@@ -117,100 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ActorCaption" xml:space="preserve">
-    <value>Aktor</value>
+  <data name="CancelButtonCaption" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="ActorGenerellValuePlaceholder" xml:space="preserve">
-    <value>Geben Sie hier einen Wert an</value>
+  <data name="DeleteButtonCaption" xml:space="preserve">
+    <value>Delete</value>
   </data>
-  <data name="ActorGenerellValuePlaceLabel" xml:space="preserve">
-    <value>Value</value>
+  <data name="DeleteButtonExecutingCaption" xml:space="preserve">
+    <value>Deleting...</value>
   </data>
-  <data name="ActorLabel" xml:space="preserve">
-    <value>Aktor</value>
+  <data name="DeleteErrorMessage" xml:space="preserve">
+    <value>Unable to delete the pipeline</value>
   </data>
-  <data name="ActorNotSelectedLabel" xml:space="preserve">
-    <value>--- Kein Actor gewählt ---</value>
-  </data>
-  <data name="ActorPropertieNameHeading" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="ActorPropertieValueHeading" xml:space="preserve">
-    <value>Wert</value>
-  </data>
-  <data name="ConditionCaption" xml:space="preserve">
-    <value>Bedingung</value>
-  </data>
-  <data name="ConditionLabel" xml:space="preserve">
-    <value>Bedingung</value>
-  </data>
-  <data name="ConditionNotSelectedLabel" xml:space="preserve">
-    <value>--- Keine Bedingung gewählt ---</value>
-  </data>
-  <data name="ConditionPropertieNameHeading" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="ConditionPropertieValueHeading" xml:space="preserve">
-    <value>Wert</value>
-  </data>
-  <data name="CreateButtonCaption" xml:space="preserve">
-    <value>Erstellen</value>
-  </data>
-  <data name="CreateInProgressButtonCaption" xml:space="preserve">
-    <value>Wird gesendet...</value>
-  </data>
-  <data name="CreatePipelineSuccessMessage" xml:space="preserve">
-    <value>Pipeline "{0}" wurde erfolgreich erstellt</value>
-  </data>
-  <data name="ErrorCaption" xml:space="preserve">
-    <value>Fehler</value>
-  </data>
-  <data name="ErrorText" xml:space="preserve">
-    <value>Fehler beim Erstellen der Pipeline. Für weiter Infos schauen Sie in die Serverlogs</value>
-  </data>
-  <data name="GenerellPropertiesCaption" xml:space="preserve">
-    <value>Allgemeine Eigenchaften</value>
-  </data>
-  <data name="LoadingText" xml:space="preserve">
-    <value>Weitere Information werden geladen...</value>
-  </data>
-  <data name="NextCaption" xml:space="preserve">
-    <value>Nächster Schriit</value>
-  </data>
-  <data name="PageTitle" xml:space="preserve">
-    <value>Erstellen Sie eine Pipeline</value>
-  </data>
-  <data name="PipelineDescriptionLabel" xml:space="preserve">
-    <value>Beschreibung</value>
-  </data>
-  <data name="PipelineDescriptionPlaceholder" xml:space="preserve">
-    <value>Geben Sie eine Beschreibung für die Pipeline ein (optional)</value>
-  </data>
-  <data name="PipelineNameLabel" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="PipelineNamePlaceholder" xml:space="preserve">
-    <value>Geben Sie den Namen der Pipeline an</value>
-  </data>
-  <data name="PreviousCaption" xml:space="preserve">
-    <value>Vorheriger Schriit</value>
-  </data>
-  <data name="TriggerCaption" xml:space="preserve">
-    <value>Auslöser</value>
-  </data>
-  <data name="TriggerLabel" xml:space="preserve">
-    <value>Trigger</value>
-  </data>
-  <data name="TriggerNotSelectedLabel" xml:space="preserve">
-    <value>--- Kein Auslöser gewählt  ---</value>
-  </data>
-  <data name="ValidationAtLeastOneScopeSelected" xml:space="preserve">
-    <value>Wenigstens ein Bereich muss ausgewählt sein</value>
-  </data>
-  <data name="ValidationNotAValidUrl" xml:space="preserve">
-    <value>Keine gültige URL</value>
-  </data>
-  <data name="ValidationNotEmpty" xml:space="preserve">
-    <value>Darf nicht leer sein</value>
+  <data name="DeleteQuestion" xml:space="preserve">
+    <value>Are you sure, you want to delete the pipeline?</value>
   </data>
 </root>

@@ -200,10 +200,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             }
         }
 
-        private void NavigateToStep(Int32 step)
-        {
-            _tabs.ActivatePanel(step - 1);
-        }
+        private void NavigateToStep(Int32 step) => _tabs.ActivatePanel(step - 1);
 
         private async Task LoadParent(Boolean manuelRefresh)
         {
@@ -282,7 +279,6 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             _addressRelatedPropertiesContext.OnFieldChanged += AddressRelatedPropertiesContextChanged;
             _optionalValuesContext.OnFieldChanged += OptionalValuesContextChanged;
             _resolverContext.OnFieldChanged += OnResolverContextChanged;
-
         }
 
         private Boolean _loadingOfInitialDataNeededCompled = false;
