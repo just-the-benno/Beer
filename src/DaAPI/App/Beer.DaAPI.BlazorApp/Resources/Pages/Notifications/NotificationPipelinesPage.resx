@@ -123,6 +123,9 @@
   <data name="BreadcrumbSelf" xml:space="preserve">
     <value>Pipelines</value>
   </data>
+  <data name="DeleteButtonTooltip" xml:space="preserve">
+    <value>Delete this pipeline</value>
+  </data>
   <data name="DeletePipelineButtonCaption" xml:space="preserve">
     <value>Delete</value>
   </data>
@@ -138,8 +141,14 @@
   <data name="Headline" xml:space="preserve">
     <value>Notifcation pipelines</value>
   </data>
+  <data name="LoadingMessage" xml:space="preserve">
+    <value>Loading pipelines...</value>
+  </data>
   <data name="NewPipelineButtonCaption" xml:space="preserve">
     <value>New</value>
+  </data>
+  <data name="NoPipelinesFound" xml:space="preserve">
+    <value>Currently, there are no pipelines</value>
   </data>
   <data name="PageTitle" xml:space="preserve">
     <value>Pipelines</value>

@@ -12,12 +12,12 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
             {
                 public Guid Id { get; set; }
                 public String Name { get; set; }
-                public String TriigerName { get; set; }
+                public String TrigerName { get; set; }
                 public String ConditionName { get; set; }
                 public String ActorName { get; set; }
             }
 
-            public class NotificationPipelineTriggerMapperEnry
+            public class NotificationPipelineTriggerMapperEntry
             {
                 public String TriggerName { get; set; }
                 public IEnumerable<String> CompactibleConditions { get; set; }
@@ -61,7 +61,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                 public IEnumerable<NotifcationCondititonDescription> Conditions { get; set; }
                 public IEnumerable<Object> Actors { get; set; }
 
-                public IEnumerable<NotificationPipelineTriggerMapperEnry> MapperEnries { get; set; }
+                public IEnumerable<NotificationPipelineTriggerMapperEntry> MapperEnries { get; set; }
             }
         }
 
