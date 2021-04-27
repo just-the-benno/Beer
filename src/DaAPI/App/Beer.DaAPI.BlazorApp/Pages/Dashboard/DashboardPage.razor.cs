@@ -10,12 +10,13 @@ using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Common;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 {
-    public partial class DashboardPage
+    public partial class DashboardPage : IDisposable
     {
-        private readonly DashboardPageViewModel _vm = new();
+        private DashboardPageViewModel _vm = new();
         private String _activeLeaseSearchterm = String.Empty;
 
         public TypeFilter LeaseTypeFilter { get; set; } = TypeFilter.Both;
@@ -128,7 +129,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
             _ => Color.Default,
         };
 
-        protected override async Task OnInitializedAsync()
+        private async Task LoadData()
         {
             var dhcpv6Scopes = await _service.GetDHCPv6ScopesAsList();
             var dhcpv4Scopes = await _service.GetDHCPv4ScopesAsList();
@@ -140,8 +141,48 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 
             _filteredScopes = _vm.DHCPv4Scopes.Keys.Union(_vm.DHCPv6Scopes.Keys).ToDictionary(x => x, x => false);
             _vm.SetLeaseFilter(_filteredScopes);
+        }
 
+        private Timer _timer;
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadData();
+
+            _timer = new Timer(async (x) => await Reload(), new object(), Timeout.Infinite, Timeout.Infinite);
+            ToogleAutoRenew(false);
             await base.OnInitializedAsync();
+        }
+
+        private Boolean _automaticReloadEnabled = false;
+
+        private void ToogleAutoRenew(Boolean startImmediately)
+        {
+            if (_automaticReloadEnabled == false)
+            {
+                _timer.Change(startImmediately == true ? TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            }
+            else
+            {
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+
+            _automaticReloadEnabled = !_automaticReloadEnabled;
+        }
+
+        protected async Task Reload()
+        {
+            _vm = new();
+            _filteredScopes.Clear();
+            await InvokeAsync(StateHasChanged);
+            await LoadData();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        public void Dispose()
+        {
+            _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            _timer.Dispose();
         }
     }
 }
