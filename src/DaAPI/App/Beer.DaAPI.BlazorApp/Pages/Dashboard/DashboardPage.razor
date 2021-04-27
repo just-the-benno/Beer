@@ -9,6 +9,8 @@
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
 
+<MudSwitch Checked="_automaticReloadEnabled" T="Boolean" CheckedChanged="@((x) => ToogleAutoRenew(true))" Label="@L["EnableAutoRenew"]" Color="Color.Info" />
+
 <BeerShowCircularLoadingIndicatorWhileNull Item="_vm.Response" Text="@L["LoadingDashboardMessage"]">
     @{
 

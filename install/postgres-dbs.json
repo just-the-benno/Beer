@@ -1,4 +1,5 @@
 [
     "IdentityUserStorage",
-    "IdentityOperationalStorage"
+    "IdentityOperationalStorage",
+    "DaAPI"
 ]

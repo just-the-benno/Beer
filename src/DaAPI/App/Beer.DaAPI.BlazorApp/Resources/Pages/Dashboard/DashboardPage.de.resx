@@ -186,6 +186,9 @@
   <data name="DHCPv6ResponseCodeCardTitle" xml:space="preserve">
     <value>DHCPv6 Antwortcodes</value>
   </data>
+  <data name="EnableAutoRenew" xml:space="preserve">
+    <value>automatisch aktualisieren</value>
+  </data>
   <data name="FileteredPacketHelperContent" xml:space="preserve">
     <value>Es gibt verschiedene Ursachen, warum Pakete von DaAPI gefiltert werden. Etwa wenn Pakete, die für Client bestimmt sind empfangen wurden, oder aber auch wenn eine Quelle zuviele Packete geschickt hat. Gefilterte Pakete wurden zuvor als gültig gekennzeichnet</value>
   </data>

@@ -186,6 +186,9 @@
   <data name="DHCPv6ResponseCodeCardTitle" xml:space="preserve">
     <value>DHCPv6 Reponse Codes</value>
   </data>
+  <data name="EnableAutoRenew" xml:space="preserve">
+    <value>Enable automatic renew</value>
+  </data>
   <data name="FileteredPacketHelperContent" xml:space="preserve">
     <value>There are multiple reasons why DaAPI filters packets. A filtered packet is a packet that has been recognized as a valid DHCP packet but didn't pass specific criteria like the received message was intended for a client or the source has sent to much packets in a time period.</value>
   </data>
