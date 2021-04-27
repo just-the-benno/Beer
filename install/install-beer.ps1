@@ -312,10 +312,28 @@ function Add-IISSites {
         Update-WebConfig($app)
 
         Write-Host "Creating website..."
-        New-WebAppPool -Name $app.Name -Force *>$null
-        Set-ItemProperty -Path (Join-Path -Path "IIS:\AppPools\" -ChildPath $app.Name) processModel.loadUserProfile $true
+        $newAppPool = New-WebAppPool -Name $app.Name -Force;
+        $newAppPool = Get-IISAppPool -Name $app.Name
+		
+        $newAppPool.Stop() > $null
+
+        Start-IISCommitDelay
+        $newAppPool.StartMode = [Microsoft.Web.Administration.StartMode]::AlwaysRunning
+        $newAppPool.ProcessModel.IdleTimeout = 0
+        $newAppPool.ProcessModel.LoadUserProfile = $true
+        Stop-IISCommitDelay
+		
+        $newAppPool.Start() > $null
+
         New-WebSite -Name $app.Name -Port 80  -IPAddress "*" -HostHeader $app.Urls[0] -PhysicalPath $app.OutputDir.Replace("/", "\") -ApplicationPool $app.Name *>$null
-        $site = Get-WebSite -Name $app.Name
+        
+        Start-IISCommitDelay
+	
+        $siteConfig = Get-IISConfigCollectionElement -ConfigCollection (Get-IISConfigCollection -ConfigElement (Get-IISConfigSection -SectionPath "system.applicationHost/sites")) -ConfigAttribute @{"name" = $app.Name }
+        Set-IISConfigAttributeValue -ConfigElement $siteConfig -AttributeName "serverAutoStart" -AttributeValue $true
+
+        Stop-IISCommitDelay
+
         Write-Host "App $($app.Name) is created and listen to $($app.Urls[0])" -ForegroundColor DarkGreen
     
         for ($i = 1; $i -lt $app.Urls.Count; $i++) {
@@ -702,13 +720,12 @@ function Install-SelfSignCertificateIfNeeded {
     param (
         [Parameter(Mandatory = $true)][string]$CommenName,
         [Parameter(Mandatory = $false)][string]$IdentityName = "IIS_IUSRS"
-
     )
 
     Write-Host "Check if a selfsigned certificate with the name $CommenName exists"
     $existingCertifcate = Get-ChildItem -Path "Cert:\LocalMachine\My" | Where-Object -Property Subject -eq -Value $CommenName;
     if ($existingCertifcate.Count -eq 0) {
-        Write-Host "Certifacte with name $CommenName not found. Creating it..."
+        Write-Host "Certifacte with name $CommenName not found. Creating it..." -ForegroundColor Dark
         $certficate = New-SelfsignedCertificate -KeyExportPolicy Exportable -Subject $CommenName -KeySpec Signature -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -CertStoreLocation "cert:\LocalMachine\My"
         Write-Host "Certifacte with Thumbprint $($certficate.Thumbprint) created" -ForegroundColor DarkGreen
 
@@ -721,10 +738,32 @@ function Install-SelfSignCertificateIfNeeded {
         $rule = new-object security.accesscontrol.filesystemaccessrule $IdentityName, "read", allow
         $permissions.AddAccessRule($rule)
         Set-Acl -Path $path -AclObject $permissions
-
     }
     else {
         Write-Host "Certifacte with name $CommenName found. Nothing to do"
+    }
+}
+
+function Add-PowershellTask {
+    param (
+        [Parameter(Mandatory = $true)][string]$TaskName,
+        [Parameter(Mandatory = $true)][string]$Argument,
+        [Parameter(Mandatory = $true)]$Trigger,
+        [Parameter(Mandatory = $false)][bool]$StartImmediately = $false
+    )
+ 
+    $task = Get-ScheduledTask | Where-Object -Property TaskName -EQ $TaskName
+    if ($null -eq $task) {
+    
+        $Sta = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $Argument
+        $principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+        $ts = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
+        $task = Register-ScheduledTask $taskName -Action $Sta -Trigger $Trigger -Settings $ts -Principal $principal
+    
+    }
+    
+    if ($StartImmediately -eq $true) {
+        $task | Start-ScheduledTask
     }
 }
 
@@ -746,7 +785,6 @@ function  Install-Beer {
         [Parameter(Mandatory = $true)][string]$AzureClientPassword,
         [Parameter(Mandatory = $true)][string]$AzureSubscrionId,
         [Parameter(Mandatory = $true)][string]$AzureResourceGroupName
-    
     )
 
     Write-BeerIntro
@@ -882,6 +920,12 @@ function  Install-Beer {
 
         $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerSignin"
         $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerVerification"
+
+        Write-Host "Creating ScheduledTask tasks for backup etc..."
+        
+        Add-PowershellTask -TaskName "BeerPing" -StartImmediately $true -Trigger (New-JobTrigger -Once -At (Get-Date).Date -RepeatIndefinitely -RepetitionInterval (New-TimeSpan -Minutes 5)) -Argument "-File $pwd\ping-applications-caller.ps1 -ExecutionPath $pwd"
+        Add-PowershellTask -TaskName "BackupBeerPSQL" -StartImmediately $false -Trigger (New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 3am ) -Argument "-File $PSScriptRoot\backup-postgres-caller.ps1 -ExecutionPath $PSScriptRoot -Password $PostgresqlPassword"
+        Add-PowershellTask -TaskName "BackupBeerEventSource" -StartImmediately $false -Trigger (New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 4am ) -Argument "-File $PSScriptRoot\backup-eventsourcedb-caller.ps1 -ExecutionPath $PSScriptRoot -DatabasePath C:\ESDB2"
 
         Write-Host @"
 
