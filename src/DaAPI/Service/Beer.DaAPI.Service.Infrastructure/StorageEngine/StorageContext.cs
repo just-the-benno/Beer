@@ -875,9 +875,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         {
             var entry = new DHCPv6PacketHandledEntryDataModel
             {
-                RequestSize = packet.GetSize(),
-                RequestType = packet.GetInnerPacket().PacketType,
                 Timestamp = DateTime.UtcNow,
+
+                RequestSize = packet.GetSize(),
+                RequestDestination = packet.Header.Destionation.ToString(),
+                RequestSource = packet.Header.Source.ToString(),
+                RequestStream = packet.GetAsStream(),
+
                 Id = Guid.NewGuid(),
             };
             modifier?.Invoke(entry);
@@ -898,9 +902,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
             var entry = new DHCPv4PacketHandledEntryDataModel
             {
-                RequestSize = packet.GetSize(),
-                RequestType = packet.MessageType,
                 Timestamp = DateTime.UtcNow,
+
+                RequestSize = packet.GetSize(),
+                RequestDestination = packet.Header.Destionation.ToString(),
+                RequestSource = packet.Header.Source.ToString(),
+                RequestStream = packet.GetAsStream(),
+
                 Id = Guid.NewGuid(),
             };
             modifier?.Invoke(entry);
@@ -917,6 +925,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         private async Task<IList<TEntry>> GetPacketsFromHandledEvents<TEntry, TDHCPMessagesTypes>(IQueryable<IPacketHandledEntry<TDHCPMessagesTypes>> input, Int32 amount, Guid? scopeId, Func<IPacketHandledEntry<TDHCPMessagesTypes>, TEntry> activator)
             where TDHCPMessagesTypes : struct
         {
+            input = input.Where(x => x.FilteredBy == null && x.InvalidRequest == false);
+
             if (scopeId.HasValue == true)
             {
                 input = input.Where(x => x.ScopeId == scopeId.Value);
@@ -925,7 +935,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             var entries = await input.OrderByDescending(x => x.Timestamp).Take(amount)
                .ToListAsync();
 
-            List<TEntry> result = new List<TEntry>(entries.Count);
+            List<TEntry> result = new(entries.Count);
 
             foreach (var item in entries)
             {
