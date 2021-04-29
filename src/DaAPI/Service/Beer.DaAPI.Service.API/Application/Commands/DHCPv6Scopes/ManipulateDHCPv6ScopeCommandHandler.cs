@@ -36,7 +36,7 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
                );
 
         protected static CreateScopeResolverInformation GetResolverInformation(IScopeChangeCommand request) =>
-            new Core.Scopes.CreateScopeResolverInformation
+            new CreateScopeResolverInformation
             {
                 PropertiesAndValues = request.Resolver.PropertiesAndValues,
                 Typename = request.Resolver.Typename,

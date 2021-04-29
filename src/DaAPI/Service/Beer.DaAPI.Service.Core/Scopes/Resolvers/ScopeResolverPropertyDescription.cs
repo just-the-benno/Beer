@@ -25,6 +25,7 @@ namespace Beer.DaAPI.Core.Scopes
             Boolean = 13,
             Byte = 14,
             VLANId = 15,
+            Device = 16,
         }
 
         #region Properties

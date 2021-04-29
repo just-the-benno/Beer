@@ -26,6 +26,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
         {
             DHCPv6ScopeResolverManager manager = new DHCPv6ScopeResolverManager(
                 Mock.Of<ISerializer>(MockBehavior.Strict),
+                Mock.Of<IDeviceService>(MockBehavior.Strict),
                 Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             List<ScopeResolverDescription> descriptions = new List<ScopeResolverDescription>
@@ -38,8 +39,11 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
                 new DHCPv6RelayAgentResolver().GetDescription(),
                 new DHCPv6MilegateResolver().GetDescription(),
                 new DHCPv6PeerAddressResolver().GetDescription(),
+                new DeviceBasedDHCPv6PeerAddressResolver(Mock.Of<IDeviceService>(MockBehavior.Strict)).GetDescription(),
                 new DHCPv6ClientDUIDResolver().GetDescription(),
+                new DeviceBasedDHCPv6ClientDUIDResolver(Mock.Of<IDeviceService>(MockBehavior.Strict)).GetDescription(),
                 new DHCPv6SimpleZyxelIESResolver().GetDescription(),
+                new DeviceBasedDHCPv6SimpleZyxelIESResolver(Mock.Of<IDeviceService>(MockBehavior.Strict)).GetDescription(),
             };
 
             IEnumerable<ScopeResolverDescription> result = manager.GetRegisterResolverDescription();
@@ -49,7 +53,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
             {
                 ScopeResolverDescription expected = descriptions[i];
                 ScopeResolverDescription actual = result.ElementAt(i);
-                
+
                 Assert.Equal(expected, actual);
             }
 
@@ -61,6 +65,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
         {
             DHCPv6ScopeResolverManager manager = new DHCPv6ScopeResolverManager(
                 Mock.Of<ISerializer>(MockBehavior.Strict),
+                Mock.Of<IDeviceService>(MockBehavior.Strict),
                 Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             Random random = new Random();
@@ -184,7 +189,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
 
             Mock<ISerializer> serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
 
-            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
             resolverMock.Setup(x => x.ApplyValues(inputModel.PropertiesAndValues, serializerMock.Object)).Verifiable();
@@ -207,7 +212,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
 
             Mock<ISerializer> serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
 
-            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(Mock.Of<ISerializer>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(Mock.Of<ISerializer>(MockBehavior.Strict), Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             String typeName = $"typname-{random.Next()}";
             inputModel.Typename = typeName;
@@ -236,7 +241,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
 
                 Mock<ISerializer> serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
 
-                DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+                DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
                 Mock<IScopeResolverContainingOtherResolvers<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolverContainingOtherResolvers<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
                 resolverMock.Setup(x => x.ApplyValues(inputModel.PropertiesAndValues, serializerMock.Object));
@@ -302,7 +307,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
             }
 
             Mock<ISerializer> serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
-            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
             resolverMock.Setup(x => x.ArePropertiesAndValuesValid(inputModel.PropertiesAndValues, serializerMock.Object)).Returns(shouldBeValid);
@@ -328,7 +333,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
                 new CreateScopeResolverInformation { Typename = String.Empty },
             };
 
-            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(Mock.Of<ISerializer>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(Mock.Of<ISerializer>(MockBehavior.Strict), Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             foreach (CreateScopeResolverInformation item in invalidModels)
             {
@@ -343,7 +348,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
             Random random = new Random();
             CreateScopeResolverInformation inputModel = new CreateScopeResolverInformation();
 
-            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(Mock.Of<ISerializer>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+            DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(Mock.Of<ISerializer>(MockBehavior.Strict), Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             String typeName = $"typname-{random.Next()}";
             inputModel.Typename = typeName;
@@ -436,7 +441,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
                 }
 
                 Mock<ISerializer> serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
-                DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+                DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(serializerMock.Object, Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
                 Mock<IScopeResolverContainingOtherResolvers<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolverContainingOtherResolvers<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
                 resolverMock.Setup(x => x.ArePropertiesAndValuesValid(inputModel.PropertiesAndValues, serializerMock.Object)).Returns(true);
@@ -541,7 +546,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.Services
             };
 
             DHCPv6ScopeResolverManager scopeManager = new DHCPv6ScopeResolverManager(
-                new JSONBasedSerializer(), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
+                new JSONBasedSerializer(), Mock.Of<IDeviceService>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6ScopeResolverManager>>());
 
             scopeManager.AddOrUpdateScopeResolver(nameof(DHCPv6AndResolver), () => new DHCPv6AndResolver());
             scopeManager.AddOrUpdateScopeResolver(nameof(DHCPv6RemoteIdentifierEnterpriseNumberResolver), () => new DHCPv6RemoteIdentifierEnterpriseNumberResolver(Mock.Of<ILogger<DHCPv6RemoteIdentifierEnterpriseNumberResolver>>()));

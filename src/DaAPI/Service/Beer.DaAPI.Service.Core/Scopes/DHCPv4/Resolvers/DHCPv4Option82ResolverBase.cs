@@ -15,6 +15,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         #region Fields
 
         public Byte[] Value { get; protected set; }
+        public Func<Byte[]> ValueGetter { get; protected set; } = () => null;
 
         #endregion
 
@@ -27,7 +28,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         {
             Byte[] rawData = GetUniqueIdentifier(packet);
 
-            return ByteHelper.AreEqual(rawData, Value);
+            return ByteHelper.AreEqual(rawData, ValueGetter() ?? Value);
         }
 
         public abstract Boolean ArePropertiesAndValuesValid(IDictionary<String, String> valueMapper, ISerializer serializer);

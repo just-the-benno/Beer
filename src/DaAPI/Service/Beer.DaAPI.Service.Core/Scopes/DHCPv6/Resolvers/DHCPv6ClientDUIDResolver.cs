@@ -57,7 +57,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6.Resolvers
             ClientDuid = DUIDFactory.GetDUID(parsedBytes);
         }
 
-        public bool PacketMeetsCondition(DHCPv6Packet packet)
+        public Boolean PacketMeetsCondition(DHCPv6Packet packet)
         {
             DHCPv6Packet innerPacket = packet.GetInnerPacket();
             DUID clientDuid = innerPacket.GetClientIdentifer();
