@@ -243,6 +243,8 @@ namespace Beer.DaAPI.Service.API
                 options.AutomaticAuthentication = false;
             });
 
+            services.AddSingleton<IDeviceService>(new InMemoryDeviceService(null));
+
             services.AddCors((builder) =>
             {
                 builder.AddPolicy("clientApps", (pb) =>
@@ -274,6 +276,12 @@ namespace Beer.DaAPI.Service.API
             if (storageContext.Database.IsNpgsql() == true)
             {
                 storageContext.Database.Migrate();
+            }
+
+            var deviceService = provider.GetService<IDeviceService>() as IManagleableDeviceService;
+            if (deviceService != null)
+            {
+                deviceService.AddDevices(storageContext.GetAllDevices());
             }
 #if DEBUG
             //var seeder = new DatabaseSeeder();

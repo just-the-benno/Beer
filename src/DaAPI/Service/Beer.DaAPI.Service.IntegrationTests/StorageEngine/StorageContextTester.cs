@@ -2,6 +2,7 @@
 using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Packets.DHCPv6;
+using Beer.DaAPI.Infrastructure.Services;
 using Beer.DaAPI.Infrastructure.StorageEngine;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
@@ -223,7 +224,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                 Guid scopeId = Guid.NewGuid();
                 Guid leaseId = Guid.NewGuid();
-                
+
                 var createdEvent = new DHCPv6LeaseCreatedEvent
                 {
                     Address = IPv6Address.FromString("fe80::2"),
@@ -1303,6 +1304,62 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     Assert.Equal(secondHandledEventBelongingToScope.Response.GetAsStream(), element.Response.Content);
                     Assert.Equal(DHCPv6PacketTypes.RELEASE, element.RequestType);
                 }
+            }
+            finally
+            {
+                await context.Database.EnsureDeletedAsync();
+            }
+        }
+
+        [Fact]
+        public async Task GetAllDevices()
+        {
+            Random random = new Random();
+
+            var preContext = GetContext(random);
+            StorageContext context = preContext.Item1;
+
+            try
+            {
+                Device firstExpectedDevice = new Device
+                {
+                    Id = random.NextGuid(),
+                    DUID = new UUIDDUID(random.NextGuid()),
+                    LinkLocalAddress = IPv6Address.FromString("fe80::8e21:d9ff:fecd:e2a"),
+                    MacAddress = new byte[] { 0x8C, 0x21, 0xD9, 0xCD, 0x0E, 0x2A },
+                    Name = "My first test device",
+                };
+
+                Device secondExpectedDevice = new Device
+                {
+                    Id = random.NextGuid(),
+                    DUID = new UUIDDUID(random.NextGuid()),
+                    LinkLocalAddress = IPv6Address.FromString("fe80::449c:35ff:fec0:a1bc"),
+                    MacAddress = new byte[] { 0x46, 0x9C, 0x35, 0xC0, 0xA1, 0xBC },
+                    Name = "a device",
+                };
+
+                context.Devices.Add(new DeviceEntryDataModel
+                {
+                    Id = firstExpectedDevice.Id,
+                    DUID = firstExpectedDevice.DUID.GetAsByteStream(),
+                    Name = firstExpectedDevice.Name,
+                    MacAddress = firstExpectedDevice.MacAddress,
+                });
+
+                context.Devices.Add(new DeviceEntryDataModel
+                {
+                    Id = secondExpectedDevice.Id,
+                    DUID = secondExpectedDevice.DUID.GetAsByteStream(),
+                    Name = secondExpectedDevice.Name,
+                    MacAddress = secondExpectedDevice.MacAddress,
+                });
+
+                await context.SaveChangesAsync();
+
+                var actualResult = context.GetAllDevices();
+
+                Assert.Equal(new[] { secondExpectedDevice, firstExpectedDevice }, actualResult, new DeviceEqualityComparer());
             }
             finally
             {

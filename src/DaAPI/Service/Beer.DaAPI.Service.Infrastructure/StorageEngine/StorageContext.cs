@@ -6,6 +6,7 @@ using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Core.Scopes.DHCPv4;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Infrastructure.Helper;
+using Beer.DaAPI.Infrastructure.Services;
 using Beer.DaAPI.Infrastructure.StorageEngine.Converters;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
@@ -47,6 +48,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public DbSet<DHCPv4LeaseEntryDataModel> DHCPv4LeaseEntries { get; set; }
 
         public DbSet<NotificationPipelineOverviewEntry> NotificationPipelines { get; set; }
+
+        public DbSet<DeviceEntryDataModel> Devices { get; set; }
 
         #endregion
 
@@ -1015,5 +1018,18 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         }
 
         public async Task<IEnumerable<Guid>> GetAllNotificationPipelineIds() => await NotificationPipelines.AsQueryable().Select(x => x.Id).ToListAsync();
+
+        public IEnumerable<Device> GetAllDevices()
+        {
+            var result = Devices.ToList().Select(x => new Device {
+                Id = x.Id,
+                Name = x.Name,
+                DUID = DUIDFactory.GetDUID(x.DUID),
+                MacAddress = x.MacAddress,
+                LinkLocalAddress = IPv6Address.GetAsLinkLocal(x.MacAddress),
+            }).OrderBy(x => x.Name).ToList();
+
+            return result;
+        }
     }
 }

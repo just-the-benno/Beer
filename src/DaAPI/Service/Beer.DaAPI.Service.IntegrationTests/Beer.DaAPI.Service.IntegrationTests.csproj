@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
 
     <UserSecretsId>ff83db66-0aa4-441e-863a-60b94b90483b</UserSecretsId>
   </PropertyGroup>
