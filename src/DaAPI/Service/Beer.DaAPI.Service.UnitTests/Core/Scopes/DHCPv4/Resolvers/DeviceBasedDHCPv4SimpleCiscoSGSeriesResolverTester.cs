@@ -171,8 +171,6 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4.Resolvers
             Int32 vlanNumber = 97;
             Guid deviceId = random.NextGuid();
 
-            String macAddressAsString = "00b1e3da247f";
-
             var serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
             serializerMock.Setup(x => x.Deserialze<Byte>(portNumber.ToString())).Returns((Byte)portNumber).Verifiable();
             serializerMock.Setup(x => x.Deserialze<UInt16>(vlanNumber.ToString())).Returns((Byte)vlanNumber).Verifiable();
@@ -213,7 +211,6 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4.Resolvers
             Int32 portNumber = 21;
             Int32 vlanNumber = 3;
             Guid deviceId = random.NextGuid();
-            String macAddressAsString = "f323a4f23a";
 
             var serializerMock = new Mock<ISerializer>(MockBehavior.Strict);
             serializerMock.Setup(x => x.Deserialze<Byte>(portNumber.ToString())).Returns((Byte)portNumber).Verifiable();
