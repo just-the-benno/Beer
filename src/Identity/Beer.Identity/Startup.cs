@@ -55,6 +55,13 @@ namespace Beer.Identity
         {
             config.BeerAuthenticationClients["ControlCenter"].SetUrlIfNotNull(Configuration.GetServiceUri("ControlCenterApp", "https"));
             config.BeerAuthenticationClients["DaAPI"].SetUrlIfNotNull(Configuration.GetServiceUri("DaAPIApp", "https"));
+
+            var selfUrl = Configuration.GetServiceUri("Identity", "https");
+            if(selfUrl != null)
+            {
+                config.OpenIdConnectConfiguration.AuthorityUrl = selfUrl.ToString();
+            }
+
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
