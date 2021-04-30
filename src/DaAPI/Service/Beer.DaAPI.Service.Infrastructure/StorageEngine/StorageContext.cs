@@ -884,6 +884,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 RequestDestination = packet.Header.Destionation.ToString(),
                 RequestSource = packet.Header.Source.ToString(),
                 RequestStream = packet.GetAsStream(),
+                RequestType = packet.GetInnerPacket().PacketType,
 
                 Id = Guid.NewGuid(),
             };
@@ -911,6 +912,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 RequestDestination = packet.Header.Destionation.ToString(),
                 RequestSource = packet.Header.Source.ToString(),
                 RequestStream = packet.GetAsStream(),
+                RequestType = packet.MessageType,
 
                 Id = Guid.NewGuid(),
             };
