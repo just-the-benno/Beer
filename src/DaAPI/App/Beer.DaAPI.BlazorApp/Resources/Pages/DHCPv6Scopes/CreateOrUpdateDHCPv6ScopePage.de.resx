@@ -213,6 +213,9 @@
   <data name="LoadingAdditionalDataText" xml:space="preserve">
     <value>Zusätzliche Daten werden geladen</value>
   </data>
+  <data name="LoadingDevices" xml:space="preserve">
+    <value>Geräte werden geladen...</value>
+  </data>
   <data name="LoadingParentDetails" xml:space="preserve">
     <value>Laden Details der Eltern</value>
   </data>
@@ -227,6 +230,9 @@
   </data>
   <data name="NextCaption" xml:space="preserve">
     <value>Nächster Schritt</value>
+  </data>
+  <data name="NoDeviceSelectedPlaceholder" xml:space="preserve">
+    <value>--- Noch kein Gerät gewählt ---</value>
   </data>
   <data name="NoExcludedAddressFound" xml:space="preserve">
     <value>Keine Adressen sind ausgeschlossen</value>
@@ -416,6 +422,9 @@
   </data>
   <data name="ValidationLifetimeSmallerThanPreferredLifetimeOfParent" xml:space="preserve">
     <value>Die gültige Lebenszeit kan nicht kleiner sein als die bevorzugte Lebenszeit des überrgeordneten Bereichs</value>
+  </data>
+  <data name="ValidationNoDeviceSelected" xml:space="preserve">
+    <value>Es wurde kein Gerät ausgewählt</value>
   </data>
   <data name="ValidationNotAValidByteSequnce" xml:space="preserve">
     <value>Dieser Werte wurde nicht als Bytefolge erkannt. Dieser wert darf nur  Hexadezimale Werde wie AABC0234 enthalten</value>

@@ -283,6 +283,27 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.ToTable("DHCPv6PacketEntries");
                 });
 
+            modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.DeviceEntryDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("DUID")
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("MacAddress")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Devices");
+                });
+
             modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.HelperEntry", b =>
                 {
                     b.Property<string>("Name")

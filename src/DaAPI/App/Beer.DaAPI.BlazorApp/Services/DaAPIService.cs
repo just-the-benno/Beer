@@ -21,6 +21,7 @@ using static Beer.DaAPI.Shared.Requests.DHCPv6InterfaceRequests.V1;
 using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
 using static Beer.DaAPI.Shared.Requests.NotificationPipelineRequests.V1;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
+using static Beer.DaAPI.Shared.Responses.DeviceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4InterfaceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4LeasesResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1;
@@ -339,6 +340,9 @@ namespace Beer.DaAPI.BlazorApp.Services
            await GetSimpleStatisticsData<Int32, Int32>(AppendTimeRangeToUrl($"/api/Statistics/ErrorCodesPerDHCPv4MessageType?MessageType={packetType}", start, end));
 
         #endregion
+
+        public async Task<IEnumerable<DeviceOverviewResponse>> GetDeviceOverview() => await _client.GetFromJsonAsync<IEnumerable<DeviceOverviewResponse>>("/api/devices/");
+
 
     }
 }

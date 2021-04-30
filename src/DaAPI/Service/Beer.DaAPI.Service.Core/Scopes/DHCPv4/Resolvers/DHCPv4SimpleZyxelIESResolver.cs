@@ -10,24 +10,20 @@ using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Core.Scopes.DHCPv4
 {
-    public class DHCPv4SimpleZyxelIESResolver : DHCPv4Option82ResolverBase
+    public class DHCPv4SimpleZyxelIESResolver : DHCPv4SimpleZyxelIESBasedResolver
     {
         #region Properties
 
-        public Byte PortNumber { get; set; }
-        public Byte LinecardNumber { get; set; }
         public Byte[] DeviceMacAddress { get; set; }
 
         #endregion
 
         #region Methods
 
-        public override Boolean ArePropertiesAndValuesValid(IDictionary<String, String> valueMapper, ISerializer serializer)
+        protected override IEnumerable<String> GetAddtionalPropertyKeys() => new[] { nameof(DeviceMacAddress) };
+
+        protected override bool ArePropertiesAndValuesValidInternal(IDictionary<string, string> valueMapper, ISerializer serializer)
         {
-            if(valueMapper == null) { return false; }
-
-            if (valueMapper.ContainsKeys(new[] { nameof(PortNumber), nameof(LinecardNumber), nameof(DeviceMacAddress) }) == false) { return false; }
-
             try
             {
                 String value = serializer.Deserialze<String>(valueMapper[nameof(DeviceMacAddress)]);
@@ -36,8 +32,6 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 var macAddress = ByteHelper.GetBytesFromHexString(value);
                 if (macAddress.Length != 6) { return false; }
 
-                serializer.Deserialze<Byte>(valueMapper[nameof(PortNumber)]);
-                serializer.Deserialze<Byte>(valueMapper[nameof(LinecardNumber)]);
                 return true;
             }
             catch (Exception)
@@ -45,49 +39,26 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 return false;
             }
         }
-
-        public override void ApplyValues(IDictionary<String, String> valueMapper, ISerializer serializer)
+        protected override IEnumerable<ScopeResolverPropertyDescription> GetAddionalProperties() => new List<ScopeResolverPropertyDescription>
         {
-            ASCIIEncoding encoding = new();
+            new ScopeResolverPropertyDescription(nameof(DeviceMacAddress),ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray),
+        };
 
-            PortNumber = serializer.Deserialze<Byte>(valueMapper[nameof(PortNumber)]);
-            LinecardNumber = serializer.Deserialze<Byte>(valueMapper[nameof(LinecardNumber)]);
+        protected override void ApplyValuesInternal(IDictionary<string, string> valueMapper, ISerializer serializer)
+        {
             String rawDeviceMacAddressValue = serializer.Deserialze<String>(valueMapper[nameof(DeviceMacAddress)]);
             DeviceMacAddress = ByteHelper.GetBytesFromHexString(rawDeviceMacAddressValue);
 
-            Byte[] remoteId = encoding.GetBytes($"{LinecardNumber}/{PortNumber}");
-
-            Byte[] result = new byte[1 + 1 + remoteId.Length + 1 + 1 + DeviceMacAddress.Length];
-            result[0] = 0x01; //remote id suboption value
-            result[1] = (Byte)remoteId.Length; // lengthOfSuboption;
-            remoteId.CopyTo(result, 2);
-            result[2 + remoteId.Length] = 0x02; // circuit id suboption identiifer
-            result[2 + remoteId.Length + 1] = (Byte)DeviceMacAddress.Length; // length of the address
-            DeviceMacAddress.CopyTo(result, 2 + 2 +  remoteId.Length);
-
-            Value = result;
+            Value = GetOptionValue(DeviceMacAddress);
         }
 
-    public override ScopeResolverDescription GetDescription()
-    {
-        return new ScopeResolverDescription(
-            nameof(DHCPv4SimpleZyxelIESResolver),
-            new List<ScopeResolverPropertyDescription>
-            {
-                   new ScopeResolverPropertyDescription(nameof(LinecardNumber),ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte),
-                   new ScopeResolverPropertyDescription(nameof(PortNumber),ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte),
-                   new ScopeResolverPropertyDescription(nameof(DeviceMacAddress),ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray),
-            }
-            );
-    }
+        protected override string GetTypeName() => nameof(DHCPv4SimpleZyxelIESResolver);
 
-        public override IDictionary<String, String> GetValues() => new Dictionary<String, String>
+        protected override IDictionary<string, string> GetAdditonalValues() => new Dictionary<String, String>
         {
-            { nameof(LinecardNumber), LinecardNumber.ToString() },
-            { nameof(PortNumber), PortNumber.ToString() },
             { nameof(DeviceMacAddress), ByteHelper.ToString(DeviceMacAddress,false) },
         };
 
-    #endregion
-}
+        #endregion
+    }
 }

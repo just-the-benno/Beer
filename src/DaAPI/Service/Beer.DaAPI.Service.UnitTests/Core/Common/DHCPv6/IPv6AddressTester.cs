@@ -265,5 +265,37 @@ namespace Beer.DaAPI.UnitTests.Core.Common.DHCPv6
 
             Assert.Equal(shouldBeUnicast, actual);
         }
+
+        [Fact]
+        public void GetAsLinkLocal_EmptyMacAddress()
+        {
+            Assert.ThrowsAny<ArgumentNullException>(() => IPv6Address.GetAsLinkLocal(null));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5)]
+        [InlineData(7)]
+        [InlineData(12)]
+        public void GetAsLinkLocal_MacAddressUnExpectedLenth(Int32 length)
+        {
+            Random random = new Random();
+            Byte[] input = random.NextBytes(length);
+
+            Assert.ThrowsAny<ArgumentOutOfRangeException>(() => IPv6Address.GetAsLinkLocal(input));
+        }
+
+        [Theory]
+        [InlineData("52:74:f2:b1:a8:7f", "fe80::5074:f2ff:feb1:a87f")]
+        [InlineData("24:24:24:24:24:24", "fe80::2624:24ff:fe24:2424")]
+        [InlineData("28:7F:CF:11:5E:80", "fe80::2a7f:cfff:fe11:5e80")]
+        public void GetAsLinkLocal(String macAddressInput, String expectedLinkLocalAddress)
+        {
+            Byte[] input = ByteHelper.GetBytesFromHexString(macAddressInput.Replace(":", String.Empty));
+
+            var actual = IPv6Address.GetAsLinkLocal(input);
+            var expected = IPv6Address.FromString(expectedLinkLocalAddress);
+            Assert.Equal(expected, actual);
+        }
     }
 }

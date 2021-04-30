@@ -38,7 +38,7 @@ namespace Beer.DaAPI.Core.Common
             return result;
         }
 
-        internal static byte[] GetBytesFromHexString(string rawByteValue) =>
+        public static byte[] GetBytesFromHexString(string rawByteValue) =>
             Enumerable.Range(0, rawByteValue.Length)
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(rawByteValue.Substring(x, 2), 16))

@@ -117,6 +117,60 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_ClientID_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceBasedDHCPv6ClientDUIDResolver_Caption" xml:space="preserve">
+    <value>Gerätebasierte Client DUID</value>
+  </data>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceBasedDHCPv6ClientDUIDResolver_Content" xml:space="preserve">
+    <value>Prüft ob die Nachricht von einem bestimmten DHCPv6 Client aus versendet wurde. Der Client wir dabei anhand seiner DUID identifiziert. Dies kann genutzt werden um dem selben Client immer die selbe Adresse zuzuweisen</value>
+  </data>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceBasedDHCPv6PeerAddressResolver_Caption" xml:space="preserve">
+    <value>Gerätebasierte Peer Adresse</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceBasedDHCPv6PeerAddressResolver_Content" xml:space="preserve">
+    <value>Diese Zuordner prüft ob der Wert der Eigenschaft "peer address" in irgendeinem Relay Packet den eingegeben Wert hat.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceId_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceBasedDeviceId_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceBasedDHCPv6SimpleZyxelIESResolver_Caption" xml:space="preserve">
+    <value>Gerätebasiertes einfaches Zyxel IES</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceBasedDHCPv6SimpleZyxelIESResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann benutzt werden wenn Zyxel Geräte der  Reihe IES5x oder IES6x von Zyxel as "Layer 2 Relay Agent" (LDRA) verwendet werden. Diese Zuordner erwartet dass die Variablen "%slotid/%portid" als "interface option" und die Variable "%dmac3" als "remote-id" verwendet werden. Für mehr Informationen und ein Konfigurationsbeispiel schauen Sie in der DaAPI Dokumentation nach.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_Index_Caption" xml:space="preserve">
+    <value>Relay Agent Index</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_Index_Content" xml:space="preserve">
+    <value>Dieser Wert gibt an, dass eine Übereinstimmung an der Stelle eines bestimmten Relay Agent zutreffen muss. Der Relay Agent mit dem Index 0 ist der dem Client am nächsten. Ein Relay Agent mit dem Index 1 ist der zweite Relay Agent auf dem zum Server</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_PortId_Caption" xml:space="preserve">
+    <value>Portnummer</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_PortId_Content" xml:space="preserve">
+    <value>Nummer des Ports, an dem das Gerät bzw. der Kunde angeschlossen sind</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_SlotId_Caption" xml:space="preserve">
+    <value>Schachtnummer</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_SlotId_Content" xml:space="preserve">
+    <value>Die Nummer des Schachtes in dem sich die Schnittstellenkarte befinden, an der das Geräte bzw. der Kunde angeschlossen sind.</value>
+  </data>
   <data name="DHCPv6ClientDUIDResolver_ClientDuid_Caption" xml:space="preserve">
     <value>Client DUID</value>
   </data>

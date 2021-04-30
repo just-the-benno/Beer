@@ -10,6 +10,8 @@ using static Beer.DaAPI.Core.Scopes.ScopeResolverPropertyDescription;
 using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1;
 using Beer.DaAPI.Shared.Requests;
 using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
+using Beer.DaAPI.Shared.Responses;
+using static Beer.DaAPI.Shared.Responses.DeviceResponses.V1;
 
 namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 {
@@ -28,6 +30,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         public Boolean IsNumericValue { get; }
         public Boolean IsNullableNumericValue { get; }
         public Boolean IsBooleanValue { get; }
+        public Boolean IsDeviceValue { get; }
 
         public Guid Key { get; private set; } = Guid.NewGuid();
 
@@ -67,6 +70,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                     break;
                 case ScopeResolverPropertyValueTypes.Boolean:
                     IsBooleanValue = true;
+                    break;
+                case ScopeResolverPropertyValueTypes.Device:
+                    IsDeviceValue = true;
                     break;
                 default:
                     break;
@@ -109,9 +115,14 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                     Addresses.Add(item);
                 }
             }
+            else if(IsDeviceValue == true)
+            {
+                DeviceId = Guid.Parse(rawValue);
+            }
         }
 
         public String SingleValue { get; set; }
+        public Guid DeviceId { get; set; }
         public Int64? NullableNumericValue { get; set; }
         public Int64 NumericValue { get; set; }
         public Boolean BooleanValue { get; set; }
@@ -144,6 +155,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 if (IsTextValue == true)
                 {
                     return System.Text.Json.JsonSerializer.Serialize(SingleValue);
+                }
+                else if(IsDeviceValue == true)
+                {
+                    return System.Text.Json.JsonSerializer.Serialize(DeviceId);
                 }
                 else if (IsBooleanValue == true)
                 {
@@ -189,6 +204,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         }
 
         public IList<CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel> Properties { get; set; } = new List<CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel>();
+        public Boolean LoadDevicesInProgress { get; internal set; }
 
         public void SetPropertiesToDefault(DHCPv4ScopeResolverDescription description)
         {
@@ -210,6 +226,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                         x => x.GetSerializedValue()),
             };
 
+        internal bool HasDeviceProperty() => Properties.Any(x => x.IsDeviceValue == true);
+
         internal void LoadFromResponse(DHCPv4ScopePropertiesResponse properties,DHCPv4ScopeResolverDescription description)
         {
             if (description == null) { return; }
@@ -223,6 +241,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 Properties.Add(new CreateOrUpdateDHCPv4ScopeResolverPropertyViewModel(propertyType.PropertyName, propertyType.PropertyValueType, item.Value));
             }
         }
+
+        public IEnumerable<DeviceOverviewResponse> Devices { get; set; }
+
+        internal void SetDevices(IEnumerable<DeviceOverviewResponse> devices) => Devices = new List<DeviceOverviewResponse>(devices);
     }
 
     public class CreateOrUpdateDHCPv4ScopeResolverRelatedViewModelValidator : AbstractValidator<CreateOrUpdateDHCPv4ScopeResolverRelatedViewModel>
@@ -256,6 +278,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                     element2.RuleFor(x => x.Value)
                     .Must((properties, address) => properties.Parent.Addresses.Count(y => y.Value == address) == 1).WithMessage(localizer["ValidationAddressAlreadyExists"]);
                 }).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv4AddressList);
+
+                element.RuleFor(x => x.DeviceId).NotNull().Must(x => x != Guid.Empty).WithMessage(localizer["ValidationNoDeviceSelected"]).When(x => x.IsDeviceValue == true);
+
             });
         }
     }

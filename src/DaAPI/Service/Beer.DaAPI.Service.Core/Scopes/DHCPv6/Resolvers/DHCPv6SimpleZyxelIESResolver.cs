@@ -10,71 +10,24 @@ using static Beer.DaAPI.Core.Scopes.ScopeResolverPropertyDescription;
 
 namespace Beer.DaAPI.Core.Scopes.DHCPv6.Resolvers
 {
-    public class DHCPv6SimpleZyxelIESResolver : IScopeResolver<DHCPv6Packet, IPv6Address>
+    public class DHCPv6SimpleZyxelIESResolver : DHCPv6SimpleZyxelIESBasedResolver
     {
         #region Fields
 
-        private const int _macAddressLength = 6;
-        private static readonly Encoding _encoding = ASCIIEncoding.ASCII;
-        private Byte[] _interfaceIdValueAsByte;
-        private Byte[] _remoteIdentifierValueAsByte;
+        private const Int32 _macAddressLength = 6;
 
         #endregion
 
         #region Properties
 
-        public UInt16 Index { get; private set; }
-        public UInt16 SlotId { get; private set; }
-        public UInt16 PortId { get; private set; }
         public Byte[] DeviceMacAddress { get; private set; }
 
         #endregion
 
-        private (DHCPv6PacketRemoteIdentifierOption RemoteOption, DHCPv6PacketByteArrayOption InterfaceOption) GetOptions(DHCPv6Packet packet)
+        protected override IEnumerable<string> GetAddtionalPropertyKeys() => new[] { nameof(DeviceMacAddress) };
+        
+        protected override Boolean ArePropertiesAndValuesValidInternal(IDictionary<String, String> valueMapper, ISerializer serializer)
         {
-            var chain = ((DHCPv6RelayPacket)packet).GetRelayPacketChain();
-            DHCPv6RelayPacket relayedPacket = chain[Index];
-
-            var remoteIdentiiferOption = relayedPacket.GetOption<DHCPv6PacketRemoteIdentifierOption>(DHCPv6PacketOptionTypes.RemoteIdentifier);
-            var interfaceOption = relayedPacket.GetOption<DHCPv6PacketByteArrayOption>(DHCPv6PacketOptionTypes.InterfaceId);
-
-            return (remoteIdentiiferOption, interfaceOption);
-        }
-
-        public Boolean HasUniqueIdentifier => true;
-
-        public Byte[] GetUniqueIdentifier(DHCPv6Packet packet)
-        {
-            var (RemoteOption, InterfaceOption) = GetOptions(packet);
-            Byte[] result = ByteHelper.ConcatBytes(RemoteOption.Data, InterfaceOption.Data);
-
-            return result;
-        }
-
-        public Boolean ArePropertiesAndValuesValid(IDictionary<String, String> valueMapper, ISerializer serializer)
-        {
-            if (valueMapper.ContainsKeys(new[] { nameof(Index), nameof(SlotId), nameof(PortId), nameof(DeviceMacAddress) }) == false)
-            {
-                return false;
-            }
-
-            var numberValues = new[] { nameof(Index), nameof(SlotId), nameof(PortId) };
-            foreach (var item in numberValues)
-            {
-                String index = serializer.Deserialze<String>(valueMapper[item]);
-                if (UInt16.TryParse(index, out UInt16 numberValue) == true)
-                {
-                    if (item != nameof(Index) && numberValue < 1)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
             String value = serializer.Deserialze<String>(valueMapper[nameof(DeviceMacAddress)]);
             if (String.IsNullOrEmpty(value) == true) { return false; }
 
@@ -94,54 +47,23 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6.Resolvers
             return true;
         }
 
-        public void ApplyValues(IDictionary<String, String> valueMapper, ISerializer serializer)
+        protected override void ApplyValuesInternal(IDictionary<String, String> valueMapper, ISerializer serializer)
         {
-            Index = serializer.Deserialze<UInt16>(valueMapper[nameof(Index)]);
-            SlotId = serializer.Deserialze<UInt16>(valueMapper[nameof(SlotId)]);
-            PortId = serializer.Deserialze<UInt16>(valueMapper[nameof(PortId)]);
-
             DeviceMacAddress = ByteHelper.GetBytesFromHexString(serializer.Deserialze<String>(valueMapper[nameof(DeviceMacAddress)]));
-
-            _interfaceIdValueAsByte = _encoding.GetBytes($"{SlotId}/{PortId}");
-            _remoteIdentifierValueAsByte = ByteHelper.ConcatBytes(new Byte[4], DeviceMacAddress);
         }
 
-        public ScopeResolverDescription GetDescription() => new ScopeResolverDescription(
-          nameof(DHCPv6SimpleZyxelIESResolver),
-          new List<ScopeResolverPropertyDescription>
-         {
-                   new ScopeResolverPropertyDescription(nameof(Index), ScopeResolverPropertyValueTypes.UInt32 ),
-                   new ScopeResolverPropertyDescription(nameof(SlotId), ScopeResolverPropertyValueTypes.UInt32 ),
-                   new ScopeResolverPropertyDescription(nameof(PortId), ScopeResolverPropertyValueTypes.UInt32 ),
-                   new ScopeResolverPropertyDescription(nameof(DeviceMacAddress),ScopeResolverPropertyValueTypes.ByteArray)
-          });
-
-        public Boolean PacketMeetsCondition(DHCPv6Packet packet)
+        protected override IEnumerable<ScopeResolverPropertyDescription> GetAddionalProperties() => new[]
         {
-            if (packet is DHCPv6RelayPacket == false) { return false; }
+            new ScopeResolverPropertyDescription(nameof(DeviceMacAddress),ScopeResolverPropertyValueTypes.ByteArray)
+        };
 
-            var chain = ((DHCPv6RelayPacket)packet).GetRelayPacketChain();
-            if (chain.Count <= Index) { return false; }
+        protected override byte[] GetDeviceMacAddress() => DeviceMacAddress;
 
-            var (RemoteOption, InterfaceOption) = GetOptions(packet);
+        protected override string GetTypeName() => nameof(DHCPv6SimpleZyxelIESResolver);
 
-            if (InterfaceOption == null || RemoteOption == null)
-            {
-                return false;
-            }
-
-            Boolean interfaceResult = ByteHelper.AreEqual(_interfaceIdValueAsByte, InterfaceOption.Data);
-            Boolean remodeIdentifierResult = ByteHelper.AreEqual(_remoteIdentifierValueAsByte, RemoteOption.Data, 4);
-
-            return interfaceResult && remodeIdentifierResult;
-        }
-
-        public IDictionary<String, String> GetValues() => new Dictionary<String, String>
+        protected override IDictionary<string, string> GetAdditonalValues() => new Dictionary<String, String>
         {
-            { nameof(Index), Index.ToString() },
-            { nameof(SlotId), SlotId.ToString() },
-            { nameof(PortId), PortId.ToString() },
-            { nameof(DeviceMacAddress), ByteHelper.ToString(DeviceMacAddress,false)  },
+            { nameof(DeviceMacAddress), ByteHelper.ToString(DeviceMacAddress,false) },
         };
     }
 }

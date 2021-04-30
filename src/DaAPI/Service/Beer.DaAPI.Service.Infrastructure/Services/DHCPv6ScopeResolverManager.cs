@@ -14,6 +14,7 @@ namespace Beer.DaAPI.Infrastructure.Services
     {
         public DHCPv6ScopeResolverManager(
             ISerializer serializer,
+            IDeviceService deviceService,
             ILogger<DHCPv6ScopeResolverManager> logger) : base(serializer, logger)
         {
             //AddOrUpdateScopeResolver(nameof(DHCPv6AndResolver), () => new DHCPv6AndResolver());
@@ -24,8 +25,11 @@ namespace Beer.DaAPI.Infrastructure.Services
             AddOrUpdateScopeResolver(nameof(DHCPv6RelayAgentResolver), () => new DHCPv6RelayAgentResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv6MilegateResolver), () => new DHCPv6MilegateResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv6PeerAddressResolver), () => new DHCPv6PeerAddressResolver());
+            AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv6PeerAddressResolver), () => new DeviceBasedDHCPv6PeerAddressResolver(deviceService));
             AddOrUpdateScopeResolver(nameof(DHCPv6ClientDUIDResolver), () => new DHCPv6ClientDUIDResolver());
+            AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv6ClientDUIDResolver), () => new DeviceBasedDHCPv6ClientDUIDResolver(deviceService));
             AddOrUpdateScopeResolver(nameof(DHCPv6SimpleZyxelIESResolver), () => new DHCPv6SimpleZyxelIESResolver());
+            AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv6SimpleZyxelIESResolver), () => new DeviceBasedDHCPv6SimpleZyxelIESResolver(deviceService));
         }
     }
 }

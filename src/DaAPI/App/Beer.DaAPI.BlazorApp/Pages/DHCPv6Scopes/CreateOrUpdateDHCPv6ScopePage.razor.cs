@@ -94,12 +94,27 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             }
         }
 
-        private void OnResolverContextChanged(object sender, FieldChangedEventArgs e)
+        private async Task LoadDevicesIfNeeded()
+        {
+            if (_resolverModel.HasDeviceProperty() == true)
+            {
+                _resolverModel.LoadDevicesInProgress = true;
+                StateHasChanged();
+                var devices = await _service.GetDeviceOverview();
+                _resolverModel.SetDevices(devices);
+                _resolverModel.LoadDevicesInProgress = false;
+                StateHasChanged();
+            }
+        }
+
+        private async void OnResolverContextChanged(object sender, FieldChangedEventArgs e)
         {
             if (e.FieldIdentifier.FieldName == nameof(CreateOrUpdateDHCPv6ScopeResolverRelatedViewModel.ResolverType))
             {
                 _resolverModel.SetPropertiesToDefault(_possibleResolvers.FirstOrDefault(x => x.TypeName == _resolverModel.ResolverType));
                 _resolverValuesKey = Guid.NewGuid();
+
+                await LoadDevicesIfNeeded();
             }
 
             ValidateContext(_resolverContext);
@@ -387,6 +402,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             _optionalValues.LoadFromResponse(properties);
 
             _resolverModel.LoadFromResponse(properties, _possibleResolvers.FirstOrDefault(x => x.TypeName == properties.Resolver.Typename));
+            await LoadDevicesIfNeeded();
         }
 
         protected override void OnAfterRender(bool firstRender)

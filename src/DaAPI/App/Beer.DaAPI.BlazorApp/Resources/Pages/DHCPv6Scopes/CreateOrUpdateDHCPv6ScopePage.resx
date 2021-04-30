@@ -210,6 +210,9 @@
   <data name="LoadingAdditionalDataText" xml:space="preserve">
     <value>Addtional Data is loading...</value>
   </data>
+  <data name="LoadingDevices" xml:space="preserve">
+    <value>Loading devices...</value>
+  </data>
   <data name="LoadingParentDetails" xml:space="preserve">
     <value>Loading details from parent</value>
   </data>
@@ -224,6 +227,9 @@
   </data>
   <data name="NextCaption" xml:space="preserve">
     <value>Next Step</value>
+  </data>
+  <data name="NoDeviceSelectedPlaceholder" xml:space="preserve">
+    <value>--- Select a device ---</value>
   </data>
   <data name="NoExcludedAddressFound" xml:space="preserve">
     <value>No addresses are excluded</value>
@@ -413,6 +419,9 @@
   </data>
   <data name="ValidationLifetimeSmallerThanPreferredLifetimeOfParent" xml:space="preserve">
     <value>The valid life time can't be smaller than the preferred life time of the parent</value>
+  </data>
+  <data name="ValidationNoDeviceSelected" xml:space="preserve">
+    <value>No Device selected</value>
   </data>
   <data name="ValidationNotAValidByteSequnce" xml:space="preserve">
     <value>This value is not reconized as a valid sequence. Enter the number without any sign as hexadecimal values like AABC0234</value>

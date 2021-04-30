@@ -14,13 +14,17 @@ namespace Beer.DaAPI.Infrastructure.Services
     {
         public DHCPv4ScopeResolverManager(
             ISerializer serializer,
+            IDeviceService deviceService,
             ILogger<DHCPv4ScopeResolverManager> logger) : base(serializer, logger)
         {
             AddOrUpdateScopeResolver(nameof(DHCPv4PseudoResolver), () => new DHCPv4PseudoResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4RelayAgentResolver), () => new DHCPv4RelayAgentResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4RelayAgentSubnetResolver), () => new DHCPv4RelayAgentSubnetResolver());
             AddOrUpdateScopeResolver(nameof(DHCPv4SimpleZyxelIESResolver), () => new DHCPv4SimpleZyxelIESResolver());
+            AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv4SimpleZyxelIESResolver), () => new DeviceBasedDHCPv4SimpleZyxelIESResolver(deviceService));
             AddOrUpdateScopeResolver(nameof(DHCPv4SimpleCiscoSGSeriesResolver), () => new DHCPv4SimpleCiscoSGSeriesResolver());
+            AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver), () => new DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver(deviceService));
+
             AddOrUpdateScopeResolver(nameof(DHCPv4Option82Resolver), () => new DHCPv4Option82Resolver());
         }
     }

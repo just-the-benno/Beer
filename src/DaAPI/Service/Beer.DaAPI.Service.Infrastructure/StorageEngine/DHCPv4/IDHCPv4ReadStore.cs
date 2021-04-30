@@ -1,5 +1,6 @@
 ﻿using Beer.DaAPI.Core.Listeners;
 using Beer.DaAPI.Core.Packets.DHCPv4;
+using Beer.DaAPI.Infrastructure.Services;
 using Beer.DaAPI.Shared.Responses;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,6 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         Task<Boolean> LogFilteredDHCPv4Packet(DHCPv4Packet packet, String filterName);
         Task<Boolean> LogInvalidDHCPv4Packet(DHCPv4Packet packet);
 
+        IEnumerable<Device> GetAllDevices();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Beer.DaAPI.Core.Common;
 using Beer.DaAPI.Core.Listeners;
 using Beer.DaAPI.Core.Packets.DHCPv6;
+using Beer.DaAPI.Infrastructure.Services;
 using Beer.DaAPI.Shared.Responses;
 using System;
 using System.Collections.Generic;
@@ -27,5 +28,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
         
         Task<Boolean> LogInvalidDHCPv6Packet(DHCPv6Packet packet);
         Task<Boolean> LogFilteredDHCPv6Packet(DHCPv6Packet packet, String filterName);
+
+        IEnumerable<Device> GetAllDevices();
     }
 }
