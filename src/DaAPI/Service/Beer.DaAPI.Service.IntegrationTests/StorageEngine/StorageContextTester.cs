@@ -1339,6 +1339,15 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     Name = "a device",
                 };
 
+                Device thirdExpectedDevice = new Device
+                {
+                    Id = random.NextGuid(),
+                    DUID = new UUIDDUID(Guid.Empty),
+                    LinkLocalAddress = IPv6Address.FromString("fe80::449c:35ff:fec0:a1be"),
+                    MacAddress = new byte[] { 0x46, 0x9C, 0x35, 0xC0, 0xA1, 0xBE },
+                    Name = "zlast device",
+                };
+
                 context.Devices.Add(new DeviceEntryDataModel
                 {
                     Id = firstExpectedDevice.Id,
@@ -1355,11 +1364,19 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     MacAddress = secondExpectedDevice.MacAddress,
                 });
 
+                context.Devices.Add(new DeviceEntryDataModel
+                {
+                    Id = thirdExpectedDevice.Id,
+                    DUID = null,
+                    Name = thirdExpectedDevice.Name,
+                    MacAddress = thirdExpectedDevice.MacAddress,
+                });
+
                 await context.SaveChangesAsync();
 
                 var actualResult = context.GetAllDevices();
 
-                Assert.Equal(new[] { secondExpectedDevice, firstExpectedDevice }, actualResult, new DeviceEqualityComparer());
+                Assert.Equal(new[] { secondExpectedDevice, firstExpectedDevice, thirdExpectedDevice }, actualResult, new DeviceEqualityComparer());
             }
             finally
             {

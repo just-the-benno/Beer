@@ -117,6 +117,60 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceBasedDHCPv6ClientDUIDResolver_Caption" xml:space="preserve">
+    <value>Device based Client DUID</value>
+  </data>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceBasedDHCPv6ClientDUIDResolver_Content" xml:space="preserve">
+    <value>Checks if the message is originated by a specified client based on its DUID. This can be used to assign the same client the same address.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceBasedDHCPv6ClientDUIDResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceBasedDHCPv6PeerAddressResolver_Caption" xml:space="preserve">
+    <value>Device based Peer address</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceBasedDHCPv6PeerAddressResolver_Content" xml:space="preserve">
+    <value>This resolver checks if the peer address in any relay forward messages has the specified address.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceBasedDHCPv6PeerAddressResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceBasedDHCPv6SimpleZyxelIESResolver_Caption" xml:space="preserve">
+    <value>Device based Simple Zyxel IES</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceBasedDHCPv6SimpleZyxelIESResolver_Content" xml:space="preserve">
+    <value>This resolver can be used if a Zyxel IES5x.. or IES6x is used as a "Layer2 relay agent" (LDRA). This resolver assumes that the variable "%slotid/%portid" is used for the interface option and %dmac3 is used for the remote-id option. See the DaAPI documentation for more detailed explanation and configuration example for the Zyxel IES series.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_Index_Caption" xml:space="preserve">
+    <value>relay agent index</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_Index_Content" xml:space="preserve">
+    <value>This property specified that the match needs at the selected relay agent. The relay agent with index zero is the nearest to the client. A relay agent with the index one would be the second relay agent passed on the way from the client to the server.</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_PortId_Caption" xml:space="preserve">
+    <value>Port number</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_PortId_Content" xml:space="preserve">
+    <value>The number of the port the device is connected</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_SlotId_Caption" xml:space="preserve">
+    <value>Slot number</value>
+  </data>
+  <data name="DeviceBasedDHCPv6SimpleZyxelIESResolver_SlotId_Content" xml:space="preserve">
+    <value>The number of the slot (1 to 10) the port on the line card is connected to the device.</value>
+  </data>
   <data name="DHCPv6ClientDUIDResolver_ClientDuid_Caption" xml:space="preserve">
     <value>Client DUID</value>
   </data>

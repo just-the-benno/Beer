@@ -117,6 +117,54 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
+    <value>Gerätebasieter Cisco SG Switch</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann verwendet werden, wenn  Cisco SG Switch wie die SG300 und SG350 Reihe mit aktivieren DHCP Snooping und Einfügen der Option 82 verwenden werden. Die Verknüpfung wird dabei über die VLAN ID und Port des Kunden, sowie die MAC Adresse des Gerätes hergestellt.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Port (1 ... 48) an dem der Kunde bzw. Nutzer angeschlossen ist.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Caption" xml:space="preserve">
+    <value>VLAN ID</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Content" xml:space="preserve">
+    <value>Die VLAN ID des Kunden bzw. Benutzers für den dieser Zuordner gelten soll. Es kann jede ID zwischen 1 und 4094 angegeben werden.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DeviceBasedDHCPv4SimpleZyxelIESResolver_Caption" xml:space="preserve">
+    <value>Gerätebasiertes Zyxel IES MSAN</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DeviceId_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst. </value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DHCPv4SimpleZyxelIESResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann verwendet werden when ein  Zyxel MSAN der Reihen IES5x.. oder IES6x eingesetzt werden und diese als  "Layer2 relay agent" betrieben werden.  Der Resolver nimmt an, dass die Variable "%slotid/%pid" für die Einstellung "opt82-circuit-id" verwenden wird, sowie dass %dmac3 die Variable für die Einstellung "opt82-remote-id" ist. In der Dokumentation finden sich mehr über diese Einstellungen.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_LinecardNumber_Caption" xml:space="preserve">
+    <value>Linecard</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_LinecardNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Einschubs  (1 to 10) der mit dem entsprechend Port verbunden ist</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Ports (1 ... 80) mit dem Kunden verbunden wurde</value>
+  </data>
   <data name="DHCPv4Option82Resolver_DHCPv4Option82Resolver_Caption" xml:space="preserve">
     <value>Benutzerdefinierte Option82</value>
   </data>

@@ -496,60 +496,77 @@ else
 
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv6Address:
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv6NetworkAddress:
-                                                        <MudTextField T="string" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv6AddressPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
+                                                    <MudTextField T="string" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv6AddressPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
 
-                                                        break;
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4AddressList:
-                                                        <div class="d-flex justify-end">
-                                                            <MudTooltip Text="@L["AddAddressToResolverPropertyToolTip"]">
-                                                                <MudFab Icon="@Icons.Filled.Add" OnClick="@( () => AddAddressToResolverProperty(_resolverModel.Properties[temp]) )" />
-                                                            </MudTooltip>
-                                                        </div>
-                                                        <MudList Dense="true" @key="_resolverModel.Properties[temp].Key">
-                                                            @for (int j = 0; j < _resolverModel.Properties[temp].Addresses.Count; j++)
-                                                            {
-                                                                Int32 tempAddress = j;
-                                                                <MudListItem>
-                                                                    <div class="d-flex flex-row">
-                                                                        <MudTextField T="string" Immediate="true" Placeholder="@L["OptionalValuesAddressOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].Addresses[tempAddress].Value" For="@(() => _resolverModel.Properties[temp].Addresses[tempAddress].Value)" />
-                                                                        <div class="d-flex" style="flex: 1 1 auto"></div>
-                                                                        @if (_resolverModel.Properties[temp].Addresses.Count > 1)
-                                                                        {
-                                                                            <MudTooltip Text="@L["DeleteAddressFromResolverPropertyValuesTooltip"]">
-                                                                                <MudIconButton Style="flex: 0 0 auto; align-self: center;" Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="@( () => RemoveAddressFromResolverProperty(_resolverModel.Properties[temp],tempAddress))" />
-                                                                            </MudTooltip>
-                                                                        }
-                                                                    </div>
-                                                                </MudListItem>
-                                                            }
-                                                        </MudList>
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4AddressList:
+                                                    <div class="d-flex justify-end">
+                                                        <MudTooltip Text="@L["AddAddressToResolverPropertyToolTip"]">
+                                                            <MudFab Icon="@Icons.Filled.Add" OnClick="@( () => AddAddressToResolverProperty(_resolverModel.Properties[temp]) )" />
+                                                        </MudTooltip>
+                                                    </div>
+                                                    <MudList Dense="true" @key="_resolverModel.Properties[temp].Key">
+                                                        @for (int j = 0; j < _resolverModel.Properties[temp].Addresses.Count; j++)
+                                                        {
+                                                            Int32 tempAddress = j;
+                                                            <MudListItem>
+                                                                <div class="d-flex flex-row">
+                                                                    <MudTextField T="string" Immediate="true" Placeholder="@L["OptionalValuesAddressOptionPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].Addresses[tempAddress].Value" For="@(() => _resolverModel.Properties[temp].Addresses[tempAddress].Value)" />
+                                                                    <div class="d-flex" style="flex: 1 1 auto"></div>
+                                                                    @if (_resolverModel.Properties[temp].Addresses.Count > 1)
+                                                                    {
+                                                                        <MudTooltip Text="@L["DeleteAddressFromResolverPropertyValuesTooltip"]">
+                                                                            <MudIconButton Style="flex: 0 0 auto; align-self: center;" Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="@( () => RemoveAddressFromResolverProperty(_resolverModel.Properties[temp],tempAddress))" />
+                                                                        </MudTooltip>
+                                                                    }
+                                                                </div>
+                                                            </MudListItem>
+                                                        }
+                                                    </MudList>
                                                     break;
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv4Subnetmask:
                                                 case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.IPv6Subnet:
-                                                        <MudTextField T="Int64" Immediate="true" Placeholder="@L["ResolverPropertyEnterNumericValuePlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Number" @bind-Value="_resolverModel.Properties[temp].NumericValue" For="@(() => _resolverModel.Properties[temp].NumericValue)" />
+                                                    <MudTextField T="Int64" Immediate="true" Placeholder="@L["ResolverPropertyEnterNumericValuePlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Number" @bind-Value="_resolverModel.Properties[temp].NumericValue" For="@(() => _resolverModel.Properties[temp].NumericValue)" />
 
-                                                        break;
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray:
-                                                        <MudTextField T="String" Immediate="true" Placeholder="@L["ResolverPropertyEnterByteArrayPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.ByteArray:
+                                                    <MudTextField T="String" Immediate="true" Placeholder="@L["ResolverPropertyEnterByteArrayPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].SingleValue" For="@(() => _resolverModel.Properties[temp].SingleValue)" />
 
-                                                        break;
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.UInt32:
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte:
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.VLANId:
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Numeric:
-                                                        <MudTextField T="Int64" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].NumericValue" For="@(() => _resolverModel.Properties[temp].NumericValue)" />
-                                                        break;
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.UInt32:
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Byte:
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.VLANId:
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Numeric:
+                                                    <MudTextField T="Int64" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].NumericValue" For="@(() => _resolverModel.Properties[temp].NumericValue)" />
+                                                    break;
 
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.NullableUInt32:
-                                                        <MudTextField T="Int64?" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].NullableNumericValue" For="@(() => _resolverModel.Properties[temp].NullableNumericValue)" />
-                                                        break;
-                                                    case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Boolean:
-                                                        <MudCheckBox T="Boolean" For="@( () => _resolverModel.Properties[temp].BooleanValue)" @bind-Checked="_resolverModel.Properties[temp].BooleanValue" />
-                                                        break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.NullableUInt32:
+                                                    <MudTextField T="Int64?" Immediate="true" Placeholder="@L["ResolverPropertyEnterIPv4SubnetmaskPlaceholer"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_resolverModel.Properties[temp].NullableNumericValue" For="@(() => _resolverModel.Properties[temp].NullableNumericValue)" />
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Boolean:
+                                                    <MudCheckBox T="Boolean" For="@( () => _resolverModel.Properties[temp].BooleanValue)" @bind-Checked="_resolverModel.Properties[temp].BooleanValue" />
+                                                    break;
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Device:
+                                                    @if (_resolverModel.LoadDevicesInProgress == true)
+                                                    {
+                                                        <BeerCenteredCircularLoading Text="@L["LoadingDevices"]" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudSelect T="Guid" For="@( () =>  _resolverModel.Properties[temp].DeviceId)" @bind-Value=" _resolverModel.Properties[temp].DeviceId">
+                                                            <MudSelectItem T="Guid" Value="@Guid.Empty">@L["NoDeviceSelectedPlaceholder"]</MudSelectItem>
 
-                                                    default:
-                                                        break;
-                                                }
+                                                            @foreach (var item in _resolverModel.Devices)
+                                                            {
+                                                                <MudSelectItem T="Guid" Value="@item.Id"> @item.Name</MudSelectItem>
+                                                            }
+                                                        </MudSelect>
+                                                    }
+
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
 
                                         </td>
                                     </tr>
@@ -557,12 +574,6 @@ else
                             </tbody>
 
                         </MudSimpleTable>
-                    }
-
-                    <ValidationSummary Model="_resolverContext" />
-                    @foreach (var item in _resolverContext.GetValidationMessages())
-                    {
-                        @item
                     }
 
                     <div class="d-flex justify-end mt-3">

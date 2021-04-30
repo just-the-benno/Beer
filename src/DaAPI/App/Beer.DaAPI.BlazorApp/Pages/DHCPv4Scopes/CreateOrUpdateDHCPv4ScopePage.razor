@@ -517,6 +517,25 @@ else
                                                     <MudCheckBox T="Boolean" For="@( () => _resolverModel.Properties[temp].BooleanValue)" @bind-Checked="_resolverModel.Properties[temp].BooleanValue" />
                                                     break;
 
+                                                case Core.Scopes.ScopeResolverPropertyDescription.ScopeResolverPropertyValueTypes.Device:
+                                                    @if (_resolverModel.LoadDevicesInProgress == true)
+                                                    {
+                                                        <BeerCenteredCircularLoading Text="@L["LoadingDevices"]" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudSelect T="Guid" For="@( () =>  _resolverModel.Properties[temp].DeviceId)" @bind-Value=" _resolverModel.Properties[temp].DeviceId">
+                                                            <MudSelectItem T="Guid" Value="@Guid.Empty">@L["NoDeviceSelectedPlaceholder"]</MudSelectItem>
+
+                                                            @foreach (var item in _resolverModel.Devices)
+                                                            {
+                                                                <MudSelectItem T="Guid" Value="@item.Id"> @item.Name</MudSelectItem>
+                                                            }
+                                                        </MudSelect>
+                                                    }
+
+                                                    break;
+
                                                 default:
                                                     break;
                                             }

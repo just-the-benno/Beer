@@ -117,6 +117,54 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
+    <value>Device based Cisco SG Switch</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DHCPv4SimpleCiscoSGSeriesResolver_Content" xml:space="preserve">
+    <value>This resolver can be used if a Cisco SG Switch like the SG300 and SG350 has the DHCP snooping activated and inserted option 82. The association is based on the VLAN ID and port of the customer/user and the device's MAC address.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Content" xml:space="preserve">
+    <value>The port number (1 ... 48) of the port, where the customer/user is connected.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Caption" xml:space="preserve">
+    <value>VLAN ID</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Content" xml:space="preserve">
+    <value>Is this the VLAN ID of the customer/user that should be valid for this resolver. You can enter any ID between 1 and 4094.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DeviceBasedDHCPv4SimpleZyxelIESResolver_Caption" xml:space="preserve">
+    <value>Device Based Zyxel IES MSAN</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_DHCPv4SimpleZyxelIESResolver_Content" xml:space="preserve">
+    <value>This resolver can be used if a Zyxel IES5x.. or IES6x is used as a "Layer2 relay agent". This resolver assumes that the variable "%slotid/%pid" is used for opt82-circuit-id option and %dmac3 is used for the opt82-remote-id option. See the DaAPI documentation for more detailed explanation and configuration example for the Zyxel IES series.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_LinecardNumber_Caption" xml:space="preserve">
+    <value>Linecard</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_LinecardNumber_Content" xml:space="preserve">
+    <value>The number of the slot (1 to 10) the port on the line card is connected to the device.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
+    <value>The port number (1 ... 80) of the port, where the customer/user is connected.</value>
+  </data>
   <data name="DHCPv4Option82Resolver_DHCPv4Option82Resolver_Caption" xml:space="preserve">
     <value>Custom Option82</value>
   </data>

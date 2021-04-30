@@ -1024,7 +1024,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             var result = Devices.ToList().Select(x => new Device {
                 Id = x.Id,
                 Name = x.Name,
-                DUID = DUIDFactory.GetDUID(x.DUID),
+                DUID = x.DUID == null ? new UUIDDUID(Guid.Empty) :  DUIDFactory.GetDUID(x.DUID),
                 MacAddress = x.MacAddress,
                 LinkLocalAddress = IPv6Address.GetAsLinkLocal(x.MacAddress),
             }).OrderBy(x => x.Name).ToList();

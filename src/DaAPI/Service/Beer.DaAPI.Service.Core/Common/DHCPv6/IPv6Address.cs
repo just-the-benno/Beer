@@ -417,7 +417,7 @@ namespace Beer.DaAPI.Core.Common.DHCPv6
         public static IPv6Address GetAsLinkLocal(byte[] macAddress)
         {
             if (macAddress == null) { throw new ArgumentNullException(nameof(macAddress)); }
-            if (macAddress.Length != 6) { throw new ArgumentOutOfRangeException(nameof(macAddress), "a mac address is supposed to have 6 bytes"); }
+            if (macAddress.Length != 6) { throw new ArgumentOutOfRangeException(nameof(macAddress), $"a mac address is supposed to have 6 bytes. {macAddress.Length} provided"); }
 
             Byte[] result = new byte[16];
             result[0] = 0xfe;

@@ -11,6 +11,7 @@ using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1;
 using Beer.DaAPI.Shared.Requests;
 using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
 using Beer.DaAPI.Core.Common.DHCPv6;
+using static Beer.DaAPI.Shared.Responses.DeviceResponses.V1;
 
 namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 {
@@ -29,6 +30,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         public Boolean IsNumericValue { get; }
         public Boolean IsNullableNumericValue { get; }
         public Boolean IsBooleanValue { get; }
+        public Boolean IsDeviceValue { get; }
 
         public Guid Key { get; private set; } = Guid.NewGuid();
 
@@ -68,6 +70,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                     break;
                 case ScopeResolverPropertyValueTypes.Boolean:
                     IsBooleanValue = true;
+                    break;
+                case ScopeResolverPropertyValueTypes.Device:
+                    IsDeviceValue = true;
                     break;
                 default:
                     break;
@@ -110,9 +115,14 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                     Addresses.Add(item);
                 }
             }
+            else if (IsDeviceValue == true)
+            {
+                DeviceId = Guid.Parse(rawValue);
+            }
         }
 
         public String SingleValue { get; set; }
+        public Guid DeviceId { get; set; }
         public Int64? NullableNumericValue { get; set; }
         public Int64 NumericValue { get; set; }
         public Boolean BooleanValue { get; set; }
@@ -145,6 +155,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 if (IsTextValue == true)
                 {
                     return System.Text.Json.JsonSerializer.Serialize(SingleValue);
+                }
+                else if (IsDeviceValue == true)
+                {
+                    return System.Text.Json.JsonSerializer.Serialize(DeviceId);
                 }
                 else if (IsBooleanValue == true)
                 {
@@ -190,6 +204,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         }
 
         public IList<CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel> Properties { get; set; } = new List<CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel>();
+        public Boolean LoadDevicesInProgress { get; internal set; }
 
         public void SetPropertiesToDefault(DHCPv6ScopeResolverDescription description)
         {
@@ -211,6 +226,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                         x => x.GetSerializedValue()),
             };
 
+        internal bool HasDeviceProperty() => Properties.Any(x => x.IsDeviceValue == true);
+
         internal void LoadFromResponse(DHCPv6ScopePropertiesResponse properties,DHCPv6ScopeResolverDescription description)
         {
             if (description == null) { return; }
@@ -224,6 +241,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 Properties.Add(new CreateOrUpdateDHCPv6ScopeResolverPropertyViewModel(propertyType.PropertyName, propertyType.PropertyValueType, item.Value));
             }
         }
+
+        public IEnumerable<DeviceOverviewResponse> Devices { get; set; }
+
+        internal void SetDevices(IEnumerable<DeviceOverviewResponse> devices) => Devices = new List<DeviceOverviewResponse>(devices);
     }
 
     public class CreateOrUpdateDHCPv6ScopeResolverRelatedViewModelValidator : AbstractValidator<CreateOrUpdateDHCPv6ScopeResolverRelatedViewModel>
@@ -249,6 +270,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 element.RuleFor(x => x.SingleValue).Matches(@"^[0-9a-fA-F]+$").WithMessage(localizer["ValidationNotAValidByteSequnce"]).When(x => x.ValueType == ScopeResolverPropertyValueTypes.ByteArray);
                 element.RuleFor(x => x.SingleValue).Must(x => x.AsIPv6Address() != IPv6Address.Empty).WithMessage(localizer["ValidationNotIPv6Address"]).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv6Address || x.ValueType == ScopeResolverPropertyValueTypes.IPv6NetworkAddress);
                 element.RuleFor(x => x.NumericValue).NotNull().LessThanOrEqualTo(128).When(x => x.ValueType == ScopeResolverPropertyValueTypes.IPv6Subnet);
+
+                element.RuleFor(x => x.DeviceId).NotNull().Must(x => x != Guid.Empty).WithMessage(localizer["ValidationNoDeviceSelected"]).When(x => x.IsDeviceValue == true);
             });
         }
     }
