@@ -270,7 +270,7 @@ namespace Beer.DaAPI.Core.Scopes
             Dictionary<Guid, IEnumerable<Guid>> scopeAndLeaseDict = new();
             scope.AttachAllScopesAndLeases(scopeAndLeaseDict, includeChildren);
 
-            foreach (var item in scopeAndLeaseDict)
+            foreach (var item in scopeAndLeaseDict.ToArray())
             {
                 foreach (var leaseId in item.Value)
                 {
