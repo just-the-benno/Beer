@@ -18,6 +18,7 @@ namespace Beer.Identity
                    {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
+                new IdentityResources.Email(),
                    };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -27,7 +28,13 @@ namespace Beer.Identity
                 new ApiScope(AuthenticationDefaults.BeerUserCreateScope,"Creates local users"),
                 new ApiScope(AuthenticationDefaults.BeerUserDeleteScope,"Delete local users"),
                 new ApiScope(AuthenticationDefaults.BeerUserResetPasswordScope,"Reset password of local users"),
+
+                new ApiScope(AuthenticationDefaults.BeerClientListScope,"list openid authentication clients"),
+                new ApiScope(AuthenticationDefaults.BeerClientModifyScope,"create or updated openid authentication clients"),
+                new ApiScope(AuthenticationDefaults.BeerClientDeleteScope,"Delete openid authentication clients"),
+
                 new ApiScope(AuthenticationDefaults.ControlCenterManageScope,"Reset password of local users"),
+                
                 new ApiScope(AuthenticationDefaults.DaAPIMangeScope,"manage entities within DaAPI"),
             };
 
@@ -37,6 +44,10 @@ namespace Beer.Identity
                 new ApiResource(AuthenticationDefaults.BeerManageUserApiScopeName, "Administration users that can use beer")
                 {
                     Scopes = { AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope }
+                },
+                new ApiResource(AuthenticationDefaults.BeerManageClientApiScopeName, "Administration client that can use the authentication service of beer")
+                {
+                    Scopes = { AuthenticationDefaults.BeerClientListScope, AuthenticationDefaults.BeerClientModifyScope, AuthenticationDefaults.BeerClientDeleteScope }
                 },
                 new ApiResource(AuthenticationDefaults.ControlCenterApiScopeName, "Basic access to the control center")
                 {

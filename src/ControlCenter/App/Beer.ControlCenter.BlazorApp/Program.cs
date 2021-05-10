@@ -64,6 +64,10 @@ namespace Beer.ControlCenter.BlazorApp
                  client.BaseAddress = new Uri(urlDict["beeridentity"]))
                  .AddHttpMessageHandler( (provider) => new ConfigurableAuthorizationMessageHandler(urlDict["beeridentity"], provider.GetRequiredService<IAccessTokenProvider>(),provider.GetRequiredService<NavigationManager>()));
 
+            builder.Services.AddHttpClient<IOpenIdService, HttpClientBasedOpenIdService>(client =>
+              client.BaseAddress = new Uri(urlDict["beeridentity"]))
+              .AddHttpMessageHandler((provider) => new ConfigurableAuthorizationMessageHandler(urlDict["beeridentity"], provider.GetRequiredService<IAccessTokenProvider>(), provider.GetRequiredService<NavigationManager>()));
+
             builder.Services.AddHttpClient<IControlCenterService, HttpClientBasedControlCenterService>(client =>
                  client.BaseAddress = new Uri(urlDict["controlcenterapi"]))
                  .AddHttpMessageHandler((provider) => new ConfigurableAuthorizationMessageHandler(urlDict["controlcenterapi"], provider.GetRequiredService<IAccessTokenProvider>(), provider.GetRequiredService<NavigationManager>()));

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Beer.Identity.Request
+namespace Beer.Identity.Shared.Requests
 {
     public static class LocalUserRequests
     {

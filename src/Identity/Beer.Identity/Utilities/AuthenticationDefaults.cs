@@ -10,6 +10,7 @@ namespace Beer.Identity.Utilities
         public const String BearerSchemaName = "Bearer";
         public const String DefaultChallengeScheme = "oidc";
         public const String DefaultAuthenticationScheme = "Cookies";
+
         public const String LocalUserPolicyName = "LocalUsersPolicy";
 
         public const String BeerManageUserApiScopeName = "beer-users";
@@ -18,6 +19,14 @@ namespace Beer.Identity.Utilities
         public const String BeerUserCreateScope = "beer-users.create";
         public const String BeerUserDeleteScope = "beer-users.delete";
         public const String BeerUserResetPasswordScope = "beer-users.reset-password";
+
+        public const String ClientPolicyName = "ClientPolicy";
+
+        public const String BeerManageClientApiScopeName = "beer-clients";
+        
+        public const String BeerClientListScope = "beer-clients.list";
+        public const String BeerClientModifyScope = "beer-clients.modify";
+        public const String BeerClientDeleteScope = "beer-clients.delete";
 
         public const String BeerAppClientId = "control-center-app";
         public const String DaAPIAppClientId = "daapi-app";

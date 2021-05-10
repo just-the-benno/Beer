@@ -14,8 +14,8 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using static Beer.Identity.Request.LocalUserRequests.V1;
-using static Beer.Identity.Responses.LocalUsersResponses.V1;
+using static Beer.Identity.Shared.Requests.LocalUserRequests.V1;
+using static Beer.Identity.Shared.Responses.LocalUsersResponses.V1;
 
 namespace Beer.Identity.IntegrationTests.ApiControllers
 {
@@ -30,7 +30,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task Get_IndexPageNotFound()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 var client = GetClientWithAnonymousUser(builder);
                 var response = await client.GetAsync("/");
@@ -41,7 +41,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task CheckIfItIsNotInitilzied()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 var client = GetClientWithAnonymousUser(builder);
 
@@ -55,7 +55,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task CheckIfItIsNotInitilzied_UserExists()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
            {
                Random random = new Random();
 
@@ -73,7 +73,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task GetAllUsers()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new Random();
 
@@ -109,7 +109,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task GetAvailableAvatars()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new();
 
@@ -158,7 +158,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [InlineData(false)]
         public async Task CheckIfUserNameExists(Boolean shouldExsits)
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new();
                 String username = "testUseR244";
@@ -193,7 +193,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task ResetUserPassword()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new Random();
 
@@ -218,7 +218,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task DeleteUser_Success()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new Random();
 
@@ -255,7 +255,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task DeleteUser_CantDeleteYourself()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new Random();
 
@@ -286,7 +286,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task DeleteUser_LastUserCantBeDeleted()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new Random();
 
@@ -307,7 +307,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task CreateUser()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 Random random = new Random();
 

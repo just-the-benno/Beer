@@ -29,11 +29,11 @@ namespace Beer.Identity.Services
 
             if (context.Caller == IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint)
             {
+                var claims = await UserManager.GetClaimsAsync(user);
+                var identity = principal.Identities.First();
+
                 if (context.RequestedResources.ParsedScopes.FirstOrDefault(x => x.ParsedName == "profile") != null)
                 {
-                    var claims = await UserManager.GetClaimsAsync(user);
-
-                    var identity = principal.Identities.First();
                     SwapClaims(identity, CustomClaimTypes.DisplayClaimsType, JwtClaimTypes.PreferredUserName, true);
 
                     var pictureClaim = identity.FindFirst(JwtClaimTypes.Picture);
@@ -46,6 +46,11 @@ namespace Beer.Identity.Services
                         identity.RemoveClaim(pictureClaim);
                         identity.AddClaim(new Claim(JwtClaimTypes.Picture, requestUri));
                     }
+                }
+                //temporary fix to add an email address claim if required
+                if(context.RequestedResources.ParsedScopes.FirstOrDefault(x => x.ParsedName == "email") != null)
+                {
+                    identity.AddClaim(new Claim(JwtClaimTypes.Email, $"{identity.FindFirst(JwtClaimTypes.Name).Value}@beerusers.com"));
                 }
             }
 

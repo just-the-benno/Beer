@@ -11,6 +11,9 @@ namespace Beer.ControlCenter.BlazorApp.Util
         public static String Settings => "/Settings";
         public static String MessageCenter => "/MessageCenter";
         public static String CreateNewUser => "/new-user";
+        public static String ClientOverview => "/clients";
+        public static String CreateNewClient => "/new-client";
+
 
     }
 }

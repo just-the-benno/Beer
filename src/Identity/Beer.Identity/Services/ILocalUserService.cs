@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Beer.Identity.Responses.LocalUsersResponses.V1;
+using static Beer.Identity.Shared.Responses.LocalUsersResponses.V1;
 
 namespace Beer.Identity.Services
 {

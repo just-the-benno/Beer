@@ -1,0 +1,129 @@
+﻿@page "/new-client"
+
+
+@inject IStringLocalizer<CreateClientPage> L
+@inject IOpenIdService _openIdService
+@inject ISnackbar _snackBarService
+@inject NavigationManager _navManager
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <EditForm Model="@_model" @ref="_form" OnSubmit="CreateClient">
+        <FluentValidator />
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">@L["NewClientHeading"]</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["DisplayNameLabelPlaceholder"]" Label="@L["DisplayNameLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.DisplayName" For="@(() => _model.DisplayName)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["ClientIdPlaceholder"]" Label="@L["ClientIdLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.ClientId" For="@(() => _model.ClientId)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["PasswordPlaceholder"]" Label="@L["PasswordLabel"]" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_model.Password" For="@(() => _model.Password)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudCheckBox T="Boolean" Label="@L["RequirePkceLabel"]"  @bind-Value="_model.RequirePkce" For="@(() => _model.RequirePkce)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">@L["ScopesLabel"]</MudText>
+                        <MudTooltip Text="@L["AddNewScopeToolTip"]">
+                            <MudFab Icon="@Icons.Material.Filled.Add" OnClick="_model.AddEmptyScope" />
+                        </MudTooltip>
+                        <ValidationMessage For="() => _model.AllowedScopes" style="color: var(--mud-palette-error);" />
+                        @for (int i = 0; i < _model.AllowedScopes.Count; i++)
+                        {
+                            var temp = i;
+                            <MudTextField T="string" Immediate="true" Placeholder="@L["ScopePlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.AllowedScopes[temp].Value" For="@(() => _model.AllowedScopes[temp].Value)" Disabled="_creatingUserInProgress" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">@L["RedirectUrisLabel"]</MudText>
+                        <MudTooltip Text="@L["AddNewRedirectUriToolTip"]">
+                            <MudFab Icon="@Icons.Material.Filled.Add" OnClick="_model.AddEmptyRedirectUrl" />
+                        </MudTooltip>
+                        <ValidationMessage For="() => _model.RedirectUris" style="color: var(--mud-palette-error);" />
+                        @for (int i = 0; i < _model.RedirectUris.Count; i++)
+                        {
+                            var temp = i;
+                            <MudTextField T="string" Immediate="true" Placeholder="@L["RedirectUrlPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.RedirectUris[temp].Value" For="@(() => _model.RedirectUris[temp].Value)" Disabled="_creatingUserInProgress" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">@L["AllowedCorsOriginsLabel"]</MudText>
+                        <MudTooltip Text="@L["AddAllowedCorUrlUriToolTip"]">
+                            <MudFab Icon="@Icons.Material.Filled.Add" OnClick="_model.AddEmptyCORSUrl" />
+                        </MudTooltip>
+                        <ValidationMessage For="() => _model.AllowedCorsOrigins" style="color: var(--mud-palette-error);" />
+                        @for (int i = 0; i < _model.AllowedCorsOrigins.Count; i++)
+                        {
+                            var temp = i;
+                            <MudTextField T="string" Immediate="true" Placeholder="@L["CorsURLPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.AllowedCorsOrigins[temp].Value" For="@(() => _model.AllowedCorsOrigins[temp].Value)" Disabled="_creatingUserInProgress" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">@L["PostLogoutRedirectUrisLabel"]</MudText>
+                        <MudTooltip Text="@L["AddNewPostLogoutRedirectUriToolTip"]">
+                            <MudFab Icon="@Icons.Material.Filled.Add" OnClick="_model.AddEmptyPostRedirectUrl" />
+                        </MudTooltip>
+                        <ValidationMessage For="() => _model.PostLogoutRedirectUris" style="color: var(--mud-palette-error);" />
+                        @for (int i = 0; i < _model.PostLogoutRedirectUris.Count; i++)
+                        {
+                            var temp = i;
+                            <MudTextField T="string" Immediate="true" Placeholder="@L["PostLogoutRedirectUrlPlaceholder"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.PostLogoutRedirectUris[temp].Value" For="@(() => _model.PostLogoutRedirectUris[temp].Value)" Disabled="_creatingUserInProgress" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Immediate="true" Placeholder="@L["FrontChannelLogoutUriPlaceholder"]" Label="@L["FrontChannelLogoutUriLabel"]" Variant="Variant.Outlined" InputType="InputType.Text" @bind-Value="_model.FrontChannelLogoutUri" For="@(() => _model.FrontChannelLogoutUri)" Disabled="_creatingUserInProgress" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <BeerSendingAwareButton DefaultText="@L["CreateNewClientButtonCaption"]" InProgressText="@L["CreatingNewUserButtonCaption"]" IsExecuting="_creatingUserInProgress" />
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+</MudContainer>
+
+@code {
+
+    private EditForm _form;
+
+    private CreateClientViewModel _model = new();
+    private Boolean _firstSubmitHappened = false;
+
+    private IEnumerable<String> _possibleAvatars = Array.Empty<String>();
+
+    private Boolean _creatingUserInProgress;
+
+    private async Task CreateClient()
+    {
+        if (_form.EditContext.Validate() == false)
+        {
+            _firstSubmitHappened = true;
+            return;
+        }
+
+        _creatingUserInProgress = true;
+
+        Boolean result = await _openIdService.CreateClient(_model.ToRequest());
+
+        if (result == true)
+        {
+            _snackBarService.Add(String.Format(L["ClientCreatedSuccessMessage"], _model.DisplayName), Severity.Success, (opt) =>
+            {
+                opt.CloseAfterNavigation = false;
+            });
+            _navManager.NavigateTo(UrlManager.ClientOverview);
+        }
+        else
+        {
+            _creatingUserInProgress = false;
+            _snackBarService.Add(String.Format(L["ClientCreatedFailedMessage"], _model.DisplayName), Severity.Error);
+        }
+    }
+}

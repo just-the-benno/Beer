@@ -9,36 +9,22 @@ using static Beer.ControlCenter.BlazorApp.Services.Responses.BeerUserResponses.V
 
 namespace Beer.ControlCenter.BlazorApp.Services
 {
-    public class HttpClientBasedBeerUserService : IBeerUserService
+    public class HttpClientBasedBeerUserService : HttpClientBase, IBeerUserService
     {
-        private HttpClient _client;
 
-        public HttpClientBasedBeerUserService(HttpClient client)
+        public HttpClientBasedBeerUserService(HttpClient client) : base(client)
         {
-            _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public async Task<Boolean> DeleteUser(string userId)
         {
-            var response = await _client.DeleteAsync($"/api/LocalUsers/{userId}");
+            var response = await Client.DeleteAsync($"/api/LocalUsers/{userId}");
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<IEnumerable<BeerUserOverview>> GetLocalUsers() => await _client.GetFromJsonAsync<IEnumerable<BeerUserOverview>>("/api/LocalUsers/");
-        public async Task<Boolean> CheckIfUsernameExists(String name) => await _client.GetFromJsonAsync<Boolean>($"/api/LocalUsers/Exists/{name ?? String.Empty}");
-        public async Task<IEnumerable<String>> GetAvailableAvatars() => await _client.GetFromJsonAsync<IEnumerable<String>>("/api/LocalUsers/Avatars/");
-
-        private async Task<Boolean> PostAsJsonAsync<T>(String url,T input)
-        {
-            var response = await _client.PostAsJsonAsync(url, input);
-            return response.IsSuccessStatusCode;
-        }
-
-        private async Task<Boolean> PutAsJsonAsync<T>(String url, T input)
-        {
-            var response = await _client.PutAsJsonAsync(url, input);
-            return response.IsSuccessStatusCode;
-        }
+        public async Task<IEnumerable<BeerUserOverview>> GetLocalUsers() => await Client.GetFromJsonAsync<IEnumerable<BeerUserOverview>>("/api/LocalUsers/");
+        public async Task<Boolean> CheckIfUsernameExists(String name) => await Client.GetFromJsonAsync<Boolean>($"/api/LocalUsers/Exists/{name ?? String.Empty}");
+        public async Task<IEnumerable<String>> GetAvailableAvatars() => await Client.GetFromJsonAsync<IEnumerable<String>>("/api/LocalUsers/Avatars/");
 
         public async  Task<Boolean> ResetPassword(String userId, String password) => await PutAsJsonAsync($"/api/LocalUsers/ChangePassword/{userId}", new ResetPasswordRequest
         {

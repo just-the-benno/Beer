@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Beer.Identity.Request.LocalUserRequests.V1;
+using static Beer.Identity.Shared.Requests.LocalUserRequests.V1;
 
 namespace Beer.Identity.ApiControllers
 {

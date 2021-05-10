@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System;
 using Beer.Helper.API;
 using System.Linq;
+using Marten;
+using Beer.Identity.Infrastructure.Repositories;
 
 namespace Beer.Identity
 {
@@ -57,11 +59,10 @@ namespace Beer.Identity
             config.BeerAuthenticationClients["DaAPI"].SetUrlIfNotNull(Configuration.GetServiceUri("DaAPIApp", "https"));
 
             var selfUrl = Configuration.GetServiceUri("Identity", "https");
-            if(selfUrl != null)
+            if (selfUrl != null)
             {
                 config.OpenIdConnectConfiguration.AuthorityUrl = selfUrl.ToString();
             }
-
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
@@ -92,6 +93,29 @@ namespace Beer.Identity
             services.AddDbContext<BeerIdentityContext>(options =>
                options.UseNpgsql(Configuration.GetConnectionString("BeerIdentityContext"), (ib) => ib.MigrationsAssembly(typeof(BeerIdentityContext).Assembly.FullName)));
 
+
+            var cString = Configuration.GetConnectionString("BeerIdentityDocumentStore");
+            if (String.IsNullOrEmpty(cString) == false)
+            {
+                services.AddMarten(storeOptions =>
+                {
+                    storeOptions.CreateDatabasesForTenants(c =>
+                   {
+                       c.ForTenant()
+                          .WithEncoding("UTF-8")
+                          .ConnectionLimit(-1)
+                          .OnDatabaseCreated(_ =>
+                          {
+
+                          });
+                   });
+                    storeOptions.Connection(cString);
+                    storeOptions.AutoCreateSchemaObjects = AutoCreate.All;
+                });
+            }
+
+            services.AddScoped<IClientRepository, MartenBasedClientRepository>();
+
             services.AddIdentity<BeerUser, IdentityRole>()
                 .AddEntityFrameworkStores<BeerIdentityContext>()
                 .AddDefaultTokenProviders();
@@ -109,10 +133,7 @@ namespace Beer.Identity
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryApiResources(Config.GetApiResources)
-                .AddInMemoryClients(new IdentityServer4.Models.Client[] {
-                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["ControlCenter"].SetClientId(AuthenticationDefaults.BeerAppClientId).SetScopes(AuthenticationDefaults.ControlCenterManageScope, AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope)),
-                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["DaAPI"].SetClientId(AuthenticationDefaults.DaAPIAppClientId).SetScopes(AuthenticationDefaults.DaAPIMangeScope)),
-                })
+                .AddClientStore<HybridClientStore>()
 
                 .AddAspNetIdentity<BeerUser>().AddProfileService<CustomProfileService>()
                 // this adds the operational data from DB (codes, tokens, consents)
@@ -126,6 +147,7 @@ namespace Beer.Identity
 
             if (Environment.IsDevelopment() || String.IsNullOrEmpty(config.IdentityServerOptions.SigningCertificate) == true)
             {
+                // not recommended for production - you need to store your key material somewhere secure
                 builder.AddDeveloperSigningCredential();
             }
             else
@@ -134,8 +156,10 @@ namespace Beer.Identity
                 builder.AddValidationKey(config.IdentityServerOptions.ValidationCertificate);
             }
 
-            // not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            services.AddScoped<HybridClientStore>(sp => new HybridClientStore(sp.GetService<IClientRepository>(), new IdentityServer4.Models.Client[] {
+                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["ControlCenter"].SetClientId(AuthenticationDefaults.BeerAppClientId).SetScopes(AuthenticationDefaults.ControlCenterManageScope, AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope,AuthenticationDefaults.BeerClientListScope,AuthenticationDefaults.BeerClientModifyScope,AuthenticationDefaults.BeerClientDeleteScope)),
+                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["DaAPI"].SetClientId(AuthenticationDefaults.DaAPIAppClientId).SetScopes(AuthenticationDefaults.DaAPIMangeScope)),
+                }));
 
             services.AddAuthentication();
 
@@ -147,6 +171,12 @@ namespace Beer.Identity
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim("scope", AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope);
+                });
+
+                options.AddPolicy(AuthenticationDefaults.ClientPolicyName, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", AuthenticationDefaults.BeerClientListScope, AuthenticationDefaults.BeerClientModifyScope, AuthenticationDefaults.BeerClientDeleteScope);
                 });
             });
 
@@ -172,11 +202,11 @@ namespace Beer.Identity
 
             services.AddCors((builder) =>
             {
-               builder.AddPolicy("clientApps", (pb) =>
-               {
-                   pb.AllowAnyHeader().AllowAnyMethod().WithOrigins(clientUrls.ToArray());
-               });
-           });
+                builder.AddPolicy("clientApps", (pb) =>
+                {
+                    pb.AllowAnyHeader().AllowAnyMethod().WithOrigins(clientUrls.ToArray());
+                });
+            });
         }
 
         public virtual void Configure(IApplicationBuilder app)
