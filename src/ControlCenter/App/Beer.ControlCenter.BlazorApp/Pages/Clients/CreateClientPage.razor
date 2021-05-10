@@ -27,7 +27,7 @@
                         <MudTextField T="string" Immediate="true" Placeholder="@L["PasswordPlaceholder"]" Label="@L["PasswordLabel"]" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_model.Password" For="@(() => _model.Password)" Disabled="_creatingUserInProgress" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudCheckBox T="Boolean" Label="@L["RequirePkceLabel"]"  @bind-Value="_model.RequirePkce" For="@(() => _model.RequirePkce)" Disabled="_creatingUserInProgress" />
+                        <MudCheckBox T="Boolean" Label="@L["RequirePkceLabel"]"  @bind-Checked="_model.RequirePkce" For="@(() => _model.RequirePkce)" Disabled="_creatingUserInProgress" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudText Typo="Typo.h6">@L["ScopesLabel"]</MudText>
