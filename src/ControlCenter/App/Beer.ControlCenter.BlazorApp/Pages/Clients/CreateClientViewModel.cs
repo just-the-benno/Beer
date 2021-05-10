@@ -21,7 +21,6 @@ namespace Beer.ControlCenter.BlazorApp.Pages.Clients
 
         public Boolean RequirePkce { get; set; } = true;
 
-
         public void AddEmptyScope() => AllowedScopes.Add(new SimpleValue<string>(String.Empty));
         public void AddEmptyRedirectUrl() => RedirectUris.Add(new SimpleValue<string>(String.Empty));
         public void AddEmptyCORSUrl() => AllowedCorsOrigins.Add(new SimpleValue<string>(String.Empty));
