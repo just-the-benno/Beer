@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Beer.ControlCenter.BlazorApp.Services.Responses
+{
+    public static class BeerClientResponses
+    {
+        public static class V1
+        {
+            public class ClientOverview
+            {
+                public Guid SystemId { get; set; }
+                public String DisplayName { get; set; }
+                public String ClientId { get; set; }
+                public IEnumerable<String> RedirectUris { get; set; }
+                public IEnumerable<String> AllowedCorsOrigins { get; set; }
+                public String FrontChannelLogoutUri { get; set; }
+                public IEnumerable<String> PostLogoutRedirectUris { get; set; }
+                public IEnumerable<String> AllowedScopes { get; set; }
+                public Boolean RequirePkce { get; set; }
+            }
+
+            public class OpenIdEndpoints
+            {
+                public String Issuer { get; set; }
+                public String Authorization { get; set; }
+                public String CheckSessionIframe { get; set; }
+                public String DeviceAuthorization { get; set; }
+                public String EndSession { get; set; }
+                public String Introspection { get; set; }
+                public String Token { get; set; }
+                public String Userinfo { get; set; }
+                public String JWKsUri { get; set; }
+                public String Revocation { get; set; }
+            }
+        }
+    }
+}

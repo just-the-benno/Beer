@@ -11,6 +11,7 @@
         {
             "ConnectionStrings__BeerIdentityContext": "Server=localhost;Port=5432;Database=IdentityUserStorage;User Id=postgres;Password=<$PostgresPassword>;",
             "ConnectionStrings__OperationalStorage": "Server=localhost;Port=5432;Database=IdentityOperationalStorage;User Id=postgres;Password=<$PostgresPassword>;",
+            "ConnectionStrings__BeerIdentityDocumentStore": "Server=localhost;Port=5432;Database=IdentityDocumentStore;User Id=postgres;Password=<$PostgresPassword>;",
             "AppConfiguration__OpenIdConnectConfiguration__AuthorityUrl": "https://<$IdentityUrl>",
             "AppConfiguration__BeerAuthenticationClients__ControlCenter__Urls__0": "https://<$ControlCenterAppUrl>",
             "AppConfiguration__BeerAuthenticationClients__DaAPI__Urls__0": "https://<$DaAPIAppUrl>",

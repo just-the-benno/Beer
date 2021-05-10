@@ -1,0 +1,139 @@
+﻿@page "/clients"
+
+@using static Beer.ControlCenter.BlazorApp.Services.Responses.BeerClientResponses.V1
+
+@inject IStringLocalizer<ClientOverviewPage> L
+@inject IStringLocalizer<SharedRessources> LShared
+@inject NavigationManager _navManager
+
+@inject IOpenIdService _service
+@inject IDialogService _dialogService
+@inject ISnackbar  _snackBarService
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudText Typo="Typo.h3" GutterBottom="true">@L["PageHeading"]</MudText>
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="@L["OpenIdDiscoveryInformationHeading"]">
+            @if (_openIdEndpoints == null)
+            {
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+            }
+            else
+            {
+                <MudSimpleTable Dense="true" Hover="true" Bordered="true" Striped="true" Style="overflow-x: auto;">
+                    <thead>
+                        <tr>
+                            <th>@L["EndpointLabel"]</th>
+                            <th>@L["EndpointValueLabel"]</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in new[]
+                       {
+                             (nameof(OpenIdEndpoints.Issuer),_openIdEndpoints.Issuer),
+                             (nameof(OpenIdEndpoints.Authorization),_openIdEndpoints.Authorization),
+                             (nameof(OpenIdEndpoints.Token),_openIdEndpoints.Token),
+                             (nameof(OpenIdEndpoints.Userinfo),_openIdEndpoints.Userinfo),
+
+                             (nameof(OpenIdEndpoints.CheckSessionIframe),_openIdEndpoints.CheckSessionIframe),
+                             (nameof(OpenIdEndpoints.DeviceAuthorization),_openIdEndpoints.DeviceAuthorization),
+                             (nameof(OpenIdEndpoints.EndSession),_openIdEndpoints.EndSession),
+                             (nameof(OpenIdEndpoints.Introspection),_openIdEndpoints.Introspection),
+                             (nameof(OpenIdEndpoints.Revocation),_openIdEndpoints.Revocation),
+                             (nameof(OpenIdEndpoints.JWKsUri),_openIdEndpoints.JWKsUri),
+                         })
+                        {
+                            <tr>
+                                <td>@row.Item1</td>
+                                <td>@row.Item2</td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudSimpleTable>
+            }
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+
+    <MudText Class="mb-8">@L["PageSubtext"]</MudText>
+    @if (_clients == null)
+    {
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+    }
+    else
+    {
+        <MudTable SortLabel="@L["SortLabel"]" Items="_clients" Hover="true" Elevation="0">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">@L["PageHeading"]</MudText>
+                <MudToolBarSpacer />
+                <MudTooltip Text="@L["CreateNewClientToolTipContent"]" Placement="Placement.Start">
+                    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" OnClick="GoToNewClientPage" />
+                </MudTooltip>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ClientOverview, object>(x=>x.DisplayName)">@L["DisplayNameTableHeader"]</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ClientOverview, object>(x=>x.ClientId)">@L["ClientIdNameTableHeader"]</MudTableSortLabel></MudTh>
+                <MudTh>@L["RedirectUrisTableHeader"]</MudTh>
+                <MudTh>@L["AllowedScopesTableHeader"]</MudTh>
+                <MudTh>
+                    @L["ActionTableHeader"]
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["LoginNameTableHeader"]">@context.DisplayName</MudTd>
+                <MudTd DataLabel="@L["DisplayNameTableHeader"]">@context.ClientId</MudTd>
+                <MudTd DataLabel="@L["RedirectUrisTableHeader"]"><BeerSimpleStringList Items="context.RedirectUris" /></MudTd>
+                <MudTd DataLabel="@L["AllowedScopesTableHeader"]"><BeerSimpleStringList Items="context.AllowedScopes" /></MudTd>
+                <MudTd>
+                    <MudTooltip Text="@L["DeleteClientToolTipContent"]">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@( () => DeleteClient(context))" />
+                    </MudTooltip>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{50, 100}" RowsPerPageString="@L["RowsPerPageString"]" InfoFormat="@L["ItemsFormat"]" />
+            </PagerContent>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+
+    private List<ClientOverview> _clients = null;
+    private OpenIdEndpoints _openIdEndpoints = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _clients = new List<ClientOverview>(await _service.GetAllOpenIdClients());
+        _openIdEndpoints = await _service.GetOpenIdConfiguration();
+    }
+
+    private async Task DeleteClient(ClientOverview client)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+           L["DeleteClientDialogHeader"],
+           String.Format(L["DeleteClientQuestion"], client.DisplayName),
+           yesText: LShared["DeleteButtonCaption"], cancelText: LShared["CancelButtonCaption"]);
+
+        if (result == true)
+        {
+            _snackBarService.Add(String.Format(L["DeletingClientMessage"], client.DisplayName), Severity.Info);
+            Boolean serviceResult = await _service.DeleteClient(client.SystemId);
+            if (serviceResult == true)
+            {
+                _snackBarService.Add(String.Format(L["ClientDeletedSuccessMessage"], client.DisplayName), Severity.Success);
+                _clients.Remove(client);
+            }
+            else
+            {
+                _snackBarService.Add(String.Format(L["ClientDeletedFailedMessage"], client.DisplayName), Severity.Error);
+            }
+        }
+    }
+
+    private void GoToNewClientPage()
+    {
+        _navManager.NavigateTo(UrlManager.CreateNewClient);
+    }
+
+}

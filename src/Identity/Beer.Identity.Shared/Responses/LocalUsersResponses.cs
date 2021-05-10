@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Beer.Identity.Responses
+namespace Beer.Identity.Shared.Responses
 {
     public static class LocalUsersResponses
     {

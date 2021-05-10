@@ -10,18 +10,15 @@ using static Beer.ControlCenter.BlazorApp.Services.Responses.BeerUserResponses.V
 
 namespace Beer.ControlCenter.BlazorApp.Services
 {
-    public class HttpClientBasedControlCenterService : IControlCenterService
+    public class HttpClientBasedControlCenterService : HttpClientBase, IControlCenterService
     {
-        private readonly HttpClient _client;
-
-        public HttpClientBasedControlCenterService(HttpClient client)
+        public HttpClientBasedControlCenterService(HttpClient client) : base(client)
         {
-            _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public async Task<IDictionary<String,String>> GetAppUrls()
         {
-            var response = await _client.GetFromJsonAsync<IDictionary<String, String>>("/api/Apps/Urls");
+            var response = await Client.GetFromJsonAsync<IDictionary<String, String>>("/api/Apps/Urls");
             return response;
         }
     }

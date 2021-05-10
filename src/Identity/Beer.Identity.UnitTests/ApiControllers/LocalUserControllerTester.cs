@@ -14,8 +14,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using static Beer.Identity.Request.LocalUserRequests.V1;
-using static Beer.Identity.Responses.LocalUsersResponses.V1;
+using static Beer.Identity.Shared.Requests.LocalUserRequests.V1;
+using static Beer.Identity.Shared.Responses.LocalUsersResponses.V1;
 
 namespace Beer.Identity.UnitTests.ApiControllers
 {

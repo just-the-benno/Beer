@@ -27,7 +27,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         {
             Random random = new Random();
 
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 context.Users.Add(new Infrastructure.Data.BeerUser
                 {
@@ -53,7 +53,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         {
             Random random = new Random();
 
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 String username = "FirstUser";
                 String password = "Awt124!!_235aq";
@@ -90,7 +90,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
         [Fact]
         public async Task FirstUserLoginCycle()
         {
-            await ExecuteDatabaseAwareTest(async (builder, context) =>
+            await ExecuteBeerIdentityContextAwareTest(async (builder, context) =>
             {
                 String redirectUrl = "/BlubAction/242525?test=true";
                 String username = "FirstUser";

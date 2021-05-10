@@ -1,5 +1,7 @@
 ﻿using Beer.Identity.Infrastructure.Data;
+using Beer.Identity.Infrastructure.Repositories;
 using Beer.TestHelper;
+using Marten;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -31,8 +33,21 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
                 ob.ShouldBeAuthenticated = true;
                 ob.AddClaim("sub", id.ToString());
                 ob.AddScopes(scopes ?? Array.Empty<String>());
+
+
             }));
 
+        protected HttpClient GetClientWithAuthenticatedUserAndSpecifiedBeerDbAndRepo(DbContextOptionsBuilder<BeerIdentityContext> contextBuilder, IClientRepository repo, Guid id, params String[] scopes) =>
+       GetClientWithSpecifiedBeerDb(contextBuilder, (services) =>
+       {
+           AddFakeAuthentication(services, (ob) =>
+            {
+                ob.ShouldBeAuthenticated = true;
+                ob.AddClaim("sub", id.ToString());
+                ob.AddScopes(scopes ?? Array.Empty<String>());
+            });
+           ReplaceService(services, repo);
+       });
 
         protected HttpClient GetClientWithSpecifiedBeerDb(DbContextOptionsBuilder<BeerIdentityContext> contextBuilder, Action<IServiceCollection> collectionModifier)
         {
@@ -66,7 +81,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
                 builder.ConfigureTestServices(services =>
                 {
                     AddFakeAuthentication(services);
-                    
+
                     RemoveServiceFromCollection(services, typeof(DbContextOptions<BeerIdentityContext>));
                     services.Add(new ServiceDescriptor(
                         typeof(DbContextOptions<BeerIdentityContext>),
@@ -79,7 +94,7 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
             return factory.CreateClient(options ?? new());
         }
 
-        protected static async Task ExecuteDatabaseAwareTest(Func<DbContextOptionsBuilder<BeerIdentityContext>, BeerIdentityContext, Task> executor)
+        protected static async Task ExecuteBeerIdentityContextAwareTest(Func<DbContextOptionsBuilder<BeerIdentityContext>, BeerIdentityContext, Task> executor)
         {
             Random random1 = new Random();
 
@@ -104,5 +119,9 @@ namespace Beer.Identity.IntegrationTests.ApiControllers
                 await context.Database.EnsureDeletedAsync();
             }
         }
+
+        protected static async Task ExecuteMartenBasedClientRepositoryAwareTest(Func<DocumentStore, MartenBasedClientRepository, Task> executor) =>
+                await MartenDbHelperUtility.ExecuteDatabaseAwareTest(executor);
+
     }
 }

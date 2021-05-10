@@ -37,10 +37,5 @@ namespace Beer.Identity.Configuration
             Scopes = new List<String>(scopes);
             return this;
         }
-
-        internal BeerAuthenticationClient SetScopes(object daAPIManage)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
