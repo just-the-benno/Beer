@@ -92,11 +92,21 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         protected abstract IDictionary<String, String> GetAdditonalValues();
 
-        public override IDictionary<String, String> GetValues() => new Dictionary<String, String>
+        public override IDictionary<String, String> GetValues()
         {
-            { nameof(VlanNumber), VlanNumber.ToString() },
-            { nameof(PortNumber), PortNumber.ToString() },
-        };
+            var values = new Dictionary<String, String>
+            {
+                { nameof(VlanNumber), VlanNumber.ToString() },
+                { nameof(PortNumber), PortNumber.ToString() },
+            };
+
+            foreach (var item in GetAdditonalValues())
+            {
+                values.Add(item.Key, item.Value);
+            }
+
+            return values;
+        }
 
         #endregion
     }
