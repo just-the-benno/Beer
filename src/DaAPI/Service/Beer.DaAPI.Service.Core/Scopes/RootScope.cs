@@ -350,10 +350,7 @@ namespace Beer.DaAPI.Core.Scopes
             }
         }
 
-        public void CheckIfScopeResolverIsValid(
-            Guid scopeId,
-            CreateScopeResolverInformation resolverInformation
-            )
+        public void CheckIfScopeResolverIsValid(Guid scopeId, CreateScopeResolverInformation resolverInformation)
         {
             CheckIfScopeExistsById(scopeId);
 
@@ -368,6 +365,33 @@ namespace Beer.DaAPI.Core.Scopes
             }
 
             return;
+        }
+
+
+        public Boolean CheckIfScopeResolverHsChanged(Guid scopeId, CreateScopeResolverInformation resolverInformation)
+        {
+            CheckIfScopeExistsById(scopeId);
+
+            var scope = GetScopeById(scopeId);
+            var resolver = _resolverManager.InitializeResolver(resolverInformation);
+
+            if(scope.Resolver.GetType() != resolver.GetType()) { return false; }
+
+            var existingValues = scope.Resolver.GetValues();
+            var newValues = resolver.GetValues();
+
+            if(existingValues.Count != newValues.Count) { return false; }
+
+            var uniqueKeys = existingValues.Keys.Union(newValues.Keys).Distinct();
+            if(uniqueKeys.Count() != existingValues.Keys.Count) { return false; }
+
+            foreach (var item in existingValues)
+            {
+                var newValue = newValues[item.Key];
+                if(newValue != item.Value) { return false; }
+            }
+
+            return true;
         }
 
         protected void CancelAllLeasesBecauseOfChangeOfResolver(Guid scopeId)

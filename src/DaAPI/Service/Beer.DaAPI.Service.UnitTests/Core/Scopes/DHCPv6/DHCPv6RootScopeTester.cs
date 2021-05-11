@@ -333,11 +333,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 })
             };
 
-            Dictionary<Guid, Boolean> expectedResults =
-                    DHCPv6LeaseTester.AddEventsForCancelableLeases(random, scopeId, events);
-
-
             rootScope.Load(events);
+
+            Dictionary<DHCPv6Lease, Boolean> expectedResults =
+                    DHCPv6LeaseTester.AddEventsForCancelableLeases(random, scopeId, rootScope);
 
             Boolean result = rootScope.UpdateScopeResolver(scopeId, information);
             Assert.True(result);
@@ -359,7 +358,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             foreach (var item in expectedResults)
             {
-                DHCPv6Lease lease = scope.Leases.GetLeaseById(item.Key);
+                DHCPv6Lease lease = item.Key;
                 if (item.Value == true)
                 {
                     Assert.Equal(LeaseStates.Canceled, lease.State);
@@ -370,7 +369,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 }
             }
 
-            HashSet<Guid> blub = expectedResults.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+            HashSet<Guid> blub = expectedResults.Where(x => x.Value == true).Select(x => x.Key.Id).ToHashSet();
             foreach (DomainEvent item in changes.Skip(1))
             {
                 Assert.IsAssignableFrom<DHCPv6LeaseCanceledEvent>(item);
@@ -656,7 +655,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                     new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(64)),
                     leaseAddress);
 
-                    if(isNotInNewRange == true)
+                    if (isNotInNewRange == true)
                     {
                         expectedBindings.Add(leaseAddress, binding);
                     }
@@ -708,13 +707,14 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             foreach (var item in expectedLeases)
             {
                 var lease = scope.Leases.GetLeaseById(item.Key);
-                if(item.Value == false)
+                if (item.Value == false)
                 {
+                    Assert.NotNull(lease);
                     Assert.Equal(LeaseStates.Pending, lease.State);
                 }
                 else
                 {
-                    Assert.Equal(LeaseStates.Canceled, lease.State);
+                    Assert.Null(lease);
                 }
             }
 
@@ -1276,7 +1276,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             for (int i = 0; i < subChildAmount; i++)
             {
                 DHCPv6ScopeDeletedEvent @event = changes.ElementAt(i) as DHCPv6ScopeDeletedEvent;
-                
+
                 Assert.NotNull(@event);
                 Assert.Contains(@event.EntityId, subChildIds);
 
@@ -1783,7 +1783,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
         [Fact]
         public void CleanUpLeases_Pending()
         {
-            Random random = new Random();
+            Random random = new Random(123);
             Guid grantParentId = random.NextGuid();
             Guid parentId = random.NextGuid();
             Guid childId = random.NextGuid();
@@ -1848,6 +1848,15 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             DHCPv6RootScope rootScope = GetRootScope();
             rootScope.Load(events);
+            Dictionary<Guid, DHCPv6Lease> savesLeases = new();
+            foreach (var scopeId in leaseToScopeMapper.Values.Distinct())
+            {
+                var scope = rootScope.GetScopeById(scopeId);
+                foreach (var item in scope.Leases.GetAllLeases().ToDictionary(x => x.Id, x => x))
+                {
+                    savesLeases.Add(item.Key, item.Value);
+                }
+            }
 
             Int32 expiredLeaseAmount = rootScope.CleanUpLeases();
             Assert.Equal(expectedResults.Values.Count(x => x == true), expiredLeaseAmount);
@@ -1856,15 +1865,16 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             {
                 var scope = rootScope.GetScopeById(leaseToScopeMapper[item.Key]);
                 var lease = scope.Leases.GetLeaseById(item.Key);
-                if (item.Value == true)
+                if (item.Value == false)
                 {
-                    Assert.False(lease.AddressIsInUse());
-                    Assert.Equal(LeaseStates.Canceled, lease.State);
+                    Assert.NotNull(lease);
+                    Assert.True(lease.IsPending());
+                    Assert.Equal(LeaseStates.Pending, lease.State);
                 }
                 else
                 {
-                    Assert.True(lease.IsPending());
-                    Assert.Equal(LeaseStates.Pending, lease.State);
+                    Assert.Null(lease);
+                    Assert.Equal(LeaseStates.Canceled, savesLeases[item.Key].State);
                 }
             }
         }

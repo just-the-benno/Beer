@@ -95,32 +95,35 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
         [Fact]
         public void AddressesAreInUse()
         {
-            Random random = new Random();
+            Random random = new Random(123);
             DHCPv6RootScope rootScope = GetRootScope();
 
             Guid scopeId = Guid.NewGuid();
 
-            List<DomainEvent> events = new List<DomainEvent>
-            {
-                 new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            rootScope.Load(new[] {
+                new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
                  {
                      Id = scopeId,
-                 }),
-            };
+                 })
+            });
 
             Int32 leaseAmount = random.Next(10, 30);
-            Dictionary<Guid, Boolean> expectedResults = new Dictionary<Guid, bool>();
+            Dictionary<DHCPv6Lease, Boolean> expectedResults = new();
             for (int i = 0; i < leaseAmount; i++)
             {
                 Guid leaseId = Guid.NewGuid();
 
-                events.Add(new DHCPv6LeaseCreatedEvent
-                {
-                    ScopeId = scopeId,
-                    EntityId = leaseId,
-                    Address = random.GetIPv6Address(),
-                    ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                rootScope.Load(new[] {
+                    new DHCPv6LeaseCreatedEvent
+                    {
+                        ScopeId = scopeId,
+                        EntityId = leaseId,
+                        Address = random.GetIPv6Address(),
+                        ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                    }
                 });
+
+                DHCPv6Lease lease = rootScope.GetRootScopes().First().Leases.GetLeaseById(leaseId);
 
                 DomainEvent eventToAdd = null;
                 Boolean addressIsInUse = true;
@@ -149,18 +152,15 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 }
                 if (eventToAdd != null)
                 {
-                    events.Add(eventToAdd);
+                    rootScope.Load(new[] { eventToAdd });
                 }
 
-                expectedResults.Add(leaseId, addressIsInUse);
+                expectedResults.Add(lease, addressIsInUse);
             }
 
-            rootScope.Load(events);
-
-            DHCPv6Scope scope = rootScope.GetRootScopes().First();
             foreach (var item in expectedResults)
             {
-                DHCPv6Lease lease = scope.Leases.GetLeaseById(item.Key);
+                DHCPv6Lease lease = item.Key;
                 Boolean actual = lease.AddressIsInUse();
                 Assert.Equal(item.Value, actual);
             }
@@ -266,10 +266,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             }
         }
 
-        public static Dictionary<Guid, Boolean> AddEventsForCancelableLeases(
+        public static Dictionary<DHCPv6Lease, Boolean> AddEventsForCancelableLeases(
             Random random,
             Guid scopeId,
-            ICollection<DomainEvent> events)
+            DHCPv6RootScope rootScope)
         {
             Dictionary<LeaseStates, Func<Guid, DHCPv6ScopeRelatedEvent>> cancalableStateBuilder = new Dictionary<LeaseStates, Func<Guid, DHCPv6ScopeRelatedEvent>>
             {
@@ -286,18 +286,23 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             };
 
             Int32 leaseAmount = random.Next(20, 40);
-            Dictionary<Guid, Boolean> expectedCancallations = new Dictionary<Guid, bool>();
+            Dictionary<DHCPv6Lease, Boolean> expectedCancallations = new();
             for (int i = 0; i < leaseAmount; i++)
             {
                 Guid leaseId = random.NextGuid();
 
-                events.Add(new DHCPv6LeaseCreatedEvent
+                rootScope.Load(new[]
+                {
+                    new DHCPv6LeaseCreatedEvent
                 {
                     ScopeId = scopeId,
                     EntityId = leaseId,
                     Address = random.GetIPv6Address(),
                     ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                }
                 });
+
+                DHCPv6Lease lease = rootScope.GetRootScopes().First().Leases.GetLeaseById(leaseId);
 
                 Boolean shouldBeCancelable = random.NextDouble() > 0.5;
                 Dictionary<LeaseStates, Func<Guid, DHCPv6ScopeRelatedEvent>> eventCreatorDict = null;
@@ -315,10 +320,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 if (stateChangingEvent != null)
                 {
                     stateChangingEvent.ScopeId = scopeId;
-                    events.Add(stateChangingEvent);
+                    rootScope.Load(new[] { stateChangingEvent });
                 }
 
-                expectedCancallations.Add(leaseId, shouldBeCancelable);
+                expectedCancallations.Add(lease, shouldBeCancelable);
             }
 
             return expectedCancallations;
@@ -332,23 +337,19 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             Guid scopeId = Guid.NewGuid();
 
-            List<DomainEvent> events = new List<DomainEvent>
-            {
-                 new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            rootScope.Load(new[] {
+              new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
                  {
                      Id = scopeId,
-                 }),
-            };
+                 })
+            });
 
-            Dictionary<Guid, Boolean> expectedResults =
-                AddEventsForCancelableLeases(random, scopeId, events);
+            Dictionary<DHCPv6Lease, Boolean> expectedResults =
+                AddEventsForCancelableLeases(random, scopeId, rootScope);
 
-            rootScope.Load(events);
-
-            DHCPv6Scope scope = rootScope.GetRootScopes().First();
             foreach (var item in expectedResults)
             {
-                DHCPv6Lease lease = scope.Leases.GetLeaseById(item.Key);
+                DHCPv6Lease lease = item.Key;
                 Boolean actual = lease.IsCancelable();
                 Assert.Equal(item.Value, actual);
             }
@@ -362,27 +363,28 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             Guid scopeId = Guid.NewGuid();
 
-            List<DomainEvent> events = new List<DomainEvent>
-            {
+            rootScope.Load(new[] {
                  new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
                  {
                      Id = scopeId,
                  }),
-            };
+            });
 
             Int32 leaseAmount = random.Next(10, 30);
-            Dictionary<Guid, Boolean> expectedResults = new Dictionary<Guid, bool>();
+            Dictionary<DHCPv6Lease, Boolean> expectedResults = new();
             for (int i = 0; i < leaseAmount; i++)
             {
                 Guid leaseId = Guid.NewGuid();
 
-                events.Add(new DHCPv6LeaseCreatedEvent
+                rootScope.Load(new[] { new DHCPv6LeaseCreatedEvent
                 {
                     ScopeId = scopeId,
                     EntityId = leaseId,
                     Address = random.GetIPv6Address(),
                     ClientIdentifier = new UUIDDUID(random.NextGuid()),
-                });
+                } });
+
+                DHCPv6Lease lease = rootScope.GetRootScopes().First().Leases.GetLeaseById(leaseId);
 
                 Boolean shouldBeExtentable = random.NextBoolean();
                 DomainEvent @event = null;
@@ -426,17 +428,14 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                     }
                 }
 
-                events.Add(@event);
+                rootScope.Load(new[] { @event });
 
-                expectedResults.Add(leaseId, shouldBeExtentable);
+                expectedResults.Add(lease, shouldBeExtentable);
             }
 
-            rootScope.Load(events);
-
-            DHCPv6Scope scope = rootScope.GetRootScopes().First();
             foreach (var item in expectedResults)
             {
-                DHCPv6Lease lease = scope.Leases.GetLeaseById(item.Key);
+                DHCPv6Lease lease = item.Key;
                 Boolean actual = lease.CanBeExtended();
                 Assert.Equal(item.Value, actual);
             }

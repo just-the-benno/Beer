@@ -46,13 +46,15 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
 
             String resolverName = random.GetAlphanumericString();
 
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            resolverMock.Setup(x => x.GetValues()).Returns(new Dictionary<string, string>());
             Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> scopeResolverMock = new Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>>();
             scopeResolverMock.Setup(x => x.IsResolverInformationValid(It.Is<CreateScopeResolverInformation>(y =>
             y.Typename == resolverName
             ))).Returns(true).Verifiable();
             scopeResolverMock.Setup(x => x.InitializeResolver(It.Is<CreateScopeResolverInformation>(y =>
             y.Typename == resolverName
-            ))).Returns(Mock.Of<IScopeResolver<DHCPv6Packet, IPv6Address>>()).Verifiable();
+            ))).Returns(resolverMock.Object).Verifiable();
 
             Mock<ILoggerFactory> factoryMock = new Mock<ILoggerFactory>(MockBehavior.Strict);
             factoryMock.Setup(x => x.CreateLogger(It.IsAny<String>())).Returns(Mock.Of<ILogger<DHCPv6RootScope>>());
@@ -158,14 +160,14 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
             scopeResolverMock.Verify();
             storageMock.Verify();
 
+            Assert.Empty(rootScope.GetTriggers());
+
             if (storeResult == true)
             {
                 serviceBusMock.Verify();
-                Assert.Empty(rootScope.GetTriggers());
             }
             else
             {
-                Assert.Single(rootScope.GetTriggers());
             }
         }
     }

@@ -85,11 +85,13 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                     RemoveEntry(e.EntityId);
                     break;
                 case DHCPv4LeaseCanceledEvent e:
-                    lease = GetLeaseById(e.EntityId);
-                    if(e.ForceRemove == true)
-                    {
-                        RemoveEntry(e.EntityId);
-                    }
+                    lease = GetLeaseAndRemoveEntry(e.EntityId);
+                    break;
+                case DHCPv4LeaseReleasedEvent e:
+                    lease = GetLeaseAndRemoveEntry(e.EntityId);
+                    break;
+                case DHCPv4LeaseRevokedEvent e:
+                    lease = GetLeaseAndRemoveEntry(e.EntityId);
                     break;
                 case DHCPv4ScopeRelatedEvent e:
                     lease = GetLeaseById(e.EntityId);
@@ -102,6 +104,13 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             {
                 ApplyToEnity(lease, domainEvent);
             }
+        }
+
+        private DHCPv4Lease GetLeaseAndRemoveEntry(Guid entityId)
+        {
+            var lease = GetLeaseById(entityId);
+            RemoveEntry(entityId);
+            return lease;
         }
 
         internal DHCPv4Lease GetLeaseByClientIdentifier(DHCPv4ClientIdentifier clientIdentifier) => GetLeaseByExpression(x => x.Identifier == clientIdentifier);

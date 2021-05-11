@@ -119,14 +119,12 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 
         }
 
-        private static void CheckIfLeaseIsRevoked(Guid scopeId, Guid leaseId, DHCPv4RootScope rootScope)
+        private static void CheckIfLeaseIsRevoked(DHCPv4Lease lease)
         {
-            DHCPv4Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
             Assert.NotEqual(DHCPv4Lease.Empty, lease);
             Assert.False(lease.IsActive());
             Assert.Equal(LeaseStates.Revoked, lease.State);
         }
-
 
         [Fact]
         public void HandleRequest_AnswerToOffer_LeaseFound_IsPending()
@@ -508,11 +506,13 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 }
             });
 
+            DHCPv4Lease previousLease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
+
             DHCPv4Packet result = rootScope.HandleRequest(requestPacket);
             CheckAcknowledgePacket(expectedAddress, result);
 
-            CheckIfLeaseIsRevoked(scopeId, leaseId, rootScope);
-            DHCPv4Lease lease = CheckLease(1, 2, expectedAddress, scopeId, rootScope, DateTime.UtcNow);
+            CheckIfLeaseIsRevoked(previousLease);
+            DHCPv4Lease lease = CheckLease(0, 1, expectedAddress, scopeId, rootScope, DateTime.UtcNow);
 
             CheckEventAmount(3, rootScope);
             CheckLeaseCreatedEvent(1, requestPacket.ClientHardwareAddress, scopeId, rootScope, expectedAddress, lease);
@@ -882,11 +882,13 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 }
             });
 
+            DHCPv4Lease previousLease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
+
             DHCPv4Packet result = rootScope.HandleRequest(requestPacket);
             CheckAcknowledgePacket(expectedAddress, result);
 
-            CheckIfLeaseIsRevoked(scopeId, leaseId, rootScope);
-            DHCPv4Lease lease = CheckLease(1, 2, expectedAddress, scopeId, rootScope, DateTime.UtcNow);
+            CheckIfLeaseIsRevoked(previousLease);
+            DHCPv4Lease lease = CheckLease(0, 1, expectedAddress, scopeId, rootScope, DateTime.UtcNow);
 
             CheckEventAmount(3, rootScope);
             CheckLeaseCreatedEvent(1, requestPacket.ClientHardwareAddress, scopeId, rootScope, expectedAddress, lease);

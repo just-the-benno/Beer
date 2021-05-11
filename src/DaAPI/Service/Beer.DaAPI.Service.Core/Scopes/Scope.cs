@@ -38,6 +38,23 @@ namespace Beer.DaAPI.Core.Scopes
         public TScope ParentScope { get; internal set; }
         public IEnumerable<TScope> GetChildScopes() => _subscopes.AsEnumerable();
 
+        private void GetAllChildScopes(ICollection<TScope> items)
+        {
+            foreach (var item in _subscopes)
+            {
+                items.Add(item);
+                item.GetAllChildScopes(items);
+            }
+        }
+
+        public IEnumerable<TScope> GetAllChildScopes()
+        {
+            List<TScope> items = new();
+            GetAllChildScopes(items);
+
+            return items;
+        }
+
         public TAddressProperties AddressRelatedProperties { get; protected set; }
         public TScopeProperties Properties { get; protected set; }
 

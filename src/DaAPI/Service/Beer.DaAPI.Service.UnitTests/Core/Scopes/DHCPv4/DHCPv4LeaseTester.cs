@@ -93,64 +93,63 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4RootScope rootScope = GetRootScope();
 
             Guid scopeId = Guid.NewGuid();
-
-            List<DomainEvent> events = new List<DomainEvent>
-            {
-                 new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            rootScope.Load(new[] {   new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
                  {
                      Id = scopeId,
-                 }),
-            };
+                 })});
 
             Int32 leaseAmount = random.Next(10, 30);
             Dictionary<Guid, Boolean> expectedResults = new Dictionary<Guid, bool>();
+            Dictionary<Guid, DHCPv4Lease> leases = new Dictionary<Guid, DHCPv4Lease>();
             for (int i = 0; i < leaseAmount; i++)
             {
                 Guid leaseId = Guid.NewGuid();
 
-                events.Add(new DHCPv4LeaseCreatedEvent
-                {
-                    ScopeId = scopeId,
-                    EntityId = leaseId,
-                    Address = random.GetIPv4Address(),
-                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
+                rootScope.Load(new[] {
+                    new DHCPv4LeaseCreatedEvent
+                    {
+                        ScopeId = scopeId,
+                        EntityId = leaseId,
+                        Address = random.GetIPv4Address(),
+                        ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
+                    }
                 });
+
+                leases.Add(leaseId, rootScope.GetRootScopes().First().Leases.GetLeaseById(leaseId));
+
 
                 DomainEvent eventToAdd = null;
                 Boolean addressIsInUse = true;
                 Double randomValue = random.NextDouble();
                 Double possiblities = 5.0;
-                if(randomValue < 1 / possiblities)
+                if (randomValue < 1 / possiblities)
                 {
                     eventToAdd = new DHCPv4LeaseReleasedEvent(leaseId);
                     addressIsInUse = false;
                 }
-                else if(randomValue < 2 / possiblities)
+                else if (randomValue < 2 / possiblities)
                 {
                     eventToAdd = new DHCPv4LeaseRevokedEvent(leaseId);
                     addressIsInUse = false;
 
                 }
-                else if(randomValue < 3 / possiblities)
+                else if (randomValue < 3 / possiblities)
                 {
                     eventToAdd = new DHCPv4AddressSuspendedEvent(leaseId, random.GetIPv4Address(), DateTime.UtcNow.AddHours(12));
                     addressIsInUse = false;
                 }
 
-                if(eventToAdd != null)
+                if (eventToAdd != null)
                 {
-                    events.Add(eventToAdd);
+                    rootScope.Load(new[] { eventToAdd });
                 }
 
                 expectedResults.Add(leaseId, addressIsInUse);
             }
 
-            rootScope.Load(events);
-
-            DHCPv4Scope scope = rootScope.GetRootScopes().First();
             foreach (var item in expectedResults)
             {
-                DHCPv4Lease lease = scope.Leases.GetLeaseById(item.Key);
+                DHCPv4Lease lease = leases[item.Key];
                 Boolean actual = lease.AddressIsInUse();
                 Assert.Equal(item.Value, actual);
             }
@@ -187,7 +186,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 });
 
                 Boolean addressIsInPending = random.NextDouble() > 0.5;
-                if(addressIsInPending == false)
+                if (addressIsInPending == false)
                 {
                     events.Add(new DHCPv4LeaseActivatedEvent(leaseId));
                 }
@@ -234,7 +233,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     EntityId = leaseId,
                     Address = random.GetIPv4Address(),
                     ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
-                }) ;
+                });
 
                 Boolean addressIsActive = random.NextDouble() > 0.5;
                 if (addressIsActive == true)
@@ -256,10 +255,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             }
         }
 
-        public static Dictionary<Guid, Boolean> AddEventsForCancelableLeases(
+        public static Dictionary<DHCPv4Lease, Boolean> AddEventsForCancelableLeases(
             Random random,
             Guid scopeId,
-            ICollection<DomainEvent> events)
+            DHCPv4RootScope scope)
         {
             Dictionary<LeaseStates, Func<Guid, DHCPv4ScopeRelatedEvent>> cancalableStateBuilder = new Dictionary<LeaseStates, Func<Guid, DHCPv4ScopeRelatedEvent>>
             {
@@ -276,18 +275,21 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             };
 
             Int32 leaseAmount = random.Next(20, 40);
-            Dictionary<Guid, Boolean> expectedCancallations = new Dictionary<Guid, bool>();
+            Dictionary<DHCPv4Lease, Boolean> expectedCancallations = new();
             for (int i = 0; i < leaseAmount; i++)
             {
                 Guid leaseId = Guid.NewGuid();
-
-                events.Add(new DHCPv4LeaseCreatedEvent
-                {
-                    ScopeId = scopeId,
-                    EntityId = leaseId,
-                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
-                    Address = random.GetIPv4Address(),
+                scope.Load(new[] {
+                    new DHCPv4LeaseCreatedEvent
+                    {
+                        ScopeId = scopeId,
+                        EntityId = leaseId,
+                        ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(random.NextBytes(6)).GetBytes(),
+                        Address = random.GetIPv4Address(),
+                    }
                 });
+
+                DHCPv4Lease lease = scope.GetRootScopes().First().Leases.GetLeaseById(leaseId);
 
                 Boolean shouldBeCancelable = random.NextDouble() > 0.5;
                 Dictionary<LeaseStates, Func<Guid, DHCPv4ScopeRelatedEvent>> eventCreatorDict = null;
@@ -305,10 +307,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 if (stateChangingEvent != null)
                 {
                     stateChangingEvent.ScopeId = scopeId;
-                    events.Add(stateChangingEvent);
+                    scope.Load(new[] { stateChangingEvent });
                 }
 
-                expectedCancallations.Add(leaseId, shouldBeCancelable);
+                expectedCancallations.Add(lease, shouldBeCancelable);
             }
 
             return expectedCancallations;
@@ -322,23 +324,21 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 
             Guid scopeId = Guid.NewGuid();
 
-            List<DomainEvent> events = new List<DomainEvent>
-            {
-                 new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            rootScope.Load(new[] {
+              new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
                  {
                      Id = scopeId,
                  }),
-            };
+            });
 
-            Dictionary<Guid, Boolean> expectedResults = 
-                AddEventsForCancelableLeases(random,scopeId,events);
+            Dictionary<DHCPv4Lease, Boolean> expectedResults =
+                AddEventsForCancelableLeases(random, scopeId, rootScope);
 
-            rootScope.Load(events);
 
             DHCPv4Scope scope = rootScope.GetRootScopes().First();
             foreach (var item in expectedResults)
             {
-                DHCPv4Lease lease = scope.Leases.GetLeaseById(item.Key);
+                DHCPv4Lease lease = item.Key;
                 Boolean actual = lease.IsCancelable();
                 Assert.Equal(item.Value, actual);
             }

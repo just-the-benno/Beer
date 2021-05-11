@@ -231,7 +231,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             {
                 if (leaseAddress == IPv6Address.Empty)
                 {
-                    leaseAddress = addressProperties.GetValidAddresses(Leases.GetUsedAddresses(), excludeFromLease);
+                    leaseAddress = GetLeasedAddress(addressProperties, excludeFromLease);
 
                     if (leaseAddress == IPv6Address.Empty)
                     {
@@ -280,6 +280,19 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             return response;
         }
 
+        private IPv6Address GetLeasedAddress(DHCPv6ScopeAddressProperties addressProperties, IPv6Address excludeFromLease)
+        {
+            IPv6Address leaseAddress;
+            List<IPv6Address> usedAddresses = new(Leases.GetUsedAddresses());
+            foreach (var item in GetAllChildScopes())
+            {
+                usedAddresses.AddRange(item.Leases.GetUsedAddresses());
+            }
+
+            leaseAddress = addressProperties.GetValidAddresses(usedAddresses, excludeFromLease);
+            return leaseAddress;
+        }
+
         internal DHCPv6Packet HandleRequestInternal(
             DHCPv6Packet packet,
             IDHCPv6ServerPropertiesResolver properyResolver,
@@ -324,7 +337,10 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                     if (identityAssociationId.HasValue == true)
                     {
                         lease.RemovePendingState();
-                        ancsestorLease?.Revoke();
+                        if(ancsestorLease != null)
+                        {
+                            Leases.Revoke(ancsestorLease);
+                        }
 
                         response = DHCPv6Packet.AsReply(packet, addressProperties, GetScopeProperties(), lease, false, properyResolver.GetServerDuid(), isRapitCommit);
                     }
@@ -431,7 +447,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                 {
                     var tempDelegation = lease.PrefixDelegation;
                     Boolean resetPrefix = false;
-                    if(prefixIdentityAsscocationId.HasValue == false && tempDelegation != DHCPv6PrefixDelegation.None)
+                    if (prefixIdentityAsscocationId.HasValue == false && tempDelegation != DHCPv6PrefixDelegation.None)
                     {
                         resetPrefix = true;
                         AddNotificationTrigger(
@@ -446,7 +462,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                             PrefixEdgeRouterBindingUpdatedTrigger.WithNewBinding(Id,
                             PrefixBinding.FromLease(lease)));
                     }
-                  
+
                     if (identityAssociationId.HasValue == true)
                     {
                         lease.Renew(addressProperties.ValidLeaseTime.Value, addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value,
@@ -474,10 +490,10 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
                         if (lease.AddressIsInUse() == true && identityAssociationId.HasValue == true)
                         {
-                            lease.Revoke();
+                            Leases.Revoke(lease);
                         }
 
-                        IPv6Address leaseAddress = identityAssociationId.HasValue == true ? addressProperties.GetValidAddresses(Leases.GetUsedAddresses(), lease.Address) : lease.Address;
+                        IPv6Address leaseAddress = identityAssociationId.HasValue == true ? GetLeasedAddress(addressProperties, lease.Address) : lease.Address;
                         DHCPv6PrefixDelegation leasedPrefix = DHCPv6PrefixDelegation.None;
                         if (prefixIdentityAsscocationId.HasValue == true)
                         {
@@ -624,6 +640,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                         PrefixBinding.FromLease(lease) : null;
 
                     lease.Release(identityAssociationId.HasValue == false);
+                    Leases.Remove(lease);
                     response = DHCPv6Packet.AsReleaseResponse(packet, lease.IdentityAssocicationId, lease.PrefixDelegation.IdentityAssociation, properyResolver.GetServerDuid());
 
                     if (prefixBinding != null)

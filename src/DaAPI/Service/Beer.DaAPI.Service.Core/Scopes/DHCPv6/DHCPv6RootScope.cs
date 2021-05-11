@@ -212,6 +212,10 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         public override Boolean UpdateScopeResolver(Guid scopeId, CreateScopeResolverInformation resolverInformation)
         {
             CheckIfScopeResolverIsValid(scopeId, resolverInformation);
+            if(CheckIfScopeResolverHsChanged(scopeId, resolverInformation) == false)
+            {
+                return false;
+            }
 
             base.Apply(new DHCPv6ScopeResolverUpdatedEvent(scopeId, resolverInformation));
 

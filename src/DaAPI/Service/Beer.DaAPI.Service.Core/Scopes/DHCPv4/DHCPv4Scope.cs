@@ -97,7 +97,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 else
                 {
                     excludeFromLease = IPv4Address.FromByteArray(currentLease.Address.GetBytes());
-                    currentLease.Revoke();
+                    Leases.Revoke(currentLease);
                 }
             }
             else
@@ -107,7 +107,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                     currentLease = Leases.GetLeaseByUniqueIdentifier(Resolver.GetUniqueIdentifier(packet));
                     if (currentLease != DHCPv4Lease.Empty)
                     {
-                        currentLease.Revoke();
+                        Leases.Revoke(currentLease);
                         excludeFromLease = IPv4Address.FromAddress(currentLease.Address);
 
                         if (addressProperties.ReuseAddressIfPossible == true)
@@ -120,7 +120,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
             if (leaseAddress == IPv4Address.Empty)
             {
-                leaseAddress = addressProperties.GetValidAddresses(Leases.GetUsedAddresses(), excludeFromLease);
+                leaseAddress = GetLeaseAddress(addressProperties, excludeFromLease);
 
                 if (leaseAddress == IPv4Address.Empty)
                 {
@@ -156,6 +156,21 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             base.Apply(new DHCPv4DiscoverHandledEvent(this.Id, packet, response));
             return response;
         }
+
+        private IPv4Address GetLeaseAddress(DHCPv4ScopeAddressProperties addressProperties, IPv4Address excludeFromLease)
+        {
+            IPv4Address leaseAddress;
+            List<IPv4Address> usedAddresses = new(Leases.GetUsedAddresses());
+
+            foreach (var item in GetAllChildScopes())
+            {
+                usedAddresses.AddRange(item.Leases.GetUsedAddresses());
+            }
+
+            leaseAddress = addressProperties.GetValidAddresses(usedAddresses, excludeFromLease);
+            return leaseAddress;
+        }
+
         internal DHCPv4Packet HandleRequest(DHCPv4Packet packet)
         {
             DHCPv4PacketRequestType requestType = packet.GetRequestType();
@@ -227,7 +242,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                             }
                             else
                             {
-                                lease.Revoke();
+                                Leases.Revoke(lease);
                                 newLeaseNeeded = true;
                                 excludedAddressForNewAddress = lease.Address;
                             }
@@ -258,7 +273,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                         }
                         else
                         {
-                            lease.Revoke();
+                            Leases.Revoke(lease);
                             newLeaseNeeded = true;
                             excludedAddressForNewAddress = lease.Address;
                         }
@@ -289,7 +304,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             {
                 if (leaseAddress == IPv4Address.Empty)
                 {
-                    leaseAddress = addressProperties.GetValidAddresses(Leases.GetUsedAddresses(), excludedAddressForNewAddress);
+                    leaseAddress = GetLeaseAddress(addressProperties, excludedAddressForNewAddress);
 
                     if (leaseAddress == IPv4Address.Empty)
                     {
@@ -384,7 +399,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 return DHCPv4Packet.Empty;
             }
 
-            lease.Release();
+            Leases.Release(lease);
             base.Apply(new DHCPv4ReleaseHandledEvent(this.Id, packet));
 
             return DHCPv4Packet.Empty;

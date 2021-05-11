@@ -91,6 +91,15 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                 case DHCPv6LeaseRemovedEvent e:
                     RemoveEntry(e.EntityId);
                         break;
+                case DHCPv6LeaseCanceledEvent e:
+                    lease = GetLeaseAndRemoveEntry(e.EntityId);
+                    break;
+                case DHCPv6LeaseReleasedEvent e:
+                    lease = GetLeaseAndRemoveEntry(e.EntityId);
+                    break;
+                case DHCPv6LeaseRevokedEvent e:
+                    lease = GetLeaseAndRemoveEntry(e.EntityId);
+                    break;
                 case DHCPv6ScopeRelatedEvent e:
                     lease = GetLeaseById(e.EntityId);
                     break;
@@ -105,6 +114,13 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                     ApplyToEnity(lease, domainEvent);
                 }
             }
+        }
+
+        private DHCPv6Lease GetLeaseAndRemoveEntry(Guid entityId)
+        {
+            var lease = GetLeaseById(entityId);
+            RemoveEntry(entityId);
+            return lease;
         }
 
         internal DHCPv6Lease GetLeaseAssociationIdAndDuid(UInt32 associationId, DUID clientId) =>

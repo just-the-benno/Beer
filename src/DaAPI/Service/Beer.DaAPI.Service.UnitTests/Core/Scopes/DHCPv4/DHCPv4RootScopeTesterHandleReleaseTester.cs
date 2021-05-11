@@ -59,9 +59,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.Equal(leaseId, createdEvent.EntityId);
         }
 
-        private void CheckIfLeaseIsRelease(Guid scopeId, Guid leaseId, DHCPv4RootScope rootScope)
+        private void CheckIfLeaseIsRelease(DHCPv4Lease lease)
         {
-            DHCPv4Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
             Assert.NotEqual(DHCPv4Lease.Empty, lease);
             Assert.False(lease.IsActive());
             Assert.Equal(LeaseStates.Released, lease.State);
@@ -72,7 +71,6 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
         {
             Random random = new Random();
             IPv4Address leasedAddress = IPv4Address.FromString("192.168.178.10");
-
 
             IPv4HeaderInformation headerInformation =
                 new IPv4HeaderInformation(leasedAddress, IPv4Address.FromString("192.168.178.1"));
@@ -132,11 +130,12 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     ScopeId = scopeId,
                 },
             });
+            DHCPv4Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
 
             DHCPv4Packet result = rootScope.HandleRelease(requestPacket);
             Assert.Equal(DHCPv4Packet.Empty, result);
 
-            CheckIfLeaseIsRelease(scopeId, leaseId, rootScope);
+            CheckIfLeaseIsRelease(lease);
 
             CheckEventAmount(2, rootScope);
             CheckLeaseReleasedEvent(0, scopeId, rootScope, leaseId);
@@ -224,22 +223,22 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     ScopeId = scopeId,
                 },
             });
+            
+            DHCPv4Lease existingLease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
 
             DHCPv4Packet releaseResult = rootScope.HandleRelease(requestPacket);
             Assert.Equal(DHCPv4Packet.Empty, releaseResult);
 
-            CheckIfLeaseIsRelease(scopeId, leaseId, rootScope);
+            CheckIfLeaseIsRelease(existingLease);
 
             CheckEventAmount(2, rootScope);
             CheckLeaseReleasedEvent(0, scopeId, rootScope, leaseId);
             CheckHandeledEvent(1, ReleaseError.NoError, requestPacket, rootScope);
 
             DHCPv4Packet discoveryResult = rootScope.HandleDiscover(discoverPacket);
-            CheckPacketOptions(scopeId, rootScope, discoveryResult);
-            DHCPv4Lease lease = CheckLease(0, 1, leasedAddress, scopeId, rootScope, leaseCreatedAt);
-            Assert.Equal(leaseId, lease.Id);
+            IPv4Address newAssignedAddress = IPv4Address.FromString("192.168.178.2");
 
-            Assert.Equal(leasedAddress, discoveryResult.YourIPAdress);
+            Assert.Equal(newAssignedAddress, discoveryResult.YourIPAdress);
         }
 
         [Fact]
