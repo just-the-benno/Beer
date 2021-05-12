@@ -177,5 +177,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return true;
         }
 
+        public async Task DeleteLeaseRelatedEventsOlderThan(DateTime leaseThreshold) => await ReadStore.DeleteLeaseRelatedEventsOlderThan(leaseThreshold);
+        public async Task DeletePacketHandledEventsOlderThan(DateTime handledEventThreshold) => await ReadStore.DeletePacketHandledEventsOlderThan(handledEventThreshold);
+        public async Task DeletePacketHandledEventMoreThan(uint amount) => await ReadStore.DeletePacketHandledEventMoreThan(amount);
+
     }
 }

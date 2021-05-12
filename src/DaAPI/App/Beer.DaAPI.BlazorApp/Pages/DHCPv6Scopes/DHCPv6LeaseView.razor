@@ -16,7 +16,10 @@
         {
             <MudText Typo="Typo.caption">@Lease.Scope.Name</MudText>
         }
-        <MudText Typo="Typo.body2">@L["DUIDLabel"]: @GetFriendlyDUID() </MudText>
+        @if (Lease.ClientIdentifier != null)
+        {
+            <MudText Typo="Typo.body2">@L["DUIDLabel"]: @GetFriendlyDUID() </MudText>
+        }
         <MudText Typo="Typo.body2">@L["StartedLabel"]: @Lease.Started.ToString("dd.MM.yy HH:mm:ss") </MudText>
         <MudText Typo="Typo.body2">@L["ExpectedEndLabel"]: @Lease.ExpectedEnd.ToString("dd.MM.yy HH:mm:ss") ( @( (Lease.ExpectedEnd-DateTime.UtcNow).Humanize()) @L["Timeleftlabel"] )  </MudText>
 

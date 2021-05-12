@@ -1,6 +1,8 @@
 ﻿using Beer.DaAPI.Core.Scopes;
+using Beer.DaAPI.Core.Scopes.DHCPv4;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Services;
+using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,18 +58,34 @@ namespace Beer.DaAPI.Service.API.HostedService
                 using (var scope = _services.CreateScope())
                 {
                     var serverPropertiesResolver = scope.ServiceProvider.GetRequiredService<IDHCPv6ServerPropertiesResolver>();
-                    var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv6RootScope>();
-                    var storageEngine = scope.ServiceProvider.GetRequiredService<IDHCPv6StorageEngine>();
 
                     DateTime now = DateTime.UtcNow;
                     DateTime leaseThreshold = now - serverPropertiesResolver.GetLeaseLifeTime();
                     DateTime handledEventThreshold = now - serverPropertiesResolver.GetHandledLifeTime();
 
-                    rootScope.DropUnusedLeasesOlderThan(leaseThreshold);
-                    await storageEngine.DeleteLeaseRelatedEventsOlderThan(leaseThreshold);
+                    {
+                        var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv6RootScope>();
+                        var storageEngine = scope.ServiceProvider.GetRequiredService<IDHCPv6StorageEngine>();
 
-                    await storageEngine.DeletePacketHandledEventsOlderThan(handledEventThreshold);
-                    await storageEngine.DeletePacketHandledEventMoreThan(serverPropertiesResolver.GetMaximumHandledCounter());
+                        rootScope.DropUnusedLeasesOlderThan(leaseThreshold);
+                        await storageEngine.DeleteLeaseRelatedEventsOlderThan(leaseThreshold);
+
+                        await storageEngine.DeletePacketHandledEventsOlderThan(handledEventThreshold);
+                        await storageEngine.DeletePacketHandledEventMoreThan(serverPropertiesResolver.GetMaximumHandledCounter());
+                    }
+
+                    {
+                        var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv4RootScope>();
+                        var storageEngine = scope.ServiceProvider.GetRequiredService<IDHCPv4StorageEngine>();
+
+                        rootScope.DropUnusedLeasesOlderThan(leaseThreshold);
+
+                        //handled by previous part as well
+                        //await storageEngine.DeleteLeaseRelatedEventsOlderThan(leaseThreshold);
+
+                        //await storageEngine.DeletePacketHandledEventsOlderThan(handledEventThreshold);
+                        //await storageEngine.DeletePacketHandledEventMoreThan(serverPropertiesResolver.GetMaximumHandledCounter());
+                    }
 
                     _logger.LogInformation("Database cleanup intervall finished");
                 }

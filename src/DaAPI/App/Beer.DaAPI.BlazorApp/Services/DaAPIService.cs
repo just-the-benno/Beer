@@ -72,7 +72,7 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<ServerInitilizedResponse> ServerIsInitilized2() => await GetResponse<ServerInitilizedResponse>("api/Server/IsInitialized2");
 
         public async Task<Boolean> InitilizeServer(InitilizeServeRequest request) =>
-            await ExecuteCommand(() =>  _client.PostAsJsonAsync("api/Server/Initialize", request));
+            await ExecuteCommand(() => _client.PostAsJsonAsync("api/Server/Initialize", request));
 
         private async Task<Boolean> ExecuteCommand(Func<Task<HttpResponseMessage>> serviceCaller)
         {
@@ -174,8 +174,19 @@ namespace Beer.DaAPI.BlazorApp.Services
             }
         }
 
-        public async Task<IEnumerable<DHCPv6LeaseOverview>> GetDHCPv6LeasesByScope(String scopeId, Boolean includeChildScopes) =>
-            await GetResponse<IEnumerable<DHCPv6LeaseOverview>>($"/api/leases/dhcpv6/scopes/{scopeId}?includeChildren={includeChildScopes}");
+        public async Task<IEnumerable<DHCPv6LeaseOverview>> GetDHCPv6LeasesByScope(String scopeId, Boolean includeChildScopes)
+        {
+            try
+            {
+                var result = await GetResult($"/api/leases/dhcpv6/scopes/{scopeId}?includeChildren={includeChildScopes}", new List<DHCPv6LeaseOverview>());
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "unable to send service request");
+                return null;
+            }
+        }
 
         public async Task<DashboardResponse> GetDashboard() => await GetDashboard<DashboardResponse>();
 

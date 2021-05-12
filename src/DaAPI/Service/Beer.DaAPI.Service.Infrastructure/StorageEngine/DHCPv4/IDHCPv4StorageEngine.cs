@@ -19,5 +19,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         Task<Boolean> LogFilteredDHCPv4Packet(DHCPv4Packet packet, string filterName);
 
         Task<Boolean> DeleteAggregateRoot<T>(Guid id) where T : AggregateRootWithEvents;
+
+        Task DeleteLeaseRelatedEventsOlderThan(DateTime leaseThreshold);
+        Task DeletePacketHandledEventsOlderThan(DateTime handledEventThreshold);
+        Task DeletePacketHandledEventMoreThan(UInt32 amount);
     }
 }

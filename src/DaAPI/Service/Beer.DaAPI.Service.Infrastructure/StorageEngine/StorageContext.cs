@@ -519,7 +519,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         }
 
 
-        private async Task<Boolean> DeleteEntriesBasedOnTimestampAndEventType(DateTime leaseThreshold, Boolean isLsesed)
+        private async Task<Boolean> DeleteDHCPv6EntriesBasedOnTimestampAndEventType(DateTime leaseThreshold, Boolean isLsesed)
         {
             if (isLsesed == false)
             {
@@ -535,22 +535,38 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return await SaveChangesAsyncInternal();
         }
 
+        private async Task<Boolean> DeleteDHCPv4EntriesBasedOnTimestampAndEventType(DateTime leaseThreshold, Boolean isLsesed)
+        {
+            if (isLsesed == false)
+            {
+                var statisticEntriesToRemove = await DHCPv4PacketEntries.AsQueryable().Where(x => x.Timestamp < leaseThreshold).ToListAsync();
+                DHCPv4PacketEntries.RemoveRange(statisticEntriesToRemove);
+            }
+            else
+            {
+                var leaseEntriesToRmeove = await DHCPv4LeaseEntries.AsQueryable().Where(x => x.Timestamp < leaseThreshold).ToListAsync();
+                DHCPv4LeaseEntries.RemoveRange(leaseEntriesToRmeove);
+            }
+
+            return await SaveChangesAsyncInternal();
+        }
+
         public async Task<Boolean> DeleteLeaseRelatedEventsOlderThan(DateTime leaseThreshold)
         {
             Boolean result =
-                 await DeleteEntriesBasedOnTimestampAndEventType(leaseThreshold, true) &&
-                 await DeleteEntriesBasedOnTimestampAndEventType(leaseThreshold, true);
+                await DeleteDHCPv6EntriesBasedOnTimestampAndEventType(leaseThreshold, true) &&
+                await DeleteDHCPv4EntriesBasedOnTimestampAndEventType(leaseThreshold, true);
+
             return result;
         }
 
         public async Task<Boolean> DeletePacketHandledEventsOlderThan(DateTime handledEventThreshold)
         {
             Boolean result =
-                await DeleteEntriesBasedOnTimestampAndEventType(handledEventThreshold, false) &&
-                await DeleteEntriesBasedOnTimestampAndEventType(handledEventThreshold, false);
+              await DeleteDHCPv6EntriesBasedOnTimestampAndEventType(handledEventThreshold, false) &&
+              await DeleteDHCPv4EntriesBasedOnTimestampAndEventType(handledEventThreshold, false);
 
             return result;
-
         }
 
         public async Task<Boolean> DeletePacketHandledEventMoreThan(UInt32 threshold)
@@ -660,7 +676,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         Start = x.Start,
                         Timestamp = x.Timestamp,
                         ExpectedRenewalAt = x.EndOfRenewalTime,
-                        ExpectedRebindingAt = x.EndOfPreferredLifetime
+                        ExpectedRebindingAt = x.EndOfPreferredLifetime,
+                        IsActive = x.IsActive,
                     }).Take(1000).ToListAsync(),
                     Packets = await GetDHCPv6PacketsFromHandledEvents(100, null),
                 },
@@ -677,7 +694,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         Start = x.Start,
                         Timestamp = x.Timestamp,
                         ExpectedRenewalAt = x.EndOfRenewalTime,
-                        ExpectedRebindingAt = x.EndOfPreferredLifetime
+                        ExpectedRebindingAt = x.EndOfPreferredLifetime,
+                        IsActive = x.IsActive,
                     }).Take(1000).ToListAsync(),
                     Packets = await GetDHCPv4PacketsFromHandledEvents(100, null),
                 },
@@ -1033,5 +1051,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
             return result;
         }
+
+       
     }
 }

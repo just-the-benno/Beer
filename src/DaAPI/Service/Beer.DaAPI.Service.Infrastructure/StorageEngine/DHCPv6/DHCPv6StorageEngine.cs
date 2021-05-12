@@ -191,19 +191,5 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
         public Task<Boolean> LogInvalidDHCPv6Packet(DHCPv6Packet packet) => ReadStore.LogInvalidDHCPv6Packet(packet);
         public Task<Boolean> LogFilteredDHCPv6Packet(DHCPv6Packet packet, String filterName) => ReadStore.LogFilteredDHCPv6Packet(packet, filterName);
 
-        public Task DeleteLeaseRelatedEventsOlderThan(DateTime leaseThreshold)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeletePacketHandledEventsOlderThan(DateTime handledEventThreshold)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeletePacketHandledEventMoreThan(uint amount)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

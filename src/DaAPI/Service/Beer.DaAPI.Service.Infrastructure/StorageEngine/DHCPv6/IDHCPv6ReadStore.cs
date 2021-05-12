@@ -30,5 +30,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
         Task<Boolean> LogFilteredDHCPv6Packet(DHCPv6Packet packet, String filterName);
 
         IEnumerable<Device> GetAllDevices();
+
+
     }
 }
