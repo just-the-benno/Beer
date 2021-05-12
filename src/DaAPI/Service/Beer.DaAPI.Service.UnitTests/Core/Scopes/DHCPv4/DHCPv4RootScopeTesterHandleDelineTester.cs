@@ -338,6 +338,12 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     EntityId = leaseId,
                     ScopeId = scopeId,
                 },
+            });
+
+            DHCPv4Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
+
+            rootScope.Load(new[]
+            {
                 new DHCPv4LeaseCanceledEvent
                 {
                     EntityId = leaseId,
@@ -348,11 +354,10 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Packet result = rootScope.HandleDecline(requestPacket);
             Assert.Equal(DHCPv4Packet.Empty, result);
 
-            DHCPv4Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
             Assert.Equal(LeaseStates.Canceled, lease.State);
 
             CheckEventAmount(1, rootScope);
-            CheckDeclinedEvent(0, DeclineErros.LeaseInInvalidState, requestPacket, rootScope, scopeId);
+            CheckDeclinedEvent(0, DeclineErros.LeaseNotFound, requestPacket, rootScope, scopeId);
         }
 
         [Fact]

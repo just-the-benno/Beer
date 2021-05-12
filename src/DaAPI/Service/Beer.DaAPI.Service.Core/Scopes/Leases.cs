@@ -79,6 +79,17 @@ namespace Beer.DaAPI.Core.Scopes
             }
         }
 
+        private void ExecuteActionAndThanRemove(TLease lease, Action<TLease> action)
+        {
+            action(lease);
+            RemoveEntry(lease.Id);
+        }
+
+        public void Remove(TLease lease) => RemoveEntry(lease.Id);
+
+        public void Release(TLease lease) => ExecuteActionAndThanRemove(lease, (x) => x.Release());
+        public void Revoke(TLease lease) => ExecuteActionAndThanRemove(lease, (x) => x.Revoke());
+
         public Boolean Contains(Guid leaseId)
         {
             return Entries.ContainsKey(leaseId);
@@ -134,13 +145,20 @@ namespace Beer.DaAPI.Core.Scopes
         {
             DateTime now = DateTime.UtcNow;
             Int32 amount = 0;
+            List<Guid> idsToRemove = new();
             foreach (var item in Entries.Values)
             {
                 if (item.IsPending() == true && (now - item.Start).TotalMinutes > 5)
                 {
                     item.Cancel(LeaseCancelReasons.ToLongPending);
+                    idsToRemove.Add(item.Id);
                     amount += 1;
                 }
+            }
+
+            foreach (var item in idsToRemove)
+            {
+                RemoveEntry(item);
             }
 
             return amount;
@@ -160,9 +178,17 @@ namespace Beer.DaAPI.Core.Scopes
 
         internal void CancelAllLeases(LeaseCancelReasons reason)
         {
+            List<Guid> leaseToRemove = new();
+
             foreach (TLease item in Entries.Values.Where(x => x.IsCancelable() == true))
             {
                 item.Cancel(reason);
+                leaseToRemove.Add(item.Id);
+            }
+
+            foreach (var item in leaseToRemove)
+            {
+                RemoveEntry(item);
             }
         }
 

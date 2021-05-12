@@ -89,7 +89,7 @@ namespace Beer.DaAPI.Core.Scopes
             }
         }
 
-        internal abstract void Reactived(TimeSpan value,TimeSpan renewalTime, TimeSpan preferredLifetime);
+        internal abstract void Reactived(TimeSpan value, TimeSpan renewalTime, TimeSpan preferredLifetime);
 
         protected void CanReactived(TimeSpan value)
         {

@@ -24,6 +24,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
 
     public enum DHCPLeaseStates
     {
+        Pending,
         Active,
         Renewing,
         Rebinding,

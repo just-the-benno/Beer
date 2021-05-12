@@ -164,10 +164,11 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 }
             });
 
+            DHCPv6Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
+
             DHCPv6Packet result = rootScope.HandleRelease(packet, GetServerPropertiesResolver());
             CheckErrorPacket(packet, leasedAddress, iaId, result, withPrefixDelegation == false ? DHCPv6PrefixDelegation.None : DHCPv6PrefixDelegation.FromValues(prefixNetworkAddress, new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(prefixLength)), prefixId), DHCPv6StatusCodes.Success);
 
-            DHCPv6Lease lease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
             Assert.Equal(LeaseStates.Released, lease.State);
 
             CheckEventAmount(2, rootScope);

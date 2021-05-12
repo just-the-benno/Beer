@@ -428,8 +428,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             DHCPv6Scope scope = rootScope.GetRootScopes().First();
             var leases = scope.Leases.GetAllLeases();
 
-            Assert.Equal(5 + 1, leases.Count());
+            Assert.Empty(leases);
         }
-
     }
 }

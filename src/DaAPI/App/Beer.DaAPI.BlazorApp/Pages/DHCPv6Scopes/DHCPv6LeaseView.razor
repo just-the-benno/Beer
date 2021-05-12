@@ -1,0 +1,49 @@
+﻿@inject IStringLocalizer<DHCPv6LeaseView> L
+@using Beer.DaAPI.Core.Common
+
+<MudItem xs="12" sm="6" md="4">
+    <MudPaper Elevation="4" Class="@Class">
+        <MudText Typo="Typo.h6">@Lease.Address</MudText>
+        @if (Lease.Prefix != null)
+        {
+            <MudText Typo="Typo.h6">@Lease.Prefix.Address/@Lease.Prefix.Mask</MudText>
+        }
+        @if (Lease.Scope.Id.ToString() != ScopeId)
+        {
+            <MudLink Href="@($"/scopes/dhcpv6/details/{Lease.Scope.Id}")">@Lease.Scope.Name</MudLink>
+        }
+        else
+        {
+            <MudText Typo="Typo.caption">@Lease.Scope.Name</MudText>
+        }
+        <MudText Typo="Typo.body2">@L["DUIDLabel"]: @GetFriendlyDUID() </MudText>
+        <MudText Typo="Typo.body2">@L["StartedLabel"]: @Lease.Started.ToString("dd.MM.yy HH:mm:ss") </MudText>
+        <MudText Typo="Typo.body2">@L["ExpectedEndLabel"]: @Lease.ExpectedEnd.ToString("dd.MM.yy HH:mm:ss") ( @( (Lease.ExpectedEnd-DateTime.UtcNow).Humanize()) @L["Timeleftlabel"] )  </MudText>
+
+    </MudPaper>
+</MudItem>
+
+@code {
+
+    [Parameter] public String Class { get; set; }
+    [Parameter] public String ScopeId { get; set; }
+    [Parameter] public DHCPv6LeaseOverview Lease { get; set; }
+
+    private String GetFriendlyDUID()
+    {
+        switch (Lease.ClientIdentifier)
+        {
+            case UUIDDUID duid:
+                return duid.UUID.ToString();
+            case LinkLayerAddressAndTimeDUID duid:
+                return $"{L["DUIDL2Label"]}: {ByteHelper.ToString(duid.LinkLayerAddress, ':')} | {L["DUIDTimeLabel"]}: {duid.Time.ToString("R")}";
+            case LinkLayerAddressDUID duid:
+                return $"{L["DUIDL2Label"]}: {ByteHelper.ToString(duid.LinkLayerAddress, ':')}";
+            case VendorBasedDUID duid:
+                return $"{L["DUIDVendorIDLabel"]}: | {L["DUIDVendorIdentifierLabel"]} {ByteHelper.ToString(duid.Identifier, ':')}";
+            default:
+                return ByteHelper.ToString(Lease.ClientIdentifier.GetAsByteStream(), ':');
+        }
+    }
+
+}

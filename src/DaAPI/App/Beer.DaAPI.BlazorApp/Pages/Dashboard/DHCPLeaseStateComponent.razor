@@ -11,6 +11,7 @@
 
     private Color GetColor() => State switch
     {
+        DHCPLeaseStates.Pending => Color.Info,
         DHCPLeaseStates.Active => Color.Success,
         DHCPLeaseStates.Renewing => Color.Warning,
         DHCPLeaseStates.Rebinding => Color.Error,
@@ -19,6 +20,7 @@
 
     private String GetShortName() => State switch
     {
+        DHCPLeaseStates.Pending => "P",
         DHCPLeaseStates.Active => "A",
         DHCPLeaseStates.Renewing => "RN",
         DHCPLeaseStates.Rebinding => "RB",
@@ -27,6 +29,7 @@
 
     private String GetToolTip() => State switch
     {
+        DHCPLeaseStates.Pending => L["PendingToolTip"],
         DHCPLeaseStates.Active => L["ActiveToolTip"],
         DHCPLeaseStates.Renewing => L["RenewingToolTip"],
         DHCPLeaseStates.Rebinding => L["RebindingToolTip"],

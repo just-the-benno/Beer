@@ -49,6 +49,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             await LoadItems();
         }
 
+        private void NavigateToScopeDetails(DHCPv6ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv6/details/{item.Id}");
         private void NavigateToCreateNewChildScope(DHCPv6ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv6/create/childOf/{item.Id}");
         private void NavigateToEditScope(DHCPv6ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv6/update/{item.Id}");
         private void NavigateToCreateCopyFromScope(DHCPv6ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv6/create/copyFrom/{item.Id}");

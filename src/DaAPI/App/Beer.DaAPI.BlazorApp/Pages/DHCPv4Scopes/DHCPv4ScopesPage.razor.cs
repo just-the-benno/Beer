@@ -50,6 +50,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             await LoadItems();
         }
 
+        private void NavigateToScopeDetails(DHCPv4ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv4/details/{item.Id}");
         private void NavigateToCreateNewChildScope(DHCPv4ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv4/create/childOf/{item.Id}");
         private void NavigateToEditScope(DHCPv4ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv4/update/{item.Id}");
         private void NavigateToCreateCopyFromScope(DHCPv4ScopeTreeViewItem item) => _navManager.NavigateTo($"/scopes/dhcpv4/create/copyFrom/{item.Id}");

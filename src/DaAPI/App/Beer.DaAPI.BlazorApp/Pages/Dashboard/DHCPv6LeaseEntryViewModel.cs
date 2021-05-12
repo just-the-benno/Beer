@@ -23,9 +23,13 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
                 {
                     return DHCPLeaseStates.Renewing;
                 }
-                else
+                else if(IsActive == true)
                 {
                     return DHCPLeaseStates.Active;
+                }
+                else
+                {
+                    return DHCPLeaseStates.Pending;
                 }
             }
         }

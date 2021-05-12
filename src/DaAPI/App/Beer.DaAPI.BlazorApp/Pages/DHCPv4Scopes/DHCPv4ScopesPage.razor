@@ -49,6 +49,9 @@
                                 }
                             </MudText>
 
+                            <MudTooltip Text="@L["DetailsButtonTooltip"]">
+                                <MudIconButton Icon="@Icons.Material.Filled.Info" OnClick="@( () => NavigateToScopeDetails(context.Value))" Color="Color.Info" />
+                            </MudTooltip>
                             <MudTooltip Text="@L["DeleteButtonTooltip"]">
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@( () => ShowDeleteDialog(context.Value))" Color="Color.Error" />
                             </MudTooltip>
