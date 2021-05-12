@@ -315,7 +315,6 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<IEnumerable<DHCPv4LeaseOverview>> GetDHCPv4LeasesByScope(String scopeId, Boolean includeChildScopes) =>
         await GetResponse<IEnumerable<DHCPv4LeaseOverview>>($"/api/leases/dhcpv4/scopes/{scopeId}?includeChildren={includeChildScopes}");
 
-
         public async Task<IEnumerable<DHCPv4PacketHandledEntry>> GetHandledDHCPv4PacketByScopeId(String scopeId, Int32 amount = 100) => await GetHandledDHCPv4PacketByScopeId<DHCPv4PacketHandledEntry>(scopeId, amount);
 
         public async Task<IEnumerable<THandeled>> GetHandledDHCPv4PacketByScopeId<THandeled>(String scopeId, Int32 amount = 100) where THandeled : DHCPv4PacketHandledEntry =>

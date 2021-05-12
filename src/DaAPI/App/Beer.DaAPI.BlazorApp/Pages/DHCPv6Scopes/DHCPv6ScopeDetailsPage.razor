@@ -1,11 +1,10 @@
-﻿@page "/scopes/dhcpv4/details/{ScopeId}"
+﻿@page "/scopes/dhcpv6/details/{ScopeId}"
 
-@using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1.DHCPv4ScopeAddressPropertyReqest
 @using Humanizer
 
 @attribute [Authorize]
 @inject DaAPIService _service
-@inject IStringLocalizer<DHCPv4ScopeDetailsPage> L
+@inject IStringLocalizer<DHCPv6ScopeDetailsPage> L
 @inject NavigationManager _navManager
 
 
@@ -22,14 +21,14 @@
         <MudGrid>
             @foreach (var item in GetActiveLeases())
             {
-                <DHCPv4LeaseView Lease="item" ScopeId="@ScopeId" Class="pa-4 white-text light-green lighten-2" />
+                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" Class="pa-4 white-text light-green lighten-2" />
             }
         </MudGrid>
         <MudText Typo="Typo.h5" Color="Color.Primary" Class="my-4">@L["PendingLeaseHeading"]</MudText>
         <MudGrid>
             @foreach (var item in GetPendingLeases())
             {
-                <DHCPv4LeaseView Lease="item" ScopeId="@ScopeId" Class="pa-4 white-text light-blue lighten-2" />
+                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" Class="pa-4 white-text light-blue lighten-2" />
             }
         </MudGrid>
     }

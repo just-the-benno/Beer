@@ -117,52 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddChildScopeToolTip" xml:space="preserve">
-    <value>Add a child Scope</value>
+  <data name="ActiveLeaseHeading" xml:space="preserve">
+    <value>Active Leases</value>
   </data>
-  <data name="CopyButtonTooltip" xml:space="preserve">
-    <value>Copy this Scope</value>
+  <data name="LoadingDetailsMessage" xml:space="preserve">
+    <value>Scope Details are loading...</value>
   </data>
-  <data name="CreateNewScopeToolTipText" xml:space="preserve">
-    <value>Create a new root Scope</value>
-  </data>
-  <data name="DeleteButtonTooltip" xml:space="preserve">
-    <value>Delete this Scope</value>
-  </data>
-  <data name="DeleteDialogTitle" xml:space="preserve">
-    <value>Delete the scope {0}</value>
-  </data>
-  <data name="DeleteScopeModalHeader" xml:space="preserve">
-    <value>Delete scope {0}</value>
-  </data>
-  <data name="DeleteScopesSuccessSnackbarContent" xml:space="preserve">
-    <value>The scope '{0}' has been successfully deleted</value>
-  </data>
-  <data name="DeleteScopeSuccessCaption" xml:space="preserve">
-    <value>Success!</value>
-  </data>
-  <data name="DeleteScopeSuccessText" xml:space="preserve">
-    <value>scope {0} deleted. Reloading scopes...</value>
-  </data>
-  <data name="DetailsButtonTooltip" xml:space="preserve">
-    <value>Show Details like Leases, Packets, Events...</value>
-  </data>
-  <data name="EditButtonTooltip" xml:space="preserve">
-    <value>Edit this Scope</value>
-  </data>
-  <data name="ExcludedAddressLabel" xml:space="preserve">
-    <value>Without</value>
-  </data>
-  <data name="LoadingMessage" xml:space="preserve">
-    <value>Scopes are loading...</value>
-  </data>
-  <data name="NewScopeButtonCaption" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="NoScopesFound" xml:space="preserve">
-    <value>No scopes found. You can create a scope</value>
+  <data name="NoLeasesFound" xml:space="preserve">
+    <value>No leases found for this scope</value>
   </data>
   <data name="PageTitle" xml:space="preserve">
-    <value>DHCPv6 Scopes</value>
+    <value>DHCPv6 Scope {0} Details</value>
+  </data>
+  <data name="PendingLeaseHeading" xml:space="preserve">
+    <value>Pending Leases</value>
   </data>
 </root>

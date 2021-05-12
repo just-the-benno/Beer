@@ -35,6 +35,7 @@ namespace Beer.DaAPI.Shared.Responses
                 Guid ScopeId { get; set; }
                 ReasonToEndLease EndReason { get; set; }
                 DateTime Timestamp { get; set; }
+                Boolean IsActive { get; set; } 
             }
 
             public class DHCPv6LeaseEntry : ILeaseEntry
@@ -50,6 +51,7 @@ namespace Beer.DaAPI.Shared.Responses
                 public Guid ScopeId { get; set; }
                 public ReasonToEndLease EndReason { get; set; }
                 public DateTime Timestamp { get; set; }
+                public Boolean IsActive { get; set; }
             }
 
 
@@ -196,6 +198,7 @@ namespace Beer.DaAPI.Shared.Responses
                 public Guid ScopeId { get; set; }
                 public ReasonToEndLease EndReason { get; set; }
                 public DateTime Timestamp { get; set; }
+                public Boolean IsActive { get; set; }
             }
 
             public class DHCPv4PacketHandledEntry

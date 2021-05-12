@@ -34,21 +34,23 @@
                                 <span>@GetScopeAddressRangeAsString(context.Value)</span>
 
                                 @*@if (context.Value.SubnetMask.HasValue == true)
-                                {
-                                    <span> @($"/{context.Value.SubnetMask}")</span>
-                                }*@
+                                    {
+                                        <span> @($"/{context.Value.SubnetMask}")</span>
+                                    }*@
 
                                 @*@if (String.IsNullOrEmpty(context.Value.FirstGatewayAddress) == false)
-                                {
-                                    <span>@($" GW: {context.Value.FirstGatewayAddress} ")</span>
-                                }
+                                    {
+                                        <span>@($" GW: {context.Value.FirstGatewayAddress} ")</span>
+                                    }
 
-                                @if (context.Value.ExcludedAddresses.Any() == true)
-                                {
-                                    <span>@L["ExcludedAddressLabel"] @GetExcludedAddressAsString(context.Value)</span>
-                                }*@
+                                    @if (context.Value.ExcludedAddresses.Any() == true)
+                                    {
+                                        <span>@L["ExcludedAddressLabel"] @GetExcludedAddressAsString(context.Value)</span>
+                                    }*@
                             </MudText>
-
+                            <MudTooltip Text="@L["DetailsButtonTooltip"]">
+                                <MudIconButton Icon="@Icons.Material.Filled.Info" OnClick="@( () => NavigateToScopeDetails(context.Value))" Color="Color.Info" />
+                            </MudTooltip>
                             <MudTooltip Text="@L["DeleteButtonTooltip"]">
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@( () => ShowDeleteDialog(context.Value))" Color="Color.Error" />
                             </MudTooltip>

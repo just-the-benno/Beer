@@ -144,6 +144,9 @@
   <data name="DeleteScopeSuccessText" xml:space="preserve">
     <value>scope {0} deleted. Reloading scopes...</value>
   </data>
+  <data name="DetailsButtonTooltip" xml:space="preserve">
+    <value>Show Details like Leases, Packets, Events...</value>
+  </data>
   <data name="EditButtonTooltip" xml:space="preserve">
     <value>Edit this Scope</value>
   </data>

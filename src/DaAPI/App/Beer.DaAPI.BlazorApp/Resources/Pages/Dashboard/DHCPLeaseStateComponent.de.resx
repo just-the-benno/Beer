@@ -120,6 +120,9 @@
   <data name="ActiveToolTip" xml:space="preserve">
     <value>Aktiv (Active)</value>
   </data>
+  <data name="PendingToolTip" xml:space="preserve">
+    <value>Ausstehend (Pending)</value>
+  </data>
   <data name="RebindingToolTip" xml:space="preserve">
     <value>Neubinden (Rebinding)</value>
   </data>
