@@ -11,5 +11,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
     {
         Task<Boolean> Project(IEnumerable<DomainEvent> events);
         Task<IEnumerable<Guid>>  GetAllNotificationPipelineIds();
+
+        Task<Boolean> DeleteLeaseRelatedEventsOlderThan(DateTime leaseThreshold);
+        Task<Boolean> DeletePacketHandledEventsOlderThan(DateTime handledEventThreshold);
+        Task<Boolean> DeletePacketHandledEventMoreThan(UInt32 amount);
     }
 }

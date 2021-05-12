@@ -1,6 +1,8 @@
-﻿using Beer.DaAPI.Core.Scopes.DHCPv6;
+﻿using Beer.DaAPI.Core.Scopes.DHCPv4;
+using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Infrastructure.ServiceBus;
 using Beer.DaAPI.Infrastructure.ServiceBus.Messages;
+using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,22 +45,48 @@ namespace Beer.DaAPI.Service.API.HostedService
             {
                 using (var scope = _services.CreateScope())
                 {
-                    var eventStore = scope.ServiceProvider.GetRequiredService<IDHCPv6EventStore>();
-                    var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv6RootScope>();
+
+
                     var serviceBus = scope.ServiceProvider.GetRequiredService<IServiceBus>();
 
-                    Int32 changeAmount = rootScope.CleanUpLeases();
-                    _logger.LogInformation("{ChangeAmount} expired leases found", changeAmount);
-
-                    await eventStore.Save(rootScope);
-
-                    if (changeAmount > 0)
                     {
-                        var triggers = rootScope.GetTriggers();
-                        if (triggers.Any() == true)
+                        var eventStore = scope.ServiceProvider.GetRequiredService<IDHCPv6EventStore>();
+                        var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv6RootScope>();
+
+                        Int32 changeAmount = rootScope.CleanUpLeases();
+                        _logger.LogInformation("{ChangeAmount} expired dhcpv6 leases found", changeAmount);
+
+                        await eventStore.Save(rootScope);
+
+                        if (changeAmount > 0)
                         {
-                            await serviceBus.Publish(new NewTriggerHappendMessage(triggers));
-                            rootScope.ClearTriggers();
+                            var triggers = rootScope.GetTriggers();
+                            if (triggers.Any() == true)
+                            {
+                                await serviceBus.Publish(new NewTriggerHappendMessage(triggers));
+                                rootScope.ClearTriggers();
+                            }
+                        }
+                    }
+
+                    {
+
+                        var eventStore = scope.ServiceProvider.GetRequiredService<IDHCPv4EventStore>();
+                        var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv4RootScope>();
+
+                        Int32 changeAmount = rootScope.CleanUpLeases();
+                        _logger.LogInformation("{ChangeAmount} expired dhcpv4 leases found", changeAmount);
+
+                        await eventStore.Save(rootScope);
+
+                        if (changeAmount > 0)
+                        {
+                            var triggers = rootScope.GetTriggers();
+                            if (triggers.Any() == true)
+                            {
+                                await serviceBus.Publish(new NewTriggerHappendMessage(triggers));
+                                rootScope.ClearTriggers();
+                            }
                         }
                     }
 
