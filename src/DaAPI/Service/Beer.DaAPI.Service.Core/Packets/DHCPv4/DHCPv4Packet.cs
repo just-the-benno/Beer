@@ -439,7 +439,10 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             var clientIdentifierOption = request.GetOptionByIdentifier(DHCPv4OptionTypes.ClientIdentifier);
             if (clientIdentifierOption != null)
             {
-                AddOption(new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromOptionData(clientIdentifierOption.OptionData)));
+                if(responseType == DHCPv4MessagesTypes.NotAcknowledge)
+                {
+                    AddOption(new DHCPv4PacketClientIdentifierOption(DHCPv4ClientIdentifier.FromOptionData(clientIdentifierOption.OptionData)));
+                }
             }
         }
 

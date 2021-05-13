@@ -572,14 +572,20 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public async Task<Boolean> DeletePacketHandledEventMoreThan(UInt32 threshold)
         {
             {
-                Int32 statisticsDiff = (Int32)threshold - await DHCPv6PacketEntries.AsQueryable().CountAsync();
-                var statisticEntriesToRemove = await DHCPv6PacketEntries.AsQueryable().OrderBy(x => x.Timestamp).Take(statisticsDiff).ToListAsync();
-                DHCPv6PacketEntries.RemoveRange(statisticEntriesToRemove);
+                Int32 statisticsDiff = await DHCPv6PacketEntries.AsQueryable().CountAsync() - (Int32)threshold;
+                if (statisticsDiff > 0)
+                {
+                    var statisticEntriesToRemove = await DHCPv6PacketEntries.AsQueryable().OrderBy(x => x.Timestamp).Take(statisticsDiff).ToListAsync();
+                    DHCPv6PacketEntries.RemoveRange(statisticEntriesToRemove);
+                }
             }
             {
-                Int32 statisticsDiff = (Int32)threshold - await DHCPv4PacketEntries.AsQueryable().CountAsync();
-                var statisticEntriesToRemove = await DHCPv4PacketEntries.AsQueryable().OrderBy(x => x.Timestamp).Take(statisticsDiff).ToListAsync();
-                DHCPv4PacketEntries.RemoveRange(statisticEntriesToRemove);
+                Int32 statisticsDiff = await DHCPv4PacketEntries.AsQueryable().CountAsync() - (Int32)threshold;
+                if (statisticsDiff > 0)
+                {
+                    var statisticEntriesToRemove = await DHCPv4PacketEntries.AsQueryable().OrderBy(x => x.Timestamp).Take(statisticsDiff).ToListAsync();
+                    DHCPv4PacketEntries.RemoveRange(statisticEntriesToRemove);
+                }
             }
 
             return await SaveChangesAsyncInternal();
@@ -1041,10 +1047,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public IEnumerable<Device> GetAllDevices()
         {
-            var result = Devices.ToList().Select(x => new Device {
+            var result = Devices.ToList().Select(x => new Device
+            {
                 Id = x.Id,
                 Name = x.Name,
-                DUID = x.DUID == null ? new UUIDDUID(Guid.Empty) :  DUIDFactory.GetDUID(x.DUID),
+                DUID = x.DUID == null ? new UUIDDUID(Guid.Empty) : DUIDFactory.GetDUID(x.DUID),
                 MacAddress = x.MacAddress,
                 LinkLocalAddress = IPv6Address.GetAsLinkLocal(x.MacAddress),
             }).OrderBy(x => x.Name).ToList();
@@ -1052,6 +1059,6 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return result;
         }
 
-       
+
     }
 }
