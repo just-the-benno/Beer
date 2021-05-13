@@ -368,7 +368,7 @@ namespace Beer.DaAPI.Core.Scopes
         }
 
 
-        public Boolean CheckIfScopeResolverHsChanged(Guid scopeId, CreateScopeResolverInformation resolverInformation)
+        public Boolean CheckIfScopeResolverHasChanged(Guid scopeId, CreateScopeResolverInformation resolverInformation)
         {
             CheckIfScopeExistsById(scopeId);
 

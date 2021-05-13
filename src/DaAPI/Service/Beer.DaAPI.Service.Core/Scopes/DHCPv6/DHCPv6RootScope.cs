@@ -212,7 +212,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         public override Boolean UpdateScopeResolver(Guid scopeId, CreateScopeResolverInformation resolverInformation)
         {
             CheckIfScopeResolverIsValid(scopeId, resolverInformation);
-            if(CheckIfScopeResolverHsChanged(scopeId, resolverInformation) == false)
+            if(CheckIfScopeResolverHasChanged(scopeId, resolverInformation) == false)
             {
                 return false;
             }

@@ -14,11 +14,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
     public interface IEventStore
     {
-        Task<Boolean> Save(AggregateRootWithEvents root);
+        Task<Boolean> Save(AggregateRootWithEvents root, Int32 eventsPerRequest);
         Task<Boolean> CheckIfAggrerootExists<T>(Guid id) where T : AggregateRootWithEvents;
         Task<T> GetAggregateRoot<T>(Guid id) where T : AggregateRootWithEvents, new();
         Task HydrateAggragate<T>(T instance) where T : AggregateRootWithEvents;
-        Task<IEnumerable<DomainEvent>> GetEvents<T>(Guid id) where T : AggregateRootWithEvents;
+        Task<IEnumerable<DomainEvent>> GetEvents<T>(Guid id, Int32 eventsPerRequest) where T : AggregateRootWithEvents;
         Task<Boolean> DeleteAggregateRoot<T>(Guid id) where T : AggregateRootWithEvents;
         Task<Boolean> ApplyMetaValuesForStream<T>(Guid id, EventStoreStreamMetaValues values);
     }

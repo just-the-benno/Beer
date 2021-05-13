@@ -528,10 +528,12 @@ namespace Beer.DaAPI.Service.IntegrationTests.StorageEngine
                         new DHCPv6PacketRemoteIdentifierOption(random.NextUInt16(),new byte[]{ 1,2,3,4,5,6,7,8,9 }),
                }, releasePacket);
 
+              firstLease = initialRootScope.GetRootScopes().First().Leases.GetAllLeases().First();
+
               initialRootScope.HandleRelease(outerreleasePacket, propertyResolverMock.Object);
 
-              firstLease = initialRootScope.GetRootScopes().First().Leases.GetAllLeases().First();
               Assert.Equal(LeaseStates.Released, firstLease.State);
+              Assert.Empty(initialRootScope.GetRootScopes().First().Leases.GetAllLeases());
 
               await engine.Save(initialRootScope);
 
