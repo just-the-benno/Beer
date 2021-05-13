@@ -218,7 +218,9 @@ namespace DaAPI.IntegrationTests.DHCPv4Pipeline
                 Assert.Equal((UInt32)0, clientIdentifierOption.Identifier.IaId);
                 Assert.Empty(clientIdentifierOption.Identifier.HwAddress);
 
-                Assert.Equal(DHCPv4PacketFlags.Broadcast, response.Flags & DHCPv4PacketFlags.Broadcast);
+                var incoming82Option = response.GetOptionByIdentifier(DHCPv4OptionTypes.Option82) as DHCPv4PacketRawByteOption;
+                Assert.NotNull(incoming82Option);
+                Assert.Equal(opt82Value, incoming82Option.OptionData);
             }
             finally
             {
