@@ -478,6 +478,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             };
 
             packet.SetIPHeader(request);
+            packet.AddOption(new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, packet.Header.Source));
             packet.AddOptions(addressProperties, scopeProperties);
             packet.AddOptions82AtTheEnd(request);
 
@@ -493,6 +494,8 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
             packet.AddOption(new DHCPv4PacketTextOption(DHCPv4OptionTypes.Message, message));
             packet.SetIPHeader(request);
+            packet.AddOption(new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, packet.Header.Source));
+
             packet.AddOptions82AtTheEnd(request);
 
             return packet;
