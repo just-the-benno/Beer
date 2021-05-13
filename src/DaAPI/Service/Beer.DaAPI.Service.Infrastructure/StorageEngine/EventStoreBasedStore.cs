@@ -17,7 +17,6 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
 {
     public record EventStoreBasedStoreConnenctionOptions(EventStoreClient Client, String EventPrefix);
 
-
     public class EventStoreBasedStore : IDHCPv6EventStore, IDHCPv4EventStore, IDisposable
     {
         private class EventMeta
@@ -72,7 +71,7 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
             return true;
         }
 
-        public async Task<Boolean> Save(AggregateRootWithEvents aggregateRoot)
+        public async Task<Boolean> Save(AggregateRootWithEvents aggregateRoot, Int32 eventsPerRequest = 100)
         {
             var events = aggregateRoot.GetChanges();
             String streamName = GetStreamId(aggregateRoot.GetType(), aggregateRoot.Id);
@@ -88,17 +87,29 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
                      BodyType = x.GetType().AssemblyQualifiedName
                  })));
 
-            await _client.AppendToStreamAsync(streamName, StreamState.Any, data);
+            Int32 eventPosition = 0;
+            while(true)
+            {
+                var dataToSend = data.Skip(eventPosition).Take(eventsPerRequest).ToArray();
+                await _client.AppendToStreamAsync(streamName, StreamState.Any, dataToSend);
+                if(dataToSend.Length != eventsPerRequest)
+                {
+                    break;
+                }
+
+                eventPosition += eventsPerRequest;
+            }
+
             return true;
         }
 
-        public async Task<IEnumerable<DomainEvent>> GetEvents<T>(Guid id) where T : AggregateRootWithEvents
+        public async Task<IEnumerable<DomainEvent>> GetEvents<T>(Guid id, Int32 eventsPerRequest = 100) where T : AggregateRootWithEvents
         {
             String streamName = GetStreamId<T>(id);
             var encoding = new UTF8Encoding();
 
-            var events = _client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start);
-            var state = await events.ReadState;
+            var firstEvent = _client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start, 1);
+            var state = await firstEvent.ReadState;
 
             if (state == ReadState.StreamNotFound)
             {
@@ -106,19 +117,30 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
             }
 
             List<DomainEvent> domainEvents = new();
-
-            await foreach (var item in events)
+            Int32 streamPosition = 0;
+            while (true)
             {
-                EventMeta meta = System.Text.Json.JsonSerializer.Deserialize<EventMeta>(new ReadOnlySpan<Byte>(item.Event.Metadata.ToArray()));
+                var partialEvents = _client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.FromInt64(streamPosition), eventsPerRequest);
+                var items = await partialEvents.ToListAsync(); 
+                if (items.Count == 0)
+                {
+                    break;
+                }
 
-                String content = encoding.GetString(item.Event.Data.ToArray());
+                foreach (var item in items)
+                {
+                    EventMeta meta = System.Text.Json.JsonSerializer.Deserialize<EventMeta>(new ReadOnlySpan<Byte>(item.Event.Metadata.ToArray()));
 
-                var domainEvent = (DomainEvent)JsonConvert.DeserializeObject(content, Type.GetType(meta.BodyType), _jsonSerializerSettings);
-                domainEvents.Add(domainEvent);
+                    String content = encoding.GetString(item.Event.Data.ToArray());
+
+                    var domainEvent = (DomainEvent)JsonConvert.DeserializeObject(content, Type.GetType(meta.BodyType), _jsonSerializerSettings);
+                    domainEvents.Add(domainEvent);
+                }
+
+                streamPosition += eventsPerRequest;
             }
 
             return domainEvents;
-
         }
 
         public async Task HydrateAggragate<T>(T instance) where T : AggregateRootWithEvents
@@ -144,7 +166,7 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
         {
             String streamName = GetStreamId<T>(id);
 
-            await _client.SetStreamMetadataAsync(streamName, StreamState.Any, 
+            await _client.SetStreamMetadataAsync(streamName, StreamState.Any,
                 new StreamMetadata(
                     maxCount: values.AmountOfItemsPerStream <= 0 ? new Int32?() : values.AmountOfItemsPerStream,
                     maxAge: values.MaxAgeOfEvents.Ticks < 0 ? new TimeSpan?() : values.MaxAgeOfEvents

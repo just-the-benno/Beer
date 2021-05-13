@@ -56,7 +56,7 @@ namespace Beer.DaAPI.Service.API.HostedService
                         Int32 changeAmount = rootScope.CleanUpLeases();
                         _logger.LogInformation("{ChangeAmount} expired dhcpv6 leases found", changeAmount);
 
-                        await eventStore.Save(rootScope);
+                        await eventStore.Save(rootScope, 20);
 
                         if (changeAmount > 0)
                         {
@@ -77,7 +77,7 @@ namespace Beer.DaAPI.Service.API.HostedService
                         Int32 changeAmount = rootScope.CleanUpLeases();
                         _logger.LogInformation("{ChangeAmount} expired dhcpv4 leases found", changeAmount);
 
-                        await eventStore.Save(rootScope);
+                        await eventStore.Save(rootScope, 20);
 
                         if (changeAmount > 0)
                         {

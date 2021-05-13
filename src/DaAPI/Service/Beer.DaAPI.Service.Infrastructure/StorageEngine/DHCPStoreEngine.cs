@@ -106,7 +106,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public virtual async Task<Boolean> Save(AggregateRootWithEvents aggregateRoot)
         {
             var events = aggregateRoot.GetChanges();
-            Boolean writeResult = await EventStore.Save(aggregateRoot);
+            Boolean writeResult = await EventStore.Save(aggregateRoot, 20);
             if (writeResult == false)
             {
                 return false;
@@ -163,9 +163,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
             var lastChanges = element.GetChanges();
             Boolean hasLastChanges = lastChanges.Any();
-            if(hasLastChanges == true)
+            if (hasLastChanges == true)
             {
-                await EventStore.Save(element);
+                await EventStore.Save(element, 20);
             }
 
             await EventStore.DeleteAggregateRoot<T>(element.Id);

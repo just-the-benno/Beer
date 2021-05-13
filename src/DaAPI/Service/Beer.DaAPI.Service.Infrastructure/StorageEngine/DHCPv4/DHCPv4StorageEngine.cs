@@ -142,7 +142,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
 
             foreach (var item in aggregatesToSave)
             {
-                await EventStore.Save(item);
+                await EventStore.Save(item, 20);
                 if (item is PseudoDHCPv4Lease)
                 {
                     var propertyResolver = Provider.GetService<IDHCPv6ServerPropertiesResolver>();
@@ -172,7 +172,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         public async Task<DHCPv4RootScope> GetRootScope()
         {
             DHCPv4RootScope rootScope = new DHCPv4RootScope(_rootScopeid, Provider.GetRequiredService<IScopeResolverManager<DHCPv4Packet, IPv4Address>>(), Provider.GetRequiredService<ILoggerFactory>());
-     
+
             PseudoDHCPv4RootScope pseudoRootScope = new PseudoDHCPv4RootScope();
             await EventStore.HydrateAggragate(pseudoRootScope);
 
@@ -180,13 +180,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
 
             foreach (var scopeId in pseudoRootScope.ScopeIds)
             {
-                var events = await EventStore.GetEvents<PseudoDHCPv4Scope>(scopeId);
+                var events = await EventStore.GetEvents<PseudoDHCPv4Scope>(scopeId, 100);
                 eventsToApply.AddRange(events);
             }
 
             foreach (var leaseId in pseudoRootScope.LeaseIds)
             {
-                var events = await EventStore.GetEvents<PseudoDHCPv4Lease>(leaseId);
+                var events = await EventStore.GetEvents<PseudoDHCPv4Lease>(leaseId, 100);
                 eventsToApply.AddRange(events);
             }
 

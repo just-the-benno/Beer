@@ -136,7 +136,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
 
             foreach (var item in aggregatesToSave)
             {
-                await EventStore.Save(item);
+                await EventStore.Save(item, 20);
                 if (item is PseudoDHCPv6Lease)
                 {
                     var propertyResolver = Provider.GetService<IDHCPv6ServerPropertiesResolver>();
@@ -174,13 +174,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
 
             foreach (var scopeId in pseudoRootScope.ScopeIds)
             {
-                var events = await EventStore.GetEvents<PseudoDHCPv6Scope>(scopeId);
+                var events = await EventStore.GetEvents<PseudoDHCPv6Scope>(scopeId, 100);
                 eventsToApply.AddRange(events);
             }
 
             foreach (var leaseId in pseudoRootScope.LeaseIds)
             {
-                var events = await EventStore.GetEvents<PseudoDHCPv6Lease>(leaseId);
+                var events = await EventStore.GetEvents<PseudoDHCPv6Lease>(leaseId, 100);
                 eventsToApply.AddRange(events);
             }
 

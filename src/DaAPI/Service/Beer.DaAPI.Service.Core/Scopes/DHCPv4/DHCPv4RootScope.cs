@@ -148,6 +148,10 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         public override Boolean UpdateScopeResolver(Guid scopeId, CreateScopeResolverInformation resolverInformation)
         {
             CheckIfScopeResolverIsValid(scopeId, resolverInformation);
+            if (CheckIfScopeResolverHasChanged(scopeId, resolverInformation) == false)
+            {
+                return false;
+            }
 
             base.Apply(new DHCPv4ScopeResolverUpdatedEvent(scopeId, resolverInformation));
 

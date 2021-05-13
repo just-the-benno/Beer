@@ -71,30 +71,75 @@ namespace Beer.DaAPI.Service.IntegrationTests.StorageEngine
 
             var settings = EventStoreClientSettings.Create("esdb://127.0.0.1:2113?tls=false");
             var client = new EventStoreClient(settings);
+            String prefix = random.GetAlphanumericString();
+            EventStoreBasedStore store = new EventStoreBasedStore(new EventStoreBasedStoreConnenctionOptions(client, prefix));
 
-            EventStoreBasedStore store = new EventStoreBasedStore(new EventStoreBasedStoreConnenctionOptions(client, random.GetAlphanumericString()));
+            try
+            {
 
-            Boolean firstExistResult = await store.CheckIfAggrerootExists<PseudoAggregateRoot>(id);
-            Assert.False(firstExistResult);
 
-            Boolean saveResult = await store.Save(aggregateRoot);
-            Assert.True(saveResult);
+                Boolean firstExistResult = await store.CheckIfAggrerootExists<PseudoAggregateRoot>(id);
+                Assert.False(firstExistResult);
 
-            Boolean secondExistResult = await store.CheckIfAggrerootExists<PseudoAggregateRoot>(id);
-            Assert.True(secondExistResult);
+                Boolean saveResult = await store.Save(aggregateRoot);
+                Assert.True(saveResult);
 
-            var hydratedVersion = new PseudoAggregateRoot(id);
-            await store.HydrateAggragate(hydratedVersion);
+                Boolean secondExistResult = await store.CheckIfAggrerootExists<PseudoAggregateRoot>(id);
+                Assert.True(secondExistResult);
 
-            Assert.Equal(firstname, hydratedVersion.InitialName);
-            Assert.Equal(secondName, hydratedVersion.SecondName);
+                var hydratedVersion = new PseudoAggregateRoot(id);
+                await store.HydrateAggragate(hydratedVersion);
 
-            Boolean deleteResult = await store.DeleteAggregateRoot<PseudoAggregateRoot>(id);
-            Assert.True(deleteResult);
+                Assert.Equal(firstname, hydratedVersion.InitialName);
+                Assert.Equal(secondName, hydratedVersion.SecondName);
 
-            Boolean thirdExistResult = await store.CheckIfAggrerootExists<PseudoAggregateRoot>(id);
-            Assert.False(thirdExistResult);
+                Boolean deleteResult = await store.DeleteAggregateRoot<PseudoAggregateRoot>(id);
+                Assert.True(deleteResult);
+
+                Boolean thirdExistResult = await store.CheckIfAggrerootExists<PseudoAggregateRoot>(id);
+                Assert.False(thirdExistResult);
+            }
+            finally
+            {
+                await EventStoreClientDisposer.CleanUp(prefix, settings);
+            }
         }
 
+        [Fact]
+        public async Task SaveAndGetEventsInChunks()
+        {
+            Random random = new Random();
+
+            Guid id = random.NextGuid();
+            PseudoAggregateRoot aggregateRoot = PseudoAggregateRoot.Create(id, "my name");
+
+            Int32 amount = 10_000;
+
+            for (int i = 0; i < amount; i++)
+            {
+                aggregateRoot.ChangeName($"iteration {i}");
+            }
+
+            var settings = EventStoreClientSettings.Create("esdb://127.0.0.1:2113?tls=false");
+            var client = new EventStoreClient(settings);
+
+            String prefix = random.GetAlphanumericString();
+
+            EventStoreBasedStore store = new(new EventStoreBasedStoreConnenctionOptions(client, prefix));
+
+            try
+            {
+                await store.Save(aggregateRoot);
+
+                var events = await store.GetEvents<PseudoAggregateRoot>(id, 10);
+                Assert.Equal(amount + 1, events.Count());
+                Assert.Equal($"iteration {amount - 1}", ((PseudoAggregateRootNameChangedEvent)events.Last()).SecondName);
+
+            }
+            finally
+            {
+                await EventStoreClientDisposer.CleanUp(prefix, settings);
+            }
+        }
     }
 }
