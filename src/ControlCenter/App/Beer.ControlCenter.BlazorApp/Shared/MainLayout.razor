@@ -16,12 +16,12 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <AuthorizeView>
-            @if(_urls.Count > 0)
+            @if(_apps.Count > 0)
             { 
             <MudMenu Icon="@Icons.Material.Filled.ViewModule" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true">
-                @if (_urls.ContainsKey("DaAPI-Blazor") == true)
+                @foreach (var item in _apps)
                 {
-                    <MudNavLink Href="@_urls["DaAPI-Blazor"]" IconColor="Color.Default" Icon="@Icons.Filled.AccountTree">DaAPI</MudNavLink>
+                    <MudNavLink Href="@item.Url" IconColor="Color.Default" Icon="@item.Icon">@item.Name</MudNavLink>
                 }
             </MudMenu>
             }
@@ -54,7 +54,7 @@
             </div>
         </MudDrawerHeader>
 
-        <NavMenu />
+        <NavMenu AppEntries="_apps"  />
 
         <MudDivider />
         <MudGrid Class="flex-min px-3">
@@ -81,6 +81,8 @@
     private String GetClaimsValue(System.Security.Claims.ClaimsPrincipal principal, String type) =>
             principal.Claims.FirstOrDefault(x => x.Type == type)?.Value;
 
+    private List<AppLinkEntry> _apps = new List<AppLinkEntry>();
+
     private MudTheme _default = new MudTheme
     {
         Palette = new Palette
@@ -106,5 +108,15 @@
     {
         await base.OnInitializedAsync();
         _urls = await ccService.GetAppUrls();
+
+        if (_urls.ContainsKey("DaAPI-Blazor"))
+        {
+            _apps.Add(new AppLinkEntry(_urls["DaAPI-Blazor"], "DaAPI", Icons.Material.Filled.AccountTree));
+        }
+        if (_urls.ContainsKey("Wiki"))
+        {
+            _apps.Add(new AppLinkEntry(_urls["Wiki"], "Wiki", Icons.Material.Filled.MenuBook));
+        }
+
     }
 }

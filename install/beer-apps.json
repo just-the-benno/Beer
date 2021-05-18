@@ -48,7 +48,8 @@
         {
             "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "https://<$IdentityUrl>",
             "AppSettings__AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
-            "AppSettings__AppURIs__ControlCenter-BlazorApp": "https://<$ControlCenterAppUrl>"
+            "AppSettings__AppURIs__ControlCenter-BlazorApp": "https://<$ControlCenterAppUrl>",
+            "AppSettings__AppURIs__Wiki": "https://<$WikiURL>"
         }
     },
     {
@@ -81,7 +82,8 @@
             "AppConfiguration__OpenIdConnection__Authority": "https://<$IdentityUrl>/",
             "AppConfiguration__OpenIdConnection__RedirectUri": "https://<$DaAPIAppUrl>/authentication/login-callback",
             "AppConfiguration__OpenIdConnection__PostLogoutRedirectUri": "https://<$DaAPIAppUrl>/authentication/logout-callback",
-            "AppConfiguration__APIUrls__DaAPI": "https://<$DaAPI-APIUrl>/"
+            "AppConfiguration__APIUrls__DaAPI": "https://<$DaAPI-APIUrl>/",
+            "AppConfiguration__AppUrls__ControlCenter": "https://<$ControlCenterAppUrl>/"
         }
     }
 ]

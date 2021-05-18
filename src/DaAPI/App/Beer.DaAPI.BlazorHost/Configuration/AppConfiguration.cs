@@ -10,5 +10,6 @@ namespace Beer.DaAPI.BlazorHost.Configuration
     {
         public OpenIdConnectionConfiguration OpenIdConnection { get; set; }
         public Dictionary<String,String> APIUrls { get; set; }
+        public Dictionary<String, String> AppUrls { get; set; }
     }
 }

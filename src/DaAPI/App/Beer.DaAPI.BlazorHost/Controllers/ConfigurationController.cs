@@ -37,9 +37,16 @@ namespace Beer.DaAPI.BlazorHost.Controllers
 
         [AllowAnonymous]
         [HttpGet("/Configuration/APIs")]
-        public IActionResult GetAppUrls()
+        public IActionResult GetAPIUrls()
         {
             return base.Ok(_appConfig.APIUrls);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/Configuration/Apps")]
+        public IActionResult GetAppUrls()
+        {
+            return base.Ok(_appConfig.AppUrls);
         }
     }
 }

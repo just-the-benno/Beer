@@ -36,10 +36,16 @@ namespace Beer.DaAPI.BlazorHost
                 config.OpenIdConnection.PostLogoutRedirectUri = $"{ownUrl}authentication/logout-callback";
             }
 
-            var url = Configuration.GetServiceUri("DaAPIService", "https");
-            if (url != null)
+            var daapiUrl = Configuration.GetServiceUri("DaAPIService", "https");
+            if (daapiUrl != null)
             {
-                config.APIUrls["DaAPI"] = url.ToString();
+                config.APIUrls["DaAPI"] = daapiUrl.ToString();
+            }
+
+            var ccUrl = Configuration.GetServiceUri("ControlCenterApp", "https");
+            if (ccUrl != null)
+            {
+                config.AppUrls["ControlCenter"] = ccUrl.ToString();
             }
         }
 
