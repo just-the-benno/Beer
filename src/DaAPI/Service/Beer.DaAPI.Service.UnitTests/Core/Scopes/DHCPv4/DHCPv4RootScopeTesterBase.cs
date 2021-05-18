@@ -47,7 +47,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
         protected static DHCPv4Lease CheckLease(
             Int32 index, Int32 expectedAmount, IPv4Address expectedAdress,
             Guid scopeId, DHCPv4RootScope rootScope, DateTime expectedCreationData,
-            Byte[] uniqueIdentifier = null)
+            Byte[] uniqueIdentifier = null, Boolean shouldBePending = true)
         {
             DHCPv4Scope scope = rootScope.GetScopeById(scopeId);
             var leases = scope.Leases.GetAllLeases();
@@ -59,7 +59,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Int32 expiresInMinutes = (Int32)(lease.End - DateTime.UtcNow).TotalMinutes;
             Assert.True(expiresInMinutes >= 60 * 24 - 4 && expiresInMinutes <= 60 * 24);
             Assert.True((expectedCreationData - lease.Start).TotalMinutes < 2);
-            Assert.True(lease.IsPending());
+            Assert.Equal(shouldBePending, lease.IsPending());
             if (uniqueIdentifier == null)
             {
                 Assert.Empty(lease.UniqueIdentifier);
@@ -127,8 +127,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
         {
             var scope = rootScope.GetScopeById(scopeId);
 
-            if(scope.Properties != null)
-            {     
+            if (scope.Properties != null)
+            {
                 foreach (var item in scope.Properties.Properties)
                 {
 
@@ -136,7 +136,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             }
 
             var subnetOption = result.GetOptionByIdentifier((Byte)DHCPv4OptionTypes.SubnetMask) as DHCPv4PacketAddressOption;
-            if(result.YourIPAdress == IPv4Address.Empty)
+            if (result.YourIPAdress == IPv4Address.Empty)
             {
                 Assert.Null(subnetOption);
             }

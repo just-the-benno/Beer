@@ -317,7 +317,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 {
                     if (newLeaseNeeded == true)
                     {
-                        Leases.AddLease(
+                        var freshLease = Leases.AddLease(
                             Guid.NewGuid(),
                             leaseAddress,
                             addressProperties.LeaseTime.Value,
@@ -327,6 +327,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                             Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
                             null
                             );
+
+                        freshLease.RemovePendingState();
                     }
 
                     answer = DHCPv4Packet.AsRequestResponse(
