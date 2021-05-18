@@ -375,23 +375,23 @@ namespace Beer.DaAPI.Core.Scopes
             var scope = GetScopeById(scopeId);
             var resolver = _resolverManager.InitializeResolver(resolverInformation);
 
-            if(scope.Resolver.GetType() != resolver.GetType()) { return false; }
+            if(scope.Resolver.GetType() != resolver.GetType()) { return true; }
 
             var existingValues = scope.Resolver.GetValues();
             var newValues = resolver.GetValues();
 
-            if(existingValues.Count != newValues.Count) { return false; }
+            if(existingValues.Count != newValues.Count) { return true; }
 
             var uniqueKeys = existingValues.Keys.Union(newValues.Keys).Distinct();
-            if(uniqueKeys.Count() != existingValues.Keys.Count) { return false; }
+            if(uniqueKeys.Count() != existingValues.Keys.Count) { return true; }
 
             foreach (var item in existingValues)
             {
                 var newValue = newValues[item.Key];
-                if(newValue != item.Value) { return false; }
+                if(newValue != item.Value) { return true; }
             }
 
-            return true;
+            return false;
         }
 
         protected void CancelAllLeasesBecauseOfChangeOfResolver(Guid scopeId)

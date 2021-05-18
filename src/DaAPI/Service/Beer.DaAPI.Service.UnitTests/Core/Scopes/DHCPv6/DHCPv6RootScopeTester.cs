@@ -267,12 +267,16 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 Typename = "my mocked resolver",
             };
 
-            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> exisitngResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            exisitngResolverMock.Setup(x => x.GetValues()).Returns(new Dictionary<String, String> { { "Prop1", "Value1" } });
+
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> newResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            newResolverMock.Setup(x => x.GetValues()).Returns(new Dictionary<String, String> { { "Prop1", "Value2" } });
 
             Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> managerMock = new Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
             managerMock.Setup(x => x.IsResolverInformationValid(information)).Returns(true);
-            managerMock.Setup(x => x.InitializeResolver(information)).Returns(resolverMock.Object);
-            managerMock.Setup(x => x.InitializeResolver(initalInformation)).Returns<IScopeResolver<DHCPv6Packet, IPv6Address>>(null);
+            managerMock.Setup(x => x.InitializeResolver(information)).Returns(exisitngResolverMock.Object);
+            managerMock.Setup(x => x.InitializeResolver(initalInformation)).Returns(newResolverMock.Object);
 
             DHCPv6RootScope rootScope = GetRootScope(managerMock);
             rootScope.Load(new List<DomainEvent> {
@@ -287,7 +291,142 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             Assert.True(result);
 
             DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
-            Assert.Equal(resolverMock.Object, scope.Resolver);
+            Assert.Equal(exisitngResolverMock.Object, scope.Resolver);
+
+            CheckScopeChangesEvent<DHCPv6ScopeResolverUpdatedEvent>(rootScope, scopeId,
+                (castedEvent) =>
+                {
+                    Assert.Equal(information, castedEvent.ResolverInformationen);
+                }
+            );
+        }
+
+        private void UpdateScopeResolver(IDictionary<String,String> existingResolverValues, IDictionary<String, String> newResolverValues)
+        {
+            Random random = new Random();
+
+            String initialDescription = random.GetAlphanumericString(30);
+            Guid scopeId = Guid.NewGuid();
+
+            CreateScopeResolverInformation initalInformation = new CreateScopeResolverInformation
+            {
+                Typename = "my initial resolver",
+            };
+
+            CreateScopeResolverInformation information = new CreateScopeResolverInformation
+            {
+                Typename = "my mocked resolver",
+            };
+
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> exisitngResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            exisitngResolverMock.Setup(x => x.GetValues()).Returns(existingResolverValues);
+
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> newResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            newResolverMock.Setup(x => x.GetValues()).Returns(newResolverValues);
+
+            Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> managerMock = new Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            managerMock.Setup(x => x.IsResolverInformationValid(information)).Returns(true);
+            managerMock.Setup(x => x.InitializeResolver(information)).Returns(exisitngResolverMock.Object);
+            managerMock.Setup(x => x.InitializeResolver(initalInformation)).Returns(newResolverMock.Object);
+
+            DHCPv6RootScope rootScope = GetRootScope(managerMock);
+            rootScope.Load(new List<DomainEvent> {
+                new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = scopeId,
+                ResolverInformation = initalInformation,
+            })
+            });
+
+            Boolean result = rootScope.UpdateScopeResolver(scopeId, information);
+            Assert.True(result);
+
+            DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
+            Assert.Equal(exisitngResolverMock.Object, scope.Resolver);
+
+            CheckScopeChangesEvent<DHCPv6ScopeResolverUpdatedEvent>(rootScope, scopeId,
+                (castedEvent) =>
+                {
+                    Assert.Equal(information, castedEvent.ResolverInformationen);
+                }
+            );
+        }
+
+        [Fact]
+        public void UpdateScopeResolver_Change_DifferentValues()
+        {
+            UpdateScopeResolver(
+                new Dictionary<String, String> { { "Prop1", "Value1" } },
+                new Dictionary<String, String> { { "Prop1", "Value2" } }
+                );
+        }
+
+        [Fact]
+        public void UpdateScopeResolver_Change_DifferentKeys()
+        {
+            UpdateScopeResolver(
+             new Dictionary<String, String> { { "Prop1", "Value1" } },
+             new Dictionary<String, String> { { "Prop2", "Value1" } }
+             );
+        }
+
+        [Fact]
+        public void UpdateScopeResolver_Change_DifferentKeyAmount()
+        {
+            UpdateScopeResolver(
+             new Dictionary<String, String> { { "Prop1", "Value1" } },
+             new Dictionary<String, String> { { "Prop1", "Value1" }, { "Prop2", "Value1" } }
+             );
+        }
+
+        [Fact]
+        public void UpdateScopeResolver_Change_MultipleValuesButDifferentKeys()
+        {
+            UpdateScopeResolver(
+             new Dictionary<String, String> { { "Prop1", "Value1" }, { "Prop3", "Value1" } },
+             new Dictionary<String, String> { { "Prop1", "Value1" }, { "Prop2", "Value1" } }
+             );
+        }
+
+        [Fact]
+        public void UpdateScopeResolver_DifferentType()
+        {
+            Random random = new Random();
+
+            String initialDescription = random.GetAlphanumericString(30);
+            Guid scopeId = Guid.NewGuid();
+
+            CreateScopeResolverInformation initalInformation = new CreateScopeResolverInformation
+            {
+                Typename = "my initial resolver",
+            };
+
+            CreateScopeResolverInformation information = new CreateScopeResolverInformation
+            {
+                Typename = "my mocked resolver",
+            };
+
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> exisitngResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+
+            Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> managerMock = new Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            managerMock.Setup(x => x.IsResolverInformationValid(information)).Returns(true);
+            managerMock.Setup(x => x.InitializeResolver(information)).Returns(exisitngResolverMock.Object);
+            managerMock.Setup(x => x.InitializeResolver(initalInformation)).Returns(new DHCPv6PseudoResolver());
+
+            DHCPv6RootScope rootScope = GetRootScope(managerMock);
+            rootScope.Load(new List<DomainEvent> {
+                new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = scopeId,
+                ResolverInformation = initalInformation,
+            })
+            });
+
+            Boolean result = rootScope.UpdateScopeResolver(scopeId, information);
+            Assert.True(result);
+
+            DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
+            Assert.Equal(exisitngResolverMock.Object, scope.Resolver);
 
             CheckScopeChangesEvent<DHCPv6ScopeResolverUpdatedEvent>(rootScope, scopeId,
                 (castedEvent) =>
@@ -315,12 +454,16 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                 Typename = "my mocked resolver",
             };
 
-            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> existingResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            existingResolverMock.Setup(x => x.GetValues()).Returns(new Dictionary<String, String> { { "Prop1", "Value1" } });
+
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> newResolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            newResolverMock.Setup(x => x.GetValues()).Returns(new Dictionary<String, String> { { "Prop1", "Value2" } });
 
             Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> managerMock = new Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
             managerMock.Setup(x => x.IsResolverInformationValid(information)).Returns(true);
-            managerMock.Setup(x => x.InitializeResolver(information)).Returns(resolverMock.Object);
-            managerMock.Setup(x => x.InitializeResolver(initalInformation)).Returns<IScopeResolver<DHCPv6Packet, IPv6Address>>(null);
+            managerMock.Setup(x => x.InitializeResolver(information)).Returns(existingResolverMock.Object);
+            managerMock.Setup(x => x.InitializeResolver(initalInformation)).Returns(newResolverMock.Object);
 
             DHCPv6RootScope rootScope = GetRootScope(managerMock);
 
@@ -342,7 +485,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             Assert.True(result);
 
             DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
-            Assert.Equal(resolverMock.Object, scope.Resolver);
+            Assert.Equal(existingResolverMock.Object, scope.Resolver);
 
             IEnumerable<DomainEvent> changes = rootScope.GetChanges();
 

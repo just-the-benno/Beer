@@ -61,7 +61,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.StorageEngine
             var mockedAggregateRoot = new MockedAggregateRoot(events);
 
             Mock<IDHCPv6EventStore> eventStoreMock = new Mock<IDHCPv6EventStore>(MockBehavior.Strict);
-            eventStoreMock.Setup(x => x.Save(mockedAggregateRoot)).ReturnsAsync(eventStoreResult).Verifiable();
+            eventStoreMock.Setup(x => x.Save(mockedAggregateRoot, 20)).ReturnsAsync(eventStoreResult).Verifiable();
 
             var comparer = new DummyEventEqualityCompare();
 
