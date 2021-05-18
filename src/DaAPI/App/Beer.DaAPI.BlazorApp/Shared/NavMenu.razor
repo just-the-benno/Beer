@@ -1,4 +1,5 @@
 ﻿@inject IStringLocalizer<NavMenu> L
+@inject BeerAppsService appService
 
 <DaAPIPersonCard Style="background-color: var(--mud-palette-drawer-background);color: var(--mud-palette-drawer-text);" />
 <MudDivider Class="mb-4" />
@@ -29,23 +30,28 @@
         base.OnInitialized();
 
         _sideNavMenu = new List<NavItemGroupViewModel>
-        {
+    {
                 new NavItemGroupViewModel(L["MenuMainMenuCaption"],false, new List<NavItemViewModel>
-                    {
+                {
                         new NavItemViewModel("Dashboard","fas fa-tachometer-alt",L["MenuMainDashboardCaption"],0),
                         new NavItemViewModel("pipelines","fas fa-bell",L["MenuMainPipelinesCaption"],0)
                     }
                 ),
                 new NavItemGroupViewModel(L["DHCPv4MenuMainCaption"],true, new List<NavItemViewModel>
-                    {
+                {
                     new NavItemViewModel("interfaces/dhcpv4","fas fa-network-wired",L["DHCPv4MenuInterfacesCaption"],0),
                     new NavItemViewModel("scopes/dhcpv4","fas fa-project-diagram",L["DHCPv4MenuScopesCaption"],0)
                     }
                 ),
                 new NavItemGroupViewModel(L["DHCPv6MenuMainCaption"],true, new List<NavItemViewModel>
-                    {
+                {
                         new NavItemViewModel("interfaces/dhcpv6","fas fa-network-wired",L["DHCPv6MenuInterfacesCaption"],0),
                         new NavItemViewModel("scopes/dhcpv6","fas fa-project-diagram",L["DHCPv6MenuScopesCaption"],0),
+                    }
+                ),
+                 new NavItemGroupViewModel(L["BeerAppsCaption"],true, new List<NavItemViewModel>
+                {
+                        new NavItemViewModel(appService.GetControlCenterAppUrl(),Icons.Material.Filled.GridView ,L["ControlCenterCaption"],0),
                     }
                 ),
         };

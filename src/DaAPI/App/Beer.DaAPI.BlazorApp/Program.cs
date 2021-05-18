@@ -77,12 +77,14 @@ namespace Beer.DaAPI.BlazorApp
                 BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
             };
 
-            var urlDict = (await configurationLoader.GetFromJsonAsync<Dictionary<String, String>>("/Configuration/APIs")).ToDictionary(x => x.Key.ToLower(), x => x.Value);
+            var apiUrlDict = (await configurationLoader.GetFromJsonAsync<Dictionary<String, String>>("/Configuration/APIs")).ToDictionary(x => x.Key.ToLower(), x => x.Value);
+            var appUrlDict = (await configurationLoader.GetFromJsonAsync<Dictionary<String, String>>("/Configuration/Apps")).ToDictionary(x => x.Key.ToLower(), x => x.Value);
 
+            builder.Services.AddSingleton(new BeerAppsService(appUrlDict));
 
             builder.Services.AddHttpClient<DaAPIService>(client =>
-                 client.BaseAddress = new Uri(urlDict["daapi"]))
-                 .AddHttpMessageHandler((provider) => new ConfigurableAuthorizationMessageHandler(urlDict["daapi"], provider.GetRequiredService<IAccessTokenProvider>(), provider.GetRequiredService<NavigationManager>()));
+                 client.BaseAddress = new Uri(apiUrlDict["daapi"]))
+                 .AddHttpMessageHandler((provider) => new ConfigurableAuthorizationMessageHandler(apiUrlDict["daapi"], provider.GetRequiredService<IAccessTokenProvider>(), provider.GetRequiredService<NavigationManager>()));
 
 
             //builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
