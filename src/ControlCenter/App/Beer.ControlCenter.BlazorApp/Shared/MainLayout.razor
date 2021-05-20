@@ -21,7 +21,7 @@
             <MudMenu Icon="@Icons.Material.Filled.ViewModule" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true">
                 @foreach (var item in _apps)
                 {
-                    <MudNavLink Href="@item.Url" IconColor="Color.Default" Icon="@item.Icon">@item.Name</MudNavLink>
+                    <MudNavLink Href="@item.Url" IconColor="Color.Default" Target="_blank" Icon="@item.Icon">@item.Name</MudNavLink>
                 }
             </MudMenu>
             }
