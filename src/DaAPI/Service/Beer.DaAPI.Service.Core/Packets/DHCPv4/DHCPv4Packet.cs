@@ -292,10 +292,10 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
                 source = IPv4Address.FromAddress(request.Header.Destionation);
             }
 
-            if (MessageType == DHCPv4MessagesTypes.NotAcknowledge && request.GatewayIPAdress == IPv4Address.Empty)
-            {
-                destionation = IPv4Address.Broadcast;
-            }
+            //if (MessageType == DHCPv4MessagesTypes.NotAcknowledge && (request.ClientIPAdress != request.Header.Source))
+            //{
+            //    destionation = IPv4Address.Broadcast;
+            //}
 
             Header = new IPv4HeaderInformation(source, destionation, request.Header.ListenerAddress);
         }

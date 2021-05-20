@@ -40,6 +40,9 @@ namespace Beer.DaAPI.Core.Scopes
         public Boolean? AcceptDecline { get; private set; }
         public Boolean? InformsAreAllowd { get; private set; }
 
+        public DynamicRenewTime? DynamicRenewTime { get; private set; }
+        public Boolean? UseDynamicRewnewTime { get; private set; }
+
         public IEnumerable<TAddress> ExcludedAddresses
         {
             get { return _excludedAddresses.ToList(); }
@@ -142,7 +145,6 @@ namespace Beer.DaAPI.Core.Scopes
 
         protected abstract Boolean AreAllAdrressesExcluded(TAddress start, TAddress end, HashSet<TAddress> excludedElements);
 
-
         internal virtual void OverrideProperties(TAddressProperties range)
         {
             if (range == null) { return; }
@@ -186,6 +188,18 @@ namespace Beer.DaAPI.Core.Scopes
             if (range.InformsAreAllowd.HasValue == true)
             {
                 this.InformsAreAllowd = range.InformsAreAllowd.Value;
+            }
+
+            if(range.UseDynamicRewnewTime.HasValue == true)
+            {
+                if(range.UseDynamicRewnewTime == true)
+                {
+                    this.DynamicRenewTime = range.DynamicRenewTime;
+                }
+                else
+                {
+                    this.DynamicRenewTime = null;
+                }
             }
         }
 
