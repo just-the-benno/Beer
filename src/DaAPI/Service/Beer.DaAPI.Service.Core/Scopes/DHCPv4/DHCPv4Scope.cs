@@ -212,6 +212,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 requestType == DHCPv4PacketRequestType.Rebinding
                 )
             {
+
                 if (
                     (requestType == DHCPv4PacketRequestType.Renewing &&
                     addressProperties.SupportDirectUnicast == true) ||
@@ -242,9 +243,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                             }
                             else
                             {
+                                answer = DHCPv4Packet.AsNonAcknowledgeResponse(packet, "no extentions possible");
                                 Leases.Revoke(lease);
-                                newLeaseNeeded = true;
-                                excludedAddressForNewAddress = lease.Address;
                             }
                         }
                     }
@@ -274,8 +274,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                         else
                         {
                             Leases.Revoke(lease);
-                            newLeaseNeeded = true;
-                            excludedAddressForNewAddress = lease.Address;
+                            answer = DHCPv4Packet.AsNonAcknowledgeResponse(packet, "no extention possible");
                         }
                     }
                     else

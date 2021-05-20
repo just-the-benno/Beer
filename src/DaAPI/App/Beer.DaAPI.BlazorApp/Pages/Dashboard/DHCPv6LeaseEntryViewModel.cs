@@ -15,21 +15,24 @@ namespace Beer.DaAPI.BlazorApp.Pages.Dashboard
             get
             {
                 DateTime now = DateTime.UtcNow;
-                if (now > ExpectedRebindingAt)
+                if (IsActive == false)
                 {
-                    return DHCPLeaseStates.Rebinding;
-                }
-                else if (now > ExpectedRenewalAt)
-                {
-                    return DHCPLeaseStates.Renewing;
-                }
-                else if(IsActive == true)
-                {
-                    return DHCPLeaseStates.Active;
+                    return DHCPLeaseStates.Pending;
                 }
                 else
                 {
-                    return DHCPLeaseStates.Pending;
+                    if (now > ExpectedRebindingAt)
+                    {
+                        return DHCPLeaseStates.Rebinding;
+                    }
+                    else if (now > ExpectedRenewalAt)
+                    {
+                        return DHCPLeaseStates.Renewing;
+                    }
+                    else
+                    {
+                        return DHCPLeaseStates.Active;
+                    }
                 }
             }
         }

@@ -422,6 +422,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
              {
                  leaseEntry.End = e.Timestamp;
                  leaseEntry.EndReason = reason;
+                 leaseEntry.IsActive = false;
              });
 
         private async Task<Boolean> UpdateLastestDHCPv6LeaseEntry(DHCPv6ScopeRelatedEvent e, Action<DHCPv6LeaseEntryDataModel> updater)
