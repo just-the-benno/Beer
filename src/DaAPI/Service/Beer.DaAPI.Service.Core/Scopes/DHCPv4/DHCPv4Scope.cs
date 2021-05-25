@@ -89,7 +89,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             {
                 if (addressProperties.ReuseAddressIfPossible == true)
                 {
-                    currentLease.Renew(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, true);
+                    LeaseTimeValues timers = GetLeaseTimers(addressProperties);
+                    currentLease.Renew(timers.Lifespan, timers.RenewTime, timers.ReboundTime, true);
                     newLeaseNeeded = false;
 
                     leaseAddress = IPv4Address.FromAddress(currentLease.Address);
@@ -132,29 +133,44 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
             if (newLeaseNeeded == true)
             {
-                Leases.AddLease(
-                    Guid.NewGuid(),
-                    leaseAddress,
-                    addressProperties.LeaseTime.Value,
-                    addressProperties.RenewalTime.Value,
-                    addressProperties.PreferredLifetime.Value,
-                    clientIdentifier,
-                    Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
-                    null
-                    );
+                currentLease = AddLease(packet, addressProperties, leaseAddress, clientIdentifier);
             }
 
             DHCPv4ScopeProperties scopeProperties = GetScopeProperties();
 
             DHCPv4Packet response = DHCPv4Packet.AsDiscoverResponse(
                    packet,
-                   leaseAddress,
+                   currentLease,
                    addressProperties,
                    scopeProperties.Properties
                 );
 
             base.Apply(new DHCPv4DiscoverHandledEvent(this.Id, packet, response));
             return response;
+        }
+
+        private DHCPv4Lease AddLease(DHCPv4Packet packet, DHCPv4ScopeAddressProperties addressProperties, IPv4Address leaseAddress, DHCPv4ClientIdentifier clientIdentifier)
+        {
+            LeaseTimeValues timers = GetLeaseTimers(addressProperties);
+
+            var lease = Leases.AddLease(
+                 Guid.NewGuid(),
+                 leaseAddress,
+                 timers.Lifespan,
+                 timers.RenewTime,
+                 timers.ReboundTime,
+                 clientIdentifier,
+                 Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
+                 null
+                 );
+
+            return lease;
+        }
+
+        private static LeaseTimeValues GetLeaseTimers(DHCPv4ScopeAddressProperties addressProperties)
+        {
+            return addressProperties.UseDynamicRewnewTime == true ? addressProperties.DynamicRenewTime.GetLeaseTimers() :
+    new LeaseTimeValues(addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, addressProperties.LeaseTime.Value);
         }
 
         private IPv4Address GetLeaseAddress(DHCPv4ScopeAddressProperties addressProperties, IPv4Address excludeFromLease)
@@ -238,7 +254,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                         {
                             if (addressProperties.ReuseAddressIfPossible == true)
                             {
-                                lease.Renew(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, false);
+                                LeaseTimeValues timers = GetLeaseTimers(addressProperties);
+                                lease.Renew(timers.Lifespan, timers.RenewTime, timers.ReboundTime, false);
                                 leaseAddress = lease.Address;
                             }
                             else
@@ -268,7 +285,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                     {
                         if (addressProperties.ReuseAddressIfPossible == true)
                         {
-                            lease.Renew(addressProperties.LeaseTime.Value, addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, false);
+                            LeaseTimeValues timers = GetLeaseTimers(addressProperties);
+                            lease.Renew(timers.Lifespan, timers.RenewTime, timers.ReboundTime, false);
                             leaseAddress = lease.Address;
                         }
                         else
@@ -316,23 +334,14 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 {
                     if (newLeaseNeeded == true)
                     {
-                        var freshLease = Leases.AddLease(
-                            Guid.NewGuid(),
-                            leaseAddress,
-                            addressProperties.LeaseTime.Value,
-                            addressProperties.RenewalTime.Value,
-                            addressProperties.PreferredLifetime.Value,
-                            identifier,
-                            Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
-                            null
-                            );
-
+                        var freshLease = AddLease(packet, addressProperties, leaseAddress, identifier);
                         freshLease.RemovePendingState();
+                        lease = freshLease;
                     }
 
                     answer = DHCPv4Packet.AsRequestResponse(
                        packet,
-                       leaseAddress,
+                       lease,
                        addressProperties,
                        scopeProperties.Properties
                     );

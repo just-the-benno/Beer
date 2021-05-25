@@ -8,15 +8,15 @@
     @<CascadingValue Value="@this" IsFixed="true">
         <MudPickerContent>
             <div class="d-flex flex-row justify-space-around">
-                @foreach (var item in _fields)
+                @foreach (var item in GetFields())
                 {
                     <div class="d-flex flex-column">
-                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward"  @onmousedown="@GetStartIncreaseTimerCallback(item)" @onmouseup="StopCouter"  Style="align-self: center;" />
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward"  @onmousedown="@GetStartIncreaseTimerCallback(item)" @onmouseup="StopCouter"  Style="align-self: center;" Disabled="@(TimeIntermediate >= Maximum)" />
                         <div class="d-flex flex-row">
                             <MudText Typo="Typo.h2">@GetTimeSpanValue(item)</MudText>
                             <MudText Typo="Typo.subtitle2" Style=" align-self: flex-end; margin-bottom: 10px;">@GetTimeUnitDisplay(item)</MudText>
                         </div>
-                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward"  @onmousedown="@GetStartDecreaseTimerCallback(item)" @onmouseup="StopCouter" Style="align-self: center;" />
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward"  @onmousedown="@GetStartDecreaseTimerCallback(item)" @onmouseup="StopCouter" Style="align-self: center;" Disabled="@(TimeIntermediate <= Minimum)"  />
                     </div>
                 }
             </div>

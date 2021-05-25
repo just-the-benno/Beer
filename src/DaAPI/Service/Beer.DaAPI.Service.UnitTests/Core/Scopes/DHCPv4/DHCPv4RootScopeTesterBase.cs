@@ -46,7 +46,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
         }
         protected static DHCPv4Lease CheckLease(
             Int32 index, Int32 expectedAmount, IPv4Address expectedAdress,
-            Guid scopeId, DHCPv4RootScope rootScope, DateTime expectedCreationData,
+            Guid scopeId, DHCPv4RootScope rootScope, DateTime expectedCreationData, Boolean checkExpires = true,
             Byte[] uniqueIdentifier = null, Boolean shouldBePending = true)
         {
             DHCPv4Scope scope = rootScope.GetScopeById(scopeId);
@@ -56,8 +56,12 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4Lease lease = leases.ElementAt(index);
             Assert.NotNull(lease);
             Assert.Equal(expectedAdress, lease.Address);
-            Int32 expiresInMinutes = (Int32)(lease.End - DateTime.UtcNow).TotalMinutes;
-            Assert.True(expiresInMinutes >= 60 * 24 - 4 && expiresInMinutes <= 60 * 24);
+            if(checkExpires == true)
+            {
+                Int32 expiresInMinutes = (Int32)(lease.End - DateTime.UtcNow).TotalMinutes;
+                Assert.True(expiresInMinutes >= 60 * 24 - 4 && expiresInMinutes <= 60 * 24);
+            }
+
             Assert.True((expectedCreationData - lease.Start).TotalMinutes < 2);
             Assert.Equal(shouldBePending, lease.IsPending());
             if (uniqueIdentifier == null)
@@ -76,7 +80,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
          Int32 index, byte[] clientMacAdress,
          Guid scopeId, DHCPv4RootScope rootScope,
          IPv4Address expectedAdress, DHCPv4Lease lease,
-         Byte[] uniqueIdentifier = null
+         Byte[] uniqueIdentifier = null, Boolean checkRenewTimes = true
          )
         {
             IEnumerable<DomainEvent> changes = rootScope.GetChanges();
@@ -108,8 +112,11 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 
             var addressProperties = rootScope.GetScopeById(scopeId).AddressRelatedProperties;
 
-            Assert.Equal(addressProperties.RenewalTime.Value, createdEvent.RenewalTime);
-            Assert.Equal(addressProperties.PreferredLifetime.Value, createdEvent.PreferredLifetime);
+            if(checkRenewTimes == true)
+            {
+                Assert.Equal(addressProperties.RenewalTime.Value, createdEvent.RenewalTime);
+                Assert.Equal(addressProperties.PreferredLifetime.Value, createdEvent.PreferredLifetime);
+            }
         }
 
         protected static void DHCPv4ScopeAddressesAreExhaustedEvent(int index, DHCPv4RootScope rootScope, Guid scopeId)

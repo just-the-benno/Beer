@@ -73,6 +73,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                         e.Address,
                         e.StartedAt,
                         e.ValidUntil,
+                        e.RenewalTime,
+                        e.PreferredLifetime,
                         e.ClientIdentifier,
                         e.IdentityAssocationId,
                         e.UniqueIdentiifer,

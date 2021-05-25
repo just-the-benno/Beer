@@ -59,6 +59,14 @@ namespace Beer.DaAPI.Shared.Responses
                 public IEnumerable<DHCPv4ScopePropertyResponse> Properties { get; set; }
             }
 
+            public class DynamicRenewTimeReponse
+            {
+                public Int32 Hours { get; set; }
+                public Int32 Minutes { get; set; }
+                public Int32 DelayToRebound { get; set; }
+                public Int32 DelayToLifetime { get; set; }
+            }
+
             public class DHCPv4ScopeAddressPropertiesResponse
             {
                 public String Start { get; set; }
@@ -66,8 +74,8 @@ namespace Beer.DaAPI.Shared.Responses
                 public IEnumerable<String> ExcludedAddresses { get; set; }
                 public Boolean? ReuseAddressIfPossible { get; set; }
                 public AddressAllocationStrategies? AddressAllocationStrategy { get; set; }
-
-
+                public Boolean? UseDynamicRenew { get; set; }
+                public DynamicRenewTimeReponse DynamicRenew { get; set; }
                 public Boolean? SupportDirectUnicast { get; set; }
                 public Boolean? AcceptDecline { get; set; }
                 public Boolean? InformsAreAllowd { get; set; }

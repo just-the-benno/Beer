@@ -267,7 +267,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
 
         public static DHCPv6Packet AsAdvertise(
             DHCPv6Packet requestPacket,
-            IPv6Address leaseAddress,
+            DHCPv6Lease lease,
             DHCPv6PrefixDelegation prefixDelegation,
             DHCPv6ScopeAddressProperties addressProperties,
             DHCPv6ScopeProperties properties,
@@ -284,7 +284,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
 
             List<DHCPv6PacketOption> packetOptions = new List<DHCPv6PacketOption>
             {
-                DHCPv6PacketIdentityAssociationNonTemporaryAddressesOption.AsSuccess(innerReceivedPacket.GetNonTemporaryIdentityAssocationId().Value,T1,T2,leaseAddress,preferredLifetime,validLifetime)
+                DHCPv6PacketIdentityAssociationNonTemporaryAddressesOption.AsSuccess(innerReceivedPacket.GetNonTemporaryIdentityAssocationId().Value,T1,T2,lease.Address,preferredLifetime,validLifetime)
             };
 
             if (innerReceivedPacket.HasOption(DHCPv6PacketOptionTypes.IdentityAssociation_PrefixDelegation) == true)

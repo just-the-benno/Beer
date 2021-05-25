@@ -17,10 +17,10 @@ namespace Beer.DaAPI.BlazorApp.Components
     {
         public enum TimeSpanUnits
         {
-            Days,
-            Hours,
-            Minutes,
-            Seconds,
+            Days = 50,
+            Hours = 40,
+            Minutes = 30,
+            Seconds = 20,
         }
 
         public DaAPITimeSpanPicker() : base(new DefaultConverter<TimeSpan?>())
@@ -29,10 +29,16 @@ namespace Beer.DaAPI.BlazorApp.Components
             Converter.SetFunc = OnSet;
         }
 
-        private readonly List<TimeSpanUnits> _fields = new() { TimeSpanUnits.Days, TimeSpanUnits.Hours, TimeSpanUnits.Minutes, TimeSpanUnits.Seconds };
+        private readonly List<TimeSpanUnits> _allUnits = new List<TimeSpanUnits> { TimeSpanUnits.Days, TimeSpanUnits.Hours, TimeSpanUnits.Minutes, TimeSpanUnits.Seconds };
+        private readonly Int32[] _unitAsInts = new[] { (Int32)TimeSpanUnits.Days, (Int32)TimeSpanUnits.Hours, (Int32)TimeSpanUnits.Minutes, (Int32)TimeSpanUnits.Seconds };
+
+        private IList<TimeSpanUnits> GetFields() => _unitAsInts.Where(x => x <= (Int32)MaxUnit && x >= (Int32)MinUnit).Select(x => (TimeSpanUnits)x).ToList();
 
         [Parameter] public TimeSpan Maximum { get; set; } = TimeSpan.MaxValue;
         [Parameter] public TimeSpan Minimum { get; set; } = TimeSpan.Zero;
+
+        [Parameter] public TimeSpanUnits MinUnit { get; set; } = TimeSpanUnits.Seconds;
+        [Parameter] public TimeSpanUnits MaxUnit { get; set; } = TimeSpanUnits.Days;
 
         private string OnSet(TimeSpan? time) => time.HasValue == false ? String.Empty : time.Value.ToString();
 
@@ -58,7 +64,7 @@ namespace Beer.DaAPI.BlazorApp.Components
 
             Int32[] representation = new[] { TimeIntermediate.Value.Days, TimeIntermediate.Value.Hours, TimeIntermediate.Value.Minutes, TimeIntermediate.Value.Seconds };
             Int32[] maxValues = new[] { TimeSpan.MaxValue.Days, 24, 60, 60, };
-            Int32 startIndex = _fields.IndexOf(unit);
+            Int32 startIndex = _allUnits.IndexOf(unit);
 
             for (int i = startIndex; i >= 0; i--)
             {
@@ -140,7 +146,7 @@ namespace Beer.DaAPI.BlazorApp.Components
 
             Int32[] representation = new[] { TimeIntermediate.Value.Days, TimeIntermediate.Value.Hours, TimeIntermediate.Value.Minutes, TimeIntermediate.Value.Seconds };
             Int32[] maxValues = new[] { TimeSpan.MinValue.Days, 24, 60, 60, };
-            Int32 startIndex = _fields.IndexOf(unit);
+            Int32 startIndex = _allUnits.IndexOf(unit);
 
             for (int i = startIndex; i >= 0; i--)
             {
@@ -201,7 +207,7 @@ namespace Beer.DaAPI.BlazorApp.Components
         };
 
         internal TimeSpan? TimeIntermediate { get; private set; }
-      
+
         /// <summary>
         /// The currently selected time (two-way bindable). If null, then nothing was selected.
         /// </summary>
@@ -251,7 +257,7 @@ namespace Beer.DaAPI.BlazorApp.Components
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing == true)
+            if (disposing == true)
             {
                 _timer?.Dispose();
             }

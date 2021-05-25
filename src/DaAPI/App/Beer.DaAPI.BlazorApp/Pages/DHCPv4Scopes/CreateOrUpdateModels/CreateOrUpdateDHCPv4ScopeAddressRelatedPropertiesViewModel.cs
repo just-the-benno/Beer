@@ -21,6 +21,12 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         }
     }
 
+    public enum RenewTypes
+    {
+        Static = 0,
+        Dynamic = 1,
+    }
+
     public class CreateOrUpdateDHCPv4ScopeAddressRelatedPropertiesViewModel
     {
         public NullableOverrideProperty<Byte> SubnetMask { get; set; } = new();
@@ -32,6 +38,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         public NullableOverrideProperty<Boolean> AcceptDecline { get; set; } = new();
         public NullableOverrideProperty<Boolean> InformsAreAllowd { get; set; } = new();
         public NullableOverrideProperty<Boolean> ReuseAddressIfPossible { get; set; } = new();
+
+        public NullableOverrideProperty<RenewTypes> RenewType { get; set; } = new();
+        public NullableOverrideProperty<TimeSpan> DynamicRenewTime { get; set; } = new();
+        public NullableOverrideProperty<TimeSpan> DynamicRenewDeltaToRebound { get; set; } = new();
+        public NullableOverrideProperty<TimeSpan> DynamicRenewDeltaToLifetime { get; set; } = new();
 
         public NullableOverrideProperty<AddressAllocationStrategies> AddressAllocationStrategy { get; set; } = new();
 
@@ -56,6 +67,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             ReuseAddressIfPossible = new() { NullableValue = false };
 
             AddressAllocationStrategy = new() { NullableValue = AddressAllocationStrategies.Random };
+
+            RenewType = new() { NullableValue = RenewTypes.Static };
+            DynamicRenewTime = new() { NullableValue = TimeSpan.FromHours(3) };
+            DynamicRenewDeltaToRebound = new() { NullableValue = TimeSpan.FromHours(1) };
+            DynamicRenewDeltaToLifetime = new() { NullableValue = TimeSpan.FromHours(2) };
         }
 
         internal void RemoveParent()
@@ -85,46 +101,100 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 End = parent.AddressRelated.End,
                 ExcludedAddresses = parent.AddressRelated.ExcludedAddresses.Select(x => new ExcludedAddressItem(x, this)).ToList(),
                 SubnetMask = new() { NullableValue = parent.AddressRelated.Mask },
-                RenewalTime = new() { NullableValue = parent.AddressRelated.RenewalTime },
-                PreferredLifetime = new() { NullableValue = parent.AddressRelated.PreferredLifetime },
-                LeaseTime = new() { NullableValue = parent.AddressRelated.LeaseTime },
                 SupportDirectUnicast = new() { NullableValue = parent.AddressRelated.SupportDirectUnicast.Value },
                 AcceptDecline = new() { NullableValue = parent.AddressRelated.AcceptDecline.Value },
                 InformsAreAllowd = new() { NullableValue = parent.AddressRelated.InformsAreAllowd.Value },
                 ReuseAddressIfPossible = new() { NullableValue = parent.AddressRelated.ReuseAddressIfPossible.Value },
                 AddressAllocationStrategy = new() { NullableValue = parent.AddressRelated.AddressAllocationStrategy.Value },
+                RenewType = new() { NullableValue = parent.AddressRelated.UseDynamicRenew.Value == true ? RenewTypes.Dynamic : RenewTypes.Static },
             };
+
+            if (parent.AddressRelated.DynamicRenew != null)
+            {
+                ParentValues.DynamicRenewTime = new() { NullableValue = new TimeSpan(parent.AddressRelated.DynamicRenew.Hours, parent.AddressRelated.DynamicRenew.Minutes, 0) };
+                ParentValues.DynamicRenewDeltaToRebound = new() { NullableValue = TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToRebound) };
+                ParentValues.DynamicRenewDeltaToLifetime = new() { NullableValue = TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToLifetime) };
+
+                ParentValues.RenewalTime = new() { NullableValue = TimeSpan.FromHours(6) };
+                ParentValues.PreferredLifetime = new() { NullableValue = TimeSpan.FromHours(12) };
+                ParentValues.LeaseTime = new() { NullableValue = TimeSpan.FromHours(24) };
+
+            }
+            else
+            {
+                ParentValues.RenewalTime = new() { NullableValue = parent.AddressRelated.RenewalTime };
+                ParentValues.PreferredLifetime = new() { NullableValue = parent.AddressRelated.PreferredLifetime };
+                ParentValues.LeaseTime = new() { NullableValue = parent.AddressRelated.LeaseTime };
+
+                ParentValues.DynamicRenewTime = new() { NullableValue = new TimeSpan(3, 0, 0) };
+                ParentValues.DynamicRenewDeltaToRebound = new() { NullableValue = TimeSpan.FromMinutes(30) };
+                ParentValues.DynamicRenewDeltaToLifetime = new() { NullableValue = TimeSpan.FromMinutes(60) };
+            }
 
             Start = ParentValues.Start;
             End = ParentValues.End;
 
             SubnetMask = new() { DefaultValue = parent.AddressRelated.Mask.Value };
-            PreferredLifetime = new() { DefaultValue = parent.AddressRelated.PreferredLifetime.Value };
-            RenewalTime = new() { DefaultValue = parent.AddressRelated.RenewalTime.Value };
-            LeaseTime = new() { DefaultValue = parent.AddressRelated.LeaseTime.Value };
+            if (parent.AddressRelated.DynamicRenew != null)
+            {
+                PreferredLifetime = new() { DefaultValue = TimeSpan.FromHours(6) };
+                RenewalTime = new() { DefaultValue = TimeSpan.FromHours(12) };
+                LeaseTime = new() { DefaultValue = TimeSpan.FromHours(24) };
+            }
+            else
+            {
+                PreferredLifetime = new() { DefaultValue = parent.AddressRelated.PreferredLifetime.Value };
+                RenewalTime = new() { DefaultValue = parent.AddressRelated.RenewalTime.Value };
+                LeaseTime = new() { DefaultValue = parent.AddressRelated.LeaseTime.Value };
+            }
+
             SupportDirectUnicast = new() { DefaultValue = parent.AddressRelated.SupportDirectUnicast.Value };
             AcceptDecline = new() { DefaultValue = parent.AddressRelated.AcceptDecline.Value };
             InformsAreAllowd = new() { DefaultValue = parent.AddressRelated.InformsAreAllowd.Value };
             ReuseAddressIfPossible = new() { DefaultValue = parent.AddressRelated.ReuseAddressIfPossible.Value };
             AddressAllocationStrategy = new() { DefaultValue = parent.AddressRelated.AddressAllocationStrategy.Value };
-
+            RenewType = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew.Value == true ? RenewTypes.Dynamic : RenewTypes.Static };
+            DynamicRenewTime = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew == true ? new TimeSpan(parent.AddressRelated.DynamicRenew.Hours, parent.AddressRelated.DynamicRenew.Minutes, 0) : new TimeSpan(3, 0, 0) };
+            DynamicRenewDeltaToRebound = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew == true ? TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToRebound) : TimeSpan.FromHours(1) };
+            DynamicRenewDeltaToLifetime = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew == true ? TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToLifetime) : TimeSpan.FromHours(2) };
         }
 
-        internal DHCPv4ScopeAddressPropertyReqest GetRequest() => new()
+        internal DHCPv4ScopeAddressPropertyReqest GetRequest()
         {
-            Start = Start,
-            End = End,
-            ExcludedAddresses = ExcludedAddresses.Select(x => x.Value).ToList(),
-            MaskLength = SubnetMask.NullableValue,
-            PreferredLifetime = PreferredLifetime.NullableValue,
-            LeaseTime = LeaseTime.NullableValue,
-            RenewalTime = RenewalTime.NullableValue,
-            AcceptDecline = AcceptDecline.NullableValue,
-            InformsAreAllowd = InformsAreAllowd.NullableValue,
-            ReuseAddressIfPossible = ReuseAddressIfPossible.NullableValue,
-            SupportDirectUnicast = SupportDirectUnicast.NullableValue,
-            AddressAllocationStrategy = AddressAllocationStrategy.NullableValue,
-        };
+            DHCPv4ScopeAddressPropertyReqest request = new()
+            {
+                Start = Start,
+                End = End,
+                ExcludedAddresses = ExcludedAddresses.Select(x => x.Value).ToList(),
+                MaskLength = SubnetMask.NullableValue,
+                PreferredLifetime = PreferredLifetime.NullableValue,
+                LeaseTime = LeaseTime.NullableValue,
+                RenewalTime = RenewalTime.NullableValue,
+                AcceptDecline = AcceptDecline.NullableValue,
+                InformsAreAllowd = InformsAreAllowd.NullableValue,
+                ReuseAddressIfPossible = ReuseAddressIfPossible.NullableValue,
+                SupportDirectUnicast = SupportDirectUnicast.NullableValue,
+                AddressAllocationStrategy = AddressAllocationStrategy.NullableValue,
+                DynamicRenewTime = ((RenewType.HasValue && RenewType == RenewTypes.Dynamic) || DynamicRenewTime.HasValue || DynamicRenewDeltaToRebound.HasValue || DynamicRenewDeltaToLifetime.HasValue) ? new DHCPv4DynamicRenewTimeRequest
+                {
+                    Hours = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Hours,
+                    Minutes = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Minutes,
+                    MinutesToRebound = (Int32)(DynamicRenewDeltaToRebound?.NullableValue ?? ParentValues.DynamicRenewDeltaToRebound.Value).TotalMinutes,
+                    MinutesToEndOfLife = (Int32)(DynamicRenewDeltaToLifetime?.NullableValue ?? ParentValues.DynamicRenewDeltaToLifetime.Value).TotalMinutes,
+                } : null,
+            };
+
+            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic)
+            {
+                request.RenewalTime ??= ParentValues.RenewalTime.NullableValue;
+                request.PreferredLifetime ??= ParentValues.PreferredLifetime.NullableValue;
+                request.LeaseTime ??= ParentValues.LeaseTime.NullableValue;
+
+                request.DynamicRenewTime = null;
+            }
+
+            return request;
+        }
 
         internal void SetByResponse(DHCPv4ScopePropertiesResponse properties)
         {
@@ -143,6 +213,31 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             InformsAreAllowd.UpdateNullableValue(addressRelatedProperties.InformsAreAllowd, ParentValues != null);
             ReuseAddressIfPossible.UpdateNullableValue(addressRelatedProperties.ReuseAddressIfPossible, ParentValues != null);
             AddressAllocationStrategy.UpdateNullableValue(addressRelatedProperties.AddressAllocationStrategy, ParentValues != null, (v1, v2) => v1 == v2);
+
+            if (addressRelatedProperties.UseDynamicRenew.HasValue == true)
+            {
+                if (addressRelatedProperties.UseDynamicRenew.Value == true)
+                {
+                    RenewType.UpdateNullableValue(RenewTypes.Dynamic, ParentValues != null, (x, y) => x == y);
+                    DynamicRenewTime.UpdateNullableValue(new TimeSpan(addressRelatedProperties.DynamicRenew.Hours, addressRelatedProperties.DynamicRenew.Minutes, 0), ParentValues != null);
+                    DynamicRenewDeltaToRebound.UpdateNullableValue(TimeSpan.FromMinutes(addressRelatedProperties.DynamicRenew.DelayToRebound), ParentValues != null);
+                    DynamicRenewDeltaToLifetime.UpdateNullableValue(TimeSpan.FromMinutes(addressRelatedProperties.DynamicRenew.DelayToLifetime), ParentValues != null);
+                }
+                else
+                {
+                    RenewType.UpdateNullableValue(RenewTypes.Static, ParentValues != null, (x, y) => x == y);
+                    DynamicRenewTime.UpdateNullableValue(new TimeSpan(3, 0, 0), ParentValues != null);
+                    DynamicRenewDeltaToRebound.UpdateNullableValue(TimeSpan.FromHours(1), ParentValues != null);
+                    DynamicRenewDeltaToLifetime.UpdateNullableValue(TimeSpan.FromHours(2), ParentValues != null);
+                }
+            }
+            else
+            {
+                RenewType.UpdateNullableValue(default, ParentValues != null);
+                DynamicRenewTime.UpdateNullableValue(default, ParentValues != null);
+                DynamicRenewDeltaToRebound.UpdateNullableValue(default, ParentValues != null);
+                DynamicRenewDeltaToLifetime.UpdateNullableValue(default, ParentValues != null);
+            }
 
             foreach (var item in properties.AddressRelated.ExcludedAddresses)
             {

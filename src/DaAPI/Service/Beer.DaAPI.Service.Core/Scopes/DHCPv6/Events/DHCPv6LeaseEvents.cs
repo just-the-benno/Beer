@@ -182,22 +182,22 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             public DateTime End { get; set; }
             public Boolean Reset { get; set; }
             public Boolean ResetPrefix { get; set; }
-            public DateTime RenewalTime { get; set; }
-            public DateTime PreferredLifetime { get; set; }
+            public TimeSpan ReboundSpan { get; set; }
+            public TimeSpan RenewSpan { get; set; }
 
             public DHCPv6LeaseRenewedEvent()
             {
 
             }
 
-            public DHCPv6LeaseRenewedEvent(Guid leaseId, DateTime end,DateTime renewalTime, DateTime preferredLifetime, Boolean reset, Boolean resetPrefix)
+            public DHCPv6LeaseRenewedEvent(Guid leaseId, DateTime end, TimeSpan renewSpan, TimeSpan reboundSpan, Boolean reset, Boolean resetPrefix)
             {
                 EntityId = leaseId;
                 End = end;
                 Reset = reset;
                 ResetPrefix = resetPrefix;
-                RenewalTime = renewalTime;
-                PreferredLifetime = preferredLifetime;
+                RenewSpan = renewSpan;
+                ReboundSpan = reboundSpan;
             }
         }
 

@@ -135,23 +135,23 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
         public class DHCPv4LeaseRenewedEvent : DHCPv4ScopeRelatedEvent
         {
             public DateTime End { get; set; }
-            public DateTime RenewalTime { get; set; }
-            public DateTime PreferredLifetime { get; set; }
-
             public Boolean Reset { get; set; }
-            
+
+            public TimeSpan ReboundSpan { get; set; }
+            public TimeSpan RenewSpan { get; set; }
+
             public DHCPv4LeaseRenewedEvent()
             {
 
             }
 
-            public DHCPv4LeaseRenewedEvent(Guid leaseId, DateTime end, DateTime renewalTime, DateTime preferredLifetime,  Boolean reset)
+            public DHCPv4LeaseRenewedEvent(Guid leaseId, DateTime end, TimeSpan renewSpan, TimeSpan reboundSpan, Boolean reset)
             {
                 EntityId = leaseId;
                 End = end;
                 Reset = reset;
-                RenewalTime = renewalTime;
-                PreferredLifetime = preferredLifetime;
+                RenewSpan = renewSpan;
+                ReboundSpan = reboundSpan;
             }
         }
 

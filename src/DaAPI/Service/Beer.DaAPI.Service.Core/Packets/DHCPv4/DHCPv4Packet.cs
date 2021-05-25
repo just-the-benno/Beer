@@ -308,10 +308,11 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
         private void AddOptions(
             IEnumerable<DHCPv4ScopeProperty> scopeProperties)
         {
-            AddOptions(null, scopeProperties);
+            AddOptions(null, null, scopeProperties);
         }
 
         private void AddOptions(
+            DHCPv4Lease lease,
         DHCPv4ScopeAddressProperties addressProperties,
         IEnumerable<DHCPv4ScopeProperty> scopeProperties)
         {
@@ -323,11 +324,11 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             }
 
             Dictionary<DHCPv4OptionTypes, TimeSpan?> timeRelatedOptions = new Dictionary<DHCPv4OptionTypes, TimeSpan?>();
-            if (addressProperties != null)
+            if (lease != null)
             {
-                timeRelatedOptions.Add(DHCPv4OptionTypes.IPAddressLeaseTime, addressProperties.LeaseTime);
-                timeRelatedOptions.Add(DHCPv4OptionTypes.RenewalTimeValue, addressProperties.RenewalTime);
-                timeRelatedOptions.Add(DHCPv4OptionTypes.RebindingTimeValue, addressProperties.PreferredLifetime);
+                timeRelatedOptions.Add(DHCPv4OptionTypes.IPAddressLeaseTime, lease.End - DateTime.UtcNow);
+                timeRelatedOptions.Add(DHCPv4OptionTypes.RenewalTimeValue, lease.RenewSpan);
+                timeRelatedOptions.Add(DHCPv4OptionTypes.RebindingTimeValue, lease.RebindingSpan);
             }
 
             Int32 timeOptionIndex = 0;
@@ -446,19 +447,19 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
         public static DHCPv4Packet AsDiscoverResponse(
             DHCPv4Packet request,
-            IPv4Address leaseAddress,
+            DHCPv4Lease lease,
             DHCPv4ScopeAddressProperties addressProperties,
             IEnumerable<DHCPv4ScopeProperty> scopeProperties)
         {
             DHCPv4Packet packet = new DHCPv4Packet(DHCPv4MessagesTypes.Offer, request)
             {
-                YourIPAdress = leaseAddress,
+                YourIPAdress = lease.Address,
                 _isValid = true,
             };
 
             packet.SetIPHeader(request);
             packet.AddOption(new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, packet.Header.Source));
-            packet.AddOptions(addressProperties, scopeProperties);
+            packet.AddOptions(lease, addressProperties, scopeProperties);
 
             packet.AddOptions82AtTheEnd(request);
 
@@ -467,19 +468,19 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
 
         public static DHCPv4Packet AsRequestResponse(
             DHCPv4Packet request,
-            IPv4Address leaseAddress,
+            DHCPv4Lease lease,
             DHCPv4ScopeAddressProperties addressProperties,
             IEnumerable<DHCPv4ScopeProperty> scopeProperties)
         {
             DHCPv4Packet packet = new DHCPv4Packet(DHCPv4MessagesTypes.Acknowledge, request)
             {
-                YourIPAdress = leaseAddress,
+                YourIPAdress = lease.Address,
                 _isValid = true,
             };
 
             packet.SetIPHeader(request);
             packet.AddOption(new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, packet.Header.Source));
-            packet.AddOptions(addressProperties, scopeProperties);
+            packet.AddOptions(lease, addressProperties, scopeProperties);
             packet.AddOptions82AtTheEnd(request);
 
             return packet;

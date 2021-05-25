@@ -154,8 +154,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             var addressProperties = rootScope.GetScopeById(scopeId).AddressRelatedProperties;
 
-            Assert.True(Math.Abs(((DateTime.UtcNow + (addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value)) - createdEvent.RenewalTime).TotalSeconds) < 20);
-            Assert.True(Math.Abs(((DateTime.UtcNow + (addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value)) - createdEvent.PreferredLifetime).TotalSeconds) < 20);
+            Assert.True(Math.Abs(((addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value) - createdEvent.RenewSpan).TotalSeconds) < 20);
+            Assert.True(Math.Abs(((addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value) - createdEvent.ReboundSpan).TotalSeconds) < 20);
         }
 
         protected static DHCPv6Lease CheckLease(
