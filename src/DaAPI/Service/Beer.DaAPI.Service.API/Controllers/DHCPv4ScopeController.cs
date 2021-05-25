@@ -203,6 +203,13 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                     PreferredLifetime = addressProperties.PreferredLifetime,
                     LeaseTime = addressProperties.LeaseTime,
                     RenewalTime = addressProperties.RenewalTime,
+                    UseDynamicRenew = addressProperties.UseDynamicRewnewTime,
+                    DynamicRenew = addressProperties.UseDynamicRewnewTime == true ? new DynamicRenewTimeReponse { 
+                        Hours = addressProperties.DynamicRenewTime.Hour,
+                        Minutes = addressProperties.DynamicRenewTime.Minutes,
+                        DelayToRebound = (Int32)addressProperties.DynamicRenewTime.MinutesToRebound,
+                        DelayToLifetime = (Int32)addressProperties.DynamicRenewTime.MinutesToEndOfLife,
+                    } : null,
                     Mask = addressProperties.Mask == null ? new Byte?() : (Byte)addressProperties.Mask.GetSlashNotation(),
                 }
             };

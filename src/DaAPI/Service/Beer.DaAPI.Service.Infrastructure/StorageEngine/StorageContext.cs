@@ -207,8 +207,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             leaseEntry.IsActive = false;
                         }
 
-                        leaseEntry.EndOfRenewalTime = e.RenewalTime;
-                        leaseEntry.EndOfPreferredLifetime = e.PreferredLifetime;
+                        leaseEntry.EndOfRenewalTime =  e.Timestamp + e.RenewSpan;
+                        leaseEntry.EndOfPreferredLifetime = e.Timestamp +  e.ReboundSpan;
                     });
                     break;
 
@@ -312,8 +312,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             leaseEntry.IsActive = false;
                         }
 
-                        leaseEntry.EndOfRenewalTime = e.RenewalTime;
-                        leaseEntry.EndOfPreferredLifetime = e.PreferredLifetime;
+                        leaseEntry.EndOfRenewalTime = e.Timestamp + e.RenewSpan;
+                        leaseEntry.EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan;
                     });
                     break;
 

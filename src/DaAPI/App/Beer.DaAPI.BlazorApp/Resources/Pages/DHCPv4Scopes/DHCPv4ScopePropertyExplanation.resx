@@ -117,6 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DynamicRenewDeltaToLifetimeContent" xml:space="preserve">
+    <value>If the renew time is set for instance to 3 am and this value is set to 2 hours, would reset in lease that will be invalid at 5 am</value>
+  </data>
+  <data name="DynamicRenewDeltaToLifetimeName" xml:space="preserve">
+    <value>Leasetime after</value>
+  </data>
+  <data name="DynamicRenewDeltaToReboundName" xml:space="preserve">
+    <value>Rebound after</value>
+  </data>
+  <data name="DynamicRenewTimeContent" xml:space="preserve">
+    <value>If the renew time is set for instance to 3 am and this value is set to 2 hours, would reset in a rebound time of 5 am</value>
+  </data>
+  <data name="DynamicRenewTimeName" xml:space="preserve">
+    <value>Time of Renew</value>
+  </data>
+  <data name="RenewTypeContent" xml:space="preserve">
+    <value>The renew type can be set static or dynamic. Static means that the time period in the ACKNOWLEDGE will be always the same. With dynamic, the value will be a difference between the time, the message has been received and the day. For instance, if the renew time is set to 3 am and a message is receiveed at 2 am, the renew time is set to two hours. If the packet is received 1 pm the renew time would be 12 hours</value>
+  </data>
+  <data name="RenewTypeName" xml:space="preserve">
+    <value>Renew Type</value>
+  </data>
   <data name="ScopePropertyAcceptDeclinesContent" xml:space="preserve">
     <value>If this option is enabled, DaAPI accepts DHCPv6 DECLINE messages and banning the specified address from being assigned to other clients for a limited time interval. DEClINE message should be sent by the client, to indicate that the suggested address is already in use (DAD).  However, DECLINE message can also be used by malicious clients to provoke address exhaustion.</value>
   </data>

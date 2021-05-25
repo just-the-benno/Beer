@@ -11,7 +11,11 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv4Scopes
 {
     public abstract class ManipulateDHCPv4ScopeCommandHandler
     {
+        protected static DynamicRenewTime GetDynamicRenewTime(DHCPv4DynamicRenewTimeRequest request) =>
+            DynamicRenewTime.WithSpecificRange(request.Hours, request.Minutes, request.MinutesToRebound, request.MinutesToEndOfLife);
+
         protected static DHCPv4ScopeAddressProperties GetScopeAddressProperties(IScopeChangeCommand request) =>
+            request.AddressProperties.DynamicRenewTime == null ?
            new DHCPv4ScopeAddressProperties
                (
                    IPv4Address.FromString(request.AddressProperties.Start),
@@ -20,6 +24,18 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv4Scopes
                    leaseTime: request.AddressProperties.LeaseTime,
                    renewalTime: request.AddressProperties.RenewalTime,
                    preferredLifetime: request.AddressProperties.PreferredLifetime,
+                   reuseAddressIfPossible: request.AddressProperties.ReuseAddressIfPossible,
+                   addressAllocationStrategy: (Core.Scopes.ScopeAddressProperties<DHCPv4ScopeAddressProperties, IPv4Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
+                   supportDirectUnicast: request.AddressProperties.SupportDirectUnicast,
+                   acceptDecline: request.AddressProperties.AcceptDecline,
+                   informsAreAllowd: request.AddressProperties.InformsAreAllowd,
+                   maskLength: request.AddressProperties.MaskLength
+               ) : new DHCPv4ScopeAddressProperties
+               (
+                   IPv4Address.FromString(request.AddressProperties.Start),
+                   IPv4Address.FromString(request.AddressProperties.End),
+                   request.AddressProperties.ExcludedAddresses.Select(x => IPv4Address.FromString(x)),
+                   GetDynamicRenewTime(request.AddressProperties.DynamicRenewTime),
                    reuseAddressIfPossible: request.AddressProperties.ReuseAddressIfPossible,
                    addressAllocationStrategy: (Core.Scopes.ScopeAddressProperties<DHCPv4ScopeAddressProperties, IPv4Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
                    supportDirectUnicast: request.AddressProperties.SupportDirectUnicast,

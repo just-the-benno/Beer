@@ -27,9 +27,11 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
     public class UpdateDHCPv4ScopeCommandHandlerTester
     {
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task Handle(Boolean storeResult)
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task Handle(Boolean storeResult, Boolean useDynamicTime)
         {
             Random random = new Random();
 
@@ -44,13 +46,16 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 
             String resolverName = random.GetAlphanumericString();
 
+            Mock<IScopeResolver<DHCPv4Packet, IPv4Address>> resolverMock = new Mock<IScopeResolver<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict);
+            resolverMock.Setup(x => x.GetValues()).Returns(new Dictionary<String, String>());
+
             Mock<IScopeResolverManager<DHCPv4Packet, IPv4Address>> scopeResolverMock = new Mock<IScopeResolverManager<DHCPv4Packet, IPv4Address>>();
             scopeResolverMock.Setup(x => x.IsResolverInformationValid(It.Is<CreateScopeResolverInformation>(y =>
             y.Typename == resolverName
             ))).Returns(true).Verifiable();
             scopeResolverMock.Setup(x => x.InitializeResolver(It.Is<CreateScopeResolverInformation>(y =>
             y.Typename == resolverName
-            ))).Returns(Mock.Of<IScopeResolver<DHCPv4Packet, IPv4Address>>()).Verifiable();
+            ))).Returns(resolverMock.Object).Verifiable();
 
             Mock<ILoggerFactory> factoryMock = new Mock<ILoggerFactory>(MockBehavior.Strict);
             factoryMock.Setup(x => x.CreateLogger(It.IsAny<String>())).Returns(Mock.Of<ILogger<DHCPv4RootScope>>());
@@ -88,21 +93,40 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
             storageMock.Setup(x => x.Save(rootScope)).ReturnsAsync(storeResult).Verifiable();
 
             var command = new UpdateDHCPv4ScopeCommand(scopeId, name, description, null,
-                new DHCPv4ScopeAddressPropertyReqest
-                {
-                    Start = start.ToString(),
-                    End = end.ToString(),
-                    ExcludedAddresses = Array.Empty<String>(),
-                    AcceptDecline = random.NextBoolean(),
-                    AddressAllocationStrategy = DHCPv4ScopeAddressPropertyReqest.AddressAllocationStrategies.Next,
-                    InformsAreAllowd = random.NextBoolean(),
-                    ReuseAddressIfPossible = random.NextBoolean(),
-                    SupportDirectUnicast = random.NextBoolean(),
-                    PreferredLifetime = TimeSpan.FromDays(0.5),
-                    RenewalTime = TimeSpan.FromDays(0.25),
-                    LeaseTime = TimeSpan.FromDays(1),
-                    MaskLength = (Byte)random.Next(10, 29),
-                },
+               useDynamicTime == false ? new DHCPv4ScopeAddressPropertyReqest
+               {
+                   Start = start.ToString(),
+                   End = end.ToString(),
+                   ExcludedAddresses = Array.Empty<String>(),
+                   AcceptDecline = random.NextBoolean(),
+                   AddressAllocationStrategy = DHCPv4ScopeAddressPropertyReqest.AddressAllocationStrategies.Next,
+                   InformsAreAllowd = random.NextBoolean(),
+                   ReuseAddressIfPossible = random.NextBoolean(),
+                   SupportDirectUnicast = random.NextBoolean(),
+                   PreferredLifetime = TimeSpan.FromDays(0.5),
+                   RenewalTime = TimeSpan.FromDays(0.25),
+                   LeaseTime = TimeSpan.FromDays(1),
+                   MaskLength = (Byte)random.Next(10, 29),
+               } : new DHCPv4ScopeAddressPropertyReqest
+               {
+                   Start = start.ToString(),
+                   End = end.ToString(),
+                   ExcludedAddresses = Array.Empty<String>(),
+                   AcceptDecline = random.NextBoolean(),
+                   AddressAllocationStrategy = DHCPv4ScopeAddressPropertyReqest.AddressAllocationStrategies.Next,
+                   InformsAreAllowd = random.NextBoolean(),
+                   ReuseAddressIfPossible = random.NextBoolean(),
+                   SupportDirectUnicast = random.NextBoolean(),
+                   DynamicRenewTime = new DHCPv4DynamicRenewTimeRequest
+                   {
+                       Hours = 5,
+                       Minutes = 10,
+                       MinutesToEndOfLife = 45,
+                       MinutesToRebound = 35,
+                   },
+                   MaskLength = (Byte)random.Next(10, 29),
+               }
+                ,
                 new CreateScopeResolverRequest
                 {
                     PropertiesAndValues = new Dictionary<String, String>(),
@@ -173,6 +197,17 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 
             Assert.True(scope.Properties.IsMarkedAsRemovedFromInheritance(64));
             Assert.False(scope.Properties.IsMarkedAsRemovedFromInheritance(24));
+
+            if (useDynamicTime == true)
+            {
+                Assert.True(scope.AddressRelatedProperties.UseDynamicRewnewTime);
+                Assert.Equal(5, scope.AddressRelatedProperties.DynamicRenewTime.Hour);
+            }
+            else
+            {
+                Assert.False(scope.AddressRelatedProperties.UseDynamicRewnewTime);
+
+            }
 
             scopeResolverMock.Verify();
             storageMock.Verify();

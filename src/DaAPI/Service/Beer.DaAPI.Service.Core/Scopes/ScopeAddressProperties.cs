@@ -41,7 +41,7 @@ namespace Beer.DaAPI.Core.Scopes
         public Boolean? InformsAreAllowd { get; private set; }
 
         public DynamicRenewTime? DynamicRenewTime { get; private set; }
-        public Boolean? UseDynamicRewnewTime { get; private set; }
+        public Boolean? UseDynamicRewnewTime { get; protected set; }
 
         public IEnumerable<TAddress> ExcludedAddresses
         {
@@ -123,7 +123,7 @@ namespace Beer.DaAPI.Core.Scopes
                 throw new ArgumentException("all possible addresses are excluded");
             }
 
-            if(start.IsGreaterThan(end) == true)
+            if (start.IsGreaterThan(end) == true)
             {
                 throw new ArgumentException($"start {start} has to be smaller than end {end}");
             }
@@ -138,7 +138,22 @@ namespace Beer.DaAPI.Core.Scopes
             InformsAreAllowd = informsAreAllowd;
         }
 
+        protected ScopeAddressProperties(
+            TAddress start,
+            TAddress end,
+            IEnumerable<TAddress> excluded,
+            Boolean? reuseAddressIfPossible = null,
+            AddressAllocationStrategies? addressAllocationStrategy = null,
+            Boolean? supportDirectUnicast = null,
+            Boolean? acceptDecline = null,
+            Boolean? informsAreAllowd = null,
+            DynamicRenewTime renewTime = null
+            ) : this(start, end, excluded, reuseAddressIfPossible, addressAllocationStrategy, supportDirectUnicast, acceptDecline, informsAreAllowd)
+        {
+            UseDynamicRewnewTime = true;
+            DynamicRenewTime = renewTime;
 
+        }
         #endregion
 
         #region Methods
@@ -190,9 +205,10 @@ namespace Beer.DaAPI.Core.Scopes
                 this.InformsAreAllowd = range.InformsAreAllowd.Value;
             }
 
-            if(range.UseDynamicRewnewTime.HasValue == true)
+            if (range.UseDynamicRewnewTime.HasValue == true)
             {
-                if(range.UseDynamicRewnewTime == true)
+                this.UseDynamicRewnewTime = range.UseDynamicRewnewTime.Value;
+                if (range.UseDynamicRewnewTime == true)
                 {
                     this.DynamicRenewTime = range.DynamicRenewTime;
                 }

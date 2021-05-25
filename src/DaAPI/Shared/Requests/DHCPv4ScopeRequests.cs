@@ -46,6 +46,14 @@ namespace Beer.DaAPI.Shared.Requests
                 public IDictionary<String, String> PropertiesAndValues { get; set; }
             }
 
+            public class DHCPv4DynamicRenewTimeRequest
+            {
+                public Int32 Hours { get; set; }
+                public Int32 Minutes { get; set; }
+                public Int32 MinutesToRebound { get; set; }
+                public Int32 MinutesToEndOfLife { get; set; }
+            }
+
             public class DHCPv4ScopeAddressPropertyReqest
             {
                 public enum AddressAllocationStrategies
@@ -80,6 +88,8 @@ namespace Beer.DaAPI.Shared.Requests
                 public Boolean? InformsAreAllowd { get; set; }
                 public AddressAllocationStrategies? AddressAllocationStrategy { get; set; }
 
+
+                public DHCPv4DynamicRenewTimeRequest DynamicRenewTime { get; set; }
             }
 
             public abstract class DHCPv4ScopePropertyRequest

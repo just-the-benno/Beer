@@ -258,8 +258,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                      EntityId = leaseId,
                      ScopeId = scopeId,
                      End = expectedEndTime,
-                     PreferredLifetime = expectedEndTime.AddHours(-2),
-                     RenewalTime = expectedEndTime.AddHours(-4),
+                     RenewSpan = TimeSpan.FromHours(-2),
+                     ReboundSpan = TimeSpan.FromHours(-4),
                     } });
 
                     Assert.True(actual);
@@ -435,8 +435,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                      EntityId = leaseId,
                      ScopeId = scopeId,
                      End = expectedEndTime,
-                     PreferredLifetime = expectedEndTime.AddHours(-2),
-                     RenewalTime = expectedEndTime.AddHours(-3),
+                     RenewSpan = TimeSpan.FromHours(-2),
+                     ReboundSpan = TimeSpan.FromHours(-4),
                     } });
 
                     Assert.True(actual);

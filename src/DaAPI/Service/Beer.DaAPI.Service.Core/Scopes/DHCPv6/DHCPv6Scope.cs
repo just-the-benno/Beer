@@ -247,7 +247,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                     leasedPrefix = addressProperties.GetValidPrefix(Leases.GetUsedPrefixes(), prefixIdentityAsscocationId.Value, excludeFromPrefix);
                 }
 
-                Leases.AddLease(
+                currentLease = Leases.AddLease(
                        Guid.NewGuid(),
                        leaseAddress,
                        addressProperties.ValidLeaseTime.Value,
@@ -269,7 +269,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             {
                 response = DHCPv6Packet.AsAdvertise(
                 packet,
-                leaseAddress,
+                currentLease,
                 prefixIdentityAsscocationId.HasValue == false ? DHCPv6PrefixDelegation.None : leasedPrefix,
                 addressProperties,
                  GetScopeProperties(),

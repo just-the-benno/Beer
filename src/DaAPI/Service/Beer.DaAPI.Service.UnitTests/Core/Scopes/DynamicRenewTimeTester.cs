@@ -77,5 +77,78 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes
             Assert.ThrowsAny<ArgumentException>(() => DynamicRenewTime.WithSpecificRange(13, 10, reboundValue, lifetime));
         }
 
+        [Fact]
+        public void DynamicRenewTime_GetLeaseTimers()
+        {
+            DateTime now = DateTime.Now;
+
+            DateTime expectedLeaseTime = now.AddHours(2).AddMinutes(30);
+            // add ten seconds as for the "runtime" of the test
+            TimeSpan smallestExpectTimeRange = (expectedLeaseTime - now).Add(TimeSpan.FromMinutes(-10)).Add(TimeSpan.FromSeconds(-30));
+            TimeSpan greatestExpectTimeRange = (expectedLeaseTime - now).Add(TimeSpan.FromMinutes(10)).Add(TimeSpan.FromSeconds(30));
+
+            var time = DynamicRenewTime.WithSpecificRange(expectedLeaseTime.Hour, expectedLeaseTime.Minute, 30, 60);
+
+            for (int i = 0; i < 100; i++)
+            {
+                var spans = time.GetLeaseTimers();
+
+                Assert.True(spans.RenewTime >= smallestExpectTimeRange);
+                Assert.True(spans.RenewTime <= greatestExpectTimeRange);
+
+                Assert.Equal(spans.RenewTime + TimeSpan.FromMinutes(30), spans.ReboundTime);
+                Assert.Equal(spans.RenewTime + TimeSpan.FromMinutes(60), spans.Lifespan);
+            }
+        }
+
+        [Fact]
+        public void DynamicRenewTime_GetLeaseTimers_WithDayOverflow()
+        {
+            DateTime now = DateTime.Now;
+
+            DateTime expectedLeaseTime = now.AddHours(-2).AddMinutes(-30);
+            TimeSpan middleExpectedLeasetime = (TimeSpan.FromDays(1).Add(TimeSpan.FromHours(-2)).Add(TimeSpan.FromMinutes(-30)));
+            // add ten seconds as for the "runtime" of the test
+            TimeSpan smallestExpectTimeRange = middleExpectedLeasetime.Add(TimeSpan.FromMinutes(-10)).Add(TimeSpan.FromSeconds(-60));
+            TimeSpan greatestExpectTimeRange = middleExpectedLeasetime.Add(TimeSpan.FromMinutes(10)).Add(TimeSpan.FromSeconds(60));
+
+            var time = DynamicRenewTime.WithSpecificRange(expectedLeaseTime.Hour, expectedLeaseTime.Minute, 30, 60);
+
+            for (int i = 0; i < 100; i++)
+            {
+                var spans = time.GetLeaseTimers();
+
+                Assert.True(spans.RenewTime >= smallestExpectTimeRange);
+                Assert.True(spans.RenewTime <= greatestExpectTimeRange);
+
+                Assert.Equal(spans.RenewTime + TimeSpan.FromMinutes(30), spans.ReboundTime);
+                Assert.Equal(spans.RenewTime + TimeSpan.FromMinutes(60), spans.Lifespan);
+            }
+        }
+
+        [Fact]
+        public void DynamicRenewTime_GetLeaseTimers_WithShortTime()
+        {
+            DateTime now = DateTime.Now;
+
+            DateTime expectedLeaseTime = now.AddMinutes(-5);
+            TimeSpan middleExpectedLeasetime = (TimeSpan.FromDays(1).Add(TimeSpan.FromMinutes(-5)));
+            // add ten seconds as for the "runtime" of the test
+            TimeSpan smallestExpectTimeRange = middleExpectedLeasetime.Add(TimeSpan.FromMinutes(-10)).Add(TimeSpan.FromSeconds(-60));
+            TimeSpan greatestExpectTimeRange = middleExpectedLeasetime.Add(TimeSpan.FromMinutes(10)).Add(TimeSpan.FromSeconds(60));
+
+            var time = DynamicRenewTime.WithSpecificRange(expectedLeaseTime.Hour, expectedLeaseTime.Minute, 30, 60);
+
+            for (int i = 0; i < 100; i++)
+            {
+                var spans = time.GetLeaseTimers();
+
+                Assert.True(spans.RenewTime >= smallestExpectTimeRange);
+                Assert.True(spans.RenewTime <= greatestExpectTimeRange);
+
+                Assert.Equal(spans.RenewTime + TimeSpan.FromMinutes(30), spans.ReboundTime);
+                Assert.Equal(spans.RenewTime + TimeSpan.FromMinutes(60), spans.Lifespan);
+            }
+        }
     }
 }

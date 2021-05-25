@@ -23,11 +23,13 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             IPv4Address address,
             DateTime start,
             DateTime end,
+            TimeSpan renewSpan,
+            TimeSpan rebindingSpan,
             DHCPv4ClientIdentifier identifier,
             Byte[] uniqueIdentifier,
             Guid? ancestorId,
             Action<DomainEvent> addtionalApplier
-             ) : base(id, address, start, end, uniqueIdentifier, ancestorId, addtionalApplier)
+             ) : base(id, address, start, end, renewSpan, rebindingSpan, uniqueIdentifier, ancestorId, addtionalApplier)
         {
             Identifier = identifier;
         }
@@ -46,7 +48,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             DateTime now = DateTime.UtcNow;
 
             base.Apply(new DHCPv4LeaseRenewedEvent(this.Id,
-                now + lifetime, now + renewalTime, now + preferredLifetime,
+                now + lifetime, renewalTime, preferredLifetime,
                 reset));
         }
 
@@ -55,7 +57,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             CanReactived(lifetime);
             DateTime now = DateTime.UtcNow;
 
-            base.Apply(new DHCPv4LeaseRenewedEvent(this.Id, now + lifetime, now + renewalTime, now + preferredLifetime, false));
+            base.Apply(new DHCPv4LeaseRenewedEvent(this.Id, now + lifetime, renewalTime, preferredLifetime, false));
         }
 
         internal override void Revoke() => base.Apply(new DHCPv4LeaseRevokedEvent(this.Id));
@@ -95,7 +97,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             switch (domainEvent)
             {
                 case DHCPv4LeaseRenewedEvent e:
-                    HandleRenew(e.End, e.Reset);
+                    HandleRenew(e.End, e.RenewSpan, e.ReboundSpan, e.Reset);
                     break;
                 case DHCPv4LeaseRevokedEvent _:
                     HandleRevoked();

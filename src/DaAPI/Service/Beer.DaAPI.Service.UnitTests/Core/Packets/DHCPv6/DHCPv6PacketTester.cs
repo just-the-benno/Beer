@@ -418,6 +418,8 @@ namespace Beer.DaAPI.UnitTests.Core.Packets.DHCPv6
             UInt32 transactionId = 424242;
             UInt32 iaid = 666789;
 
+            Guid scopeid = random.NextGuid();
+
             List<DHCPv6PacketOption> options = new List<DHCPv6PacketOption>
             {
                 new DHCPv6PacketIdentifierOption(DHCPv6PacketOptionTypes.ClientIdentifier,clientDuid),
@@ -433,7 +435,35 @@ namespace Beer.DaAPI.UnitTests.Core.Packets.DHCPv6
 
             DHCPv6ScopeProperties scopeProperties = GetScopeProperties(random);
 
-            DHCPv6Packet response = DHCPv6Packet.AsAdvertise(received, leaseAddress, delegation, properties, scopeProperties, serverDuid);
+            Mock<ILoggerFactory> factoryMock = new Mock<ILoggerFactory>(MockBehavior.Strict);
+            factoryMock.Setup(x => x.CreateLogger(It.IsAny<String>())).Returns(Mock.Of<ILogger<DHCPv6RootScope>>());
+
+            DHCPv6RootScope rootScope = new DHCPv6RootScope(random.NextGuid(), Mock.Of<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(), factoryMock.Object);
+            rootScope.Load(new List<DomainEvent>{ new DHCPv6ScopeEvents.DHCPv6ScopeAddedEvent(
+                new DHCPv6ScopeCreateInstruction
+                {
+                    Name = "Testscope",
+                    Id = scopeid,
+                }),
+                new DHCPv6LeaseCreatedEvent
+                {
+                    EntityId = random.NextGuid(),
+                    Address = leaseAddress,
+                    IdentityAssocationId = iaid,
+                    ClientIdentifier = clientDuid,
+                    ScopeId = scopeid,
+                    StartedAt = DateTime.UtcNow.AddDays(-0.25),
+                    ValidUntil = DateTime.UtcNow.AddDays(1.75),
+                    HasPrefixDelegation = true,
+                    IdentityAssocationIdForPrefix = delegation.IdentityAssociation,
+                    PrefixLength = delegation.Mask.Identifier,
+                    DelegatedNetworkAddress = delegation.NetworkAddress,
+                 },
+            });
+
+            var lease = rootScope.GetRootScopes().First().Leases.GetAllLeases().First();
+
+            DHCPv6Packet response = DHCPv6Packet.AsAdvertise(received, lease, delegation, properties, scopeProperties, serverDuid);
 
             Assert.NotNull(response);
             Assert.Equal(response.Header.Source, headerInformation.Destionation);

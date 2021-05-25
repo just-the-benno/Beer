@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Core.Scopes
 {
+    public record LeaseTimeValues(TimeSpan RenewTime, TimeSpan ReboundTime, TimeSpan Lifespan);
+
     public class DynamicRenewTime : Value<DynamicRenewTime>
     {
+        private static Random _random = new();
+        private const Int32 _maxDeltaForVariance = 10 * 60; //10 minutes;
+        private const Int32 _minDeltaForVariance = 10;
+
+
         public Byte Hour { get; init; }
         public Byte Minutes { get; init; }
        
@@ -59,5 +66,27 @@ namespace Beer.DaAPI.Core.Scopes
             };
         }
 
+        public LeaseTimeValues GetLeaseTimers()
+        {
+            DateTime now = DateTime.Now;
+
+            DateTime renewTime = new (now.Year, now.Month, now.Day, Hour, Minutes, 0);
+
+            TimeSpan renewSpan = renewTime - now;
+            if(renewSpan.TotalMinutes < 10) 
+            {
+                renewSpan = renewSpan.Add(TimeSpan.FromHours(24));
+            }
+
+            Int32 randomOffset = _random.Next(_minDeltaForVariance, _maxDeltaForVariance); //10 minutes 
+            if(_random.NextDouble() > 0.5)
+            {
+                randomOffset *= -1;
+            }
+
+            renewSpan = renewSpan.Add(TimeSpan.FromSeconds(randomOffset));
+
+            return new (renewSpan, renewSpan.Add(TimeSpan.FromMinutes(MinutesToRebound)), renewSpan.Add(TimeSpan.FromMinutes(MinutesToEndOfLife)));
+        }
     }
 }

@@ -1,12 +1,17 @@
 ﻿using Beer.DaAPI.Core.Common;
+using Beer.DaAPI.Core.Packets.DHCPv4;
+using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv4;
 using Beer.DaAPI.Service.TestHelper;
 using Beer.TestHelper;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4ScopeAddressProperties;
+using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4ScopeAddressProperties.AddressAllocationStrategies;
+using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4ScopeEvents;
 
 namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
 {
@@ -29,6 +34,30 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, null, Array.Empty<IPv4Address>()));
 
             Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, null, null));
+        }
+
+        [Fact]
+        public void DHCPv4ScopeAddressProperties_WithRenewTime_FailedConstructor_NullInputs()
+        {
+            Random random = new Random();
+            IPv4Address end = random.GetIPv4Address();
+            IPv4Address start = random.GetIPv4AddressGreaterThan(end);
+
+            DynamicRenewTime renewTime = DynamicRenewTime.WithDefaultRange(22, 30);
+
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(start, end, null, renewTime));
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, end, Array.Empty<IPv4Address>(), renewTime));
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(start, null, Array.Empty<IPv4Address>(), renewTime));
+
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(start, null, null, renewTime));
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, end, null, renewTime));
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, null, Array.Empty<IPv4Address>(), renewTime));
+
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, null, null, renewTime));
+
+            DynamicRenewTime nullRenewTime = null;
+
+            Assert.ThrowsAny<Exception>(() => new DHCPv4ScopeAddressProperties(null, null, null, nullRenewTime));
         }
 
         [Fact]
@@ -368,6 +397,91 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             {
                 Boolean shouldBeInvalid = item.ValueAreValidForRoot();
                 Assert.False(shouldBeInvalid);
+                Assert.False(item.UseDynamicRewnewTime);
+            }
+        }
+
+        [Fact]
+        public void DHCPv4ScopeAddressProperties_ValueAreValidForRoot_WithDynamicRenew()
+        {
+            Random random = new Random();
+
+            IPv4Address start = random.GetIPv4Address();
+            IPv4Address end = random.GetIPv4AddressGreaterThan(start);
+
+            DynamicRenewTime time = DynamicRenewTime.WithDefaultRange(23, 10);
+
+            DHCPv4ScopeAddressProperties validProperties = new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                24,
+                random.NextBoolean(),
+                DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
+                random.NextBoolean(), random.NextBoolean(), random.NextBoolean()
+                );
+
+            Boolean shouldBeValid = validProperties.ValueAreValidForRoot();
+            Assert.True(shouldBeValid);
+            Assert.True(validProperties.UseDynamicRewnewTime);
+            Assert.Equal(time, validProperties.DynamicRenewTime);
+
+            List<DHCPv4ScopeAddressProperties> invalidProperties = new List<DHCPv4ScopeAddressProperties>
+            {
+                new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                0,
+                random.NextBoolean(),
+                DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
+                random.NextBoolean(), random.NextBoolean(), random.NextBoolean()
+                ),
+                new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                24,
+                null,
+                DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
+                random.NextBoolean(), random.NextBoolean(), random.NextBoolean()
+                ),
+                new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                24,
+                random.NextBoolean(),
+                null,
+                random.NextBoolean(), random.NextBoolean(), random.NextBoolean()
+                ),
+                new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                24,
+                random.NextBoolean(),
+                DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
+                null, random.NextBoolean(), random.NextBoolean()
+                ),
+                new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                24,
+                random.NextBoolean(),
+                DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
+                random.NextBoolean(), null, random.NextBoolean()
+                ),
+                 new DHCPv4ScopeAddressProperties(
+                start, end, Array.Empty<IPv4Address>(),
+                time,
+                24,
+                random.NextBoolean(),
+                DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next,
+                random.NextBoolean(), random.NextBoolean(), null
+                ),
+            };
+
+            foreach (var item in invalidProperties)
+            {
+                Boolean shouldBeInvalid = item.ValueAreValidForRoot();
+                Assert.False(shouldBeInvalid);
+                Assert.True(item.UseDynamicRewnewTime);
             }
         }
 
@@ -439,6 +553,188 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Boolean actual = own.IsAddressRangeBetween(other);
 
             Assert.Equal(expectedResult, actual);
+
+        }
+
+        public DHCPv4RootScope GetRootScope()
+        {
+            Mock<ILoggerFactory> factoryMock = new Mock<ILoggerFactory>(MockBehavior.Strict);
+            factoryMock.Setup(x => x.CreateLogger(It.IsAny<String>())).Returns(Mock.Of<ILogger<DHCPv4RootScope>>());
+
+            var scope = new DHCPv4RootScope(Guid.NewGuid(), Mock.Of<IScopeResolverManager<DHCPv4Packet, IPv4Address>>(), factoryMock.Object);
+            return scope;
+
+        }
+
+        [Fact]
+        public void DHCPv4ScopeAddressProperties_Inheritance_DynamicAddress_SetByGrantParent()
+        {
+            Random random = new Random();
+
+            IPv4Address start = random.GetIPv4Address();
+            IPv4Address end = random.GetIPv4AddressGreaterThan(start);
+
+            Guid grantParentId = random.NextGuid();
+            Guid parentId = random.NextGuid();
+            Guid childId = random.NextGuid();
+
+            List<DomainEvent> events = new List<DomainEvent>();
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), DynamicRenewTime.WithDefaultRange(11, 30), 12, true, Next, true, true, true),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = parentId,
+                ParentId = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>()),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = childId,
+                ParentId = parentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>()),
+            }));
+
+            var rootScope = GetRootScope();
+            rootScope.Load(events);
+
+            var childScope = rootScope.GetScopeById(childId);
+            var properties = childScope.GetAddressProperties();
+
+            Assert.True(properties.UseDynamicRewnewTime);
+            Assert.Equal(DynamicRenewTime.WithDefaultRange(11, 30), properties.DynamicRenewTime);
+        }
+
+        [Fact]
+        public void DHCPv4ScopeAddressProperties_Inheritance_DynamicAddress_OverrideByKid()
+        {
+            Random random = new Random();
+
+            IPv4Address start = random.GetIPv4Address();
+            IPv4Address end = random.GetIPv4AddressGreaterThan(start);
+
+            Guid grantParentId = random.NextGuid();
+            Guid parentId = random.NextGuid();
+            Guid childId = random.NextGuid();
+
+            List<DomainEvent> events = new List<DomainEvent>();
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), DynamicRenewTime.WithDefaultRange(11, 30), 12, true, Next, true, true, true),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = parentId,
+                ParentId = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), DynamicRenewTime.WithDefaultRange(12, 30)),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = childId,
+                ParentId = parentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), DynamicRenewTime.WithDefaultRange(13, 30)),
+            }));
+
+            var rootScope = GetRootScope();
+            rootScope.Load(events);
+
+            var childScope = rootScope.GetScopeById(childId);
+            var properties = childScope.GetAddressProperties();
+
+            Assert.True(properties.UseDynamicRewnewTime);
+            Assert.Equal(DynamicRenewTime.WithDefaultRange(13, 30), properties.DynamicRenewTime);
+        }
+
+        [Fact]
+        public void DHCPv4ScopeAddressProperties_Inheritance_DynamicAddress_OverrideByParentWithStatic()
+        {
+            Random random = new Random();
+
+            IPv4Address start = random.GetIPv4Address();
+            IPv4Address end = random.GetIPv4AddressGreaterThan(start);
+
+            Guid grantParentId = random.NextGuid();
+            Guid parentId = random.NextGuid();
+            Guid childId = random.NextGuid();
+
+            List<DomainEvent> events = new List<DomainEvent>();
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), DynamicRenewTime.WithDefaultRange(11, 30), 12, true, Next, true, true, true),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = parentId,
+                ParentId = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), renewalTime: TimeSpan.FromHours(2), preferredLifetime: TimeSpan.FromHours(4), TimeSpan.FromHours(6)),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = childId,
+                ParentId = parentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), preferredLifetime: TimeSpan.FromHours(3)),
+            }));
+
+            var rootScope = GetRootScope();
+            rootScope.Load(events);
+
+            var childScope = rootScope.GetScopeById(childId);
+            var properties = childScope.GetAddressProperties();
+
+            Assert.False(properties.UseDynamicRewnewTime);
+            Assert.Null(properties.DynamicRenewTime);
+            Assert.Equal(TimeSpan.FromHours(2), properties.RenewalTime);
+            Assert.Equal(TimeSpan.FromHours(3), properties.PreferredLifetime);
+            Assert.Equal(TimeSpan.FromHours(6), properties.LeaseTime);
+
+        }
+
+        [Fact]
+        public void DHCPv4ScopeAddressProperties_Inheritance_DynamicAddress_OverrideByParentWithStatic2()
+        {
+            Random random = new Random();
+
+            IPv4Address start = random.GetIPv4Address();
+            IPv4Address end = random.GetIPv4AddressGreaterThan(start);
+
+            Guid grantParentId = random.NextGuid();
+            Guid parentId = random.NextGuid();
+            Guid childId = random.NextGuid();
+
+            List<DomainEvent> events = new List<DomainEvent>();
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), TimeSpan.FromHours(2), TimeSpan.FromHours(4), TimeSpan.FromHours(6), 12, true, Next, true, true, true),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = parentId,
+                ParentId = grantParentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), DynamicRenewTime.WithDefaultRange(11, 30)),
+            }));
+            events.Add(new DHCPv4ScopeAddedEvent(new DHCPv4ScopeCreateInstruction
+            {
+                Id = childId,
+                ParentId = parentId,
+                AddressProperties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(), preferredLifetime: TimeSpan.FromHours(3)),
+            }));
+
+            var rootScope = GetRootScope();
+            rootScope.Load(events);
+
+            var childScope = rootScope.GetScopeById(childId);
+            var properties = childScope.GetAddressProperties();
+
+            Assert.False(properties.UseDynamicRewnewTime);
+            Assert.Null(properties.DynamicRenewTime);
+            Assert.Equal(TimeSpan.FromHours(2), properties.RenewalTime);
+            Assert.Equal(TimeSpan.FromHours(3), properties.PreferredLifetime);
+            Assert.Equal(TimeSpan.FromHours(6), properties.LeaseTime);
 
         }
     }

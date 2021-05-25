@@ -68,6 +68,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                         e.Address,
                         e.StartedAt,
                         e.ValidUntil,
+                        e.RenewalTime,
+                        e.PreferredLifetime,
                         e.ClientIdenfier == null ? DHCPv4ClientIdentifier.Empty : DHCPv4ClientIdentifier.FromOptionData(e.ClientIdenfier),
                         e.UniqueIdentifier,
                         e.AncestorId,

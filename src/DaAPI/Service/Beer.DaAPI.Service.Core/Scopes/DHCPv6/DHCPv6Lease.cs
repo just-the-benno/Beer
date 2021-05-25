@@ -26,13 +26,15 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             IPv6Address address,
             DateTime start,
             DateTime end,
+            TimeSpan renewSpan,
+            TimeSpan rebindingSpan,
             DUID clientIdentifier,
             UInt32 identityAssociationId,
             Byte[] uniqueIdentifier,
             DHCPv6PrefixDelegation prefix,
             Guid? ancestorId,
             Action<DomainEvent> addtionalApplier
-             ) : base(id, address, start, end, uniqueIdentifier, ancestorId, addtionalApplier)
+             ) : base(id, address, start, end, renewSpan, rebindingSpan, uniqueIdentifier, ancestorId, addtionalApplier)
         {
             ClientDUID = clientIdentifier;
             IdentityAssocicationId = identityAssociationId;
@@ -52,7 +54,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                 resetPrefix = false;
             }
             DateTime now = DateTime.UtcNow;
-            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime, now + renewalTime, now + preferredLifetime, reset, resetPrefix));
+            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime, renewalTime, preferredLifetime, reset, resetPrefix));
         }
 
         internal override void Reactived(TimeSpan lifetime, TimeSpan renewalTime, TimeSpan preferredLifetime)
@@ -60,7 +62,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             CanReactived(lifetime);
             DateTime now = DateTime.UtcNow;
 
-            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime, now + renewalTime, now + preferredLifetime, false, true));
+            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime,  renewalTime, preferredLifetime, false, true));
         }
 
         internal override void Revoke() => base.Apply(new DHCPv6LeaseRevokedEvent(this.Id));
@@ -130,7 +132,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             switch (domainEvent)
             {
                 case DHCPv6LeaseRenewedEvent e:
-                    HandleRenew(e.End, e.Reset);
+                    HandleRenew(e.End, e.RenewSpan, e.ReboundSpan, e.Reset);
+
                     if (e.ResetPrefix == true)
                     {
                         PrefixDelegation = DHCPv6PrefixDelegation.None;

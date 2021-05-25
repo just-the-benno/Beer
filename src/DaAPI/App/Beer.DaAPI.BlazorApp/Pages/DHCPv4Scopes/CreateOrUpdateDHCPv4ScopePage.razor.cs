@@ -264,15 +264,15 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
             try
             {
-                var result = _isCreateMode == true ? await _service.CreateDHCPv4Scope(model.GetRequest()) : await _service.UpdateDHCPv4Scope(model.GetRequest(),ScopeId);
+                var result = _isCreateMode == true ? await _service.CreateDHCPv4Scope(model.GetRequest()) : await _service.UpdateDHCPv4Scope(model.GetRequest(), ScopeId);
                 if (result == true)
                 {
-                    _snackBarService.Add(String.Format(_isCreateMode == true  ? L["CreateScopeSuccessSnackbarContent"] : L["UpdateScopeSuccessSnackbarContent"], _generellPropertiesModel.Name), Severity.Success);
+                    _snackBarService.Add(String.Format(_isCreateMode == true ? L["CreateScopeSuccessSnackbarContent"] : L["UpdateScopeSuccessSnackbarContent"], _generellPropertiesModel.Name), Severity.Success);
                     _navManager.NavigateTo("scopes/dhcpv4/");
                 }
                 else
                 {
-                    _snackBarService.Add(_isCreateMode == true ?  L["CreateScopeFailedSnackbarContent"] : L["UpdateScopeFailedSnackbarContent"], Severity.Error);
+                    _snackBarService.Add(_isCreateMode == true ? L["CreateScopeFailedSnackbarContent"] : L["UpdateScopeFailedSnackbarContent"], Severity.Error);
                 }
             }
             finally
@@ -372,7 +372,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             if (_generellPropertiesModel.HasParent == true)
             {
                 await LoadPossibleParents();
-                
+
                 _generellPropertiesModel.ParentId = properties.ParentId.Value;
                 await LoadParent(false);
             }

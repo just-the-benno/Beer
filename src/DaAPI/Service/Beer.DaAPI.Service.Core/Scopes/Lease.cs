@@ -37,6 +37,8 @@ namespace Beer.DaAPI.Core.Scopes
         public Byte[] UniqueIdentifier { get; private set; }
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
+        public TimeSpan RenewSpan { get; private set; }
+        public TimeSpan RebindingSpan { get; private set; }
         public Guid? AncestorId { get; private set; }
 
 
@@ -49,6 +51,8 @@ namespace Beer.DaAPI.Core.Scopes
             TAddress address,
             DateTime start,
             DateTime end,
+            TimeSpan renewSpan,
+            TimeSpan rebindingSpan,
             Byte[] uniqueIdentifier,
             Guid? ancestorId,
             Action<DomainEvent> addtionalApplier
@@ -58,6 +62,8 @@ namespace Beer.DaAPI.Core.Scopes
             Address = address;
             Start = start;
             End = end;
+            RenewSpan = renewSpan;
+            RebindingSpan = rebindingSpan;
             AncestorId = ancestorId;
 
             UniqueIdentifier = uniqueIdentifier == null ? Array.Empty<Byte>() : ByteHelper.CopyData(uniqueIdentifier);
@@ -146,9 +152,12 @@ namespace Beer.DaAPI.Core.Scopes
             }
         }
 
-        protected void HandleRenew(DateTime end, Boolean reset)
+        protected void HandleRenew(DateTime end, TimeSpan renewSpan, TimeSpan reboundSpan, Boolean reset)
         {
             End = end;
+            RenewSpan = renewSpan;
+            RebindingSpan = reboundSpan;
+
             if (reset == true)
             {
                 State = LeaseStates.Pending;

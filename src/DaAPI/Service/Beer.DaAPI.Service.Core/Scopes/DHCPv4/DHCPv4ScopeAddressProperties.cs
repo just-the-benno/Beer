@@ -60,6 +60,30 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             RenewalTime = renewalTime;
             PreferredLifetime = preferredLifetime;
             LeaseTime = leaseTime;
+
+            if(leaseTime.HasValue || renewalTime.HasValue || preferredLifetime.HasValue)
+            {
+                UseDynamicRewnewTime = false;
+            }
+        }
+
+
+        public DHCPv4ScopeAddressProperties(
+          IPv4Address start,
+          IPv4Address end,
+          IEnumerable<IPv4Address> excluded,
+          DynamicRenewTime rewnewTime,
+          Byte? maskLength = null,
+          Boolean? reuseAddressIfPossible = null,
+          AddressAllocationStrategies? addressAllocationStrategy = null,
+          Boolean? supportDirectUnicast = null,
+          Boolean? acceptDecline = null,
+          Boolean? informsAreAllowd = null
+          ) : base(start, end, excluded, reuseAddressIfPossible, addressAllocationStrategy, supportDirectUnicast, acceptDecline, informsAreAllowd, rewnewTime)
+        {
+
+            Mask = (maskLength == null || maskLength == 0) ? null : new IPv4SubnetMask(new IPv4SubnetMaskIdentifier(maskLength.Value));
+
         }
 
         public static DHCPv4ScopeAddressProperties Empty => new DHCPv4ScopeAddressProperties();
@@ -149,10 +173,19 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 return false;
             }
 
-            return Mask != null &&
-              RenewalTime.HasValue &&
-              PreferredLifetime.HasValue &&
-              LeaseTime.HasValue;
+            if(Mask == null) { return false; }
+
+            if(UseDynamicRewnewTime == true)
+            {
+                return DynamicRenewTime != null;
+            }
+            else
+            {
+                return
+                  RenewalTime.HasValue &&
+                  PreferredLifetime.HasValue &&
+                  LeaseTime.HasValue && AreTimeValueValid();
+            }
         }
 
         public Boolean AreTimeValueValid()
