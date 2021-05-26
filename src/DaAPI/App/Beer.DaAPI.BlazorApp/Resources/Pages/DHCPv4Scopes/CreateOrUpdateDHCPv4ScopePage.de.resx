@@ -454,6 +454,6 @@
     <value>Die Startadresse darf nicht kleiner sein als die Startadresse des übergeordnenten Bereichs</value>
   </data>
   <data name="ValidationStartSmallerThenEnd" xml:space="preserve">
-    <value> </value>
+    <value>Die Startadresse muss größer sein als die Endadresse</value>
   </data>
 </root>
