@@ -161,7 +161,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
         protected static DHCPv6Lease CheckLease(
             Int32 index, Int32 expectedAmount, IPv6Address expectedAdress,
             Guid scopeId, DHCPv6RootScope rootScope, DateTime expectedCreationData,
-            DUID clientDuid, UInt32 iaId, Boolean shouldBePending, Boolean shouldHavePrefix, Byte[] uniqueIdentifier = null)
+            DUID clientDuid, UInt32 iaId, Boolean shouldBePending, Boolean shouldHavePrefix, Byte[] uniqueIdentifier = null, Boolean checkExpire = true)
         {
             DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
             var leases = scope.Leases.GetAllLeases();
@@ -170,8 +170,12 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             DHCPv6Lease lease = leases.ElementAt(index);
             Assert.NotNull(lease);
             Assert.Equal(expectedAdress, lease.Address);
-            Int32 expiresInMinutes = (Int32)(lease.End - DateTime.UtcNow).TotalMinutes;
-            Assert.True(expiresInMinutes >= 60 * 24 - 4 && expiresInMinutes <= 60 * 24);
+            if (checkExpire == true)
+            {
+                Int32 expiresInMinutes = (Int32)(lease.End - DateTime.UtcNow).TotalMinutes;
+                Assert.True(expiresInMinutes >= 60 * 24 - 4 && expiresInMinutes <= 60 * 24);
+            }
+
             Assert.True((expectedCreationData - lease.Start).TotalMinutes < 2);
             if (shouldBePending == true)
             {
@@ -252,7 +256,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
          Guid scopeId, DHCPv6RootScope rootScope,
          IPv6Address expectedAdress, DHCPv6Lease lease,
           Byte[] uniqueIdentifier = null,
-          Guid? ancestorId = null
+          Guid? ancestorId = null,
+          Boolean checkLeaseTimes = true
          )
         {
             IEnumerable<DomainEvent> changes = rootScope.GetChanges();
@@ -282,8 +287,11 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             var addressProperties = rootScope.GetScopeById(scopeId).AddressRelatedProperties;
 
-            Assert.Equal(addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value, createdEvent.RenewalTime);
-            Assert.Equal(addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value, createdEvent.PreferredLifetime);
+            if (checkLeaseTimes == true)
+            {
+                Assert.Equal(addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value, createdEvent.RenewalTime);
+                Assert.Equal(addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value, createdEvent.PreferredLifetime);
+            }
 
             if (lease.PrefixDelegation == DHCPv6PrefixDelegation.None)
             {

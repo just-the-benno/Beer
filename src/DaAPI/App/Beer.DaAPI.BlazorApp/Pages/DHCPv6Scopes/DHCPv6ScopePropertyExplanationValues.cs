@@ -28,6 +28,10 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         AddressAllocationStrategy,
         ScopeOptions,
         Resolver,
-        RenewalTime
+        RenewalTime,
+        RenewType,
+        DynamicRenewTime,
+        DynamicRenewDeltaToRebound,
+        DynamicRenewDeltaToLifetime
     }
 }

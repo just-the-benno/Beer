@@ -189,6 +189,15 @@
   <data name="DescriptionPlaceholder" xml:space="preserve">
     <value>(optional) Enter a description for this scope here</value>
   </data>
+  <data name="DynamicRenewDeltaToLifetLabel" xml:space="preserve">
+    <value>Lease ends after</value>
+  </data>
+  <data name="DynamicRenewDeltaToReboundLabel" xml:space="preserve">
+    <value>Rebound after</value>
+  </data>
+  <data name="DynamicRenewTime" xml:space="preserve">
+    <value>Renew at</value>
+  </data>
   <data name="EnablePrefixDelegationLabel" xml:space="preserve">
     <value>Enable</value>
   </data>
@@ -314,6 +323,15 @@
   </data>
   <data name="RapitCommitEnabledLabel" xml:space="preserve">
     <value>Rapit Commit</value>
+  </data>
+  <data name="RenewTypeDynamicLabel" xml:space="preserve">
+    <value>dynamic</value>
+  </data>
+  <data name="RenewTypeLabel" xml:space="preserve">
+    <value>Renew Type</value>
+  </data>
+  <data name="RenewTypeStaticLabel" xml:space="preserve">
+    <value>static</value>
   </data>
   <data name="ResolverPropertiesSectionHeading" xml:space="preserve">
     <value>Resolver</value>

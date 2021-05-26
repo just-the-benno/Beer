@@ -117,11 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DynamicRenewDeltaToLifetimeContent" xml:space="preserve">
+    <value>Die Zeit die vergehen muss, nach der Renew Zeit, damit der Client in den "Init" Zustand übergeht und damit die Adresse nicht mehr nutzen kann.  Wenn dieser Wert auf 3 Stunden festgelegt ist und die Rewnew Zeit auf 3:00 Uhr, so wird die Lease Zeit auf 6:00 Uhr festgelegt.</value>
+  </data>
+  <data name="DynamicRenewDeltaToLifetimeName" xml:space="preserve">
+    <value>Eigenschaft: Lebenszeit endet nach</value>
+  </data>
+  <data name="DynamicRenewDeltaToReboundContent" xml:space="preserve">
+    <value>Die Zeit die vergehen muss, nach der Renew Zeit, damit der Client in den "Rebound" Zustand übergeht.  Wenn dieser Wert auf 2 Stunden festgelegt ist und die Rewnew Zeit auf 3:00 Uhr, so wird die Rebound Zeit auf 5:00 Uhr festgelegt.</value>
+  </data>
+  <data name="DynamicRenewDeltaToReboundName" xml:space="preserve">
+    <value>Eigenschaft: Rebound nach</value>
+  </data>
+  <data name="DynamicRenewTimeContent" xml:space="preserve">
+    <value>Die Uhrzeit nach dem ein Client in den "Renewing" Zustand übergeht und entsprechend versucht, sein Lease zu erneuern. Wenn dieser Wert beispielsweise auf 3:00 Uhr eingestellt ist und ein Paket um 1:00 Uhr empfangen wurde, so die Renew Zeit Option in der Antwort auf 2 Stunden festgelegt. Wird ein Paket dahingehend um 13:00 Uhr empfangen, so wird die Zeit auf 14 Stunden festgelegt.</value>
+  </data>
+  <data name="DynamicRenewTimeName" xml:space="preserve">
+    <value>Eigenschaft:  Zeitpunkt für Renew</value>
+  </data>
   <data name="RenewalTimeContent" xml:space="preserve">
     <value>Die Zeit die vergeht, bist ein Client versucht das Lease zu verlängern.</value>
   </data>
   <data name="RenewalTimeName" xml:space="preserve">
     <value>Verlängerungszeit</value>
+  </data>
+  <data name="RenewTypeContent" xml:space="preserve">
+    <value>Die Art des Renews kann entweder "statisch" oder "dynaisch" sein. Statich bedeutet, dass die Zeiten in einem ACK immer die selben sein werden, unabhängig der Uhrzeit an dem die Nachricht empfangen wurde.  Dynamisch hingegen bedeutet, dass die Leasezeit, Renew und Reboundzeit abhängig von der Uhrzeit ist, an dem das Paket empfangen wurde. Ist die Renew Zeit beispielweise auf 3:00 Uhr morgens eingestellt und ein Paket wird um 1:00 Uhr empfangen, so beträgt die Renewzeit zwei Stunden.</value>
+  </data>
+  <data name="RenewTypeName" xml:space="preserve">
+    <value>Eigenschaft:  Art des Renews</value>
   </data>
   <data name="ScopePropertyAcceptDeclinesContent" xml:space="preserve">
     <value>Wenn diese Option aktiviert wird, akzeptiert DaAPI DHCPv6 DECLINE Nachrichten. In der Folge wird die entsprechende Adresse gesperrt und kann nicht mehr an andere Clients zugewiesen werden. Diese Sperre hält eine begrenzte Zeit. DECLINE Nachrichten sollten von Clients verwendet werden, wenn beispielsweise die Adresse bereits verwendet wird. Es kann jedoch auch genutzt werden, um eine Entleerung des Adresspools zu erreichen.</value>

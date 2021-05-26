@@ -276,11 +276,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
         {
             DHCPv6Packet innerReceivedPacket = requestPacket.GetInnerPacket();
 
-            TimeSpan T1 = addressProperties.T1.Value * addressProperties.PreferredLeaseTime.Value;
-            TimeSpan T2 = addressProperties.T2.Value * addressProperties.PreferredLeaseTime.Value;
-
-            TimeSpan preferredLifetime = addressProperties.PreferredLeaseTime.Value; ;
-            TimeSpan validLifetime = addressProperties.ValidLeaseTime.Value;
+            GetTimeValues(addressProperties, lease, false, out TimeSpan preferredLifetime, out TimeSpan validLifetime, out TimeSpan T1, out TimeSpan T2);
 
             List<DHCPv6PacketOption> packetOptions = new List<DHCPv6PacketOption>
             {
@@ -310,6 +306,15 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
             return response;
         }
 
+        private static void ApplyDynamicRenewTime(DHCPv6Lease lease, out TimeSpan T1, out TimeSpan T2, out TimeSpan preferredLifetime, out TimeSpan validLifetime)
+        {
+            T1 = lease.RenewSpan;
+            T2 = lease.RebindingSpan;
+
+            preferredLifetime = lease.RebindingSpan;
+            validLifetime = lease.End - DateTime.UtcNow;
+        }
+
         private static void AddRapitCommitOption(DHCPv6Packet response)
         {
             var innerPacket = response.GetInnerPacket();
@@ -321,10 +326,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
         {
             DHCPv6Packet innerReceivedPacket = requestPacket.GetInnerPacket();
 
-            AdjustTimeValues(addressProperties, lease, out TimeSpan preferredLifetime, out TimeSpan validLifetime);
-
-            TimeSpan T1 = preferredLifetime * addressProperties.T1.Value;
-            TimeSpan T2 = preferredLifetime * addressProperties.T2.Value;
+            GetTimeValues(addressProperties, lease, false, out TimeSpan preferredLifetime, out TimeSpan validLifetime, out TimeSpan T1, out TimeSpan T2);
 
             List<DHCPv6PacketOption> packetOptions = new List<DHCPv6PacketOption>
             {
@@ -354,15 +356,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
         {
             DHCPv6Packet innerReceivedPacket = requestPacket.GetInnerPacket();
 
-            TimeSpan preferredLifetime = addressProperties.PreferredLeaseTime.Value;
-            TimeSpan validLifetime = addressProperties.ValidLeaseTime.Value;
-            if (adjustTimers == true)
-            {
-                AdjustTimeValues(addressProperties, lease, out preferredLifetime, out validLifetime);
-            }
-
-            TimeSpan T1 = addressProperties.T1.Value * preferredLifetime;
-            TimeSpan T2 = addressProperties.T2.Value * preferredLifetime;
+            GetTimeValues(addressProperties, lease, adjustTimers, out TimeSpan preferredLifetime, out TimeSpan validLifetime, out TimeSpan T1, out TimeSpan T2);
 
             List<DHCPv6PacketOption> packetOptions = new List<DHCPv6PacketOption>();
 
@@ -399,6 +393,27 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
             DHCPv6Packet response = ConstructPacketWithHeader(requestPacket, innerResponse);
 
             return response;
+        }
+
+        private static void GetTimeValues(DHCPv6ScopeAddressProperties addressProperties, DHCPv6Lease lease, bool adjustTimers, out TimeSpan preferredLifetime, out TimeSpan validLifetime, out TimeSpan T1, out TimeSpan T2)
+        {
+            if (addressProperties.UseDynamicRewnewTime == true)
+            {
+                ApplyDynamicRenewTime(lease, out T1, out T2, out preferredLifetime, out validLifetime);
+            }
+            else
+            {
+                preferredLifetime = addressProperties.PreferredLeaseTime.Value;
+                validLifetime = addressProperties.ValidLeaseTime.Value;
+
+                T1 = addressProperties.T1.Value * preferredLifetime;
+                T2 = addressProperties.T2.Value * preferredLifetime;
+
+                if (adjustTimers == true)
+                {
+                    AdjustTimeValues(addressProperties, lease, out preferredLifetime, out validLifetime);
+                }
+            }
         }
 
         public static DHCPv6Packet AsError(DHCPv6Packet requestPacket, DHCPv6StatusCodes errorCode, DUID serverDuid)

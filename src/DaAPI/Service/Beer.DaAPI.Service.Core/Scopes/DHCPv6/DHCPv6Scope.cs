@@ -175,6 +175,10 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         internal Boolean IsFreshLease(DHCPv6Lease lease) => (DateTime.UtcNow - lease.Start) < _leaseReboundTime && lease.AddressIsInUse() == true;
         internal Boolean IsFreshPrefix(DHCPv6Lease lease) => (DateTime.UtcNow - lease.PrefixDelegation.Started) < _leaseReboundTime;
 
+        private static LeaseTimeValues GetLeaseTimers(DHCPv6ScopeAddressProperties addressProperties) =>
+         addressProperties.UseDynamicRewnewTime == true ? addressProperties.DynamicRenewTime.GetLeaseTimers()
+         : new LeaseTimeValues(addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value, addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value, addressProperties.ValidLeaseTime.Value);
+
         internal DHCPv6Packet HandleSolicit(DHCPv6Packet packet, IDHCPv6ServerPropertiesResolver properyResolver)
         {
             DHCPv6Packet innerPacket = packet.GetInnerPacket();
@@ -235,7 +239,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
                     if (leaseAddress == IPv6Address.Empty)
                     {
-                        _logger.LogError("{scope} has noip addresses left", Name);
+                        _logger.LogError("{scope} has no ip addresses left", Name);
                         base.Apply(new DHCPv6ScopeAddressesAreExhaustedEvent(Id));
                         base.Apply(new DHCPv6SolicitHandledEvent(this.Id, packet, DHCPv6SolicitHandledEvent.SolicitErros.NoAddressesLeft));
                         return DHCPv6Packet.Empty;
@@ -247,17 +251,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                     leasedPrefix = addressProperties.GetValidPrefix(Leases.GetUsedPrefixes(), prefixIdentityAsscocationId.Value, excludeFromPrefix);
                 }
 
-                currentLease = Leases.AddLease(
-                       Guid.NewGuid(),
-                       leaseAddress,
-                       addressProperties.ValidLeaseTime.Value,
-                       addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value,
-                       addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value,
-                       identityAssociationId,
-                       clientIdentifier,
-                       Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
-                       prefixIdentityAsscocationId.HasValue == false ? DHCPv6PrefixDelegation.None : leasedPrefix,
-                       currentLease);
+                currentLease = AddLease(packet, addressProperties, clientIdentifier, identityAssociationId, prefixIdentityAsscocationId, currentLease, leaseAddress, leasedPrefix);
             }
 
             DHCPv6Packet response;
@@ -278,6 +272,24 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
             base.Apply(new DHCPv6SolicitHandledEvent(this.Id, packet, response, rapitCommit));
             return response;
+        }
+
+        private DHCPv6Lease AddLease(DHCPv6Packet packet, DHCPv6ScopeAddressProperties addressProperties, DUID clientIdentifier, uint identityAssociationId, uint? prefixIdentityAsscocationId, DHCPv6Lease currentLease, IPv6Address leaseAddress, DHCPv6PrefixDelegation leasedPrefix)
+        {
+            LeaseTimeValues timers = GetLeaseTimers(addressProperties);
+
+            currentLease = Leases.AddLease(
+                   Guid.NewGuid(),
+                   leaseAddress,
+                   timers.Lifespan,
+                   timers.RenewTime,
+                   timers.ReboundTime,
+                   identityAssociationId,
+                   clientIdentifier,
+                   Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
+                   prefixIdentityAsscocationId.HasValue == false ? DHCPv6PrefixDelegation.None : leasedPrefix,
+                   currentLease);
+            return currentLease;
         }
 
         private IPv6Address GetLeasedAddress(DHCPv6ScopeAddressProperties addressProperties, IPv6Address excludeFromLease)
@@ -465,8 +477,9 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
                     if (identityAssociationId.HasValue == true)
                     {
-                        lease.Renew(addressProperties.ValidLeaseTime.Value, addressProperties.T1.Value * addressProperties.ValidLeaseTime.Value,
-                       addressProperties.T2.Value * addressProperties.ValidLeaseTime.Value, false, resetPrefix);
+                        var timers = GetLeaseTimers(addressProperties);
+
+                        lease.Renew(timers.Lifespan, timers.RenewTime, timers.ReboundTime, false, resetPrefix);
                     }
 
                     leaseUsedToGenerateResponse = lease;
@@ -514,7 +527,11 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                         }
                         else
                         {
-                            leaseUsedToGenerateResponse = identityAssociationId.HasValue == true ? Leases.AddLease(
+                            leaseUsedToGenerateResponse = identityAssociationId.HasValue == false ? lease :
+                                AddLease(packet, addressProperties, clientIdentifier, identityAssociationId.Value, prefixIdentityAsscocationId, lease, leaseAddress, leasedPrefix);
+
+                            /*
+                             *  Leases.AddLease(
                               Guid.NewGuid(),
                               leaseAddress,
                               addressProperties.ValidLeaseTime.Value,
@@ -525,7 +542,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                               Resolver.HasUniqueIdentifier == true ? Resolver.GetUniqueIdentifier(packet) : null,
                               prefixIdentityAsscocationId.HasValue == false ? DHCPv6PrefixDelegation.None : leasedPrefix,
                               lease
-                              ) : lease;
+                              )
+                             */
 
                             if (identityAssociationId.HasValue == true)
                             {

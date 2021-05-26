@@ -88,7 +88,6 @@ namespace Beer.DaAPI.Shared.Requests
                 public Boolean? InformsAreAllowd { get; set; }
                 public AddressAllocationStrategies? AddressAllocationStrategy { get; set; }
 
-
                 public DHCPv4DynamicRenewTimeRequest DynamicRenewTime { get; set; }
             }
 

@@ -167,11 +167,9 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             return lease;
         }
 
-        private static LeaseTimeValues GetLeaseTimers(DHCPv4ScopeAddressProperties addressProperties)
-        {
-            return addressProperties.UseDynamicRewnewTime == true ? addressProperties.DynamicRenewTime.GetLeaseTimers() :
-    new LeaseTimeValues(addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, addressProperties.LeaseTime.Value);
-        }
+        private static LeaseTimeValues GetLeaseTimers(DHCPv4ScopeAddressProperties addressProperties) =>
+                 addressProperties.UseDynamicRewnewTime == true ? addressProperties.DynamicRenewTime.GetLeaseTimers() 
+                 : new LeaseTimeValues(addressProperties.RenewalTime.Value, addressProperties.PreferredLifetime.Value, addressProperties.LeaseTime.Value);
 
         private IPv4Address GetLeaseAddress(DHCPv4ScopeAddressProperties addressProperties, IPv4Address excludeFromLease)
         {

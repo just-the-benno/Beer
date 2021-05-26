@@ -450,6 +450,66 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
         }
 
         [Fact]
+        public void HandleSolicit_NoLeaseFound_AddressAvaiable_WithRapitCommit_DynamicRenew()
+        {
+            Random random = new Random();
+
+            var packet = GetSolicitPacket(random, out DUID clientDuid, out UInt32 iaId, false, new DHCPv6PacketTrueOption(DHCPv6PacketOptionTypes.RapitCommit));
+            var resolverInformations = GetMockupResolver(packet, out Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> scopeResolverMock);
+
+            Guid scopeId = random.NextGuid();
+
+            var tempDate = DateTime.Now.AddHours(2);
+            TimeSpan minExpectedRenewSpan = TimeSpan.FromHours(2).Add(TimeSpan.FromMinutes(-10)).Add(TimeSpan.FromSeconds(-60));
+            TimeSpan maxExpectedRenewSpan = TimeSpan.FromHours(2).Add(TimeSpan.FromMinutes(10)).Add(TimeSpan.FromSeconds(60));
+
+            DynamicRenewTime renewTime = DynamicRenewTime.WithDefaultRange(tempDate.Hour, tempDate.Minute);
+
+            DHCPv6RootScope rootScope = GetRootScope(scopeResolverMock);
+            rootScope.Load(new List<DomainEvent>{ new DHCPv6ScopeEvents.DHCPv6ScopeAddedEvent(
+                new DHCPv6ScopeCreateInstruction
+                {
+                    AddressProperties = new DHCPv6ScopeAddressProperties(
+                        IPv6Address.FromString("fe80::0"),
+                        IPv6Address.FromString("fe80::ff"),
+                        new List<IPv6Address>{IPv6Address.FromString("fe80::1") },
+                        renewTime,
+                        rapitCommitEnabled: true,
+                        addressAllocationStrategy: DHCPv6ScopeAddressProperties.AddressAllocationStrategies.Next),
+                    ResolverInformation = resolverInformations,
+                    Name = "Testscope",
+                    Id = scopeId,
+                })
+            });
+
+            IPv6Address expectedAdress = IPv6Address.FromString("fe80::0");
+
+            DHCPv6Packet result = rootScope.HandleSolicit(packet, GetServerPropertiesResolver());
+            CheckPacket(packet, expectedAdress, iaId, result, DHCPv6PacketTypes.REPLY, DHCPv6PrefixDelegation.None);
+
+            DHCPv6Lease lease = CheckLease(0, 1, expectedAdress, scopeId, rootScope, DateTime.UtcNow, clientDuid, iaId, false, false, null, false);
+
+            Assert.True(lease.RenewSpan >= minExpectedRenewSpan);
+            Assert.True(lease.RenewSpan <= maxExpectedRenewSpan);
+
+            Assert.Equal(lease.RenewSpan + TimeSpan.FromMinutes(renewTime.MinutesToRebound), lease.RebindingSpan);
+            Assert.True((DateTime.UtcNow + (lease.RenewSpan + TimeSpan.FromMinutes(renewTime.MinutesToEndOfLife)) - lease.End).TotalMinutes < 60);
+
+            CheckEventAmount(3, rootScope);
+            CheckLeaseCreatedEvent(0, clientDuid, iaId, scopeId, rootScope, expectedAdress, lease, null, null, false);
+            CheckLeaseActivatedEvent(1, scopeId, lease.Id, rootScope);
+            CheckHandeledEvent(2, packet, result, rootScope, scopeId);
+
+            var option = result.GetInnerPacket().GetNonTemporaryIdentiyAssocation(iaId);
+            Assert.Equal(lease.RenewSpan, option.T1);
+            Assert.Equal(lease.RebindingSpan, option.T2);
+            Assert.Equal(lease.RebindingSpan, (option.Suboptions.First() as DHCPv6PacketIdentityAssociationAddressSuboption).PreferredLifetime);
+            Assert.True(  ((lease.RenewSpan + TimeSpan.FromMinutes(renewTime.MinutesToEndOfLife) - (option.Suboptions.First() as DHCPv6PacketIdentityAssociationAddressSuboption).ValidLifetime)).TotalSeconds < 3);
+
+            CheckEmptyTrigger(rootScope);
+        }
+
+        [Fact]
         public async Task HandleSolicit_NoLeaseFound_AddressAvaiable_WithRapitCommit_TwoPackets()
         {
             Random random = new Random();
@@ -1453,7 +1513,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
                     ScopeId = scopeId,
                  },
             }); ;
-            
+
             var oldLease = rootScope.GetScopeById(scopeId).Leases.GetLeaseById(leaseId);
 
             DHCPv6Packet result = rootScope.HandleSolicit(packet, GetServerPropertiesResolver());
@@ -2070,7 +2130,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             UInt32 firstClientPrefixIaId = random.NextUInt32();
             UInt32 secondClientPrefixIaId = random.NextUInt32();
 
-            var firstPacket = GetSolicitPacket(random, out  _, out UInt32 firstClientIaId, false,
+            var firstPacket = GetSolicitPacket(random, out _, out UInt32 firstClientIaId, false,
                 new DHCPv6PacketTrueOption(DHCPv6PacketOptionTypes.RapitCommit),
                 new DHCPv6PacketIdentityAssociationPrefixDelegationOption(firstClientPrefixIaId, TimeSpan.Zero, TimeSpan.Zero, Array.Empty<DHCPv6PacketSuboption>())
                 );

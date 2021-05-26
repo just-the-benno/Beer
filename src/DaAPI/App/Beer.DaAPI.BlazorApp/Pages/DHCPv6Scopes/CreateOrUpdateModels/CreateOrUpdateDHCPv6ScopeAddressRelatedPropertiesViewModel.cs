@@ -22,6 +22,12 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         }
     }
 
+    public enum RenewTypes
+    {
+        Static = 0,
+        Dynamic = 1,
+    }
+
     public class CreateOrUpdateDHCPv6ScopeAddressRelatedPropertiesViewModel
     {
         public NullableOverrideProperty<Double> T1 { get; set; } = new();
@@ -34,6 +40,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         public NullableOverrideProperty<Boolean> AcceptDecline { get; set; } = new();
         public NullableOverrideProperty<Boolean> InformsAreAllowd { get; set; } = new();
         public NullableOverrideProperty<Boolean> ReuseAddressIfPossible { get; set; } = new();
+
+        public NullableOverrideProperty<RenewTypes> RenewType { get; set; } = new();
+        public NullableOverrideProperty<TimeSpan> DynamicRenewTime { get; set; } = new();
+        public NullableOverrideProperty<TimeSpan> DynamicRenewDeltaToRebound { get; set; } = new();
+        public NullableOverrideProperty<TimeSpan> DynamicRenewDeltaToLifetime { get; set; } = new();
 
         public NullableOverrideProperty<AddressAllocationStrategies> AddressAllocationStrategy { get; set; } = new();
 
@@ -54,9 +65,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             End = "fe80:fff:ffff:ffff::1";
 
             T1 = new() { NullableValue = 0.5 };
-            T2 = new() { NullableValue = 0.75 };
+            T2 = new() { NullableValue = 0.8 };
             ValidLifetime = new() { NullableValue = TimeSpan.FromHours(24) };
-            PreferredLifetime =  new() { NullableValue = TimeSpan.FromHours(18) };
+            PreferredLifetime = new() { NullableValue = TimeSpan.FromHours(18) };
             RapitCommitEnabled = new() { NullableValue = true };
             SupportDirectUnicast = new() { NullableValue = true };
             AcceptDecline = new() { NullableValue = false };
@@ -67,6 +78,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             PrefixLength = 56;
 
             AddressAllocationStrategy = new() { NullableValue = AddressAllocationStrategies.Random };
+
+            RenewType = new() { NullableValue = RenewTypes.Static };
+            DynamicRenewTime = new() { NullableValue = TimeSpan.FromHours(3) };
+            DynamicRenewDeltaToRebound = new() { NullableValue = TimeSpan.FromHours(1) };
+            DynamicRenewDeltaToLifetime = new() { NullableValue = TimeSpan.FromHours(2) };
         }
 
         internal void RemoveParent()
@@ -95,10 +111,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 Start = parent.AddressRelated.Start,
                 End = parent.AddressRelated.End,
                 ExcludedAddresses = parent.AddressRelated.ExcludedAddresses.Select(x => new ExcludedAddressItem(x, this)).ToList(),
-                T1 = new() { NullableValue = parent.AddressRelated.T1 },
-                T2 = new() { NullableValue = parent.AddressRelated.T2 },
-                ValidLifetime = new() { NullableValue = parent.AddressRelated.ValidLifetime },
-                PreferredLifetime = new() { NullableValue = parent.AddressRelated.PreferedLifetime },
+
+
                 RapitCommitEnabled = new() { NullableValue = parent.AddressRelated.RapitCommitEnabled.Value },
                 SupportDirectUnicast = new() { NullableValue = parent.AddressRelated.SupportDirectUnicast.Value },
                 AcceptDecline = new() { NullableValue = parent.AddressRelated.AcceptDecline.Value },
@@ -108,9 +122,34 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 InformsAreAllowd = new() { NullableValue = parent.AddressRelated.InformsAreAllowd.Value },
                 ReuseAddressIfPossible = new() { NullableValue = parent.AddressRelated.ReuseAddressIfPossible.Value },
                 AddressAllocationStrategy = new() { NullableValue = parent.AddressRelated.AddressAllocationStrategy.Value },
+                RenewType = new() { NullableValue = parent.AddressRelated.UseDynamicRenew.Value == true ? RenewTypes.Dynamic : RenewTypes.Static },
             };
 
-            if(ParentValues.DelegatePrefixes == true)
+            if (parent.AddressRelated.DynamicRenew != null)
+            {
+                ParentValues.DynamicRenewTime = new() { NullableValue = new TimeSpan(parent.AddressRelated.DynamicRenew.Hours, parent.AddressRelated.DynamicRenew.Minutes, 0) };
+                ParentValues.DynamicRenewDeltaToRebound = new() { NullableValue = TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToRebound) };
+                ParentValues.DynamicRenewDeltaToLifetime = new() { NullableValue = TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToLifetime) };
+
+                ParentValues.T1 = new() { NullableValue = 0.5 };
+                ParentValues.T2 = new() { NullableValue = 0.8 };
+                ParentValues.ValidLifetime = new() { NullableValue = TimeSpan.FromHours(24) };
+                ParentValues.PreferredLifetime = new() { NullableValue = TimeSpan.FromHours(18) };
+
+            }
+            else
+            {
+                ParentValues.T1 = new() { NullableValue = parent.AddressRelated.T1 };
+                ParentValues.T2 = new() { NullableValue = parent.AddressRelated.T2 };
+                ParentValues.ValidLifetime = new() { NullableValue = parent.AddressRelated.ValidLifetime };
+                ParentValues.PreferredLifetime = new() { NullableValue = parent.AddressRelated.PreferedLifetime };
+
+                ParentValues.DynamicRenewTime = new() { NullableValue = new TimeSpan(3, 0, 0) };
+                ParentValues.DynamicRenewDeltaToRebound = new() { NullableValue = TimeSpan.FromMinutes(30) };
+                ParentValues.DynamicRenewDeltaToLifetime = new() { NullableValue = TimeSpan.FromMinutes(60) };
+            }
+
+            if (ParentValues.DelegatePrefixes == true)
             {
                 ParentValues.Prefix = parent.AddressRelated.PrefixDelegationInfo.Prefix;
                 ParentValues.PrefixLength = parent.AddressRelated.PrefixDelegationInfo.PrefixLength;
@@ -119,11 +158,21 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 
             Start = ParentValues.Start;
             End = ParentValues.End;
+            if (parent.AddressRelated.DynamicRenew != null)
+            {
+                T1 = new() { NullableValue = 0.5 };
+                T2 = new() { NullableValue = 0.8 };
+                ValidLifetime = new() { NullableValue = TimeSpan.FromHours(24) };
+                PreferredLifetime = new() { NullableValue = TimeSpan.FromHours(18) };
+            }   
+            else
+            {
+                T1 = new() { DefaultValue = parent.AddressRelated.T1.Value };
+                T2 = new() { DefaultValue = parent.AddressRelated.T2.Value };
+                ValidLifetime = new() { DefaultValue = parent.AddressRelated.ValidLifetime.Value };
+                PreferredLifetime = new() { DefaultValue = parent.AddressRelated.PreferedLifetime.Value };
+            }
 
-            T1 = new() { DefaultValue = parent.AddressRelated.T1.Value };
-            T2 = new() { DefaultValue = parent.AddressRelated.T2.Value };
-            ValidLifetime = new() { DefaultValue = parent.AddressRelated.ValidLifetime.Value };
-            PreferredLifetime = new() { DefaultValue = parent.AddressRelated.PreferedLifetime.Value };
 
             RapitCommitEnabled = new() { DefaultValue = parent.AddressRelated.RapitCommitEnabled.Value };
             SupportDirectUnicast = new() { DefaultValue = parent.AddressRelated.SupportDirectUnicast.Value };
@@ -136,30 +185,57 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             Prefix = ParentValues.Prefix;
             PrefixLength = ParentValues.PrefixLength;
             AssingedPrefixLength = ParentValues.AssingedPrefixLength;
+
+            RenewType = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew.Value == true ? RenewTypes.Dynamic : RenewTypes.Static };
+            DynamicRenewTime = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew == true ? new TimeSpan(parent.AddressRelated.DynamicRenew.Hours, parent.AddressRelated.DynamicRenew.Minutes, 0) : new TimeSpan(3, 0, 0) };
+            DynamicRenewDeltaToRebound = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew == true ? TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToRebound) : TimeSpan.FromHours(1) };
+            DynamicRenewDeltaToLifetime = new() { DefaultValue = parent.AddressRelated.UseDynamicRenew == true ? TimeSpan.FromMinutes(parent.AddressRelated.DynamicRenew.DelayToLifetime) : TimeSpan.FromHours(2) };
         }
 
-        internal DHCPv6ScopeAddressPropertyReqest GetRequest() => new()
+        internal DHCPv6ScopeAddressPropertyReqest GetRequest()
         {
-            Start = Start,
-            End = End,
-            PrefixDelgationInfo = DelegatePrefixes == false ? null : new DHCPv6PrefixDelgationInfoRequest
+            DHCPv6ScopeAddressPropertyReqest request = new()
             {
-                AssingedPrefixLength = AssingedPrefixLength,
-                Prefix = Prefix,
-                PrefixLength = PrefixLength,
-            },
-            ExcludedAddresses = ExcludedAddresses.Select(x => x.Value).ToList(),
-            ValidLifeTime = ValidLifetime.NullableValue,
-            PreferredLifeTime = PreferredLifetime.NullableValue,
-            T1 = T1.NullableValue,
-            T2 = T2.NullableValue,
-            RapitCommitEnabled = RapitCommitEnabled.NullableValue,
-            AcceptDecline = AcceptDecline.NullableValue,
-            InformsAreAllowd = InformsAreAllowd.NullableValue,
-            ReuseAddressIfPossible = ReuseAddressIfPossible.NullableValue,
-            SupportDirectUnicast = SupportDirectUnicast.NullableValue,
-            AddressAllocationStrategy = AddressAllocationStrategy.NullableValue,
-        };
+                Start = Start,
+                End = End,
+                PrefixDelgationInfo = DelegatePrefixes == false ? null : new DHCPv6PrefixDelgationInfoRequest
+                {
+                    AssingedPrefixLength = AssingedPrefixLength,
+                    Prefix = Prefix,
+                    PrefixLength = PrefixLength,
+                },
+                ExcludedAddresses = ExcludedAddresses.Select(x => x.Value).ToList(),
+                ValidLifeTime = ValidLifetime.NullableValue,
+                PreferredLifeTime = PreferredLifetime.NullableValue,
+                T1 = T1.NullableValue,
+                T2 = T2.NullableValue,
+                RapitCommitEnabled = RapitCommitEnabled.NullableValue,
+                AcceptDecline = AcceptDecline.NullableValue,
+                InformsAreAllowd = InformsAreAllowd.NullableValue,
+                ReuseAddressIfPossible = ReuseAddressIfPossible.NullableValue,
+                SupportDirectUnicast = SupportDirectUnicast.NullableValue,
+                AddressAllocationStrategy = AddressAllocationStrategy.NullableValue,
+                DynamicRenewTime = ((RenewType.HasValue && RenewType == RenewTypes.Dynamic) || DynamicRenewTime.HasValue || DynamicRenewDeltaToRebound.HasValue || DynamicRenewDeltaToLifetime.HasValue) ? new DHCPv6DynamicRenewTimeRequest
+                { 
+                    Hours = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Hours,
+                    Minutes = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Minutes,
+                    MinutesToRebound = (Int32)(DynamicRenewDeltaToRebound?.NullableValue ?? ParentValues.DynamicRenewDeltaToRebound.Value).TotalMinutes,
+                    MinutesToEndOfLife = (Int32)(DynamicRenewDeltaToLifetime?.NullableValue ?? ParentValues.DynamicRenewDeltaToLifetime.Value).TotalMinutes,
+                } : null,
+            };
+
+            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic)
+            {
+                request.T1 ??= ParentValues.T1.NullableValue;
+                request.T2 ??= ParentValues.T2.NullableValue;
+                request.PreferredLifeTime ??= ParentValues.PreferredLifetime.NullableValue;
+                request.ValidLifeTime ??= ParentValues.ValidLifetime.NullableValue;
+
+                request.DynamicRenewTime = null;
+            }
+
+            return request;
+        }
 
         internal void SetByResponse(DHCPv6ScopePropertiesResponse properties)
         {
@@ -173,7 +249,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 ExcludedAddresses.Add(new ExcludedAddressItem(item, this));
             }
 
-            if(addressRelatedProperties.PrefixDelegationInfo != null)
+            if (addressRelatedProperties.PrefixDelegationInfo != null)
             {
                 DelegatePrefixes = true;
                 Prefix = addressRelatedProperties.PrefixDelegationInfo.Prefix;
@@ -183,6 +259,31 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             else
             {
                 DelegatePrefixes = false;
+            }
+
+            if (addressRelatedProperties.UseDynamicRenew.HasValue == true)
+            {
+                if (addressRelatedProperties.UseDynamicRenew.Value == true)
+                {
+                    RenewType.UpdateNullableValue(RenewTypes.Dynamic, ParentValues != null, (x, y) => x == y);
+                    DynamicRenewTime.UpdateNullableValue(new TimeSpan(addressRelatedProperties.DynamicRenew.Hours, addressRelatedProperties.DynamicRenew.Minutes, 0), ParentValues != null);
+                    DynamicRenewDeltaToRebound.UpdateNullableValue(TimeSpan.FromMinutes(addressRelatedProperties.DynamicRenew.DelayToRebound), ParentValues != null);
+                    DynamicRenewDeltaToLifetime.UpdateNullableValue(TimeSpan.FromMinutes(addressRelatedProperties.DynamicRenew.DelayToLifetime), ParentValues != null);
+                }
+                else
+                {
+                    RenewType.UpdateNullableValue(RenewTypes.Static, ParentValues != null, (x, y) => x == y);
+                    DynamicRenewTime.UpdateNullableValue(new TimeSpan(3, 0, 0), ParentValues != null);
+                    DynamicRenewDeltaToRebound.UpdateNullableValue(TimeSpan.FromHours(1), ParentValues != null);
+                    DynamicRenewDeltaToLifetime.UpdateNullableValue(TimeSpan.FromHours(2), ParentValues != null);
+                }
+            }
+            else
+            {
+                RenewType.UpdateNullableValue(default, ParentValues != null);
+                DynamicRenewTime.UpdateNullableValue(default, ParentValues != null);
+                DynamicRenewDeltaToRebound.UpdateNullableValue(default, ParentValues != null);
+                DynamicRenewDeltaToLifetime.UpdateNullableValue(default, ParentValues != null);
             }
 
             PreferredLifetime.UpdateNullableValue(addressRelatedProperties.PreferedLifetime, ParentValues != null);
@@ -218,7 +319,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             {
                 RuleFor(y => y.PrefixLength).LessThanOrEqualTo((Byte)128).Must((y, z) => z <= y.AssingedPrefixLength).WithMessage(localizer["ValidationPrefixLengthGreaterThanAssingedPrefixLength"]).WithName("PrefixDelegationLengthLabel");
                 RuleFor(y => y.AssingedPrefixLength).LessThanOrEqualTo((Byte)128).Must((y, z) => z >= y.PrefixLength).WithMessage(localizer["ValidationAssingedPrefixLengthSmallerThanPrefixLength"]).WithName("PrefixDelegationAssingedLengthLabel");
-                RuleFor(y => y.Prefix).Cascade(CascadeMode.Stop).InjectIPv6AdressValidator(localizer["PrefixDelegationNetworkLabel"]).Must( (x,y) => {
+                RuleFor(y => y.Prefix).Cascade(CascadeMode.Stop).InjectIPv6AdressValidator(localizer["PrefixDelegationNetworkLabel"]).Must((x, y) =>
+                {
                     try
                     {
                         var address = IPv6Address.FromString(y);
@@ -228,8 +330,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                     catch (Exception)
                     {
                         return false;
-                    }   
-           
+                    }
+
                 }).WithMessage(localizer["ValidationNotAValidNetwork"]);
             });
 
@@ -268,7 +370,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 .Must((properties, address) => properties.Parent.ExcludedAddresses.Count(y => y.Value == address) == 1).When(x => x.Parent != null, ApplyConditionTo.CurrentValidator).WithMessage(localizer["ValidationExcludedAddressAlreadyExists"])
                 .Must((properties, address) => !properties.Parent.ParentValues.ExcludedAddresses.Any(y => y.Value == address)).WithMessage(localizer["ValidationExcludedAddressAlreadyExists"]).When(x => x.Parent.ParentValues != null, ApplyConditionTo.CurrentValidator);
             });
-         
+
             When(y => y.PreferredLifetime.NullableValue.HasValue, () =>
             {
                 Transform(x => x.PreferredLifetime.NullableValue, (time) => time.Value).Must((properties, time) => time <= properties.ValidLifetime.Value).WithMessage(localizer["ValidationPreferredLifetimeGreaterThanValidLifetime"]).When(y => y.ValidLifetime.HasValue);

@@ -62,7 +62,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             CanReactived(lifetime);
             DateTime now = DateTime.UtcNow;
 
-            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime,  renewalTime, preferredLifetime, false, true));
+            base.Apply(new DHCPv6LeaseRenewedEvent(this.Id, now + lifetime, renewalTime, preferredLifetime, false, true));
         }
 
         internal override void Revoke() => base.Apply(new DHCPv6LeaseRevokedEvent(this.Id));

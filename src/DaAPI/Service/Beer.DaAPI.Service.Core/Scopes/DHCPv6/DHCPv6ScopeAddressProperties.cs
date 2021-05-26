@@ -67,6 +67,30 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
             T1 = t1;
             T2 = t2;
+
+            if (preferredLifeTime.HasValue || validLifeTime.HasValue || t1 != null || t2 != null)
+            {
+                UseDynamicRewnewTime = false;
+            }
+        }
+
+        public DHCPv6ScopeAddressProperties(
+           IPv6Address start,
+           IPv6Address end,
+           IEnumerable<IPv6Address> excluded,
+           DynamicRenewTime dynamicRenewTime,
+           Boolean? reuseAddressIfPossible = null,
+           AddressAllocationStrategies? addressAllocationStrategy = null,
+           Boolean? supportDirectUnicast = null,
+           Boolean? acceptDecline = null,
+           Boolean? informsAreAllowd = null,
+           Boolean? rapitCommitEnabled = null,
+           DHCPv6PrefixDelgationInfo prefixDelgationInfo = null
+           ) : base(start, end, excluded, reuseAddressIfPossible, addressAllocationStrategy, supportDirectUnicast, acceptDecline, informsAreAllowd, dynamicRenewTime)
+        {
+
+            RapitCommitEnabled = rapitCommitEnabled;
+            PrefixDelgationInfo = prefixDelgationInfo;
         }
 
         public static DHCPv6ScopeAddressProperties Empty => new DHCPv6ScopeAddressProperties();
@@ -284,13 +308,20 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
                 return false;
             }
 
-            return
-                RapitCommitEnabled.HasValue &&
-                PreferredLeaseTime.HasValue &&
-                ValidLeaseTime.HasValue &&
-                PreferredLeaseTime.Value < ValidLeaseTime.Value &&
-                T1 != null && T2 != null &&
-                T1 < T2;
+            if (UseDynamicRewnewTime == true)
+            {
+                return DynamicRenewTime != null;
+            }
+            else
+            {
+                return
+                   RapitCommitEnabled.HasValue &&
+                   PreferredLeaseTime.HasValue &&
+                   ValidLeaseTime.HasValue &&
+                   PreferredLeaseTime.Value < ValidLeaseTime.Value &&
+                   T1 != null && T2 != null &&
+                   T1 < T2;
+            }
         }
     }
 }
