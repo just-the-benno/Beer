@@ -45,6 +45,14 @@ namespace Beer.DaAPI.Shared.Requests
                 public IDictionary<String, String> PropertiesAndValues { get; set; }
             }
 
+            public class DHCPv6DynamicRenewTimeRequest
+            {
+                public Int32 Hours { get; set; }
+                public Int32 Minutes { get; set; }
+                public Int32 MinutesToRebound { get; set; }
+                public Int32 MinutesToEndOfLife { get; set; }
+            }
+
             public class DHCPv6PrefixDelgationInfoRequest
             {
                 [Display(Name = "Prefix")]
@@ -115,6 +123,9 @@ namespace Beer.DaAPI.Shared.Requests
                 public AddressAllocationStrategies? AddressAllocationStrategy { get; set; }
 
                 public DHCPv6PrefixDelgationInfoRequest PrefixDelgationInfo { get; set; }
+
+                public DHCPv6DynamicRenewTimeRequest DynamicRenewTime { get; set; }
+
             }
 
             public abstract class DHCPv6ScopePropertyRequest

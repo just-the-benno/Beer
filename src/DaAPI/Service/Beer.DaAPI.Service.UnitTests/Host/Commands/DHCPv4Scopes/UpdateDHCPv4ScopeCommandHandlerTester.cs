@@ -206,7 +206,6 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
             else
             {
                 Assert.False(scope.AddressRelatedProperties.UseDynamicRewnewTime);
-
             }
 
             scopeResolverMock.Verify();

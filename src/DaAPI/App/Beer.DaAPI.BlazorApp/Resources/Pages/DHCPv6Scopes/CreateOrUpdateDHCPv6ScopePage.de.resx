@@ -189,6 +189,15 @@
   <data name="DescriptionPlaceholder" xml:space="preserve">
     <value>(optional) Fügen Sie hier eine Beschreibung für den Bereich ein</value>
   </data>
+  <data name="DynamicRenewDeltaToLifetLabel" xml:space="preserve">
+    <value>Lease endet nach</value>
+  </data>
+  <data name="DynamicRenewDeltaToReboundLabel" xml:space="preserve">
+    <value>Rebound nach</value>
+  </data>
+  <data name="DynamicRenewTime" xml:space="preserve">
+    <value>Renew um</value>
+  </data>
   <data name="EnablePrefixDelegationLabel" xml:space="preserve">
     <value>Enable</value>
   </data>
@@ -317,6 +326,15 @@
   </data>
   <data name="RapitCommitEnabledLabel" xml:space="preserve">
     <value>Rapit Commit</value>
+  </data>
+  <data name="RenewTypeDynamicLabel" xml:space="preserve">
+    <value>Dynamisch</value>
+  </data>
+  <data name="RenewTypeLabel" xml:space="preserve">
+    <value>Renew Art</value>
+  </data>
+  <data name="RenewTypeStaticLabel" xml:space="preserve">
+    <value>Statisch</value>
   </data>
   <data name="ResolverPropertiesSectionHeading" xml:space="preserve">
     <value>Zuordner</value>

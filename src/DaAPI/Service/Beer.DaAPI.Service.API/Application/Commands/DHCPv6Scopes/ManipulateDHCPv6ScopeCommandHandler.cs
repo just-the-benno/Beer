@@ -12,7 +12,12 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
 {
     public abstract class ManipulateDHCPv6ScopeCommandHandler
     {
+        protected static DynamicRenewTime GetDynamicRenewTime(DHCPv6DynamicRenewTimeRequest request) =>
+           DynamicRenewTime.WithSpecificRange(request.Hours, request.Minutes, request.MinutesToRebound, request.MinutesToEndOfLife);
+
+
         protected static DHCPv6ScopeAddressProperties GetScopeAddressProperties(IScopeChangeCommand request) =>
+             request.AddressProperties.DynamicRenewTime == null ?
            new DHCPv6ScopeAddressProperties
                (
                    IPv6Address.FromString(request.AddressProperties.Start),
@@ -23,7 +28,7 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
                    preferredLifeTime: request.AddressProperties.PreferredLifeTime,
                    validLifeTime: request.AddressProperties.ValidLifeTime,
                    reuseAddressIfPossible: request.AddressProperties.ReuseAddressIfPossible,
-                   addressAllocationStrategy: (Beer.DaAPI.Core.Scopes.ScopeAddressProperties<DHCPv6ScopeAddressProperties,IPv6Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
+                   addressAllocationStrategy: (Beer.DaAPI.Core.Scopes.ScopeAddressProperties<DHCPv6ScopeAddressProperties, IPv6Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
                    supportDirectUnicast: request.AddressProperties.SupportDirectUnicast,
                    acceptDecline: request.AddressProperties.AcceptDecline,
                    informsAreAllowd: request.AddressProperties.InformsAreAllowd,
@@ -33,7 +38,23 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
                            IPv6Address.FromString(request.AddressProperties.PrefixDelgationInfo.Prefix),
                            new IPv6SubnetMaskIdentifier(request.AddressProperties.PrefixDelgationInfo.PrefixLength),
                            new IPv6SubnetMaskIdentifier(request.AddressProperties.PrefixDelgationInfo.AssingedPrefixLength))
-               );
+               ) : new DHCPv6ScopeAddressProperties
+               (
+                   IPv6Address.FromString(request.AddressProperties.Start),
+                   IPv6Address.FromString(request.AddressProperties.End),
+                   request.AddressProperties.ExcludedAddresses.Select(x => IPv6Address.FromString(x)),
+                   GetDynamicRenewTime(request.AddressProperties.DynamicRenewTime),
+                   reuseAddressIfPossible: request.AddressProperties.ReuseAddressIfPossible,
+                   addressAllocationStrategy: (Beer.DaAPI.Core.Scopes.ScopeAddressProperties<DHCPv6ScopeAddressProperties, IPv6Address>.AddressAllocationStrategies?)request.AddressProperties.AddressAllocationStrategy,
+                   supportDirectUnicast: request.AddressProperties.SupportDirectUnicast,
+                   acceptDecline: request.AddressProperties.AcceptDecline,
+                   informsAreAllowd: request.AddressProperties.InformsAreAllowd,
+                   rapitCommitEnabled: request.AddressProperties.RapitCommitEnabled,
+                   prefixDelgationInfo: request.AddressProperties.PrefixDelgationInfo == null ? null :
+                       DHCPv6PrefixDelgationInfo.FromValues(
+                           IPv6Address.FromString(request.AddressProperties.PrefixDelgationInfo.Prefix),
+                           new IPv6SubnetMaskIdentifier(request.AddressProperties.PrefixDelgationInfo.PrefixLength),
+                           new IPv6SubnetMaskIdentifier(request.AddressProperties.PrefixDelgationInfo.AssingedPrefixLength)));
 
         protected static CreateScopeResolverInformation GetResolverInformation(IScopeChangeCommand request) =>
             new CreateScopeResolverInformation

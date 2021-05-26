@@ -169,24 +169,45 @@ else
                                     }
                                 </ChildContent>
                             </DHCPv6AddressRelatedPropertyEntry>
-                            <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.PreferredLifetime" PropertyName="@L["PreferredLifetimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.PreferredLifetime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.PreferredLifetime.OverrideValue">
-                                <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.PreferredLifetime.NullableValue" For="@(() => _addressRelatedPropertiesModel.PreferredLifetime.NullableValue)" />
+                            <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.RenewType" PropertyName="@L["RenewTypeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.RenewType.Value.ToString()" @bind-OverrideValue="_addressRelatedPropertiesModel.RenewType.OverrideValue">
+                                <MudSelect T="RenewTypes?" For="@( () => _addressRelatedPropertiesModel.RenewType.NullableValue)" @bind-Value="_addressRelatedPropertiesModel.RenewType.NullableValue">
+                                    <MudSelectItem T="RenewTypes?" Value="@RenewTypes.Static">@L["RenewTypeStaticLabel"]</MudSelectItem>
+                                    <MudSelectItem T="RenewTypes?" Value="@RenewTypes.Dynamic">@L["RenewTypeDynamicLabel"]</MudSelectItem>
+                                </MudSelect>
                             </DHCPv6AddressRelatedPropertyEntry>
-                            <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.ValidLifetime" PropertyName="@L["ValidLifetimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.ValidLifetime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.ValidLifetime.OverrideValue">
-                                <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.ValidLifetime.NullableValue" For="@(() => _addressRelatedPropertiesModel.ValidLifetime.NullableValue)" />
-                            </DHCPv6AddressRelatedPropertyEntry>
-                            <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.T1" PropertyName="@L["T1Label"]" ShowParentValue="@HasParent()" ParentValue="@GetT1DisplayValueOfParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.T1.OverrideValue">
-                                <MudSlider T="Double?" @bind-Value="_addressRelatedPropertiesModel.T1.NullableValue" Min="0" Max="0.95" Step="0.05" Color="Color.Primary">
-                                    @(((_addressRelatedPropertiesModel.PreferredLifetime.NullableValue ?? _addressRelatedPropertiesModel.ParentValues.PreferredLifetime.NullableValue) * _addressRelatedPropertiesModel.T1.Value).Value.Humanize())
-                                </MudSlider>
-                                <ValidationMessage style="color: var(--mud-palette-error) !important;" For="@(() => _addressRelatedPropertiesModel.T1.NullableValue)" />
-                            </DHCPv6AddressRelatedPropertyEntry>
-                            <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.T2" PropertyName="@L["T2Label"]" ShowParentValue="@HasParent()" ParentValue="@GetT2DisplayValueOfParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.T2.OverrideValue">
-                                <MudSlider T="Double?" @bind-Value="_addressRelatedPropertiesModel.T2.NullableValue" Min="0" Max="0.95" Step="0.05" Color="Color.Primary">
-                                    @(((_addressRelatedPropertiesModel.PreferredLifetime.NullableValue ?? _addressRelatedPropertiesModel.ParentValues.PreferredLifetime.NullableValue) * _addressRelatedPropertiesModel.T2.Value).Value.Humanize())
-                                </MudSlider>
-                                <ValidationMessage style="color: var(--mud-palette-error) !important;" For="@(() => _addressRelatedPropertiesModel.T2.NullableValue)" />
-                            </DHCPv6AddressRelatedPropertyEntry>
+                            @if ( ( _addressRelatedPropertiesModel.RenewType.NullableValue ?? _addressRelatedPropertiesModel.RenewType.DefaultValue) == RenewTypes.Static)
+                            {
+                                <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.PreferredLifetime" PropertyName="@L["PreferredLifetimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.PreferredLifetime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.PreferredLifetime.OverrideValue">
+                                    <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.PreferredLifetime.NullableValue" For="@(() => _addressRelatedPropertiesModel.PreferredLifetime.NullableValue)" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                                <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.ValidLifetime" PropertyName="@L["ValidLifetimeLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.ValidLifetime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.ValidLifetime.OverrideValue">
+                                    <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.ValidLifetime.NullableValue" For="@(() => _addressRelatedPropertiesModel.ValidLifetime.NullableValue)" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                                <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.T1" PropertyName="@L["T1Label"]" ShowParentValue="@HasParent()" ParentValue="@GetT1DisplayValueOfParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.T1.OverrideValue">
+                                    <MudSlider T="Double?" @bind-Value="_addressRelatedPropertiesModel.T1.NullableValue" Min="0" Max="0.95" Step="0.05" Color="Color.Primary">
+                                        @(((_addressRelatedPropertiesModel.PreferredLifetime.NullableValue ?? _addressRelatedPropertiesModel.ParentValues.PreferredLifetime.NullableValue) * _addressRelatedPropertiesModel.T1.Value).Value.Humanize())
+                                    </MudSlider>
+                                    <ValidationMessage style="color: var(--mud-palette-error) !important;" For="@(() => _addressRelatedPropertiesModel.T1.NullableValue)" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                                <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.T2" PropertyName="@L["T2Label"]" ShowParentValue="@HasParent()" ParentValue="@GetT2DisplayValueOfParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.T2.OverrideValue">
+                                    <MudSlider T="Double?" @bind-Value="_addressRelatedPropertiesModel.T2.NullableValue" Min="0" Max="0.95" Step="0.05" Color="Color.Primary">
+                                        @(((_addressRelatedPropertiesModel.PreferredLifetime.NullableValue ?? _addressRelatedPropertiesModel.ParentValues.PreferredLifetime.NullableValue) * _addressRelatedPropertiesModel.T2.Value).Value.Humanize())
+                                    </MudSlider>
+                                    <ValidationMessage style="color: var(--mud-palette-error) !important;" For="@(() => _addressRelatedPropertiesModel.T2.NullableValue)" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                            }
+                            else
+                            {
+                                 <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.DynamicRenewTime" PropertyName="@L["DynamicRenewTime"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.DynamicRenewTime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.DynamicRenewTime.OverrideValue">
+                                    <MudTimePicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.DynamicRenewTime.NullableValue" For="@(() => _addressRelatedPropertiesModel.DynamicRenewTime.NullableValue)" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                                <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.DynamicRenewDeltaToRebound" PropertyName="@L["DynamicRenewDeltaToReboundLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.DynamicRenewDeltaToRebound.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.DynamicRenewDeltaToRebound.OverrideValue">
+                                    <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.DynamicRenewDeltaToRebound.NullableValue" For="@(() => _addressRelatedPropertiesModel.DynamicRenewDeltaToRebound.NullableValue)" Minimum="TimeSpan.FromMinutes(20)" Maximum="TimeSpan.FromHours(4)" MinUnit="DaAPITimeSpanPicker.TimeSpanUnits.Minutes" MaxUnit="DaAPITimeSpanPicker.TimeSpanUnits.Hours" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                                <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.DynamicRenewDeltaToLifetime" PropertyName="@L["DynamicRenewDeltaToLifetLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.DynamicRenewDeltaToLifetime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.DynamicRenewDeltaToLifetime.OverrideValue">
+                                    <DaAPITimeSpanPicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.DynamicRenewDeltaToLifetime.NullableValue" For="@(() => _addressRelatedPropertiesModel.DynamicRenewDeltaToLifetime.NullableValue)" Minimum="TimeSpan.FromMinutes(20)" Maximum="TimeSpan.FromHours(4)" MinUnit="DaAPITimeSpanPicker.TimeSpanUnits.Minutes" MaxUnit="DaAPITimeSpanPicker.TimeSpanUnits.Hours" />
+                                </DHCPv6AddressRelatedPropertyEntry>
+                            }
                             <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.RapidCommit" PropertyName="@L["RapitCommitEnabledLabel"]" ShowParentValue="@HasParent()" @bind-OverrideValue="_addressRelatedPropertiesModel.SupportDirectUnicast.OverrideValue">
                                 <ParentContent>
                                     <BeerPseudoCheckBox Checked="@_addressRelatedPropertiesModel.ParentValues?.RapitCommitEnabled.NullableValue" />

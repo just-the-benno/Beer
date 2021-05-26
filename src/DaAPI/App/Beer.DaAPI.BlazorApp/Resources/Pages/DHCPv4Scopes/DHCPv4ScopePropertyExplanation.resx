@@ -118,16 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DynamicRenewDeltaToLifetimeContent" xml:space="preserve">
-    <value>If the renew time is set for instance to 3 am and this value is set to 2 hours, would reset in lease that will be invalid at 5 am</value>
+    <value>The time span after after the Renew time has passed, the client will go into the init state again. If this value is set to 3 hours and the Renew time is set to 3 am. The client will go into the init state and forget it lease at 6 am.</value>
   </data>
   <data name="DynamicRenewDeltaToLifetimeName" xml:space="preserve">
     <value>Leasetime after</value>
+  </data>
+  <data name="DynamicRenewDeltaToReboundContent" xml:space="preserve">
+    <value>The time span after after the Renew time has passed, the client will go into the 'Rebounding' state. If this value is set to 2 hours and the Renew time is set to 3 am. The client will go into the rebouding state at 5 am. </value>
   </data>
   <data name="DynamicRenewDeltaToReboundName" xml:space="preserve">
     <value>Rebound after</value>
   </data>
   <data name="DynamicRenewTimeContent" xml:space="preserve">
-    <value>If the renew time is set for instance to 3 am and this value is set to 2 hours, would reset in a rebound time of 5 am</value>
+    <value>The time, a client should go into the 'renewing' state and tries to extent it's lease.  If this value is set for instance to 3 am and a request is received at 1 am, the value the timespan in the ACK package is set to 2 hours. If the message is received at 1 pm the renewing time in the ACK would be 13 hours.</value>
   </data>
   <data name="DynamicRenewTimeName" xml:space="preserve">
     <value>Time of Renew</value>

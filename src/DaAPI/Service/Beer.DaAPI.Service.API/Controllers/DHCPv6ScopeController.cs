@@ -182,7 +182,15 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                         AssingedPrefixLength = addressProperties.PrefixDelgationInfo.AssignedPrefixLength,
                         Prefix = addressProperties.PrefixDelgationInfo.Prefix.ToString(),
                         PrefixLength = addressProperties.PrefixDelgationInfo.PrefixLength
-                    }
+                    },
+                    UseDynamicRenew = addressProperties.UseDynamicRewnewTime,
+                    DynamicRenew = addressProperties.UseDynamicRewnewTime == true ? new DynamicRenewTimeReponse
+                    {
+                        Hours = addressProperties.DynamicRenewTime.Hour,
+                        Minutes = addressProperties.DynamicRenewTime.Minutes,
+                        DelayToRebound = (Int32)addressProperties.DynamicRenewTime.MinutesToRebound,
+                        DelayToLifetime = (Int32)addressProperties.DynamicRenewTime.MinutesToEndOfLife,
+                    } : null,
                 }
             };
 

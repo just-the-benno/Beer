@@ -29,9 +29,11 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
     public class UpdateDHCPv6ScopeCommandHandlerTester
     {
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task Handle(Boolean storeResult)
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task Handle(Boolean storeResult, Boolean useDynamicTime)
         {
             Random random = new Random();
 
@@ -96,7 +98,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
             storageMock.Setup(x => x.Save(rootScope)).ReturnsAsync(storeResult).Verifiable();
 
             var command = new UpdateDHCPv6ScopeCommand(scopeId, name, description, null,
-                new DHCPv6ScopeAddressPropertyReqest
+                  useDynamicTime == false ? new DHCPv6ScopeAddressPropertyReqest
                 {
                     Start = start.ToString(),
                     End = end.ToString(),
@@ -117,6 +119,30 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
                     },
                     T1 = 0.3,
                     T2 = 0.65,
+                } : new DHCPv6ScopeAddressPropertyReqest
+                {
+                    Start = start.ToString(),
+                    End = end.ToString(),
+                    ExcludedAddresses = Array.Empty<String>(),
+                    AcceptDecline = random.NextBoolean(),
+                    AddressAllocationStrategy = DHCPv6ScopeAddressPropertyReqest.AddressAllocationStrategies.Next,
+                    InformsAreAllowd = random.NextBoolean(),
+                    RapitCommitEnabled = random.NextBoolean(),
+                    ReuseAddressIfPossible = random.NextBoolean(),
+                    SupportDirectUnicast = random.NextBoolean(),
+                    PrefixDelgationInfo = new DHCPv6PrefixDelgationInfoRequest
+                    {
+                        AssingedPrefixLength = 80,
+                        Prefix = "fe80::0",
+                        PrefixLength = 64
+                    },
+                    DynamicRenewTime = new DHCPv6DynamicRenewTimeRequest
+                    {
+                        Hours = 5,
+                        Minutes = 10,
+                        MinutesToEndOfLife = 45,
+                        MinutesToRebound = 35,
+                    },
                 },
                 new CreateScopeResolverRequest
                 {
@@ -157,17 +183,28 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
             Assert.True(scope.Properties.IsMarkedAsRemovedFromInheritance(64));
             Assert.False(scope.Properties.IsMarkedAsRemovedFromInheritance(24));
 
+            if (useDynamicTime == true)
+            {
+                Assert.True(scope.AddressRelatedProperties.UseDynamicRewnewTime);
+                Assert.Equal(5, scope.AddressRelatedProperties.DynamicRenewTime.Hour);
+            }
+            else
+            {
+                Assert.False(scope.AddressRelatedProperties.UseDynamicRewnewTime);
+            }
+
             scopeResolverMock.Verify();
             storageMock.Verify();
 
-            Assert.Empty(rootScope.GetTriggers());
 
             if (storeResult == true)
             {
                 serviceBusMock.Verify();
+                Assert.Empty(rootScope.GetTriggers());
             }
             else
             {
+                Assert.Single(rootScope.GetTriggers());
             }
         }
     }
