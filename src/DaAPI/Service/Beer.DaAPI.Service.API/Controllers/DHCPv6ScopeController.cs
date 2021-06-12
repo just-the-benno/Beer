@@ -246,5 +246,12 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             DeleteDHCPv6ScopeCommand command = new DeleteDHCPv6ScopeCommand(scopeId, includeChildren);
             return await ExecuteCommand(command);
         }
+
+        [HttpPut("/api/scopes/dhcpv6/changeScopeParent/{id}/{parentId?}")]
+        public async Task<IActionResult> UpdateScopeParent([FromRoute(Name = "id")] Guid scoopeId, [FromRoute(Name = "parentId")] Guid? parentId)
+        {
+            UpdateDHCPv6ScopeParentCommand command = new (scoopeId, parentId);
+            return await ExecuteCommand(command);
+        }
     }
 }

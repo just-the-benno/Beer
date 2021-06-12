@@ -74,6 +74,26 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             }
         }
 
+        public async Task ShowChangeParentDialog(DHCPv4ScopeTreeViewItem item)
+        {
+            var parameters = new DialogParameters
+            {
+                { nameof(ChangeParentDHCPv4ScopeDialog.Entry), item },
+                { nameof(ChangeParentDHCPv4ScopeDialog.Items), _scopes }
+            };
+
+            var messageForm = _dialogService.Show<ChangeParentDHCPv4ScopeDialog>(String.Format(L["ChangeParentScopeTitle"], item.Name), parameters);
+            var result = await messageForm.Result;
+
+            if (result.IsSuccess() == true)
+            {
+                _snackBarService.Add(String.Format(L["ChangeParentScopesSuccessSnackbarContent"], item.Name), Severity.Success);
+                _items.Clear();
+                StateHasChanged();
+                await LoadItems();
+            }
+        }
+
         private String GetScopeAddressRangeAsString(DHCPv4ScopeTreeViewItem item)
         {
             if (item.StartAddress == item.EndAddress)

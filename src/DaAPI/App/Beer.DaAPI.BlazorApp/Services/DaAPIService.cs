@@ -109,6 +109,9 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<Boolean> UpdateDHCPv6Scope(CreateOrUpdateDHCPv6ScopeRequest request, String scopeId) =>
             await ExecuteCommand(() => _client.PutAsync($"api/scopes/dhcpv6/{scopeId}", GetStringContentAsJson(request)));
 
+        public async Task<Boolean> SendChangeDHCPv6ScopeParentRequest(Guid scopeId, Guid? parentId) =>
+            await ExecuteCommand(() => _client.PutAsync($"/api/scopes/dhcpv6/changeScopeParent/{scopeId}/{parentId}", GetStringContentAsJson(new { })));
+
         private async Task<TResult> GetResponse<TResult>(String url) where TResult : class
         {
             try
@@ -322,6 +325,10 @@ namespace Beer.DaAPI.BlazorApp.Services
 
         public async Task<Boolean> CreateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request) =>
         await ExecuteCommand(() => _client.PostAsync("api/scopes/dhcpv4/", GetStringContentAsJson(request)));
+
+
+        public async Task<Boolean> SendChangeDHCPv4ScopeParentRequest(Guid scopeId, Guid? parentId) =>
+            await ExecuteCommand(() => _client.PutAsync($"/api/scopes/dhcpv4/changeScopeParent/{scopeId}/{parentId}", GetStringContentAsJson(new { })));
 
         public async Task<IEnumerable<DHCPv4LeaseOverview>> GetDHCPv4LeasesByScope(String scopeId, Boolean includeChildScopes) =>
         await GetResponse<IEnumerable<DHCPv4LeaseOverview>>($"/api/leases/dhcpv4/scopes/{scopeId}?includeChildren={includeChildScopes}");

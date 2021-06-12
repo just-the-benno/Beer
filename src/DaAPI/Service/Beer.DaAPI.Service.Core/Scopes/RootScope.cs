@@ -493,6 +493,10 @@ namespace Beer.DaAPI.Core.Scopes
             {
                 scope.DetachFromParent(false);
             }
+            else
+            {
+                _firstLevelScopes.Remove(scope);
+            }
 
             if (parentId.HasValue == false)
             {

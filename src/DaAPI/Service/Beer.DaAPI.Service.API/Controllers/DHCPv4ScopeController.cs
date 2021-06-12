@@ -204,7 +204,8 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                     LeaseTime = addressProperties.LeaseTime,
                     RenewalTime = addressProperties.RenewalTime,
                     UseDynamicRenew = addressProperties.UseDynamicRewnewTime,
-                    DynamicRenew = addressProperties.UseDynamicRewnewTime == true ? new DynamicRenewTimeReponse { 
+                    DynamicRenew = addressProperties.UseDynamicRewnewTime == true ? new DynamicRenewTimeReponse
+                    {
                         Hours = addressProperties.DynamicRenewTime.Hour,
                         Minutes = addressProperties.DynamicRenewTime.Minutes,
                         DelayToRebound = (Int32)addressProperties.DynamicRenewTime.MinutesToRebound,
@@ -264,6 +265,13 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         public async Task<IActionResult> DeleteScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery] Boolean includeChildren = false)
         {
             DeleteDHCPv4ScopeCommand command = new DeleteDHCPv4ScopeCommand(scopeId, includeChildren);
+            return await ExecuteCommand(command);
+        }
+
+        [HttpPut("/api/scopes/dhcpv4/changeScopeParent/{id}/{parentId?}")]
+        public async Task<IActionResult> UpdateScopeParent([FromRoute(Name = "id")] Guid scoopeId, [FromRoute(Name = "parentId")] Guid? parentId)
+        {
+            UpdateDHCPv4ScopeParentCommand command = new UpdateDHCPv4ScopeParentCommand(scoopeId, parentId);
             return await ExecuteCommand(command);
         }
     }

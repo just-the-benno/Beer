@@ -135,7 +135,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         protected override IPv4Address GetNextAddress(IEnumerable<IPv4Address> used)
         {
-            IList<IPv4Address> sorted = used.Union(ExcludedAddresses).OrderBy(x => x).ToList();
+            IList<IPv4Address> sorted = used.Union(ExcludedAddresses.Where(x => x >= Start && x <= End)).OrderBy(x => x).ToList();
             if (sorted.Count == 0)
             {
                 return IPv4Address.FromAddress(Start);

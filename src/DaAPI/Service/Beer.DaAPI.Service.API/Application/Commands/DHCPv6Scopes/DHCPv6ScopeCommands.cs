@@ -31,4 +31,6 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
      IEnumerable<DHCPv6ScopePropertyRequest> Properties
     ) : IScopeChangeCommand, IRequest<Boolean>;
 
+    public record UpdateDHCPv6ScopeParentCommand(Guid ScopeId, Guid? ParentScopeId) : IRequest<Boolean>;
+
 }

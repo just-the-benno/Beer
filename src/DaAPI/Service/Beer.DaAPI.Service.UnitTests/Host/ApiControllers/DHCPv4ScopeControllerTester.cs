@@ -428,5 +428,42 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
 
             mediatorMock.Verify();
         }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task UpdateScopeParent(Boolean mediatorResultShouldBeSuccessful)
+        {
+            Random random = new Random();
+
+            Guid id = random.NextGuid();
+            Guid? parentId = random.NextBoolean() == true ? random.NextGuid() : new Guid?();
+
+            Mock<ILoggerFactory> factoryMock = new Mock<ILoggerFactory>(MockBehavior.Strict);
+            factoryMock.Setup(x => x.CreateLogger(It.IsAny<String>())).Returns(Mock.Of<ILogger<DHCPv4RootScope>>());
+
+            DHCPv4RootScope rootScope = new DHCPv4RootScope(random.NextGuid(), Mock.Of<IScopeResolverManager<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict), factoryMock.Object);
+
+            Mock<IMediator> mediatorMock = new Mock<IMediator>(MockBehavior.Strict);
+            mediatorMock.Setup(x => x.Send(It.Is<UpdateDHCPv4ScopeParentCommand>(y =>
+            y.ScopeId == id && y.ParentScopeId == parentId
+            ), It.IsAny<CancellationToken>())).ReturnsAsync(mediatorResultShouldBeSuccessful).Verifiable();
+
+            var controller = new DHCPv4ScopeController(mediatorMock.Object,
+                Mock.Of<IScopeResolverManager<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict),
+                rootScope);
+
+            var actionResult = await controller.UpdateScopeParent(id, parentId);
+            if (mediatorResultShouldBeSuccessful == true)
+            {
+                actionResult.EnsureNoContentResult();
+            }
+            else
+            {
+                actionResult.EnsureBadRequestObjectResult("unable to execute service operation");
+            }
+
+            mediatorMock.Verify();
+        }
     }
 }
