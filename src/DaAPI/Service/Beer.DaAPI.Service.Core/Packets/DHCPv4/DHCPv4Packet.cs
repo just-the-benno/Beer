@@ -590,6 +590,10 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
                 {
                     _clientIdenfier = clientIdentifierOption.Identifier.AddHardwareAddress(ClientHardwareAddress);
                 }
+                else
+                {
+                    _clientIdenfier = clientIdentifierOption.Identifier;
+                }
             }
             else
             {
