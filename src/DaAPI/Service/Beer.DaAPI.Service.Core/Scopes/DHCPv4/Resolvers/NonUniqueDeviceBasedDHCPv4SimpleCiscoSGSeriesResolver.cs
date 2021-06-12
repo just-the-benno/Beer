@@ -51,7 +51,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             ValueGetter = () => GetOptionValue(_deviceService.GetMacAddressFromDevice(DeviceId));
         }
 
-        protected override string GetTypeName() => nameof(DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver);
+        protected override string GetTypeName() => nameof(NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver);
 
         protected override IEnumerable<ScopeResolverPropertyDescription> GetAddionalProperties() => new[]
         {
