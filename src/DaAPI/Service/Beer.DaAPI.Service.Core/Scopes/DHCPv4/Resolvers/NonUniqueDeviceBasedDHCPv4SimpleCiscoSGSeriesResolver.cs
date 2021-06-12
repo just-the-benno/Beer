@@ -27,7 +27,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         #region Constructor
 
-        public DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver(IDeviceService deviceService)
+        public NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver(IDeviceService deviceService)
         {
             _deviceService = deviceService;
         }
