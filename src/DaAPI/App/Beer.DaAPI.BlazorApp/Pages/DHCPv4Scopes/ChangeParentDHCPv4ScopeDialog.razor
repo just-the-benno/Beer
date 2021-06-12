@@ -1,0 +1,30 @@
+﻿@inherits DaAPIDialogBase
+@inject IStringLocalizer<ChangeParentDHCPv4ScopeDialog> L
+@inject IStringLocalizer<SharedRessources> LShared
+
+@inject DaAPIService _service
+
+
+<MudDialog>
+    <DialogContent>
+        @if (_hasErrors == true)
+        {
+            <MudAlert Class="mb-5" Severity="Severity.Error">@L["ErrorMessage"]</MudAlert>
+        }
+
+        <MudSelect T="Guid?" @bind-Value="ParentId" MultiSelection="false" Label="@L["ParentLabel"]">
+            <MudSelectItem T="Guid?" Value="new Guid?()">@L["NoParentChoose"]</MudSelectItem>
+
+            @foreach (var item in GetPossibleParents())
+            {
+                <MudSelectItem T="Guid?" Value="@item.item.Id" Style="@($"margin-left: ${5 * item.depth}px")">@item.item.Name</MudSelectItem>
+            }
+        </MudSelect>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@LShared["CancelCaption"]</MudButton>
+        <BeerSendingAwareButton ButtonType="ButtonType.Button" OnClick="ChangeParent" DefaultText="@L["ChangeButtonCaption"]" InProgressText="@L["ChangingButtonCaption"]" IsExecuting="_sendingInProgress" />
+    </DialogActions>
+</MudDialog>
+

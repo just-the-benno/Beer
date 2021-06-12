@@ -198,7 +198,7 @@ else
                             }
                             else
                             {
-                                 <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.DynamicRenewTime" PropertyName="@L["DynamicRenewTime"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.DynamicRenewTime.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.DynamicRenewTime.OverrideValue">
+                                 <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.DynamicRenewTime" PropertyName="@L["DynamicRenewTime"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.DynamicRenewTime.Value.ToString("hh\\:mm")" @bind-OverrideValue="_addressRelatedPropertiesModel.DynamicRenewTime.OverrideValue">
                                     <MudTimePicker PickerVariant="PickerVariant.Dialog" @bind-Time="_addressRelatedPropertiesModel.DynamicRenewTime.NullableValue" For="@(() => _addressRelatedPropertiesModel.DynamicRenewTime.NullableValue)" />
                                 </DHCPv6AddressRelatedPropertyEntry>
                                 <DHCPv6AddressRelatedPropertyEntry Property="DHCPv6ScopePropertyExplanationValues.DynamicRenewDeltaToRebound" PropertyName="@L["DynamicRenewDeltaToReboundLabel"]" ShowParentValue="@HasParent()" ParentValue="@_addressRelatedPropertiesModel.ParentValues?.DynamicRenewDeltaToRebound.Value.Humanize()" @bind-OverrideValue="_addressRelatedPropertiesModel.DynamicRenewDeltaToRebound.OverrideValue">

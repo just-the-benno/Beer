@@ -184,7 +184,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 } : null,
             };
 
-            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic)
+            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && (ParentValues == null ) || (ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic))
             {
                 request.RenewalTime ??= ParentValues.RenewalTime.NullableValue;
                 request.PreferredLifetime ??= ParentValues.PreferredLifetime.NullableValue;
