@@ -23,6 +23,8 @@ namespace Beer.DaAPI.Infrastructure.Services
             AddOrUpdateScopeResolver(nameof(DHCPv4SimpleZyxelIESResolver), () => new DHCPv4SimpleZyxelIESResolver());
             AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv4SimpleZyxelIESResolver), () => new DeviceBasedDHCPv4SimpleZyxelIESResolver(deviceService));
             AddOrUpdateScopeResolver(nameof(DHCPv4SimpleCiscoSGSeriesResolver), () => new DHCPv4SimpleCiscoSGSeriesResolver());
+            AddOrUpdateScopeResolver(nameof(NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver), () => new NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver(deviceService));
+            
             AddOrUpdateScopeResolver(nameof(DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver), () => new DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver(deviceService));
 
             AddOrUpdateScopeResolver(nameof(DHCPv4Option82Resolver), () => new DHCPv4Option82Resolver());

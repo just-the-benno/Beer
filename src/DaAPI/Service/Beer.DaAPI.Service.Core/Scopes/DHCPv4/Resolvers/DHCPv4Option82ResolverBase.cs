@@ -21,7 +21,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         #region Methods
 
-        public Boolean HasUniqueIdentifier => true;
+        public virtual Boolean HasUniqueIdentifier => true;
         public byte[] GetUniqueIdentifier(DHCPv4Packet packet) => packet.GetOptionByIdentifier(82)?.OptionData ?? Array.Empty<Byte>();
 
         public Boolean PacketMeetsCondition(DHCPv4Packet packet)
