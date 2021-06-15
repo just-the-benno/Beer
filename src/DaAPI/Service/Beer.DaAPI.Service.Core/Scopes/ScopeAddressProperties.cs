@@ -227,7 +227,7 @@ namespace Beer.DaAPI.Core.Scopes
 
         public abstract Boolean IsAddressRangeBetween(TAddressProperties child);
 
-        protected virtual TAddress GetNextRandomAddressInternal(IEnumerable<TAddress> used, Func<Byte[], TAddress> byteFactory, Func<TAddress> emptyFactory)
+        protected virtual TAddress GetNextRandomAddressInternal(IEnumerable<TAddress> used, Func<Byte[], TAddress> byteFactory, Func<TAddress> emptyFactory, IEnumerable<IPAddressRange<TAddress>> excludedRanges)
         {
             HashSet<TAddress> notuseableAddresses = new HashSet<TAddress>(used.Union(ExcludedAddresses));
 
@@ -284,7 +284,7 @@ namespace Beer.DaAPI.Core.Scopes
                 }
 
                 nextAddress = byteFactory(addressBytes);
-            } while (trysLeft-- > 0 && notuseableAddresses.Contains(nextAddress) == true);
+            } while (trysLeft-- > 0 && (notuseableAddresses.Contains(nextAddress) == true || IsInRanges(nextAddress,excludedRanges)));
 
             if (trysLeft < 0)
             {
@@ -294,21 +294,61 @@ namespace Beer.DaAPI.Core.Scopes
             return nextAddress;
         }
 
-        protected abstract TAddress GetNextRandomAddress(HashSet<TAddress> used);
+        protected virtual TAddress GetNextAddressInternal(IEnumerable<TAddress> used, IEnumerable<IPAddressRange<TAddress>> excludedRanges, Func<TAddress,TAddress> getNextAddress)
+        {
+            TAddress current = Start;
+            HashSet<TAddress> notUsableAddresses = new(used.Union(ExcludedAddresses));
 
-        protected abstract TAddress GetNextAddress(IEnumerable<TAddress> used);
+            while (true)
+            {
+                if(current.IsGreaterThan(End) == true)
+                {
+                    return GetEmptyAddress();
+                }
+
+                if (notUsableAddresses.Contains(current) == true || IsInRanges(current, excludedRanges) == true)
+                {
+                    current = getNextAddress(current);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return current;
+        }
+
+        protected abstract TAddress GetNextRandomAddress(HashSet<TAddress> used, IEnumerable<IPAddressRange<TAddress>> excludedRanges);
+
+        protected abstract TAddress GetNextAddress(IEnumerable<TAddress> used, IEnumerable<IPAddressRange<TAddress>> excludedRanges);
+
+        protected Boolean IsInRanges(TAddress address, IEnumerable<IPAddressRange<TAddress>> excludedRanges)
+        {
+            if(excludedRanges.Any() == false) { return false; }
+
+            foreach (var item in excludedRanges)
+            {
+               if(address.IsBetween(item.Start, item.End) == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         protected abstract TAddress GetEmptyAddress();
 
-        public TAddress GetValidAddresses(IEnumerable<TAddress> usedAddresses, params TAddress[] addtionnalExcludedAddresses)
+        public TAddress GetValidAddresses(IEnumerable<TAddress> usedAddresses, IEnumerable<IPAddressRange<TAddress>> excludedRanges, params TAddress[] addtionnalExcludedAddresses)
         {
             HashSet<TAddress> exclucedAddresses = new HashSet<TAddress>(usedAddresses.Union(
                 addtionnalExcludedAddresses.Where(x => x != GetEmptyAddress())));
 
             return AddressAllocationStrategy.Value switch
             {
-                AddressAllocationStrategies.Random => GetNextRandomAddress(exclucedAddresses),
-                AddressAllocationStrategies.Next => GetNextAddress(exclucedAddresses),
+                AddressAllocationStrategies.Random => GetNextRandomAddress(exclucedAddresses, excludedRanges),
+                AddressAllocationStrategies.Next => GetNextAddress(exclucedAddresses, excludedRanges),
                 _ => throw new NotImplementedException(),
             };
         }

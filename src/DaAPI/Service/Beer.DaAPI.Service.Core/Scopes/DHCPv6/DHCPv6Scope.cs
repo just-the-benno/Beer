@@ -296,12 +296,14 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         {
             IPv6Address leaseAddress;
             List<IPv6Address> usedAddresses = new(Leases.GetUsedAddresses());
+            List<IPAddressRange<IPv6Address>> childRanges = new ();
             foreach (var item in GetAllChildScopes())
             {
                 usedAddresses.AddRange(item.Leases.GetUsedAddresses());
+                childRanges.Add(new IPAddressRange<IPv6Address>(item.AddressRelatedProperties.Start, item.AddressRelatedProperties.End));
             }
 
-            leaseAddress = addressProperties.GetValidAddresses(usedAddresses, excludeFromLease);
+            leaseAddress = addressProperties.GetValidAddresses(usedAddresses, childRanges,  excludeFromLease);
             return leaseAddress;
         }
 

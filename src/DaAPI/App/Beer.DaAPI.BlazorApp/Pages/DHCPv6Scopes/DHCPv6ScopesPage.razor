@@ -48,6 +48,9 @@
                                         <span>@L["ExcludedAddressLabel"] @GetExcludedAddressAsString(context.Value)</span>
                                     }*@
                             </MudText>
+                             <MudTooltip Text="@L["ChangeParentsTooltip"]">
+                                <MudIconButton Icon="fas fa-exchange-alt" OnClick="@( () => ShowChangeParentDialog(context.Value))" Color="Color.Info" />
+                            </MudTooltip>
                             <MudTooltip Text="@L["DetailsButtonTooltip"]">
                                 <MudIconButton Icon="@Icons.Material.Filled.Info" OnClick="@( () => NavigateToScopeDetails(context.Value))" Color="Color.Info" />
                             </MudTooltip>

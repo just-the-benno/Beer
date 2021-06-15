@@ -776,8 +776,8 @@ namespace Beer.DaAPI.UnitTests.Core.Packets.DHCPv6
                     var identityOption = (DHCPv6PacketIdentityAssociationPrefixDelegationOption)item;
 
 
-                    TimeSpan expectedPreferredLifetime = properties.PreferredLeaseTime.Value - (DateTimeOffset.Now - lease.Start);
-                    TimeSpan expectedValidLifetime = properties.ValidLeaseTime.Value - (DateTimeOffset.Now - lease.Start);
+                    TimeSpan expectedPreferredLifetime = properties.PreferredLeaseTime.Value - (DateTime.UtcNow - lease.Start);
+                    TimeSpan expectedValidLifetime = properties.ValidLeaseTime.Value - (DateTime.UtcNow - lease.Start);
 
                     Assert.True(Math.Abs((identityOption.T1 - (expectedPreferredLifetime * properties.T1.Value)).TotalSeconds) < 20);
                     Assert.True(Math.Abs((identityOption.T2 - (expectedPreferredLifetime * properties.T2.Value)).TotalSeconds) < 20);
@@ -1076,8 +1076,8 @@ namespace Beer.DaAPI.UnitTests.Core.Packets.DHCPv6
                     {
                         var identityOption = (DHCPv6PacketIdentityAssociationPrefixDelegationOption)item;
 
-                        TimeSpan expectedPreferredLifetime = properties.PreferredLeaseTime.Value - (DateTimeOffset.Now - lease.Start);
-                        TimeSpan expectedValidLifetime = properties.ValidLeaseTime.Value - (DateTimeOffset.Now - lease.Start);
+                        TimeSpan expectedPreferredLifetime = properties.PreferredLeaseTime.Value - (DateTime.UtcNow - lease.Start);
+                        TimeSpan expectedValidLifetime = properties.ValidLeaseTime.Value - (DateTime.UtcNow - lease.Start);
 
                         Assert.True(Math.Abs((identityOption.T1 - (expectedPreferredLifetime * properties.T1.Value)).TotalSeconds) < 20);
                         Assert.True(Math.Abs((identityOption.T2 - (expectedPreferredLifetime * properties.T2.Value)).TotalSeconds) < 20);

@@ -224,7 +224,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 } : null,
             };
 
-            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic)
+            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && (ParentValues == null) || (ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic))
             {
                 request.T1 ??= ParentValues.T1.NullableValue;
                 request.T2 ??= ParentValues.T2.NullableValue;

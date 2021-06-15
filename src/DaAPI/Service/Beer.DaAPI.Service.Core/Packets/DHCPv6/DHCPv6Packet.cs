@@ -326,7 +326,7 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
         {
             DHCPv6Packet innerReceivedPacket = requestPacket.GetInnerPacket();
 
-            GetTimeValues(addressProperties, lease, false, out TimeSpan preferredLifetime, out TimeSpan validLifetime, out TimeSpan T1, out TimeSpan T2);
+            GetTimeValues(addressProperties, lease, true, out TimeSpan preferredLifetime, out TimeSpan validLifetime, out TimeSpan T1, out TimeSpan T2);
 
             List<DHCPv6PacketOption> packetOptions = new List<DHCPv6PacketOption>
             {
@@ -406,13 +406,13 @@ namespace Beer.DaAPI.Core.Packets.DHCPv6
                 preferredLifetime = addressProperties.PreferredLeaseTime.Value;
                 validLifetime = addressProperties.ValidLeaseTime.Value;
 
-                T1 = addressProperties.T1.Value * preferredLifetime;
-                T2 = addressProperties.T2.Value * preferredLifetime;
-
                 if (adjustTimers == true)
                 {
                     AdjustTimeValues(addressProperties, lease, out preferredLifetime, out validLifetime);
                 }
+
+                T1 = addressProperties.T1.Value * preferredLifetime;
+                T2 = addressProperties.T2.Value * preferredLifetime;
             }
         }
 

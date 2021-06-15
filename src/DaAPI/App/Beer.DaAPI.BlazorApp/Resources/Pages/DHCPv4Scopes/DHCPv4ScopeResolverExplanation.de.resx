@@ -261,6 +261,30 @@
   <data name="DHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
     <value>Die Nummer des Ports (1 ... 80) mit dem Kunden verbunden wurde</value>
   </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst.</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
+    <value>Gerätebasieter Cisco SG Switch mit nicht einzigartigen Option82 Werten</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Content" xml:space="preserve">
+    <value>Dieser Zuordner kann verwendet werden, wenn  Cisco SG Switch wie die SG300 und SG350 Reihe mit aktivieren DHCP Snooping und Einfügen der Option 82 verwenden werden. Die Verknüpfung wird dabei über die VLAN ID und Port des Kunden, sowie die MAC Adresse des Gerätes hergestellt. Dieser Zuordner sollte verwendet werden, wenn mehrere Kunden sich eine Option82 teilen.</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Content" xml:space="preserve">
+    <value>Die Nummer des Port (1 ... 48) an dem der Kunde bzw. Nutzer angeschlossen ist.</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Caption" xml:space="preserve">
+    <value>VLAN ID</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Content" xml:space="preserve">
+    <value>Die VLAN ID des Kunden bzw. Benutzers für den dieser Zuordner gelten soll. Es kann jede ID zwischen 1 und 4094 angegeben werden.</value>
+  </data>
   <data name="PropertyCaption" xml:space="preserve">
     <value>Eigenschaft</value>
   </data>

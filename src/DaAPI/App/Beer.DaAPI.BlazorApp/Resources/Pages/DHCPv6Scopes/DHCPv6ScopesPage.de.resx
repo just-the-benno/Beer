@@ -120,6 +120,15 @@
   <data name="AddChildScopeToolTip" xml:space="preserve">
     <value>Einen unterordnetes Bereiche erstellen</value>
   </data>
+  <data name="ChangeParentScopesSuccessSnackbarContent" xml:space="preserve">
+    <value>Der Übergeordnenten Bereich vom Bereich "{0}" wurde erfolgreich geändert</value>
+  </data>
+  <data name="ChangeParentScopeTitle" xml:space="preserve">
+    <value>Übergeordnenten Bereich vom Bereich "{0}" ändern</value>
+  </data>
+  <data name="ChangeParentsTooltip" xml:space="preserve">
+    <value>Übergeordneten Bereich ändern</value>
+  </data>
   <data name="CopyButtonTooltip" xml:space="preserve">
     <value>Bereich kopieren</value>
   </data>

@@ -143,7 +143,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 DHCPv4ScopeAddressProperties properties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(),
                     addressAllocationStrategy: item);
 
-                IPv4Address next = properties.GetValidAddresses(Array.Empty<IPv4Address>());
+                IPv4Address next = properties.GetValidAddresses(Array.Empty<IPv4Address>(), Array.Empty<IPAddressRange<IPv4Address>>());
 
                 Assert.Equal(start, next);
             }
@@ -168,7 +168,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                     DHCPv4ScopeAddressProperties properties = new DHCPv4ScopeAddressProperties(start, end, Array.Empty<IPv4Address>(),
                         addressAllocationStrategy: item);
 
-                    IPv4Address next = properties.GetValidAddresses(new IPv4Address[] { start });
+                    IPv4Address next = properties.GetValidAddresses(new IPv4Address[] { start }, Array.Empty<IPAddressRange<IPv4Address>>());
 
                     Assert.Equal(IPv4Address.Empty, next);
                 }
@@ -204,7 +204,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             DHCPv4ScopeAddressProperties properties = new DHCPv4ScopeAddressProperties(start, end, excludedAddresses,
                 addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next);
 
-            IPv4Address next = properties.GetValidAddresses(usedAddress);
+            IPv4Address next = properties.GetValidAddresses(usedAddress, Array.Empty<IPAddressRange<IPv4Address>>());
             IPv4Address expectedAddress = start + usedAddreessAmount;
             Assert.Equal(expectedAddress, next);
         }
@@ -243,7 +243,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             for (int i = 0; i < checkAmount; i++)
             {
 
-                IPv4Address next = properties.GetValidAddresses(usedAddress);
+                IPv4Address next = properties.GetValidAddresses(usedAddress, Array.Empty<IPAddressRange<IPv4Address>>());
 
                 Assert.DoesNotContain(next, usedAddress);
                 Assert.DoesNotContain(next, excludedAddresses);
@@ -288,7 +288,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 DHCPv4ScopeAddressProperties properties = new DHCPv4ScopeAddressProperties(start, end, excludedAddresses,
     addressAllocationStrategy: item);
 
-                IPv4Address next = properties.GetValidAddresses(usedAddress);
+                IPv4Address next = properties.GetValidAddresses(usedAddress, Array.Empty<IPAddressRange<IPv4Address>>());
                 Assert.Equal(IPv4Address.Empty, next);
             }
         }
