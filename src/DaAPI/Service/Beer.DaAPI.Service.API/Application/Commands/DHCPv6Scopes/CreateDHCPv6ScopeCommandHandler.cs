@@ -2,6 +2,7 @@
 using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Scopes.DHCPv6.ScopeProperties;
+using Beer.DaAPI.Infrastructure.ServiceBus;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -17,16 +18,12 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
 {
     public class CreateDHCPv6ScopeCommandHandler : ManipulateDHCPv6ScopeCommandHandler, IRequestHandler<CreateDHCPv6ScopeCommand, Guid?>
     {
-        private readonly IDHCPv6StorageEngine _store;
-        private readonly DHCPv6RootScope _rootScope;
         private readonly ILogger<CreateDHCPv6ScopeCommandHandler> _logger;
 
         public CreateDHCPv6ScopeCommandHandler(
-            IDHCPv6StorageEngine store, DHCPv6RootScope rootScope,
-            ILogger<CreateDHCPv6ScopeCommandHandler> logger)
+            IDHCPv6StorageEngine store, IServiceBus serviceBus, DHCPv6RootScope rootScope,
+            ILogger<CreateDHCPv6ScopeCommandHandler> logger) : base(store,serviceBus,rootScope)
         {
-            _store = store;
-            _rootScope = rootScope;
             _logger = logger;
         }
 
@@ -47,9 +44,9 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
                 ScopeProperties = GetScopeProperties(request),
             };
 
-            _rootScope.AddScope(instruction);
+            RootScope.AddScope(instruction);
 
-            await _store.Save(_rootScope);
+            await SaveRootAndTriggerEvents();
 
             return id;
         }

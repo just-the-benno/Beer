@@ -1,5 +1,6 @@
 ﻿using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv4;
+using Beer.DaAPI.Infrastructure.ServiceBus;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -15,16 +16,13 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv4Scopes
 {
     public class CreateDHCPv4ScopeCommandHandler : ManipulateDHCPv4ScopeCommandHandler, IRequestHandler<CreateDHCPv4ScopeCommand, Guid?>
     {
-        private readonly IDHCPv4StorageEngine _store;
-        private readonly DHCPv4RootScope _rootScope;
         private readonly ILogger<CreateDHCPv4ScopeCommandHandler> _logger;
 
         public CreateDHCPv4ScopeCommandHandler(
             IDHCPv4StorageEngine store, DHCPv4RootScope rootScope,
-            ILogger<CreateDHCPv4ScopeCommandHandler> logger)
+            IServiceBus serviceBus,
+            ILogger<CreateDHCPv4ScopeCommandHandler> logger) : base(store, serviceBus, rootScope)
         {
-            _store = store;
-            _rootScope = rootScope;
             _logger = logger;
         }
 
@@ -45,9 +43,8 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv4Scopes
                 ScopeProperties = GetScopeProperties(request),
             };
 
-            _rootScope.AddScope(instruction);
-
-            await _store.Save(_rootScope);
+            RootScope.AddScope(instruction);
+            await SaveRootAndTriggerEvents();
 
             return id;
         }

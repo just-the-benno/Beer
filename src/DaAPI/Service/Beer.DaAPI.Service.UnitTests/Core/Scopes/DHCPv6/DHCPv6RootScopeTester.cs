@@ -301,7 +301,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             );
         }
 
-        private void UpdateScopeResolver(IDictionary<String,String> existingResolverValues, IDictionary<String, String> newResolverValues)
+        private void UpdateScopeResolver(IDictionary<String, String> existingResolverValues, IDictionary<String, String> newResolverValues)
         {
             Random random = new Random();
 
@@ -2236,6 +2236,75 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             var addressSubOption = result.GetNonTemporaryIdentiyAssocation(iaid).Suboptions.First() as DHCPv6PacketIdentityAssociationAddressSuboption;
             Assert.Equal(IPv6Address.FromString("fe80::10"), addressSubOption.Address);
+        }
+
+        [Fact]
+        public void GetLeaseById_NotFound()
+        {
+            Random random = new ();
+
+            var events = new DomainEvent[]
+                {
+                    new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+                {
+                    Id = random.NextGuid(),
+                }),
+                new DHCPv6LeaseCreatedEvent {
+                  EntityId = random.NextGuid(),
+                }
+                };
+
+
+            DHCPv6RootScope rootScope = GetRootScope();
+            rootScope.Load(events);
+
+            var lease = rootScope.GetLeaseById(random.NextGuid());
+
+            Assert.Equal(DHCPv6Lease.Empty, lease);
+
+        }
+
+        [Fact]
+        public void GetLeaseById_Found()
+        {
+            Random random = new();
+
+            Guid leaseId = random.NextGuid();
+            Guid firstScopeId = random.NextGuid();
+            Guid secondScopeId = random.NextGuid();
+                 
+            IPv6Address leaseAddress =  IPv6Address.FromString("fe20::1");
+
+            var events = new DomainEvent[]
+                {
+                    new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+                {
+                    Id = firstScopeId,
+                }),
+                new DHCPv6LeaseCreatedEvent {
+                  EntityId = random.NextGuid(),
+                  ScopeId = firstScopeId,
+                  ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                },
+                new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+                {
+                    Id = secondScopeId,
+                }),
+                new DHCPv6LeaseCreatedEvent {
+                  ScopeId = secondScopeId,
+                  EntityId = leaseId,
+                  Address = leaseAddress,
+                  ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                }
+                };
+
+            DHCPv6RootScope rootScope = GetRootScope();
+            rootScope.Load(events);
+
+            var lease = rootScope.GetLeaseById(leaseId);
+
+            Assert.NotEqual(DHCPv6Lease.Empty, lease);
+            Assert.Equal(leaseAddress, lease.Address);
         }
     }
 }

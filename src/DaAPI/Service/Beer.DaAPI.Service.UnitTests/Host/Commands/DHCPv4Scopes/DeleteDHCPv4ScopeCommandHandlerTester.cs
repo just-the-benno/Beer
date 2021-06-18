@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4ScopeEvents;
+using Beer.DaAPI.Infrastructure.ServiceBus;
 
 namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 {
@@ -59,7 +60,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 
             var command = new DeleteDHCPv4ScopeCommand(id, requestedToDeleteChildrenAsWell);
 
-            var handler = new DeleteDHCPv4ScopeCommandHandler(storageMock.Object, rootScope,
+            var handler = new DeleteDHCPv4ScopeCommandHandler(storageMock.Object, Mock.Of<IServiceBus>(MockBehavior.Strict), rootScope,
                 Mock.Of<ILogger<DeleteDHCPv4ScopeCommandHandler>>());
 
             Boolean result = await handler.Handle(command, CancellationToken.None);
@@ -139,7 +140,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 
             var command = new DeleteDHCPv4ScopeCommand(parentId, requestedToDeleteChildrenAsWell);
 
-            var handler = new DeleteDHCPv4ScopeCommandHandler(storageMock.Object, rootScope,
+            var handler = new DeleteDHCPv4ScopeCommandHandler(storageMock.Object, Mock.Of<IServiceBus>(MockBehavior.Strict), rootScope, 
                 Mock.Of<ILogger<DeleteDHCPv4ScopeCommandHandler>>());
 
             Boolean result = await handler.Handle(command, CancellationToken.None);
@@ -203,7 +204,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 
             var command = new DeleteDHCPv4ScopeCommand(random.NextGuid(), random.NextBoolean());
 
-            var handler = new DeleteDHCPv4ScopeCommandHandler(Mock.Of<IDHCPv4StorageEngine>(MockBehavior.Strict), rootScope,
+            var handler = new DeleteDHCPv4ScopeCommandHandler(Mock.Of<IDHCPv4StorageEngine>(MockBehavior.Strict), Mock.Of<IServiceBus>(MockBehavior.Strict), rootScope,
                 Mock.Of<ILogger<DeleteDHCPv4ScopeCommandHandler>>());
 
             Boolean result = await handler.Handle(command, CancellationToken.None);

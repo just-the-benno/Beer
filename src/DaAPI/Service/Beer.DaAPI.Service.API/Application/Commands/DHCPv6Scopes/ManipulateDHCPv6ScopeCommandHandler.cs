@@ -2,6 +2,8 @@
 using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Scopes.DHCPv6.ScopeProperties;
+using Beer.DaAPI.Infrastructure.ServiceBus;
+using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +12,15 @@ using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
 
 namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
 {
-    public abstract class ManipulateDHCPv6ScopeCommandHandler
+    public abstract class ManipulateDHCPv6ScopeCommandHandler : DHCPv6ScopeTriggerAwareCommandHandler
     {
+        public ManipulateDHCPv6ScopeCommandHandler(IDHCPv6StorageEngine store,
+           IServiceBus serviceBus,
+           DHCPv6RootScope rootScope) : base(store, serviceBus, rootScope)
+        {
+
+        }
+
         protected static DynamicRenewTime GetDynamicRenewTime(DHCPv6DynamicRenewTimeRequest request) =>
            DynamicRenewTime.WithSpecificRange(request.Hours, request.Minutes, request.MinutesToRebound, request.MinutesToEndOfLife);
 

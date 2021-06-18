@@ -1,4 +1,6 @@
 ﻿using Beer.DaAPI.Core.Scopes.DHCPv4;
+using Beer.DaAPI.Service.API.Application.Commands.DHCPv4Leases;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,11 +19,13 @@ namespace Beer.DaAPI.Service.API.ApiControllers
     {
         private readonly DHCPv4RootScope _rootScope;
         private readonly ILogger<DHCPv4LeaseController> _logger;
+        private readonly IMediator _mediator;
 
-        public DHCPv4LeaseController(DHCPv4RootScope rootScope, ILogger<DHCPv4LeaseController> logger)
+        public DHCPv4LeaseController(DHCPv4RootScope rootScope, IMediator mediator, ILogger<DHCPv4LeaseController> logger)
         {
-            this._rootScope = rootScope;
-            this._logger = logger;
+            _rootScope = rootScope ?? throw new ArgumentNullException(nameof(rootScope));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private DHCPv4LeaseOverview GetLeaseOverview(DHCPv4Lease lease, DHCPv4Scope scope) => new DHCPv4LeaseOverview
@@ -82,6 +86,20 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             }
 
             return base.Ok(result.OrderBy(x => x.State).ThenBy(x => x.Address).ToList());
+        }
+
+        [HttpDelete("/api/leases/dhcpv4/{id}")]
+        public async Task<IActionResult> CancelLease([FromRoute(Name = "id")] Guid leaseId)
+        {
+            var command = new CancelDHCPv4LeaseCommand(leaseId);
+            Boolean result = await _mediator.Send(command);
+
+            if (result == false)
+            {
+                return BadRequest("unable to delete lease");
+            }
+
+            return Ok(true);
         }
     }
 }

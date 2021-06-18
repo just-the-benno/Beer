@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Xunit;
 using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
 using Beer.DaAPI.Service.TestHelper;
+using Beer.DaAPI.Infrastructure.ServiceBus;
 
 namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
 {
@@ -92,7 +93,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv6Scopes
                 }
                 );
 
-            var handler = new CreateDHCPv6ScopeCommandHandler(storageMock.Object, rootScope,
+            var handler = new CreateDHCPv6ScopeCommandHandler(storageMock.Object, Mock.Of<IServiceBus>(MockBehavior.Strict), rootScope,
                 Mock.Of<ILogger<CreateDHCPv6ScopeCommandHandler>>());
 
             Guid? result = await handler.Handle(command, CancellationToken.None);
