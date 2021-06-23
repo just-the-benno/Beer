@@ -120,6 +120,12 @@
   <data name="ActiveLeaseHeading" xml:space="preserve">
     <value>Aktive Leases</value>
   </data>
+  <data name="CancelLeaseFailureSnackbarContent" xml:space="preserve">
+    <value>Das Lease mit der IPv6 Adresse "{0}" konnte nicht beendet werden</value>
+  </data>
+  <data name="CancelLeaseSuccessSnackbarContent" xml:space="preserve">
+    <value>Das Lease mit der IPv6 Adresse "{0}" wurde erfolgreich beendet</value>
+  </data>
   <data name="LoadingDetailsMessage" xml:space="preserve">
     <value>Bereichsdetails werden geladen...</value>
   </data>

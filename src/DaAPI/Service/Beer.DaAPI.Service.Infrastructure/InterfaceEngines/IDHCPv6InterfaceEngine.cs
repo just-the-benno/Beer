@@ -23,6 +23,6 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         public Boolean CloseListener(DHCPv6Listener listener);
         IEnumerable<DHCPv6Listener> GetPossibleListeners();
 
-        Boolean SendPacket(DHCPv6Packet packet);
+        Task<Boolean> SendPacket(DHCPv6Packet packet);
     }
 }

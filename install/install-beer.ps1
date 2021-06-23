@@ -924,6 +924,7 @@ function  Install-Beer {
         Write-Host "Creating ScheduledTask tasks for backup etc..."
         
         Add-PowershellTask -TaskName "BeerPing" -StartImmediately $true -Trigger (New-JobTrigger -Once -At (Get-Date).Date -RepeatIndefinitely -RepetitionInterval (New-TimeSpan -Minutes 5)) -Argument "-File $pwd\ping-applications-caller.ps1 -ExecutionPath $pwd"
+        Add-PowershellTask -TaskName "CriticalErrorObserver" -StartImmediately $true -Trigger (New-JobTrigger -Once -At (Get-Date).Date -RepeatIndefinitely -RepetitionInterval (New-TimeSpan -Minutes 3)) -Argument "-File $pwd\check-critical-errors-caller.ps1 -ExecutionPath $pwd"
         Add-PowershellTask -TaskName "BackupBeerPSQL" -StartImmediately $false -Trigger (New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 3am ) -Argument "-File $PSScriptRoot\backup-postgres-caller.ps1 -ExecutionPath $PSScriptRoot -Password $PostgresqlPassword"
         Add-PowershellTask -TaskName "BackupBeerEventSource" -StartImmediately $false -Trigger (New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 4am ) -Argument "-File $PSScriptRoot\backup-eventsourcedb-caller.ps1 -ExecutionPath $PSScriptRoot -DatabasePath C:\ESDB2"
 

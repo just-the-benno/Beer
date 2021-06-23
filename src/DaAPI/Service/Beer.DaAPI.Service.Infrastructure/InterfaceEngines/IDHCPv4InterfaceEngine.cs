@@ -24,6 +24,6 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         public Boolean CloseListener(DHCPv4Listener listener);
         IEnumerable<DHCPv4Listener> GetPossibleListeners();
 
-        Boolean SendPacket(DHCPv4Packet packet);
+        Task<Boolean> SendPacket(DHCPv4Packet packet);
     }
 }

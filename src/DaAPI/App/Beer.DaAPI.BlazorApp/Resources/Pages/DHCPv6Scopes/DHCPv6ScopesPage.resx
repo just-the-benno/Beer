@@ -120,6 +120,15 @@
   <data name="AddChildScopeToolTip" xml:space="preserve">
     <value>Add a child Scope</value>
   </data>
+  <data name="ChangeParentScopesSuccessSnackbarContent" xml:space="preserve">
+    <value>The parent of the scope '{0}' has been changed successfully</value>
+  </data>
+  <data name="ChangeParentScopeTitle" xml:space="preserve">
+    <value>Change parent of the scope {0}</value>
+  </data>
+  <data name="ChangeParentsTooltip" xml:space="preserve">
+    <value>Change Parent</value>
+  </data>
   <data name="CopyButtonTooltip" xml:space="preserve">
     <value>Copy this Scope</value>
   </data>

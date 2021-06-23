@@ -2,21 +2,31 @@
 @using Beer.DaAPI.Core.Common
 
 <MudItem xs="12" sm="6" md="4">
-    <MudPaper Elevation="4" Class="@Class">
-        <MudText Typo="Typo.h6">@Lease.Address</MudText>
-        @if (Lease.Scope.Id.ToString() != ScopeId)
-        {
-            <MudLink Href="@($"/scopes/dhcpv4/details/{Lease.Scope.Id}")">@Lease.Scope.Name</MudLink>
-        }
-        else
-        {
-            <MudText Typo="Typo.caption">@Lease.Scope.Name</MudText>
-        }
-        <MudText Typo="Typo.body2">@L["HWAddressLabel"]: @GetMacFriendlyMacAddress() </MudText>
-        <MudText Typo="Typo.body2">@L["StartedLabel"]: @Lease.Started.ToString("dd.MM.yy HH:mm:ss") </MudText>
-        <MudText Typo="Typo.body2">@L["ExpectedEndLabel"]: @Lease.ExpectedEnd.ToString("dd.MM.yy HH:mm:ss") ( @( (Lease.ExpectedEnd-DateTime.UtcNow).Humanize()) @L["Timeleftlabel"] )  </MudText>
-
-    </MudPaper>
+    <MudCard Class="@Class">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">@Lease.Address</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudTooltip Text="@L["CancelLeaseTooltip"]">
+                    <MudIconButton OnClick="CancelLease" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                </MudTooltip>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (Lease.Scope.Id.ToString() != ScopeId)
+            {
+                <MudLink Href="@($"/scopes/dhcpv4/details/{Lease.Scope.Id}")">@Lease.Scope.Name</MudLink>
+            }
+            else
+            {
+                <MudText Typo="Typo.caption">@Lease.Scope.Name</MudText>
+            }
+            <MudText Typo="Typo.body2">@L["HWAddressLabel"]: @GetMacFriendlyMacAddress() </MudText>
+            <MudText Typo="Typo.body2">@L["StartedLabel"]: @Lease.Started.ToString("dd.MM.yy HH:mm:ss") </MudText>
+            <MudText Typo="Typo.body2">@L["ExpectedEndLabel"]: @Lease.ExpectedEnd.ToString("dd.MM.yy HH:mm:ss") ( @( (Lease.ExpectedEnd-DateTime.UtcNow).Humanize()) @L["Timeleftlabel"] )  </MudText>
+        </MudCardContent>
+    </MudCard>
 </MudItem>
 
 @code {
@@ -24,6 +34,7 @@
     [Parameter] public String Class { get; set; }
     [Parameter] public String ScopeId { get; set; }
     [Parameter] public DHCPv4LeaseOverview Lease { get; set; }
+    [Parameter] public EventCallback CancelLease { get; set; }
 
     private String GetMacFriendlyMacAddress() => ByteHelper.ToString(Lease.MacAddress, ':');
 

@@ -6,7 +6,7 @@
 @inject DaAPIService _service
 @inject IStringLocalizer<DHCPv6ScopeDetailsPage> L
 @inject NavigationManager _navManager
-
+@inject ISnackbar _snackBarService
 
 <BeerShowCircularLoadingIndicatorWhileNull Item="_properties" Text="@L["LoadingDetailsMessage"]">
     <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-4">@String.Format(L["PageTitle"], _properties.Name)</MudText>
@@ -19,16 +19,20 @@
     {
         <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["ActiveLeaseHeading"]</MudText>
         <MudGrid>
+            @{ Int32 index = 0; }
             @foreach (var item in GetActiveLeases())
             {
-                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" Class="pa-4 white-text light-green lighten-2" />
+                var temp = index++;
+                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" CancelLease="@( () => CancelLease(GetActiveLeases().ElementAt(temp)))" Class="pa-4 white-text light-green lighten-2" />
             }
         </MudGrid>
         <MudText Typo="Typo.h5" Color="Color.Primary" Class="my-4">@L["PendingLeaseHeading"]</MudText>
         <MudGrid>
+            @{ Int32 index = 0; }
             @foreach (var item in GetPendingLeases())
             {
-                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" Class="pa-4 white-text light-blue lighten-2" />
+                var temp = index++;
+                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" CancelLease="@( () => CancelLease(GetPendingLeases().ElementAt(temp)))" Class="pa-4 white-text light-blue lighten-2" />
             }
         </MudGrid>
     }

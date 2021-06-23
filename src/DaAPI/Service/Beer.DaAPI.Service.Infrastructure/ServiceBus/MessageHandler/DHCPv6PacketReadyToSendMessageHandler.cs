@@ -25,16 +25,13 @@ namespace Beer.DaAPI.Infrastructure.ServiceBus.MessageHandler
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public Task Handle(DHCPv6PacketReadyToSendMessage notification, CancellationToken cancellationToken)
+        public async Task Handle(DHCPv6PacketReadyToSendMessage notification, CancellationToken cancellationToken)
         {
             _logger.LogDebug("received a DHCPv6PacketReadyToSendMessage from the service bus");
             if (notification.Packet != DHCPv6Packet.Empty)
             {
-                _engine.SendPacket(notification.Packet);
+                await _engine.SendPacket(notification.Packet);
             }
-
-            return Task.FromResult(new object());
-
         }
     }
 }

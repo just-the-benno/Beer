@@ -176,12 +176,14 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             IPv4Address leaseAddress;
             List<IPv4Address> usedAddresses = new(Leases.GetUsedAddresses());
 
+            List<IPAddressRange<IPv4Address>> childRanges = new List<IPAddressRange<IPv4Address>>();
             foreach (var item in GetAllChildScopes())
             {
                 usedAddresses.AddRange(item.Leases.GetUsedAddresses());
+                childRanges.Add(new IPAddressRange<IPv4Address>(item.AddressRelatedProperties.Start, item.AddressRelatedProperties.End));
             }
 
-            leaseAddress = addressProperties.GetValidAddresses(usedAddresses, excludeFromLease);
+            leaseAddress = addressProperties.GetValidAddresses(usedAddresses, childRanges, excludeFromLease);
             return leaseAddress;
         }
 

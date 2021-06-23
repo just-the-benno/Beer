@@ -170,6 +170,22 @@ namespace Beer.DaAPI.Core.Scopes
             return resultScope;
         }
 
+        public TLease GetLeaseById(Guid leaseId)
+        {
+            foreach (var item in _scopes.Values)
+            {
+                var lease = item.Leases.GetLeaseById(leaseId);
+                if(lease != null)
+                {
+                    return lease;
+                }
+            }
+
+            return null;
+        }
+
+        public void CancelLease(TLease lease) => lease.Cancel(LeaseCancelReasons.RequestedByAdmin);
+
         #endregion
 
         #region handle packets

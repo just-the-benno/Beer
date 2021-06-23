@@ -261,6 +261,30 @@
   <data name="DHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
     <value>The port number (1 ... 80) of the port, where the customer/user is connected.</value>
   </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service. This resolver can be used if the same option 82 is used for multiple customers</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
+    <value>Device based Cisco SG Switch with non unique option82 values</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Content" xml:space="preserve">
+    <value>This resolver can be used if a Cisco SG Switch like the SG300 and SG350 has the DHCP snooping activated and inserted option 82. The association is based on the VLAN ID and port of the customer/user and the device's MAC address.</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Caption" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_PortNumber_Content" xml:space="preserve">
+    <value>The port number (1 ... 48) of the port, where the customer/user is connected.</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Caption" xml:space="preserve">
+    <value>VLAN ID</value>
+  </data>
+  <data name="NonUniqueDeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_VlanNumber_Content" xml:space="preserve">
+    <value>Is this the VLAN ID of the customer/user that should be valid for this resolver. You can enter any ID between 1 and 4094.</value>
+  </data>
   <data name="PropertyCaption" xml:space="preserve">
     <value>Resolver Property</value>
   </data>

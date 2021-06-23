@@ -120,8 +120,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             }
         }
 
-        protected override IPv4Address GetNextRandomAddress(HashSet<IPv4Address> used) =>
-            GetNextRandomAddressInternal(used, (input) => IPv4Address.FromByteArray(input), () => IPv4Address.Empty);
+        protected override IPv4Address GetNextRandomAddress(HashSet<IPv4Address> used, IEnumerable<IPAddressRange<IPv4Address>> excludedRanges) =>
+            GetNextRandomAddressInternal(used, (input) => IPv4Address.FromByteArray(input), () => IPv4Address.Empty, excludedRanges);
 
         #endregion
 
@@ -133,34 +133,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
         protected override IPv4Address GetEmptyAddress() => IPv4Address.Empty;
 
-        protected override IPv4Address GetNextAddress(IEnumerable<IPv4Address> used)
-        {
-            IList<IPv4Address> sorted = used.Union(ExcludedAddresses.Where(x => x >= Start && x <= End)).OrderBy(x => x).ToList();
-            if (sorted.Count == 0)
-            {
-                return IPv4Address.FromAddress(Start);
-            }
-
-            Double maxDelta = End - Start + 1;
-            if (sorted.Count == maxDelta)
-            {
-                return IPv4Address.Empty;
-            }
-
-            IPv4Address current = Start - 1;
-            foreach (var item in sorted)
-            {
-                Double delta = (item - current);
-                if (delta > 1)
-                {
-                    break;
-                }
-
-                current = item;
-            }
-
-            return current + 1;
-        }
+        protected override IPv4Address GetNextAddress(IEnumerable<IPv4Address> used, IEnumerable<IPAddressRange<IPv4Address>> excludedRanges) =>
+            GetNextAddressInternal(used, excludedRanges, (x) => x + 1);
 
         public override Boolean IsAddressRangeBetween(DHCPv4ScopeAddressProperties child) =>
             Start <= child.Start && End >= child.Start && End >= child.End;

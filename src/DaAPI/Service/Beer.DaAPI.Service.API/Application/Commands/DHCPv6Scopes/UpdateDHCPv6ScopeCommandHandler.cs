@@ -20,20 +20,14 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
 {
     public class UpdateDHCPv6ScopeCommandHandler : ManipulateDHCPv6ScopeCommandHandler, IRequestHandler<UpdateDHCPv6ScopeCommand, Boolean>
     {
-        private readonly IDHCPv6StorageEngine _store;
-        private readonly IServiceBus _serviceBus;
-        private readonly DHCPv6RootScope _rootScope;
         private readonly ILogger<UpdateDHCPv6ScopeCommandHandler> _logger;
 
         public UpdateDHCPv6ScopeCommandHandler(
             IDHCPv6StorageEngine store,
             IServiceBus serviceBus,
             DHCPv6RootScope rootScope,
-            ILogger<UpdateDHCPv6ScopeCommandHandler> logger)
+            ILogger<UpdateDHCPv6ScopeCommandHandler> logger) : base(store,serviceBus,rootScope)
         {
-            _store = store;
-            this._serviceBus = serviceBus;
-            _rootScope = rootScope;
             _logger = logger;
         }
 
@@ -41,7 +35,7 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
         {
             _logger.LogDebug("Handle started");
 
-            var scope = _rootScope.GetScopeById(request.ScopeId);
+            var scope = RootScope.GetScopeById(request.ScopeId);
             if (scope == DHCPv6Scope.NotFound)
             {
                 return false;
@@ -53,43 +47,30 @@ namespace Beer.DaAPI.Service.API.Application.Commands.DHCPv6Scopes
 
             if (request.Name != scope.Name)
             {
-                _rootScope.UpdateScopeName(request.ScopeId, ScopeName.FromString(request.Name));
+                RootScope.UpdateScopeName(request.ScopeId, ScopeName.FromString(request.Name));
             }
             if (request.Description != scope.Description)
             {
-                _rootScope.UpdateScopeDescription(request.ScopeId, ScopeDescription.FromString(request.Description));
+                RootScope.UpdateScopeDescription(request.ScopeId, ScopeDescription.FromString(request.Description));
             }
             if (request.ParentId != parentId)
             {
-                _rootScope.UpdateParent(request.ScopeId, request.ParentId);
+                RootScope.UpdateParent(request.ScopeId, request.ParentId);
             }
 
-            _rootScope.UpdateScopeResolver(request.ScopeId, GetResolverInformation(request));
+            RootScope.UpdateScopeResolver(request.ScopeId, GetResolverInformation(request));
 
             if (addressProperties != scope.AddressRelatedProperties)
             {
-                _rootScope.UpdateAddressProperties(request.ScopeId, addressProperties);
+                RootScope.UpdateAddressProperties(request.ScopeId, addressProperties);
             }
 
             if (properties != scope.Properties)
             {
-                _rootScope.UpdateScopeProperties(request.ScopeId, properties);
+                RootScope.UpdateScopeProperties(request.ScopeId, properties);
             }
 
-            Boolean result = await _store.Save(_rootScope);
-
-            if (result == true)
-            {
-                var triggers = _rootScope.GetTriggers();
-
-                if (triggers.Any() == true)
-                {
-                    await _serviceBus.Publish(new NewTriggerHappendMessage(triggers));
-
-                    _rootScope.ClearTriggers();
-                }
-            }
-
+            Boolean result = await SaveRootAndTriggerEvents();
             return result;
         }
     }

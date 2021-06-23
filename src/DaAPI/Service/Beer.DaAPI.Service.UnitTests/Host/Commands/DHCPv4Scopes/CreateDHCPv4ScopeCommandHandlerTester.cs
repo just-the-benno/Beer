@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Xunit;
 using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
 using Beer.DaAPI.Service.TestHelper;
+using Beer.DaAPI.Infrastructure.ServiceBus;
 
 namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
 {
@@ -137,7 +138,7 @@ namespace Beer.DaAPI.UnitTests.Host.Commands.DHCPv4Scopes
                 }
                 );
 
-            var handler = new CreateDHCPv4ScopeCommandHandler(storageMock.Object, rootScope,
+            var handler = new CreateDHCPv4ScopeCommandHandler(storageMock.Object, rootScope, Mock.Of<IServiceBus>(MockBehavior.Strict),
                 Mock.Of<ILogger<CreateDHCPv4ScopeCommandHandler>>());
 
             Guid? result = await handler.Handle(command, CancellationToken.None);

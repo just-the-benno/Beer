@@ -21,7 +21,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             IServiceBus serviceBus,
             IDHCPv4StorageEngine storage,
             ILoggerFactory loggerFactory
-            ) : base(loggerFactory.CreateLogger<DHCPv4InterfaceEngine>(),
+            ) : base(serviceBus, loggerFactory.CreateLogger<DHCPv4InterfaceEngine>(),
                 (listener) => new DHCPv4Server(listener.Address, serviceBus, loggerFactory.CreateLogger<DHCPv4Server>()))
         {
             this._storage = storage ?? throw new ArgumentNullException(nameof(storage));

@@ -137,8 +137,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             }
         }
 
-        protected override IPv6Address GetNextRandomAddress(HashSet<IPv6Address> used) =>
-             GetNextRandomAddressInternal(used, (input) => IPv6Address.FromByteArray(input), () => IPv6Address.Empty);
+        protected override IPv6Address GetNextRandomAddress(HashSet<IPv6Address> used, IEnumerable<IPAddressRange<IPv6Address>> excludedRanges) =>
+             GetNextRandomAddressInternal(used, (input) => IPv6Address.FromByteArray(input), () => IPv6Address.Empty, excludedRanges);
 
         internal IPv6Address GetRandomPrefix(HashSet<IPv6Address> hashedUsedPrefixes)
         {
@@ -212,34 +212,8 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
         protected override IPv6Address GetEmptyAddress() => IPv6Address.Empty;
 
-        protected override IPv6Address GetNextAddress(IEnumerable<IPv6Address> used)
-        {
-            IList<IPv6Address> sorted = used.Union(ExcludedAddresses).OrderBy(x => x).ToList();
-            if (sorted.Count == 0)
-            {
-                return IPv6Address.FromAddress(Start);
-            }
-
-            Double maxDelta = End - Start + 1;
-            if (sorted.Count == maxDelta)
-            {
-                return IPv6Address.Empty;
-            }
-
-            IPv6Address current = Start - 1;
-            foreach (var item in sorted)
-            {
-                Double delta = (item - current);
-                if (delta > 1)
-                {
-                    break;
-                }
-
-                current = item;
-            }
-
-            return current + 1;
-        }
+        protected override IPv6Address GetNextAddress(IEnumerable<IPv6Address> used,IEnumerable<IPAddressRange<IPv6Address>> excludedRanges) =>
+             GetNextAddressInternal(used, excludedRanges, (x) => x + 1);
 
         internal IPv6Address GetNextPrefix(IEnumerable<IPv6Address> used)
         {

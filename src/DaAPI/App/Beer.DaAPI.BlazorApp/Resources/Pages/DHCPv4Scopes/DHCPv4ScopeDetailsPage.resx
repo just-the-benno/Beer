@@ -120,6 +120,12 @@
   <data name="ActiveLeaseHeading" xml:space="preserve">
     <value>Active Leases</value>
   </data>
+  <data name="CancelLeaseFailureSnackbarContent" xml:space="preserve">
+    <value>The lease with the IPv4 Address '{0}' couldn't been  cancelled</value>
+  </data>
+  <data name="CancelLeaseSuccessSnackbarContent" xml:space="preserve">
+    <value>The lease with the IPv4 Address '{0}' has been successfully cancelled</value>
+  </data>
   <data name="LoadingDetailsMessage" xml:space="preserve">
     <value>Scope Details are loading...</value>
   </data>

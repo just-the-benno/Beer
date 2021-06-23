@@ -11,6 +11,7 @@ namespace Beer.DaAPI.Core.Scopes
         ResolverChanged = 1,
         ToLongPending = 2,
         AddressRangeChanged = 3,
+        RequestedByAdmin = 4,
     }
 
     public enum LeaseStates
