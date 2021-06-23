@@ -33,7 +33,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             IServiceBus serviceBus,
             IDHCPv6StorageEngine storage,
             ILoggerFactory loggerFactory
-            ) : base(loggerFactory.CreateLogger<DHCPv6InterfaceEngine>(),
+            ) : base(serviceBus, loggerFactory.CreateLogger<DHCPv6InterfaceEngine>(),
                 (listener) => new DHCPv6Server(listener.Address, serviceBus, loggerFactory.CreateLogger<DHCPv6Server>()))
         {
             this._storage = storage ?? throw new ArgumentNullException(nameof(storage));

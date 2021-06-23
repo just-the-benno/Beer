@@ -251,7 +251,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.InterfaceEngines
             Mock<ILoggerFactory> factoryMock = new Mock<ILoggerFactory>(MockBehavior.Strict);
             factoryMock.Setup(x => x.CreateLogger(It.IsAny<String>())).Returns(Mock.Of<ILogger<DHCPv6Server>>());
 
-            DHCPv6InterfaceEngine engine = new DHCPv6InterfaceEngine(
+            DHCPv6InterfaceEngine engine = new DHCPv6InterfaceEngine (
                 Mock.Of<IServiceBus>(MockBehavior.Strict),
                 Mock.Of<IDHCPv6StorageEngine>(MockBehavior.Strict),
                 factoryMock.Object
@@ -274,7 +274,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.InterfaceEngines
             client.Connect(new IPEndPoint(address, 547));
             try
             {
-                Boolean sended = engine.SendPacket(responsePacket);
+                Boolean sended = await engine.SendPacket(responsePacket);
                 Assert.True(sended);
                 var result = await client.ReceiveAsync();
 

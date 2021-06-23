@@ -26,7 +26,7 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.ServiceBus.MessageHandler
             DHCPv6Packet response = DHCPv6Packet.AsOuter(headerInformation, 1, DHCPv6PacketTypes.ADVERTISE, new List<DHCPv6PacketOption>());
 
             Mock<IDHCPv6InterfaceEngine> interfaceEngine = new Mock<IDHCPv6InterfaceEngine>(MockBehavior.Strict);
-            interfaceEngine.Setup(x => x.SendPacket(response)).Returns(true).Verifiable();
+            interfaceEngine.Setup(x => x.SendPacket(response)).ReturnsAsync(true).Verifiable();
 
             DHCPv6PacketReadyToSendMessageHandler handler = new DHCPv6PacketReadyToSendMessageHandler(
                 interfaceEngine.Object,

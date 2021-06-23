@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using Beer.DaAPI.Infrastructure.Helper;
+using System.Threading.Tasks;
+using Beer.DaAPI.Infrastructure.ServiceBus;
 
 namespace Beer.DaAPI.Infrastructure.InterfaceEngines
 {
@@ -20,18 +22,21 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         where TPacketArrivedMessage : IMessage
         where TInvalidPacketArrivedMessage : IMessage
     {
+        private readonly IServiceBus _serviceBus;
         protected readonly ILogger<TEngine> _logger;
         private readonly Dictionary<TListeners, TServer> _activeSockets = new Dictionary<TListeners, TServer>();
         private readonly Dictionary<TAddress, TServer> _addressSocketMapper = new Dictionary<TAddress, TServer>();
         private readonly Func<TListeners, TServer> _serverFactory;
 
         public DHCPInterfaceEngine(
+            IServiceBus _serviceBus,
             ILogger<TEngine> logger,
             Func<TListeners, TServer> serverFactory
             )
         {
-            _logger = logger;
-            _serverFactory = serverFactory;
+            _serviceBus = _serviceBus ?? throw new ArgumentNullException(nameof(_serviceBus));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
         }
 
         protected abstract Boolean IsValidAddress(UnicastIPAddressInformation addressInfo);
@@ -153,7 +158,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             return stopped;
         }
 
-        public Boolean SendPacket(TPacket packet)
+        public async Task<Boolean> SendPacket(TPacket packet)
         {
             if (_addressSocketMapper.ContainsKey(packet.Header.ListenerAddress) == false)
             {
@@ -166,6 +171,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             if (result == false)
             {
                 _logger.LogError("unable to send packet to {receiver}", packet.Header.Destionation);
+                await _serviceBus.Publish(new UnableToSentPacketMessage(server.Endpoint.Address.ToString()));
             }
 
             return result;
