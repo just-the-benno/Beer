@@ -181,6 +181,9 @@ namespace Beer.DaAPI.Service.API
             services.AddTransient<INotificationHandler<NewTriggerHappendMessage>>(sp => new NewTriggerHappendMessageHandler(
               sp.GetRequiredService<INotificationEngine>(), sp.GetService<ILogger<NewTriggerHappendMessageHandler>>()));
 
+            services.AddTransient<INotificationHandler<UnableToSentPacketMessage>>(sp => new WriteCriticalEventsToLogHandler(
+                sp.GetService<ILogger<WriteCriticalEventsToLogHandler>>()));
+
             services.AddTransient<DHCPv6RateLimitBasedFilter>();
             services.AddTransient<DHCPv6PacketConsistencyFilter>();
 

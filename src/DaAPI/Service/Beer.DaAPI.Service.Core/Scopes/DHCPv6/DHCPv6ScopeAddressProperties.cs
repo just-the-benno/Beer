@@ -142,6 +142,11 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
 
         internal IPv6Address GetRandomPrefix(HashSet<IPv6Address> hashedUsedPrefixes)
         {
+            if(PrefixDelgationInfo.PrefixLength == PrefixDelgationInfo.AssignedPrefixLength)
+            {
+                return IPv6Address.FromByteArray(PrefixDelgationInfo.Prefix.GetBytes());
+            }    
+
             Random random = new Random();
 
             Byte[] addressBytes = new byte[16];
