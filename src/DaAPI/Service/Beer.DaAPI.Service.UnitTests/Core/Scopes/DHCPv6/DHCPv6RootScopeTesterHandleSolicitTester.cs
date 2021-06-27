@@ -147,6 +147,58 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             CheckEmptyTrigger(rootScope);
         }
 
+        [Theory]
+        [InlineData(DHCPv6ScopeAddressProperties.AddressAllocationStrategies.Random)]
+        [InlineData(DHCPv6ScopeAddressProperties.AddressAllocationStrategies.Next)]
+        public void HandleSolicit_NoLeaseFound_SingleAddressAndPrefix(DHCPv6ScopeAddressProperties.AddressAllocationStrategies strategy)
+        {
+            Random random = new Random();
+            UInt32 prefixIaId = random.NextUInt32();
+            var packet = GetSolicitPacket(random, out DUID clientDuid, out UInt32 iaId, false, new DHCPv6PacketIdentityAssociationPrefixDelegationOption(prefixIaId, TimeSpan.Zero, TimeSpan.Zero, Array.Empty<DHCPv6PacketSuboption>()));
+            var resolverInformations = GetMockupResolver(packet, out Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> scopeResolverMock);
+
+            Guid scopeId = random.NextGuid();
+
+            DHCPv6RootScope rootScope = GetRootScope(scopeResolverMock);
+            rootScope.Load(new List<DomainEvent>{ new DHCPv6ScopeEvents.DHCPv6ScopeAddedEvent(
+                new DHCPv6ScopeCreateInstruction
+                {
+                    AddressProperties = new DHCPv6ScopeAddressProperties(
+                        IPv6Address.FromString("2a0c:cac6:2000:202::10"),
+                        IPv6Address.FromString("2a0c:cac6:2000:202::10"),
+                        new List<IPv6Address>(),
+                        t1: DHCPv6TimeScale.FromDouble(0.5),
+                        t2: DHCPv6TimeScale.FromDouble(0.75),
+                        preferredLifeTime: TimeSpan.FromDays(0.5),
+                        validLifeTime: TimeSpan.FromDays(1),
+                        prefixDelgationInfo: DHCPv6PrefixDelgationInfo.FromValues(IPv6Address.FromString("2a0c:cac2:2200:1000::"),new IPv6SubnetMaskIdentifier(56),new IPv6SubnetMaskIdentifier(56)),
+                        addressAllocationStrategy: strategy),
+
+                    ResolverInformation = resolverInformations,
+                    Name = "Testscope",
+                    Id = scopeId,
+                })
+            });
+
+            IPv6Address expectedAdress = IPv6Address.FromString("2a0c:cac6:2000:202::10");
+            IPv6Address expectedPrefix = IPv6Address.FromString("2a0c:cac2:2200:1000::");
+
+            DHCPv6Packet result = rootScope.HandleSolicit(packet, GetServerPropertiesResolver());
+            CheckPacket(packet, expectedAdress, iaId, result, DHCPv6PacketTypes.ADVERTISE, DHCPv6PrefixDelegation.None);
+
+            DHCPv6Lease lease = CheckLease(0, 1, expectedAdress, scopeId, rootScope, DateTime.UtcNow, clientDuid, iaId, true, true);
+
+            Assert.NotNull(lease.PrefixDelegation);
+            Assert.Equal(expectedPrefix, lease.PrefixDelegation.NetworkAddress);
+            Assert.Equal(56, lease.PrefixDelegation.Mask.Identifier.Value);
+
+            CheckEventAmount(2, rootScope);
+            CheckLeaseCreatedEvent(0, clientDuid, iaId, scopeId, rootScope, expectedAdress, lease);
+            CheckHandeledEvent(1, packet, result, rootScope, scopeId);
+
+            CheckEmptyTrigger(rootScope);
+        }
+
         [Fact]
         public void HandleSolicit_TestRandomizeOfAddresses()
         {
@@ -504,7 +556,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             Assert.Equal(lease.RenewSpan, option.T1);
             Assert.Equal(lease.RebindingSpan, option.T2);
             Assert.Equal(lease.RebindingSpan, (option.Suboptions.First() as DHCPv6PacketIdentityAssociationAddressSuboption).PreferredLifetime);
-            Assert.True(  ((lease.RenewSpan + TimeSpan.FromMinutes(renewTime.MinutesToEndOfLife) - (option.Suboptions.First() as DHCPv6PacketIdentityAssociationAddressSuboption).ValidLifetime)).TotalSeconds < 3);
+            Assert.True(((lease.RenewSpan + TimeSpan.FromMinutes(renewTime.MinutesToEndOfLife) - (option.Suboptions.First() as DHCPv6PacketIdentityAssociationAddressSuboption).ValidLifetime)).TotalSeconds < 3);
 
             CheckEmptyTrigger(rootScope);
         }

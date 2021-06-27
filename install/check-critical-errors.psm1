@@ -67,6 +67,7 @@ function Read-CriticalApplicationLogs {
         if($counter -ge 5)
         {
             Write-Host "Threshold meet. Initilizing restart" -ForegroundColor DarkRed
+            Remove-Item -Path $errorLogPath
             Restart-Computer -Force
             return
         }
