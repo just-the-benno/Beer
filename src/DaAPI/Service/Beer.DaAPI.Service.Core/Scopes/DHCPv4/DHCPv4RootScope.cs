@@ -51,6 +51,16 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
             return result;
         }
 
+        private DHCPv4Packet HandlePacketByClientAddress(
+           DHCPv4Packet packet,
+           Func<DHCPv4Scope, DHCPv4Packet> handler,
+           Func<DomainEvent> notFoundApplier
+           ) => HandlePacketByAddress(
+                packet,
+                packet.ClientIPAdress,
+                handler,
+                notFoundApplier);
+        
         public DHCPv4Packet HandleRequest(DHCPv4Packet packet)
         {
             CheckPacket(packet, DHCPv4MessagesTypes.Request);
@@ -59,11 +69,17 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
 
             if (packet.GetRequestType() == DHCPv4Packet.DHCPv4PacketRequestType.Renewing)
             {
-                result = HandlePacketBySourceAddress(
-                    packet,
-                    (scope) => scope.HandleRequest(packet),
-                    () => new DHCPv4RequestHandledEvent(packet)
-                    );
+                IPv4Address sourceAddress = packet.Header.Source;
+                IPv4Address clientAddress = packet.ClientIPAdress;
+
+                Func<DHCPv4Packet, Func<DHCPv4Scope, DHCPv4Packet>, Func<DomainEvent>, DHCPv4Packet> 
+                    executor = sourceAddress == clientAddress ? HandlePacketBySourceAddress : HandlePacketByClientAddress;
+
+                result = executor(
+                     packet,
+                     (scope) => scope.HandleRequest(packet),
+                     () => new DHCPv4RequestHandledEvent(packet)
+                     );
             }
             else
             {

@@ -1535,5 +1535,97 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
                 Assert.True(clientAddress <= IPv4Address.FromString("192.168.178.255"));
             }
         }
+
+        [Fact]
+        public void HandleDiscover_NoLeaseFound_AddressAvaiable_FullCycle_WithRenew()
+        {
+            Random random = new Random();
+
+            IPv4Address expectedAdress = IPv4Address.FromString("192.168.178.13");
+
+            IPv4HeaderInformation headerInformation =
+                new IPv4HeaderInformation(IPv4Address.Empty, IPv4Address.Broadcast);
+
+            IPv4HeaderInformation secondHeaderInformation =
+         new IPv4HeaderInformation(expectedAdress, IPv4Address.FromString("192.168.20.0"));
+
+            Byte[] clientMacAdress = random.NextBytes(6);
+
+            UInt32 firstTransactionId = (UInt32)random.Next();
+            UInt32 secondTransactionId = (UInt32)random.Next();
+
+            DHCPv4Packet discoverPacket = new DHCPv4Packet(
+                headerInformation, clientMacAdress, firstTransactionId,
+                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty,
+                DHCPv4PacketFlags.Unicast,
+                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Discover)
+            );
+
+            DHCPv4Packet requestAsAnswerToOfferPacket = new DHCPv4Packet(headerInformation, clientMacAdress, firstTransactionId,
+                IPv4Address.Empty, IPv4Address.Empty, IPv4Address.Empty, DHCPv4PacketFlags.Unicast,
+                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request), new DHCPv4PacketAddressOption(DHCPv4OptionTypes.RequestedIPAddress, expectedAdress), new DHCPv4PacketAddressOption(DHCPv4OptionTypes.ServerIdentifier, IPv4Address.FromString("192.168.20.0")));
+
+            DHCPv4Packet requestPacket = new DHCPv4Packet(secondHeaderInformation, clientMacAdress, firstTransactionId,
+             IPv4Address.Empty, IPv4Address.Empty, expectedAdress, DHCPv4PacketFlags.Unicast,
+            new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request));
+
+            Mock<IScopeResolverManager<DHCPv4Packet, IPv4Address>> scopeResolverMock =
+                new Mock<IScopeResolverManager<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict);
+
+            var resolverInformations = new CreateScopeResolverInformation
+            {
+                Typename = nameof(DHCPv4RelayAgentSubnetResolver),
+            };
+
+            Mock<IScopeResolver<DHCPv4Packet, IPv4Address>> resolverMock = new Mock<IScopeResolver<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict);
+            resolverMock.Setup(x => x.PacketMeetsCondition(discoverPacket)).Returns(true);
+            resolverMock.Setup(x => x.PacketMeetsCondition(requestAsAnswerToOfferPacket)).Returns(true);
+            resolverMock.Setup(x => x.PacketMeetsCondition(requestPacket)).Returns(true);
+
+            resolverMock.SetupGet(x => x.HasUniqueIdentifier).Returns(false);
+
+            scopeResolverMock.Setup(x => x.InitializeResolver(resolverInformations)).Returns(resolverMock.Object);
+
+            Guid scopeId = random.NextGuid();
+
+            DHCPv4RootScope rootScope = GetRootScope(scopeResolverMock);
+            rootScope.Load(new List<DomainEvent>{ new DHCPv4ScopeEvents.DHCPv4ScopeAddedEvent(
+                new DHCPv4ScopeCreateInstruction
+                {
+                    AddressProperties = new DHCPv4ScopeAddressProperties(
+                        IPv4Address.FromString("192.168.178.13"),
+                        IPv4Address.FromString("192.168.178.13"),
+                        Array.Empty<IPv4Address>(),
+                        leaseTime: TimeSpan.FromHours(6),
+                        renewalTime: TimeSpan.FromHours(3),
+                        preferredLifetime: TimeSpan.FromHours(1),
+                        maskLength: 24,
+                        reuseAddressIfPossible: true,
+                        supportDirectUnicast: true,
+                        addressAllocationStrategy: DHCPv4ScopeAddressProperties.AddressAllocationStrategies.Next),
+                    ResolverInformation = resolverInformations,
+                    Name = "Testscope",
+                    Id = scopeId,
+                })
+            });
+
+            DHCPv4Packet offer = rootScope.HandleDiscover(discoverPacket);
+            CheckPacket(expectedAdress, offer);
+            CheckPacketOptions(scopeId, rootScope, offer);
+
+            DHCPv4Lease lease = CheckLease(0, 1, expectedAdress, scopeId, rootScope, DateTime.UtcNow, false);
+
+            CheckEventAmount(2, rootScope);
+            CheckLeaseCreatedEvent(0, clientMacAdress, scopeId, rootScope, expectedAdress, lease);
+            CheckHandeledEvent(1, discoverPacket, offer, rootScope, scopeId);
+
+            DHCPv4Packet ack = rootScope.HandleRequest(requestAsAnswerToOfferPacket);
+            Assert.Equal(DHCPv4MessagesTypes.Acknowledge, ack.MessageType);
+            Assert.Equal(LeaseStates.Active, lease.State);
+
+            DHCPv4Packet secondAck = rootScope.HandleRequest(requestPacket);
+            Assert.Equal(DHCPv4MessagesTypes.Acknowledge, secondAck.MessageType);
+            Assert.Equal(LeaseStates.Active, lease.State);
+        }
     }
 }
