@@ -166,7 +166,6 @@ namespace Beer.DaAPI.Core.Common
             else
             {
                 return ByteHelper.AreEqual(this.HwAddress, other.HwAddress);
-
             }
         }
 

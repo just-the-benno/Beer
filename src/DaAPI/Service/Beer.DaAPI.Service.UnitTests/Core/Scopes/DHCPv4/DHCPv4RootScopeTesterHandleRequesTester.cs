@@ -652,6 +652,87 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv4
             Assert.Equal(lease.RenewSpan, renewTimeOption.Value);
         }
 
+        [Fact]
+        public void HandleRequest_SupportDirectUnicast_LeaseFound_LeaseActive_ReuseIsAllowed_ButPacketIsBroadcasted()
+        {
+            Random random = new();
+
+            IPv4Address leasedAddress = IPv4Address.FromString("192.168.178.10");
+            Byte[] clientMacAdress = random.NextBytes(6);
+
+            IPv4HeaderInformation headerInformation =
+    new IPv4HeaderInformation(IPv4Address.FromString("172.27.10.10"),
+        IPv4Address.FromString("192.168.178.1"));
+
+            DHCPv4Packet requestPacket = new DHCPv4Packet(
+                headerInformation, clientMacAdress, (UInt32)random.Next(),
+                IPv4Address.Empty, IPv4Address.Empty, leasedAddress,
+                DHCPv4PacketFlags.Unicast,
+                new DHCPv4PacketMessageTypeOption(DHCPv4MessagesTypes.Request));
+
+            Mock <IScopeResolverManager<DHCPv4Packet, IPv4Address>> scopeResolverMock =
+                new Mock<IScopeResolverManager<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict);
+
+            var resolverInformations = new CreateScopeResolverInformation
+            {
+                Typename = nameof(DHCPv4RelayAgentSubnetResolver),
+            };
+
+            Mock<IScopeResolver<DHCPv4Packet, IPv4Address>> resolverMock = new Mock<IScopeResolver<DHCPv4Packet, IPv4Address>>(MockBehavior.Strict);
+            resolverMock.SetupGet(x => x.HasUniqueIdentifier).Returns(false);
+
+            scopeResolverMock.Setup(x => x.InitializeResolver(resolverInformations)).Returns(resolverMock.Object);
+
+            Guid scopeId = random.NextGuid();
+            Guid leaseId = random.NextGuid();
+
+            DateTime leaseCreatedAt = DateTime.UtcNow.AddHours(-1);
+            DHCPv4RootScope rootScope = GetRootScope(scopeResolverMock);
+            rootScope.Load(new List<DomainEvent>{ new DHCPv4ScopeEvents.DHCPv4ScopeAddedEvent(
+                new DHCPv4ScopeCreateInstruction
+                {
+                    AddressProperties = new DHCPv4ScopeAddressProperties(
+                        IPv4Address.FromString("192.168.178.1"),
+                        IPv4Address.FromString("192.168.178.255"),
+                        new List<IPv4Address>{IPv4Address.FromString("192.168.178.1") },
+                        leaseTime: TimeSpan.FromDays(1),
+                        renewalTime: TimeSpan.FromHours(12),
+                        preferredLifetime: TimeSpan.FromHours(18),
+                        supportDirectUnicast:  true,
+                        reuseAddressIfPossible: true,
+                        maskLength: 24
+                        ),
+                    ResolverInformation = resolverInformations,
+                    Name = "Testscope",
+                    Id = scopeId,
+                }),
+                new DHCPv4LeaseCreatedEvent
+                {
+                    EntityId = leaseId,
+                    Address = leasedAddress,
+                    ClientIdenfier = DHCPv4ClientIdentifier.FromHwAddress(requestPacket.ClientHardwareAddress).GetBytes(),
+                    ScopeId = scopeId,
+                    UniqueIdentifier = null,
+                    StartedAt = leaseCreatedAt,
+                    ValidUntil = DateTime.UtcNow.AddDays(1),
+                 },
+                new DHCPv4LeaseActivatedEvent
+                {
+                    EntityId = leaseId,
+                    ScopeId = scopeId,
+                }
+            });
+
+            DHCPv4Packet result = rootScope.HandleRequest(requestPacket);
+            CheckAcknowledgePacket(leasedAddress, result);
+
+            CheckIfLeaseIsActive(scopeId, leaseId, rootScope, DateTime.UtcNow.AddHours(24));
+
+            CheckEventAmount(2, rootScope);
+            CheckLeaseRenewedEvent(0, scopeId, rootScope, leaseId, DateTime.UtcNow.AddHours(24));
+            CheckHandeledEvent(1, RequestErros.NoError, requestPacket, result, rootScope, scopeId);
+        }
+
         [Theory]
         [InlineData(DHCPv4Packet.DHCPv4PacketRequestType.Renewing)]
         [InlineData(DHCPv4Packet.DHCPv4PacketRequestType.Rebinding)]

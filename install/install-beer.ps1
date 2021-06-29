@@ -921,12 +921,20 @@ function  Install-Beer {
         $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerSignin"
         $_ = Install-SelfSignCertificateIfNeeded -CommenName "CN=IdentiyServerVerification"
 
+        Write-Host "### Restart IIS.... just in case"
+        Stop-Service W3SVC
+        Start-Service W3SVC
+
         Write-Host "Creating ScheduledTask tasks for backup etc..."
         
         Add-PowershellTask -TaskName "BeerPing" -StartImmediately $true -Trigger (New-JobTrigger -Once -At (Get-Date).Date -RepeatIndefinitely -RepetitionInterval (New-TimeSpan -Minutes 5)) -Argument "-File $pwd\ping-applications-caller.ps1 -ExecutionPath $pwd"
         Add-PowershellTask -TaskName "CriticalErrorObserver" -StartImmediately $true -Trigger (New-JobTrigger -Once -At (Get-Date).Date -RepeatIndefinitely -RepetitionInterval (New-TimeSpan -Minutes 3)) -Argument "-File $pwd\check-critical-errors-caller.ps1 -ExecutionPath $pwd"
+        #Activate only when activily used
+        #Add-PowershellTask -TaskName "DHCPPacketObserver" -StartImmediately $true -Trigger (New-JobTrigger -Once -At (Get-Date).Date -RepeatIndefinitely -RepetitionInterval (New-TimeSpan -Minutes 12)) -Argument "-File $pwd\check-outgoing-dhcp-packets-caller.ps1 -ExecutionPath $pwd"
         Add-PowershellTask -TaskName "BackupBeerPSQL" -StartImmediately $false -Trigger (New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 3am ) -Argument "-File $PSScriptRoot\backup-postgres-caller.ps1 -ExecutionPath $PSScriptRoot -Password $PostgresqlPassword"
         Add-PowershellTask -TaskName "BackupBeerEventSource" -StartImmediately $false -Trigger (New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 4am ) -Argument "-File $PSScriptRoot\backup-eventsourcedb-caller.ps1 -ExecutionPath $PSScriptRoot -DatabasePath C:\ESDB2"
+
+        Start-ScheduledTask -TaskName BeerPing
 
         Write-Host @"
 

@@ -92,6 +92,30 @@ namespace Beer.DaAPI.UnitTests.Core.Common.DHCPv4
         }
 
         [Fact]
+        public void Equals_WithIdentifierFromHwAddress()
+        {
+            Random random = new Random();
+            
+            Byte[] firstHwAddress = random.NextBytes(6);
+            Byte[] secondHwAddress = random.NextBytes(6);
+
+            String thirdIdentifierValue = random.GetAlphanumericString();
+
+            DHCPv4ClientIdentifier firstIdentifier = DHCPv4ClientIdentifier.FromHwAddress(firstHwAddress);
+            DHCPv4ClientIdentifier secondIdentifier = DHCPv4ClientIdentifier.FromHwAddress(firstHwAddress);
+            DHCPv4ClientIdentifier thirdIdentifier = DHCPv4ClientIdentifier.FromIdentifierValue(thirdIdentifierValue);
+
+            secondIdentifier = secondIdentifier.AddHardwareAddress(secondHwAddress);
+            thirdIdentifier = thirdIdentifier.AddHardwareAddress(secondHwAddress);
+
+            Assert.Equal(firstIdentifier, secondIdentifier);
+            Assert.True(firstIdentifier == secondIdentifier);
+            Assert.NotEqual(firstIdentifier, thirdIdentifier);
+            Assert.NotEqual(secondIdentifier, thirdIdentifier);
+            Assert.True(firstIdentifier != thirdIdentifier);
+        }
+
+        [Fact]
         public void Equals_BasedOnDuid()
         {
             Guid firstGuid = Guid.NewGuid();
