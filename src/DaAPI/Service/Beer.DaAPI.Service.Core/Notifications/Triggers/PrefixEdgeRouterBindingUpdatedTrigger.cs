@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Resources;
 using System.Text;
+using System.Text.Json;
 
 namespace Beer.DaAPI.Core.Notifications.Triggers
 {
@@ -77,6 +78,11 @@ namespace Beer.DaAPI.Core.Notifications.Triggers
         public static PrefixEdgeRouterBindingUpdatedTrigger WithNewBinding(Guid scopeId, PrefixBinding newBinding) => new PrefixEdgeRouterBindingUpdatedTrigger(null, newBinding, scopeId);
         public static PrefixEdgeRouterBindingUpdatedTrigger WithOldAndNewBinding(Guid scopeId, PrefixBinding oldBinding, PrefixBinding newBinding) => new PrefixEdgeRouterBindingUpdatedTrigger(oldBinding, newBinding, scopeId);
 
-
+        public override IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>
+        {
+            { "Name", "PrefixEdgeRouterBindingUpdatedTrigger" },
+            {  "OldBinding", JsonSerializer.Serialize(OldBinding == null ? null : new { Host = OldBinding.Host.ToString(), Network = OldBinding.Prefix.ToString(), Mask = OldBinding.Mask.Identifier.ToString()   }) },
+            {  "NewBinding", JsonSerializer.Serialize(NewBinding == null ? null : new { Host = NewBinding.Host.ToString(), Network = NewBinding.Prefix.ToString(), Mask = NewBinding.Mask.Identifier.ToString()   }) },
+        };
     }
 }

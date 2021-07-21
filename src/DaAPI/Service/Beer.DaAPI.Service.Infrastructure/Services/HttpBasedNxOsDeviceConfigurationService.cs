@@ -1,5 +1,6 @@
 ﻿using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Services;
+using Beer.DaAPI.Core.Tracing;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -41,26 +42,23 @@ namespace Beer.DaAPI.Infrastructure.Services
 
         private HttpClient _client;
         private readonly ILogger<HttpBasedNxOsDeviceConfigurationService> _logger;
+        private String _username;
 
-        public HttpBasedNxOsDeviceConfigurationService(
+        public HttpBasedNxOsDeviceConfigurationService(HttpClient client,
             ILogger<HttpBasedNxOsDeviceConfigurationService> logger)
         {
             this._logger = logger;
+            _client = client;
         }
 
-        public Task<Boolean> Connect(String endpoint, String username, String password)
+        public Task<Boolean> Connect(String endpoint, String username, String password, TracingStream tracingStream)
         {
-            HttpClientHandler handler = new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            };
             String authHeaderValue = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}"));
 
-            _client = new HttpClient(handler)
-            {
-                BaseAddress = new Uri(endpoint)
-            };
+            _client.BaseAddress = new Uri(endpoint);
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeaderValue);
+
+            _username = username;
 
             return Task.FromResult(true);
         }
@@ -85,15 +83,35 @@ namespace Beer.DaAPI.Infrastructure.Services
             return content;
         }
 
-        private async Task<Boolean> ExecuteCLICommand(String command)
+        private async Task<Boolean> ExecuteCLICommand(String command, TracingStream tracingStream)
         {
+            await tracingStream.Append(1, new Dictionary<String, String>
+            {
+                { "Command", command },
+                { "Url", _client.BaseAddress + "/ins" },
+            });
+
             var result = await _client.PostAsync("/ins", ExecuteCLICommandContent(command));
+
+            await tracingStream.Append(2, new Dictionary<String, String>
+            {
+                { "Command", command },
+                { "Url", _client.BaseAddress + "/ins" },
+                { "StatusCode", System.Text.Json.JsonSerializer.Serialize(result.StatusCode) },
+            });
 
             _logger.LogDebug("nxos response has code {statusCode}", result.StatusCode);
 
 
             if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
+                await tracingStream.Append(3, new Dictionary<String, String>
+                {
+                    { "Command", command },
+                    { "Url", _client.BaseAddress.ToString() },
+                    { "Username", _username },
+                });
+
                 _logger.LogError("unable to connect to nx os device. user is unauthorized");
                 return false;
             }
@@ -103,29 +121,44 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             if (result.IsSuccessStatusCode == false)
             {
+                await tracingStream.Append(4, new Dictionary<String, String>
+                {
+                    { "Command", command },
+                    { "Url", _client.BaseAddress.ToString() },
+                    { "StatusCode", System.Text.Json.JsonSerializer.Serialize(result.StatusCode) },
+                    { "ErrMsg", response?.Errror?.Message },
+                    { "ErrMsgExtented", response?.Errror?.Data?.Message },
+
+                });
+
                 _logger.LogDebug("unable to execute command {errMsg}", response?.Errror?.Message + " " + response?.Errror?.Data?.Message);
                 return false;
             }
 
+            await tracingStream.Append(5);
+
             return response.Errror == null;
         }
 
-        public async Task<Boolean> AddIPv6StaticRoute(IPv6Address prefix, IPv6SubnetMaskIdentifier length, IPv6Address host)
+        public async Task<Boolean> AddIPv6StaticRoute(IPv6Address prefix, IPv6SubnetMaskIdentifier length, IPv6Address host, TracingStream tracingStream)
         {
             String command = $"ipv6 route {prefix}/{length} {host} 60";
             _logger.LogDebug("adding a static ipv6 route with {command}", command);
 
-            Boolean result = await ExecuteCLICommand(command);
+            Boolean result = await ExecuteCLICommand(command, tracingStream);
             return result;
         }
 
-        public async Task<Boolean> RemoveIPv6StaticRoute(IPv6Address prefix, IPv6SubnetMaskIdentifier length, IPv6Address host)
+        public async Task<Boolean> RemoveIPv6StaticRoute(IPv6Address prefix, IPv6SubnetMaskIdentifier length, IPv6Address host, TracingStream tracingStream)
         {
             String command = $"no ipv6 route {prefix}/{length} {host} 60";
+
             _logger.LogDebug("removing a static ipv6 route with {command}", command);
 
-            Boolean result = await ExecuteCLICommand(command);
+            Boolean result = await ExecuteCLICommand(command, tracingStream);
             return result;
         }
+
+        public int GetTracingIdenfier() => 1;
     }
 }

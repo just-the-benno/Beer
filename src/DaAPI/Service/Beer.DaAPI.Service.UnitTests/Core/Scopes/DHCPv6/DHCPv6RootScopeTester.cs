@@ -2241,7 +2241,7 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
         [Fact]
         public void GetLeaseById_NotFound()
         {
-            Random random = new ();
+            Random random = new();
 
             var events = new DomainEvent[]
                 {
@@ -2272,8 +2272,8 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             Guid leaseId = random.NextGuid();
             Guid firstScopeId = random.NextGuid();
             Guid secondScopeId = random.NextGuid();
-                 
-            IPv6Address leaseAddress =  IPv6Address.FromString("fe20::1");
+
+            IPv6Address leaseAddress = IPv6Address.FromString("fe20::1");
 
             var events = new DomainEvent[]
                 {
@@ -2305,6 +2305,144 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             Assert.NotEqual(DHCPv6Lease.Empty, lease);
             Assert.Equal(leaseAddress, lease.Address);
+        }
+
+        [Fact]
+        public void UpdateParent_RootWithChildrenToNonRootWithChildren()
+        {
+            Random random = new Random();
+
+            DHCPv6RootScope rootScope = GetRootScope();
+            Guid parentId = Guid.NewGuid();
+            Guid scopeId = Guid.NewGuid();
+
+            Guid targetParentId = Guid.NewGuid();
+            Guid targetScopeId = Guid.NewGuid();
+
+            rootScope.Load(new List<DomainEvent>
+            {
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = parentId,
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = scopeId,
+                ParentId = parentId,
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+              new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = targetParentId,
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = targetScopeId,
+                ParentId = targetParentId,
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            });
+
+            Boolean actual = rootScope.UpdateParent(parentId, targetScopeId);
+            Assert.True(actual);
+
+            DHCPv6Scope targetParent = rootScope.GetScopeById(targetParentId);
+            DHCPv6Scope targetScope = rootScope.GetScopeById(targetScopeId);
+
+            DHCPv6Scope parentScope = rootScope.GetScopeById(parentId);
+            DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
+
+            Assert.Contains(scope, parentScope.GetChildScopes());
+            Assert.Contains(targetScope, targetParent.GetChildScopes());
+
+            Assert.Contains(parentScope, targetScope.GetChildScopes());
+            Assert.Equal(targetScope.ParentScope, targetParent);
+            Assert.Equal(parentScope.ParentScope, targetScope);
+            Assert.Equal(scope.ParentScope, parentScope);
+
+            CheckScopeChangesEvent<DHCPv6ScopeParentUpdatedEvent>(rootScope, parentId, (castedEvent) =>
+            {
+                Assert.NotNull(castedEvent.ParentId);
+                Assert.Equal(targetScopeId, castedEvent.ParentId.Value);
+            });
+        }
+
+        [Fact]
+        public void UpdateParent_RootWithChildrenToNonRootWithGrantChildren()
+        {
+            Random random = new Random();
+
+            DHCPv6RootScope rootScope = GetRootScope();
+            Guid parentId = Guid.NewGuid();
+            Guid scopeId = Guid.NewGuid();
+
+            Guid targetGrantParentId = Guid.NewGuid();
+            Guid targetParentId = Guid.NewGuid();
+            Guid targetScopeId = Guid.NewGuid();
+
+            rootScope.Load(new List<DomainEvent>
+            {
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = parentId,
+                Name = "Parent",
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = scopeId,
+                Name = "Scope",
+                ParentId = parentId,
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+              new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = targetGrantParentId,
+                Name = "target-grant-parent",
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = targetParentId,
+                ParentId = targetGrantParentId,
+                Name = "target-parent",
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            new DHCPv6ScopeAddedEvent(new DHCPv6ScopeCreateInstruction
+            {
+                Id = targetScopeId,
+                ParentId = targetParentId,
+                Name = "target",
+                AddressProperties =  DHCPv6ScopeAddressProperties.Empty,
+            }),
+            });
+
+            Boolean actual = rootScope.UpdateParent(parentId, targetScopeId);
+            Assert.True(actual);
+
+            DHCPv6Scope targetGrantScope = rootScope.GetScopeById(targetGrantParentId);
+            DHCPv6Scope targetParent = rootScope.GetScopeById(targetParentId);
+            DHCPv6Scope targetScope = rootScope.GetScopeById(targetScopeId);
+
+            DHCPv6Scope parentScope = rootScope.GetScopeById(parentId);
+            DHCPv6Scope scope = rootScope.GetScopeById(scopeId);
+
+            Assert.Contains(scope, parentScope.GetChildScopes());
+            Assert.Contains(targetScope, targetParent.GetChildScopes());
+
+            Assert.Contains(parentScope, targetScope.GetChildScopes());
+            Assert.Equal(targetParent.ParentScope, targetGrantScope);
+            Assert.Equal(targetScope.ParentScope, targetParent);
+            Assert.Equal(parentScope.ParentScope, targetScope);
+            Assert.Equal(scope.ParentScope, parentScope);
+
+            CheckScopeChangesEvent<DHCPv6ScopeParentUpdatedEvent>(rootScope, parentId, (castedEvent) =>
+            {
+                Assert.NotNull(castedEvent.ParentId);
+                Assert.Equal(targetScopeId, castedEvent.ParentId.Value);
+            });
         }
     }
 }

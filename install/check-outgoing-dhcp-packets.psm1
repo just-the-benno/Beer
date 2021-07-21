@@ -67,7 +67,21 @@ function Read-OutgoingDHCPPackets {
 
     foreach ($item in Get-ChildItem -Path $captureFinalDirectory) {
         $content = & "$TsharkPath" -r `"$($item.FullName)`" -q -z dhcp,stat -2
+        $discoverLine = $content[4]
+        $requestLine = $content[6]
+        Write-Host "Checking the number of discover and requests"
+        $discoveValue = $discoverLine.Substring($discoverLine.IndexOf('|') + 1, $discoverLine.Length - $discoverLine.LastIndexOf('|') + 1).Trim()
+        $requestValue =  $requestLine.Substring($requestLine.IndexOf('|') + 1, $requestLine.Length - $requestLine.LastIndexOf('|') + 1).Trim()
+        Write-Host "Disover: $discoveValue | Requests: $requestValue" 
+        if( ($discoveValue  + $requestValue) -eq 0) {
+            Write-Host "No request or discover packets. Continue";
+            continue;
+        }
+
+        Write-Host "Packets that needed and reply found. Checking for replies..."
+
         $ackLine = $content[10]
+       
         $numberValue = $ackLine.Substring($ackLine.IndexOf('|') + 1, $ackLine.Length - $ackLine.LastIndexOf('|') + 1).Trim()
         Write-Host "Found $numberValue ACK in sample"
         if ($numberValue -eq "0") {

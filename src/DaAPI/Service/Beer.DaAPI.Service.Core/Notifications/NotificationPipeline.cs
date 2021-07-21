@@ -1,9 +1,11 @@
 ﻿using Beer.DaAPI.Core.Common;
+using Beer.DaAPI.Core.Tracing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Beer.DaAPI.Core.Notifications.NotificationsEvent.V1;
 
@@ -17,8 +19,13 @@ namespace Beer.DaAPI.Core.Notifications
         Success = 5,
     }
 
-    public class NotificationPipeline : AggregateRootWithEvents
+    public class NotificationPipeline : AggregateRootWithEvents, ITracingRecord
     {
+        private const Int32 _startExecutionTracingNumber = 1;
+        private const Int32 _checkingNotDefaultConditionTracingNumber = 2;
+        private const Int32 _defaultConditionTracingNumber = 3;
+        private const Int32 _startActorTracingNumber = 4;
+
         private readonly ILogger<NotificationPipeline> _logger;
         private readonly INotificationConditionFactory _conditionFactory;
         private readonly INotificationActorFactory _actorFactory;
@@ -30,6 +37,8 @@ namespace Beer.DaAPI.Core.Notifications
         public String TriggerIdentifier { get; private set; }
         public NotificationCondition Condition { get; private set; }
         public NotificationActor Actor { get; private set; }
+
+        Guid? ITracingRecord.Id => base.Id;
 
         #endregion
 
@@ -74,8 +83,9 @@ namespace Beer.DaAPI.Core.Notifications
 
         #region Methods
 
-        public async Task<NotifactionPipelineExecutionResults> Execute(NotifcationTrigger trigger)
+        public async Task<NotifactionPipelineExecutionResults> Execute(NotifcationTrigger trigger, TracingStream tracingStream)
         {
+            await tracingStream.Append(_startExecutionTracingNumber, this);
             _logger.LogDebug("start of {name} pipeline", Name);
 
             if (TriggerIdentifier != trigger.GetTypeIdentifier())
@@ -86,7 +96,10 @@ namespace Beer.DaAPI.Core.Notifications
 
             if (Condition != NotificationCondition.True)
             {
-                if (await Condition.IsValid(trigger) == false)
+                tracingStream.OpenNextLevel(_checkingNotDefaultConditionTracingNumber);
+                tracingStream.OpenNextLevel(Condition.GetTracingIdentifier());
+
+                if (await Condition.IsValid(trigger, tracingStream) == false)
                 {
                     _logger.LogDebug("the trigger doens't satisfy the condition. Execution of pipeline stopped");
                     return NotifactionPipelineExecutionResults.ConditionNotMatched;
@@ -95,21 +108,32 @@ namespace Beer.DaAPI.Core.Notifications
                 {
                     _logger.LogDebug("the trigger {trgger} meet the condtion {condition}", trigger, Condition);
                 }
+
+                tracingStream.RevertLevel();
+                tracingStream.RevertLevel();
             }
             else
             {
+                await tracingStream.Append(_defaultConditionTracingNumber, this);
+
                 _logger.LogDebug("no conditions applied. actor enabled");
             }
 
             _logger.LogDebug("executing actor...");
             try
             {
-                Boolean actorResult = await Actor.Handle(trigger);
+                tracingStream.OpenNextLevel(_startActorTracingNumber);
+                tracingStream.OpenNextLevel(Actor.GetTracingIdentifier());
+
+                Boolean actorResult = await Actor.Handle(trigger, tracingStream);
                 if (actorResult == false)
                 {
                     _logger.LogError("Actor {actor} of pipeline {name} failed.", Actor, Name);
                     return NotifactionPipelineExecutionResults.ActorFailed;
                 }
+
+                tracingStream.RevertLevel();
+                tracingStream.RevertLevel();
 
                 return NotifactionPipelineExecutionResults.Success;
             }
@@ -149,5 +173,15 @@ namespace Beer.DaAPI.Core.Notifications
             base.Apply(new NotificationPipelineDeletedEvent(Id));
         }
 
+        public IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String,String>
+        {
+            { "Id", Id.ToString() },
+            { "Name", Name.Value },
+            { "Trigger", TriggerIdentifier },
+            { "Condition", JsonSerializer.Serialize(Condition.GetTracingRecordDetails()) },
+            { "Actor", JsonSerializer.Serialize(Actor.GetTracingRecordDetails()) },
+        };
+
+        public Boolean HasIdentity() => true;
     }
 }

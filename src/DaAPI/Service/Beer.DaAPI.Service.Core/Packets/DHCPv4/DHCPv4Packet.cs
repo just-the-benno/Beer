@@ -740,13 +740,13 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
                 requestedIPAddress == IPv4Address.Empty &&
                 ClientIPAdress != IPv4Address.Empty)
             {
-                if (Header.Source != IPv4Address.Broadcast)
+                if (Header.Source == IPv4Address.Broadcast || GatewayIPAdress != IPv4Address.Empty)
                 {
-                    return DHCPv4PacketRequestType.Renewing;
+                    return DHCPv4PacketRequestType.Rebinding;
                 }
                 else
                 {
-                    return DHCPv4PacketRequestType.Rebinding;
+                    return DHCPv4PacketRequestType.Renewing;
                 }
             }
 

@@ -5,6 +5,7 @@ using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Services;
+using Beer.DaAPI.Core.Tracing;
 using Beer.TestHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -134,8 +135,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
 
             var trigger = new NotificationPipelineTester.DummyNotifcationTrigger(random.GetAlphanumericString());
             var condition = GetCondition(random, false, out IEnumerable<Guid> _);
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
-            Boolean actual = await condition.IsValid(trigger);
+            Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.False(actual);
         }
 
@@ -149,7 +151,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Guid scopeId = scopeIds.ElementAt(random.Next(0, scopeIds.Count()));
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(scopeId);
-            Boolean actual = await condition.IsValid(trigger);
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+
+            Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.True(actual);
         }
 
@@ -159,9 +163,10 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Random random = new Random();
 
             var condition = GetCondition(random, false, out _);
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(random.NextGuid());
-            Boolean actual = await condition.IsValid(trigger);
+            Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.False(actual);
         }
 
@@ -242,14 +247,15 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
         }
 
         [Fact]
-        public async Task IsValid_True_NoDirectMeber_ButFoundAsChild()
+        public async Task IsValid_True_NoDirectMember_ButFoundAsChild()
         {
             Random random = new Random();
 
             var condition = GetConditionWithScopeTree(random, out Guid childId);
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(childId);
-            Boolean actual = await condition.IsValid(trigger);
+            Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.True(actual);
         }
 
@@ -259,9 +265,10 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Random random = new Random();
 
             var condition = GetConditionWithScopeTree(random, out Guid _);
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(random.NextGuid());
-            Boolean actual = await condition.IsValid(trigger);
+            Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.False(actual);
         }
     }

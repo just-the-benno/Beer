@@ -29,12 +29,12 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         private readonly Func<TListeners, TServer> _serverFactory;
 
         public DHCPInterfaceEngine(
-            IServiceBus _serviceBus,
+            IServiceBus serviceBus,
             ILogger<TEngine> logger,
             Func<TListeners, TServer> serverFactory
             )
         {
-            _serviceBus = _serviceBus ?? throw new ArgumentNullException(nameof(_serviceBus));
+            _serviceBus = serviceBus ?? throw new ArgumentNullException(nameof(_serviceBus));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
         }

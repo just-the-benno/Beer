@@ -190,6 +190,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                     PropertiesAndValues = scope.Resolver.GetValues(),
                 },
                 Properties = scopeProperties.Properties.Where(x => x != null).Select(x => GetScopePropertyResponse(x)).ToArray(),
+                InheritanceStopedProperties = scopeProperties.GetMarkedFromInheritanceOptionCodes().Select(x => (Int32)x).ToArray(),
                 AddressRelated = new DHCPv4ScopeAddressPropertiesResponse
                 {
                     AcceptDecline = addressProperties.AcceptDecline,

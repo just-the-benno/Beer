@@ -57,6 +57,7 @@ namespace Beer.DaAPI.Shared.Responses
                 public ScopeResolverResponse Resolver { get; set; }
                 public DHCPv4ScopeAddressPropertiesResponse AddressRelated { get; set; }
                 public IEnumerable<DHCPv4ScopePropertyResponse> Properties { get; set; }
+                public IEnumerable<Int32> InheritanceStopedProperties { get; set; }
             }
 
             public class DynamicRenewTimeReponse
