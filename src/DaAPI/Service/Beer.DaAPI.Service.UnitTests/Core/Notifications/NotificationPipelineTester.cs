@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using static Beer.DaAPI.Core.Notifications.NotificationsEvent.V1;
+using Beer.DaAPI.Core.Tracing;
 
 namespace Beer.DaAPI.UnitTests.Core.Notifications
 {
@@ -24,6 +25,8 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             }
 
             public override string GetTypeIdentifier() => Identiifer;
+
+            public override IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>();
         }
 
         public class DummyNotificationCondition : NotificationCondition
@@ -43,7 +46,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
                 return ApplyValuesResult;
             }
 
-            public override Task<bool> IsValid(NotifcationTrigger trigger)
+            public override Task<bool> IsValid(NotifcationTrigger trigger, TracingStream stream)
             {
                 if (IsValidShouldThrowError == true) { throw new NotImplementedException(); }
 
@@ -56,6 +59,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
 
                 return ToCreateModelResult;
             }
+
+            public override int GetTracingIdentifier() => 42;
+            public override IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>();
 
             public static DummyNotificationCondition AllErrors = new DummyNotificationCondition
             {
@@ -89,12 +95,15 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
                 return ToCreateModelResult;
             }
 
-            protected override Task<bool> Handle(NotifcationTrigger trigger)
+            protected override Task<bool> Handle(NotifcationTrigger trigger, TracingStream stream)
             {
                 if (HandleModelShouldThrowError == true) throw new NotImplementedException();
 
                 return Task.FromResult(HandleResult);
             }
+
+            public override int GetTracingIdentifier() => 42 + 42;
+            public override IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>();
 
             public static DummyNotificationActor AllErrors = new DummyNotificationActor
             {
@@ -166,8 +175,8 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, NotificationCondition.True, new DummyNotificationActor { HandleResult = true });
-
-            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier));
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.Success, result);
         }
 
@@ -177,8 +186,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, NotificationCondition.True, new DummyNotificationActor { HandleResult = false });
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
-            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier));
+            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.ActorFailed, result);
         }
 
@@ -188,8 +198,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, new DummyNotificationCondition { IsValidResult = true }, new DummyNotificationActor { HandleResult = true });
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
-            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier));
+            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.Success, result);
         }
 
@@ -199,8 +210,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, new DummyNotificationCondition { IsValidResult = true }, new DummyNotificationActor { HandleResult = false });
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
-            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier));
+            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.ActorFailed, result);
         }
 
@@ -210,8 +222,9 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, new DummyNotificationCondition { IsValidResult = false }, new DummyNotificationActor { HandleResult = true });
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
-            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier));
+            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.ConditionNotMatched, result);
         }
 
@@ -221,13 +234,14 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier);
+            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
-            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier.Substring(1)));
+            NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier.Substring(1)), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.TriggerNotMatch, result);
         }
 
         [Fact]
-        public void Ceate()
+        public void Create()
         {
             Random random = new Random();
             String name = random.GetAlphanumericString();

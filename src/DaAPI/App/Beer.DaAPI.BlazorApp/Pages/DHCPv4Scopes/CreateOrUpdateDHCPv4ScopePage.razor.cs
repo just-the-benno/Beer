@@ -37,6 +37,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         private Guid _resolverValuesKey = Guid.NewGuid();
 
         private DHCPv4ScopePropertiesResponse _parent = new();
+        private DHCPv4ScopePropertiesResponse _self = new();
 
         private IEnumerable<DHCPv4ScopeResolverDescription> _possibleResolvers;
 
@@ -242,8 +243,9 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
             _parent = await _service.GetDHCPv4ScopeProperties(_generellPropertiesModel.ParentId.Value, true);
             _addressRelatedPropertiesModel.SetParent(_parent);
-            _optionalValues.LoadFromParent(_parent);
+            _optionalValues.LoadFromParent(_parent, _self);
             _loadingParentInProgress = true;
+
             if (manuelRefresh == true)
             {
                 StateHasChanged();
@@ -335,8 +337,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             String uri = _navManager.Uri;
             if (uri.Contains("scopes/dhcpv4/create/copyFrom/") == true)
             {
-                var properties = await _service.GetDHCPv4ScopeProperties(ScopeId, false);
-                await SetValuesFromProperties(properties);
+                _self = await _service.GetDHCPv4ScopeProperties(ScopeId, false);
+                await SetValuesFromProperties(_self);
                 _generellPropertiesModel.Name = $"{L["ScopeCopyPrefix"]} {_generellPropertiesModel.Name}";
 
                 CreateContexts();
@@ -345,8 +347,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             {
                 _isCreateMode = false;
                 _generellPropertiesModel.Id = Guid.Parse(ScopeId);
-                var properties = await _service.GetDHCPv4ScopeProperties(ScopeId, false);
-                await SetValuesFromProperties(properties);
+                _self = await _service.GetDHCPv4ScopeProperties(ScopeId, false);
+                await SetValuesFromProperties(_self);
 
                 CreateContexts();
             }

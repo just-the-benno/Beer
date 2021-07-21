@@ -39,7 +39,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
             serializer.Serialize(writer, new EeasySerialibleVersionOfDHCPv4ScopeProperties
             {
                 Properties = item.Properties.Where(x => x != null),
-                ExcludedFromInheritance = item.GetMarkedFromInheritanceOptionCodes().Cast<Int32>().ToArray(),
+                ExcludedFromInheritance = item.GetMarkedFromInheritanceOptionCodes().Select(x => (Int32)x).ToArray(),
             }) ;
         }
     }

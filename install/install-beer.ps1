@@ -642,7 +642,7 @@ function Set-EventStoreOperational {
     }
 
     if ($requestCertficate -eq $true) {
-        $getCertifcateCommand = "wacs  --accepttos --emailaddress $($EmailAddress)  --friendlyname $ExternalDnsName  --usedefaulttaskuser --installation script --script `".\upgrade-tls-binding-esdb.ps1`"  --scriptparameters `"NewCertThumbprint='{CertThumbprint}' OldCertThumbprint='{OldCertThumbprint}' RootPath='$RootPath'`" --store certificatestore   --target manual  --host $externalDnsName  --validationmode dns-01 --validation azure  --azuretenantid $AzureTenendId  --azureclientid $AzureClientId --azuresecret $AzureClientPassword --azuresubscriptionid $AzureSubscrionId --azureresourcegroupname $AzureResourceGroupName"
+        $getCertifcateCommand = "wacs  --accepttos --emailaddress $($EmailAddress)  --friendlyname $ExternalDnsName  --usedefaulttaskuser --installation script --script `"$pwd\upgrade-tls-binding-esdb.ps1`"  --scriptparameters `"NewCertThumbprint='{CertThumbprint}' OldCertThumbprint='{OldCertThumbprint}' RootPath='$RootPath'`" --store certificatestore   --target manual  --host $externalDnsName  --validationmode dns-01 --validation azure  --azuretenantid $AzureTenendId  --azureclientid $AzureClientId --azuresecret $AzureClientPassword --azuresubscriptionid $AzureSubscrionId --azureresourcegroupname $AzureResourceGroupName"
         Invoke-Expression -Command $getCertifcateCommand *>$null
         Write-Host "certifcate requested"
     }

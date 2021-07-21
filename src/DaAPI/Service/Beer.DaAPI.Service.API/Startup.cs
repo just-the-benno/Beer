@@ -52,6 +52,8 @@ using Beer.Helper.API;
 using Beer.DaAPI.Service.API.Application.Commands;
 using Beer.DaAPI.Service.Infrastructure.StorageEngine;
 using EventStore.Client;
+using Beer.DaAPI.Infrastructure.Tracing;
+using System.Net.Http;
 
 namespace Beer.DaAPI.Service.API
 {
@@ -190,7 +192,12 @@ namespace Beer.DaAPI.Service.API
             services.AddSingleton<INotificationEngine, NotificationEngine>();
             services.AddSingleton<INotificationActorFactory, ServiceProviderBasedNotificationActorFactory>();
             services.AddSingleton<INotificationConditionFactory, ServiceProviderBasedNotificationConditionFactory>();
-            services.AddTransient<INxOsDeviceConfigurationService, HttpBasedNxOsDeviceConfigurationService>();
+            services.AddTransient<INxOsDeviceConfigurationService, HttpBasedNxOsDeviceConfigurationService>( sp => new HttpBasedNxOsDeviceConfigurationService(
+                new HttpClient(new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                }),sp.GetService<ILogger<HttpBasedNxOsDeviceConfigurationService>>()
+                ));
 
             services.AddTransient<NxOsStaticRouteUpdaterNotificationActor>();
             services.AddTransient<DHCPv6ScopeIdNotificationCondition>();
@@ -255,6 +262,9 @@ namespace Beer.DaAPI.Service.API
                     pb.AllowAnyHeader().AllowAnyMethod().WithOrigins(appSettings.AppURIs.Values.ToArray());
                 });
             });
+
+            services.AddTransient<ITracingManager, TracingManager>();
+           
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider provider)

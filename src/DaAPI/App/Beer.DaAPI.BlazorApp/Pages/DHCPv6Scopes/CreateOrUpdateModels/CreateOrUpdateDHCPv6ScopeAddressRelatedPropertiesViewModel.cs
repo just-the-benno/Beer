@@ -106,6 +106,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 
         internal void SetParent(DHCPv6ScopePropertiesResponse parent)
         {
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(parent));
             ParentValues = new()
             {
                 Start = parent.AddressRelated.Start,

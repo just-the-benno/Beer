@@ -161,7 +161,8 @@ namespace Beer.DaAPI.Service.API.ApiControllers
                     Typename = scope.Resolver.GetDescription().TypeName,
                     PropertiesAndValues = scope.Resolver.GetValues(),
                 },
-                Properties = scopeProperties.Properties.Select(x => GetScopePropertyResponse(x)).ToArray(),
+                Properties = scopeProperties.Properties.Where(x => x != null).Select(x => GetScopePropertyResponse(x)).ToArray(),
+                InheritanceStopedProperties = scopeProperties.GetMarkedFromInheritanceOptionCodes().Select(x => (Int32)x).ToArray(),
                 AddressRelated = new DHCPv6ScopeAddressPropertiesResponse
                 {
                     AcceptDecline = addressProperties.AcceptDecline,

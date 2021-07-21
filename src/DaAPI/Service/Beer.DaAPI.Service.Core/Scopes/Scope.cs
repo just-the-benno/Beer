@@ -259,7 +259,7 @@ namespace Beer.DaAPI.Core.Scopes
             }
 
             ids.Add(this.ParentScope.Id);
-            GetParentIds(ids, this.ParentScope);
+            scope.ParentScope.GetParentIds(ids, this.ParentScope);
         }
 
         public override string ToString()

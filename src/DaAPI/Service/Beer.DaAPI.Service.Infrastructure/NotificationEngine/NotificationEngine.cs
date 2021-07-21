@@ -2,7 +2,9 @@
 using Beer.DaAPI.Core.Notifications.Actors;
 using Beer.DaAPI.Core.Notifications.Conditions;
 using Beer.DaAPI.Core.Notifications.Triggers;
+using Beer.DaAPI.Core.Tracing;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
+using Beer.DaAPI.Infrastructure.Tracing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +16,25 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
 {
     public class NotificationEngine : INotificationEngine
     {
-        private readonly IDHCPv6StorageEngine storageEngine;
 
+        private readonly IDHCPv6StorageEngine _storageEngine;
+        private readonly ITracingManager _tracingManager;
         private List<NotificationPipeline> _pipelines;
 
-        public NotificationEngine(IDHCPv6StorageEngine storageEngine)
+        public NotificationEngine(IDHCPv6StorageEngine storageEngine, ITracingManager tracingManager)
         {
-            this.storageEngine = storageEngine;
+            this._storageEngine = storageEngine;
+            this._tracingManager = tracingManager;
         }
 
         public async Task Initialize()
         {
-            _pipelines = new List<NotificationPipeline>(await storageEngine.GetAllNotificationPipeleines());
+            _pipelines = new List<NotificationPipeline>(await _storageEngine.GetAllNotificationPipeleines());
         }
 
         public async Task<Boolean> AddNotificationPipeline(NotificationPipeline pipeline)
         {
-            Boolean result = await storageEngine.Save(pipeline);
+            Boolean result = await _storageEngine.Save(pipeline);
             if (result == true)
             {
                 _pipelines.Add(pipeline);
@@ -42,12 +46,12 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
         public async Task<Boolean> DeletePipeline(Guid id)
         {
             var pipeline = _pipelines.FirstOrDefault(x => x.Id == id);
-            if(pipeline == null)
+            if (pipeline == null)
             {
                 return false;
             }
 
-            if(await storageEngine.DeleteAggregateRoot(pipeline) == false)
+            if (await _storageEngine.DeleteAggregateRoot(pipeline) == false)
             {
                 return false;
             }
@@ -58,13 +62,33 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
 
         public async Task HandleTrigger(NotifcationTrigger trigger)
         {
+            var tracingStream = _tracingManager.NewTrace(TracingManagerConstants.Modules.NotificationEngine, TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted,
+                trigger);
+
             foreach (var item in _pipelines)
             {
+                tracingStream.SetEntityId(item.Id);
+                await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted, item);
+
                 if (item.CanExecute(trigger) == true)
                 {
-                    await item.Execute(trigger);
+                    await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.PipelineCanHandleTrigger, item);
+                    tracingStream.OpenNextLevel(TracingManagerConstants.NotifcationEngineSubModels.ExecutionPipelineStarted);
+
+                    await item.Execute(trigger, tracingStream);
+
+                    tracingStream.RevertLevel();
                 }
+                else
+                {
+                    await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.PipelineCanNotHandleTrigger, item);
+                }
+
+                tracingStream.ClearEntity();
             }
+
+            await tracingStream.AppendAndClose(TracingManagerConstants.NotifcationEngineSubModels.TriggerHandled, trigger);
+
         }
 
         public Task<IEnumerable<NotificationPipelineReadModel>> GetPipelines()

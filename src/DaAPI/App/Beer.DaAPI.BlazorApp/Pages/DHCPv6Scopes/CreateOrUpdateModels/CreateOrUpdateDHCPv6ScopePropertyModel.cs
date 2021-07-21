@@ -186,16 +186,17 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             OptionCode = optionCode;
         }
 
-        public CreateOrUpdateDHCPv6ScopePropertyModel(DHCPv6ScopePropertyResponse response, Boolean setAsParent)
+        public CreateOrUpdateDHCPv6ScopePropertyModel(DHCPv6ScopePropertyResponse response, Boolean markAsRemovedInInheritance, Boolean setAsParent)
         {
-            if(setAsParent == true)
+            if (setAsParent == true)
             {
                 IsSetByParent = true;
                 _parent = response;
-            }    
+            }
 
             OptionCode = response.OptionCode;
             PropertyType = response.Type;
+            MarkAsRemovedInInheritance = markAsRemovedInInheritance;
 
             SetValueFromResponse(response);
         }
@@ -239,7 +240,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 {
                     Addresses = AddressesValues.Select(x => x.Value).ToList(),
                 },
-              
+
                 DHCPv6ScopePropertyType.Byte => new DHCPv6NumericScopePropertyRequest
                 {
                     NumericType = NumericScopePropertiesValueTypes.Byte,
@@ -269,11 +270,12 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             return request;
         }
 
-        internal void UpdateFromResponse(DHCPv6ScopePropertyResponse item)
+        internal void UpdateFromResponse(DHCPv6ScopePropertyResponse item, Boolean markAsRemovedInInheritance)
         {
             OverrideParentValue = true;
             ResetValues();
             SetValueFromResponse(item);
+            MarkAsRemovedInInheritance = markAsRemovedInInheritance;
         }
     }
 
@@ -281,13 +283,13 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
     {
         public IList<CreateOrUpdateDHCPv6ScopePropertyModel> Properties { get; private set; } = new List<CreateOrUpdateDHCPv6ScopePropertyModel>();
 
-        internal void LoadFromParent(DHCPv6ScopePropertiesResponse parent)
+        internal void LoadFromParent(DHCPv6ScopePropertiesResponse parent, DHCPv6ScopePropertiesResponse withoutParents)
         {
             Properties.Clear();
 
             foreach (var item in parent.Properties)
             {
-                Properties.Add(new CreateOrUpdateDHCPv6ScopePropertyModel(item, true));
+                Properties.Add(new CreateOrUpdateDHCPv6ScopePropertyModel(item, (parent?.InheritanceStopedProperties ?? Array.Empty<Int32>()).Contains(item.OptionCode) || (withoutParents?.InheritanceStopedProperties ?? Array.Empty<Int32>()).Contains(item.OptionCode), true));
             }
         }
 
@@ -301,13 +303,13 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             foreach (var item in properties.Properties)
             {
                 var existing = Properties.FirstOrDefault(x => x.OptionCode == item.OptionCode);
-                if(existing == null)
+                if (existing == null)
                 {
-                    Properties.Add(new CreateOrUpdateDHCPv6ScopePropertyModel(item, false));
+                    Properties.Add(new CreateOrUpdateDHCPv6ScopePropertyModel(item, properties.InheritanceStopedProperties.Contains(item.OptionCode), false));
                 }
                 else
                 {
-                    existing.UpdateFromResponse(item);
+                    existing.UpdateFromResponse(item, properties.InheritanceStopedProperties.Contains(item.OptionCode));
                 }
             }
         }

@@ -2,11 +2,13 @@
 using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Services;
+using Beer.DaAPI.Core.Tracing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Core.Notifications.Conditions
@@ -51,30 +53,40 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
             }
         }
 
-        public override Task<Boolean> IsValid(NotifcationTrigger trigger)
+        public override async Task<Boolean> IsValid(NotifcationTrigger trigger, TracingStream tracingStream)
         {
             if (trigger is PrefixEdgeRouterBindingUpdatedTrigger == false)
             {
                 _logger.LogError("condition {name} has invalid trigger. expected trigger type is {expectedType} actual is {type}",
                     nameof(DHCPv6ScopeIdNotificationCondition), typeof(PrefixEdgeRouterBindingUpdatedTrigger), trigger.GetType());
 
-                return Task.FromResult(false);
+                return false;
             }
 
             var castedTrigger = (PrefixEdgeRouterBindingUpdatedTrigger)trigger;
 
+            await tracingStream.Append(1, new Dictionary<String, String>
+            {
+               { "ScopeId", castedTrigger.ScopeId.ToString()  },
+               { "ScopeIds", JsonSerializer.Serialize(ScopeIds) }
+            });
+
             if (ScopeIds.Contains(castedTrigger.ScopeId) == true)
             {
+                await tracingStream.Append(2);
+
                 _logger.LogDebug("triggers scope id {scopeId} found in condtition. Condition is true", castedTrigger.ScopeId);
-                return Task.FromResult(true);
+                return true;
             }
             else
             {
                 _logger.LogDebug("triggers scope id {scopeId} not found scope list. Checking if children are included", castedTrigger.ScopeId);
                 if (IncludesChildren == false)
                 {
+                    await tracingStream.Append(3);
+
                     _logger.LogDebug("children shouldn't be included. Conditition evalutated to false");
-                    return Task.FromResult(false);
+                    return false;
                 }
                 else
                 {
@@ -82,6 +94,8 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
                     {
                         _logger.LogDebug("checking scopes recursivly for machting id");
                         _logger.LogDebug("check if {triggerId} is a child of {scopeId}", castedTrigger.ScopeId, castedTrigger.ScopeId);
+
+                        await tracingStream.Append(4);
 
                         var scope = _rootScope.GetScopeById(scopeId);
                         if(scope == null)
@@ -95,14 +109,16 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
                             Boolean found = SearchChildScope(item, castedTrigger.ScopeId);
                             if (found == true)
                             {
-                                _logger.LogDebug("a machting child scope found. Condition evaluted to true");
-                                return Task.FromResult(true);
+                                await tracingStream.Append(5);
+                                return true;
                             }
                         }
                     }
 
+                    await tracingStream.Append(6);
+
                     _logger.LogDebug("no child found. Condition evaluted to false");
-                    return Task.FromResult(false);
+                    return false;
 
                 }
             }
@@ -131,5 +147,14 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
                 return false;
             }
         }
+        
+        public override int GetTracingIdentifier() => NotificationCondition.DHCPv6ScopeIdConditionTracingIdentifier;
+
+        public override IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>
+        {
+            { "Name", "DHCPv6ScopeIdNotificationCondition" },
+            { "IncludesChildren", JsonSerializer.Serialize(IncludesChildren) },
+            { "ScopeIds", JsonSerializer.Serialize(ScopeIds) }
+        };
     }
 }
