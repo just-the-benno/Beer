@@ -165,7 +165,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                 T2 = new() { NullableValue = 0.8 };
                 ValidLifetime = new() { NullableValue = TimeSpan.FromHours(24) };
                 PreferredLifetime = new() { NullableValue = TimeSpan.FromHours(18) };
-            }   
+            }
             else
             {
                 T1 = new() { DefaultValue = parent.AddressRelated.T1.Value };
@@ -206,33 +206,33 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
                     PrefixLength = PrefixLength,
                 },
                 ExcludedAddresses = ExcludedAddresses.Select(x => x.Value).ToList(),
-                ValidLifeTime = ValidLifetime.NullableValue,
-                PreferredLifeTime = PreferredLifetime.NullableValue,
-                T1 = T1.NullableValue,
-                T2 = T2.NullableValue,
                 RapitCommitEnabled = RapitCommitEnabled.NullableValue,
                 AcceptDecline = AcceptDecline.NullableValue,
                 InformsAreAllowd = InformsAreAllowd.NullableValue,
                 ReuseAddressIfPossible = ReuseAddressIfPossible.NullableValue,
                 SupportDirectUnicast = SupportDirectUnicast.NullableValue,
                 AddressAllocationStrategy = AddressAllocationStrategy.NullableValue,
-                DynamicRenewTime = ((RenewType.HasValue && RenewType == RenewTypes.Dynamic) || DynamicRenewTime.HasValue || DynamicRenewDeltaToRebound.HasValue || DynamicRenewDeltaToLifetime.HasValue) ? new DHCPv6DynamicRenewTimeRequest
-                { 
-                    Hours = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Hours,
-                    Minutes = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Minutes,
-                    MinutesToRebound = (Int32)(DynamicRenewDeltaToRebound?.NullableValue ?? ParentValues.DynamicRenewDeltaToRebound.Value).TotalMinutes,
-                    MinutesToEndOfLife = (Int32)(DynamicRenewDeltaToLifetime?.NullableValue ?? ParentValues.DynamicRenewDeltaToLifetime.Value).TotalMinutes,
-                } : null,
             };
 
-            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && (ParentValues == null) || (ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic))
+            switch ((RenewType.NullableValue ?? ParentValues.RenewType.NullableValue).Value)
             {
-                request.T1 ??= ParentValues.T1.NullableValue;
-                request.T2 ??= ParentValues.T2.NullableValue;
-                request.PreferredLifeTime ??= ParentValues.PreferredLifetime.NullableValue;
-                request.ValidLifeTime ??= ParentValues.ValidLifetime.NullableValue;
-
-                request.DynamicRenewTime = null;
+                case RenewTypes.Static:
+                    request.ValidLifeTime = ValidLifetime.NullableValue;
+                    request.PreferredLifeTime = PreferredLifetime.NullableValue;
+                    request.T1 = T1.NullableValue;
+                    request.T2 = T2.NullableValue;
+                    break;
+                case RenewTypes.Dynamic:
+                    request.DynamicRenewTime = new()
+                    {
+                        Hours = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Hours,
+                        Minutes = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Minutes,
+                        MinutesToRebound = (Int32)(DynamicRenewDeltaToRebound?.NullableValue ?? ParentValues.DynamicRenewDeltaToRebound.Value).TotalMinutes,
+                        MinutesToEndOfLife = (Int32)(DynamicRenewDeltaToLifetime?.NullableValue ?? ParentValues.DynamicRenewDeltaToLifetime.Value).TotalMinutes,
+                    };
+                    break;
+                default:
+                    break;
             }
 
             return request;
