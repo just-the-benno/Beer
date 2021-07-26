@@ -167,30 +167,31 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 End = End,
                 ExcludedAddresses = ExcludedAddresses.Select(x => x.Value).ToList(),
                 MaskLength = SubnetMask.NullableValue,
-                PreferredLifetime = PreferredLifetime.NullableValue,
-                LeaseTime = LeaseTime.NullableValue,
-                RenewalTime = RenewalTime.NullableValue,
                 AcceptDecline = AcceptDecline.NullableValue,
                 InformsAreAllowd = InformsAreAllowd.NullableValue,
                 ReuseAddressIfPossible = ReuseAddressIfPossible.NullableValue,
                 SupportDirectUnicast = SupportDirectUnicast.NullableValue,
                 AddressAllocationStrategy = AddressAllocationStrategy.NullableValue,
-                DynamicRenewTime = ((RenewType.HasValue && RenewType == RenewTypes.Dynamic) || DynamicRenewTime.HasValue || DynamicRenewDeltaToRebound.HasValue || DynamicRenewDeltaToLifetime.HasValue) ? new DHCPv4DynamicRenewTimeRequest
-                {
-                    Hours = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Hours,
-                    Minutes = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Minutes,
-                    MinutesToRebound = (Int32)(DynamicRenewDeltaToRebound?.NullableValue ?? ParentValues.DynamicRenewDeltaToRebound.Value).TotalMinutes,
-                    MinutesToEndOfLife = (Int32)(DynamicRenewDeltaToLifetime?.NullableValue ?? ParentValues.DynamicRenewDeltaToLifetime.Value).TotalMinutes,
-                } : null,
             };
 
-            if (RenewType.HasValue == true && RenewType == RenewTypes.Static && (ParentValues == null ) || (ParentValues != null && ParentValues.RenewType == RenewTypes.Dynamic))
+            switch ((RenewType.NullableValue ?? ParentValues.RenewType.NullableValue).Value)
             {
-                request.RenewalTime ??= ParentValues.RenewalTime.NullableValue;
-                request.PreferredLifetime ??= ParentValues.PreferredLifetime.NullableValue;
-                request.LeaseTime ??= ParentValues.LeaseTime.NullableValue;
-
-                request.DynamicRenewTime = null;
+                case RenewTypes.Static:
+                    request.PreferredLifetime = PreferredLifetime.NullableValue;
+                    request.LeaseTime = LeaseTime.NullableValue;
+                    request.RenewalTime = RenewalTime.NullableValue;
+                    break;
+                case RenewTypes.Dynamic:
+                    request.DynamicRenewTime = new()
+                    {
+                        Hours = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Hours,
+                        Minutes = (DynamicRenewTime?.NullableValue ?? ParentValues.DynamicRenewTime.Value).Minutes,
+                        MinutesToRebound = (Int32)(DynamicRenewDeltaToRebound?.NullableValue ?? ParentValues.DynamicRenewDeltaToRebound.Value).TotalMinutes,
+                        MinutesToEndOfLife = (Int32)(DynamicRenewDeltaToLifetime?.NullableValue ?? ParentValues.DynamicRenewDeltaToLifetime.Value).TotalMinutes,
+                    };
+                    break;
+                default:
+                    break;
             }
 
             return request;
