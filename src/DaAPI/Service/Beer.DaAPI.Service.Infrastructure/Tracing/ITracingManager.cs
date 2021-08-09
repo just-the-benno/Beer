@@ -9,6 +9,6 @@ namespace Beer.DaAPI.Infrastructure.Tracing
 {
     public interface  ITracingManager
     {
-        TracingStream NewTrace(Int32 systemIdentifier, Int32 procedureIdentfier, ITracingRecord firstRecordData);
+        Task<TracingStream> NewTrace(Int32 systemIdentifier, Int32 procedureIdentfier, ITracingRecord firstRecordData);
     }
 }

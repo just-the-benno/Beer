@@ -175,6 +175,7 @@ namespace Beer.DaAPI.Core.Notifications.Actors
 
         public override IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>
         {
+            { "Name", nameof(NxOsStaticRouteUpdaterNotificationActor) },
             { "Url", Url },
             { "Username", Username }
         };

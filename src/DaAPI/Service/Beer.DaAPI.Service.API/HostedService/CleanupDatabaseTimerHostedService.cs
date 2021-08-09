@@ -2,6 +2,7 @@
 using Beer.DaAPI.Core.Scopes.DHCPv4;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Services;
+using Beer.DaAPI.Infrastructure.StorageEngine;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,10 +63,12 @@ namespace Beer.DaAPI.Service.API.HostedService
                     DateTime now = DateTime.UtcNow;
                     DateTime leaseThreshold = now - serverPropertiesResolver.GetLeaseLifeTime();
                     DateTime handledEventThreshold = now - serverPropertiesResolver.GetHandledLifeTime();
+                    DateTime tracingStreamThreshold = now - serverPropertiesResolver.GetTracingStreamLifeTime();
+
+                    var storageEngine = scope.ServiceProvider.GetRequiredService<IDHCPv6StorageEngine>();
 
                     {
                         var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv6RootScope>();
-                        var storageEngine = scope.ServiceProvider.GetRequiredService<IDHCPv6StorageEngine>();
 
                         rootScope.DropUnusedLeasesOlderThan(leaseThreshold);
                         await storageEngine.DeleteLeaseRelatedEventsOlderThan(leaseThreshold);
@@ -76,7 +79,6 @@ namespace Beer.DaAPI.Service.API.HostedService
 
                     {
                         var rootScope = scope.ServiceProvider.GetRequiredService<DHCPv4RootScope>();
-                        var storageEngine = scope.ServiceProvider.GetRequiredService<IDHCPv4StorageEngine>();
 
                         rootScope.DropUnusedLeasesOlderThan(leaseThreshold);
 
@@ -85,6 +87,13 @@ namespace Beer.DaAPI.Service.API.HostedService
 
                         //await storageEngine.DeletePacketHandledEventsOlderThan(handledEventThreshold);
                         //await storageEngine.DeletePacketHandledEventMoreThan(serverPropertiesResolver.GetMaximumHandledCounter());
+                    }
+
+                    {
+                        var store = scope.ServiceProvider.GetRequiredService<IReadStore>();
+
+                        await store.RemoveTracingStreamsOlderThan(tracingStreamThreshold);
+
                     }
 
                     _logger.LogInformation("Database cleanup intervall finished");

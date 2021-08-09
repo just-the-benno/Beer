@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="10.1" xml:space="preserve">
+    <value>Trigger started</value>
+  </data>
+  <data name="10.1.1" xml:space="preserve">
+    <value>Trigger started</value>
+  </data>
+  <data name="10.1.2" xml:space="preserve">
+    <value>Pipeline can handle trigger</value>
+  </data>
+  <data name="10.1.3" xml:space="preserve">
+    <value>Trigger suitable for pipeline</value>
+  </data>
+  <data name="10.1.4" xml:space="preserve">
+    <value>Trigger not suitable for pipeline</value>
+  </data>
+  <data name="10.1.5" xml:space="preserve">
+    <value>Trigger handled</value>
+  </data>
+  <data name="10.1.6.1" xml:space="preserve">
+    <value>Pipeline started to handle trigger</value>
+  </data>
+  <data name="10.1.6.2.1.1" xml:space="preserve">
+    <value>Start to check ScopeId Condition </value>
+  </data>
+  <data name="10.1.6.2.1.2" xml:space="preserve">
+    <value>Scope Id Found in Rootscope</value>
+  </data>
+  <data name="10.1.6.2.1.3" xml:space="preserve">
+    <value>Children are excluded from search</value>
+  </data>
+  <data name="10.1.6.2.1.4" xml:space="preserve">
+    <value>Checking child scopes</value>
+  </data>
+  <data name="10.1.6.2.1.5" xml:space="preserve">
+    <value>Scope found in childscopes</value>
+  </data>
+  <data name="10.1.6.2.1.6" xml:space="preserve">
+    <value>No child found. Condition not satisfied</value>
+  </data>
+  <data name="10.1.6.3" xml:space="preserve">
+    <value>No condition configured. Moving to actor</value>
+  </data>
+  <data name="10.1.6.4.1.1" xml:space="preserve">
+    <value>Actor NxOsStaticRouteUpdater started</value>
+  </data>
+  <data name="10.1.6.4.1.2" xml:space="preserve">
+    <value>Device not reachable</value>
+  </data>
+  <data name="10.1.6.4.1.3" xml:space="preserve">
+    <value>Removing old binding</value>
+  </data>
+  <data name="10.1.6.4.1.3.1.1" xml:space="preserve">
+    <value>Sending command to NX OS API</value>
+  </data>
+  <data name="10.1.6.4.1.3.1.2" xml:space="preserve">
+    <value>Command sent</value>
+  </data>
+  <data name="10.1.6.4.1.3.1.3" xml:space="preserve">
+    <value>Not authorized to NS OS API</value>
+  </data>
+  <data name="10.1.6.4.1.3.1.4" xml:space="preserve">
+    <value>Comment sent successfully</value>
+  </data>
+  <data name="10.1.6.4.1.3.1.5" xml:space="preserve">
+    <value>Comment handling finishind</value>
+  </data>
+  <data name="10.1.6.4.1.4" xml:space="preserve">
+    <value>Remove of old binding failed</value>
+  </data>
+  <data name="10.1.6.4.1.5" xml:space="preserve">
+    <value>Old binding removed successfully</value>
+  </data>
+  <data name="10.1.6.4.1.6" xml:space="preserve">
+    <value>Adding new binding</value>
+  </data>
+  <data name="10.1.6.4.1.6.1.1" xml:space="preserve">
+    <value>Sending command to NX OS API</value>
+  </data>
+  <data name="10.1.6.4.1.6.1.2" xml:space="preserve">
+    <value>Command sent</value>
+  </data>
+  <data name="10.1.6.4.1.6.1.3" xml:space="preserve">
+    <value>Not authorized to NS OS API</value>
+  </data>
+  <data name="10.1.6.4.1.6.1.4" xml:space="preserve">
+    <value>Add Command sent successfully</value>
+  </data>
+  <data name="10.1.6.4.1.6.1.5" xml:space="preserve">
+    <value>Add Command handling finishind</value>
+  </data>
+  <data name="10.1.6.4.1.7" xml:space="preserve">
+    <value>Adding of new binding failed</value>
+  </data>
+  <data name="10.1.6.4.1.8" xml:space="preserve">
+    <value>New binding added successfully</value>
+  </data>
+  <data name="10.1.6.4.1.9" xml:space="preserve">
+    <value>Actor NxOsStaticRouteUpdater finished</value>
+  </data>
+  <data name="DHCPv6ScopeIdConditionSimpleView_ScopeId" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="DHCPv6ScopeIdConditionSimpleView_ScopeIds" xml:space="preserve">
+    <value>Valid Scopes</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterErrorResult_Command" xml:space="preserve">
+    <value>CLI Command</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterErrorResult_ErrMsg" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterErrorResult_ErrMsgExtented" xml:space="preserve">
+    <value>Error Details</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterErrorResult_StatusCode" xml:space="preserve">
+    <value>HTTP Response Code</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterErrorResult_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterNotAuthorizeResult_Command" xml:space="preserve">
+    <value>CLI Command</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterNotAuthorizeResult_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterNotAuthorizeResult_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterResult_Command" xml:space="preserve">
+    <value>CLI Command</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterResult_StatusCode" xml:space="preserve">
+    <value>HTTP Response Code</value>
+  </data>
+  <data name="NxOsAPIBindingUpaterResult_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="NxOsAPIBindingUpater_Command" xml:space="preserve">
+    <value>CLI Command</value>
+  </data>
+  <data name="NxOsAPIBindingUpater_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="NxOsDeviceConnectionRequest_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="NxOsDeviceNewBindindRequest_NewBinding" xml:space="preserve">
+    <value>New Binding</value>
+  </data>
+  <data name="NxOsDeviceNewBindindRequest_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="NxOsDeviceRemoveOldBindindRequest_OldBinding" xml:space="preserve">
+    <value>Old Binding</value>
+  </data>
+  <data name="NxOsDeviceRemoveOldBindindRequest_Url" xml:space="preserve">
+    <value>NxOS Device URL</value>
+  </data>
+  <data name="PrefixEdgeRouterBindingUpdatedTriggerFirstItem_BothBindings" xml:space="preserve">
+    <value>IPv6 Präfix Binding changed from {0}/{1} via {2} to {3}/{4} via {5}</value>
+  </data>
+  <data name="PrefixEdgeRouterBindingUpdatedTriggerFirstItem_OnlyNewBinding" xml:space="preserve">
+    <value>IPv6 Präfix Binding added {0}/{1} via {2}</value>
+  </data>
+  <data name="PrefixEdgeRouterBindingUpdatedTriggerFirstItem_OnlyOldBinding" xml:space="preserve">
+    <value>IPv6 Präfix Binding removed {0}/{1} via {2}</value>
+  </data>
+  <data name="PrefixEdgeRouterBindingUpdated_Name" xml:space="preserve">
+    <value>Prefix Changed</value>
+  </data>
+  <data name="PrefixEdgeRouterBindingUpdated_NewBinding" xml:space="preserve">
+    <value>New Binding</value>
+  </data>
+  <data name="PrefixEdgeRouterBindingUpdated_OldBinding" xml:space="preserve">
+    <value>Old Binding</value>
+  </data>
+  <data name="ProcedureIdentifier" xml:space="preserve">
+    <value>Trigger occured</value>
+  </data>
+  <data name="SimplePipeline_Actor" xml:space="preserve">
+    <value>Actor</value>
+  </data>
+  <data name="SimplePipeline_Condition" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="SimplePipeline_Id" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="SimplePipeline_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SimplePipeline_Trigger" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+</root>

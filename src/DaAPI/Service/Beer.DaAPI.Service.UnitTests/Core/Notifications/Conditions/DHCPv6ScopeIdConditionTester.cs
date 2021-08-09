@@ -135,7 +135,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
 
             var trigger = new NotificationPipelineTester.DummyNotifcationTrigger(random.GetAlphanumericString());
             var condition = GetCondition(random, false, out IEnumerable<Guid> _);
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, condition, null);
 
             Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.False(actual);
@@ -151,7 +151,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Guid scopeId = scopeIds.ElementAt(random.Next(0, scopeIds.Count()));
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(scopeId);
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, condition, null);
 
             Boolean actual = await condition.IsValid(trigger, tracingStream);
             Assert.True(actual);
@@ -163,7 +163,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Random random = new Random();
 
             var condition = GetCondition(random, false, out _);
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, condition, null);
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(random.NextGuid());
             Boolean actual = await condition.IsValid(trigger, tracingStream);
@@ -252,7 +252,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Random random = new Random();
 
             var condition = GetConditionWithScopeTree(random, out Guid childId);
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, condition, null);
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(childId);
             Boolean actual = await condition.IsValid(trigger, tracingStream);
@@ -265,7 +265,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Conditions
             Random random = new Random();
 
             var condition = GetConditionWithScopeTree(random, out Guid _);
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, condition, null);
 
             var trigger = PrefixEdgeRouterBindingUpdatedTrigger.NoChanges(random.NextGuid());
             Boolean actual = await condition.IsValid(trigger, tracingStream);

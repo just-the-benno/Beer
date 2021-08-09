@@ -62,7 +62,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
 
         public async Task HandleTrigger(NotifcationTrigger trigger)
         {
-            var tracingStream = _tracingManager.NewTrace(TracingManagerConstants.Modules.NotificationEngine, TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted,
+            var tracingStream = await _tracingManager.NewTrace(TracingManagerConstants.Modules.NotificationEngine, TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted,
                 trigger);
 
             foreach (var item in _pipelines)

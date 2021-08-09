@@ -2,6 +2,7 @@
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Shared.Commands;
+using Beer.DaAPI.Shared.Helper;
 using Beer.DaAPI.Shared.JsonConverters;
 using Beer.DaAPI.Shared.Requests;
 using Beer.DaAPI.Shared.Responses;
@@ -21,6 +22,7 @@ using static Beer.DaAPI.Shared.Requests.DHCPv6InterfaceRequests.V1;
 using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
 using static Beer.DaAPI.Shared.Requests.NotificationPipelineRequests.V1;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
+using static Beer.DaAPI.Shared.Requests.TracingRequests.V1;
 using static Beer.DaAPI.Shared.Responses.DeviceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4InterfaceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4LeasesResponses.V1;
@@ -32,6 +34,7 @@ using static Beer.DaAPI.Shared.Responses.NotificationPipelineResponses.V1;
 using static Beer.DaAPI.Shared.Responses.ServerControllerResponses;
 using static Beer.DaAPI.Shared.Responses.ServerControllerResponses.V1;
 using static Beer.DaAPI.Shared.Responses.StatisticsControllerResponses.V1;
+using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
 
 namespace Beer.DaAPI.BlazorApp.Services
 {
@@ -365,6 +368,35 @@ namespace Beer.DaAPI.BlazorApp.Services
 
         public async Task<IEnumerable<DeviceOverviewResponse>> GetDeviceOverview() => await _client.GetFromJsonAsync<IEnumerable<DeviceOverviewResponse>>("/api/devices/");
 
+        public async Task<FilteredResult<TracingStreamOverview>> GetTracingOverview(FilterTracingRequest request)
+        {
+            String url = $"/api/tracing/streams?{nameof(FilterTracingRequest.Amount)}={request.Amount}&{nameof(FilterTracingRequest.Start)}={request.Start}";
+            if (request.ModuleIdentifier.HasValue == true)
+            {
+                url += $"&{nameof(FilterTracingRequest.ModuleIdentifier)}={request.ModuleIdentifier.Value}";
+            }
+
+            if (request.ProcedureIdentifier.HasValue == true)
+            {
+                url += $"&{nameof(FilterTracingRequest.ProcedureIdentifier)}={request.ProcedureIdentifier.Value}";
+            }
+
+            if (request.StartedBefore.HasValue == true)
+            {
+                url += $"&{nameof(FilterTracingRequest.StartedBefore)}={request.StartedBefore.Value}";
+            }
+
+            if (request.EntitiyId.HasValue == true)
+            {
+                url += $"&{nameof(FilterTracingRequest.EntitiyId)}={request.EntitiyId.Value}";
+            }
+
+            var result = await GetResponse<FilteredResult<TracingStreamOverview>>(url);
+            return result;
+        }
+
+        public async Task<IEnumerable<TracingStreamRecord>> GetTracingStreamRecords(Guid traceid, Guid? entityId) =>
+              await GetResponse<IEnumerable<TracingStreamRecord>>($"/api/tracing/streams/{traceid}/records/{entityId}");
 
     }
 }

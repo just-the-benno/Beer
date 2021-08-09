@@ -12,6 +12,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
         public TimeSpan LeaseLifeTime { get; set; }
         public TimeSpan HandledLifeTime { get; set; }
         public UInt32 MaximumHandldedCounter { get; set; }
+        public TimeSpan TracingStreamLifeTime { get; set; }
 
         internal void SetDefaultIfNeeded()
         {
@@ -28,6 +29,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
             if(MaximumHandldedCounter == 0)
             {
                 MaximumHandldedCounter = 30_000;
+            }
+
+            if(TracingStreamLifeTime == default)
+            {
+                TracingStreamLifeTime = TimeSpan.FromDays(7);
             }
         }
     }

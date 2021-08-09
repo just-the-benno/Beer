@@ -12,5 +12,7 @@ namespace Beer.DaAPI.Core.Services
         TimeSpan GetLeaseLifeTime();
         TimeSpan GetHandledLifeTime();
         UInt32 GetMaximumHandledCounter();
+        TimeSpan GetTracingStreamLifeTime();
+
     }
 }

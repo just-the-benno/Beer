@@ -157,6 +157,7 @@ namespace Beer.DaAPI.Service.API
             services.AddSingleton<IDHCPv6InterfaceEngine, DHCPv6InterfaceEngine>();
             services.AddTransient<IDHCPv6StorageEngine, DHCPv6StorageEngine>();
             services.AddTransient<IDHCPv6ReadStore, StorageContext>();
+            services.AddTransient<IReadStore, StorageContext>();
 
             var esdbSettings = EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"));
             esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.Username, appSettings.EventStoreSettings.Password);

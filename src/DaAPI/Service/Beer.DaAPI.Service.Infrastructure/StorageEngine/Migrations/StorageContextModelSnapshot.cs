@@ -16,7 +16,7 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4.DHCPv4InterfaceDataModel", b =>
@@ -330,6 +330,86 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NotificationPipelineEntries");
+                });
+
+            modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.TracingStreamDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("FirstEntryData")
+                        .HasColumnType("jsonb");
+
+                    b.Property<bool>("HasFailed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ProcedureIdentifier")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RecordCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SystemIdentifier")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TracingStreams");
+                });
+
+            modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.TracingStreamEntryDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AddtionalData")
+                        .HasColumnType("jsonb");
+
+                    b.Property<Guid?>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsError")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("StreamId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamId");
+
+                    b.ToTable("TracingStreamEntries");
+                });
+
+            modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.TracingStreamEntryDataModel", b =>
+                {
+                    b.HasOne("Beer.DaAPI.Infrastructure.StorageEngine.TracingStreamDataModel", "Stream")
+                        .WithMany("Entries")
+                        .HasForeignKey("StreamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stream");
+                });
+
+            modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.TracingStreamDataModel", b =>
+                {
+                    b.Navigation("Entries");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,10 @@
-﻿
-@page "/pipelines"
+﻿@page "/pipelines"
 @attribute [Authorize]
 @inject DaAPIService service
 @inject IStringLocalizer<NotificationPipelinesPage> L
+@inject TracingEnricherService _tracingService
 @inject IDialogService _dialogService
-@inject ISnackbar _snackbarService 
+@inject ISnackbar _snackbarService
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["Headline"]</MudText>
 
@@ -52,6 +52,17 @@
                 </MudSimpleTable>
             </MudCardContent>
         </MudCard>
+
+        <MudCard Class="mt-5">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Tracing</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <DaAPITracingStream ShowProcedureIdentifier="true" ShowModuleIdentifier="false" ModuleIdentifier="_tracingService.NotificationSystemIdentifier" />
+            </MudCardContent>
+        </MudCard>
     }
 
 </BeerShowCircularLoadingIndicatorWhileNull>
@@ -70,9 +81,9 @@
     public async Task ShowDeleteDialog(NotificationPipelineReadModel item)
     {
         var parameters = new DialogParameters
-            {
-                { nameof(DeleteNotificationPipelineDialog.Entry), item }
-            };
+        {
+            { nameof(DeleteNotificationPipelineDialog.Entry), item }
+        };
 
         var messageForm = _dialogService.Show<DeleteNotificationPipelineDialog>(String.Format(L["DeleteDialogTitle"], item.Name), parameters);
         var result = await messageForm.Result;

@@ -175,7 +175,8 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, NotificationCondition.True, new DummyNotificationActor { HandleResult = true });
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, pipeline, null);
+
             NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.Success, result);
         }
@@ -186,7 +187,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, NotificationCondition.True, new DummyNotificationActor { HandleResult = false });
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, pipeline, null);
 
             NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.ActorFailed, result);
@@ -198,7 +199,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, new DummyNotificationCondition { IsValidResult = true }, new DummyNotificationActor { HandleResult = true });
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, pipeline, null);
 
             NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.Success, result);
@@ -210,7 +211,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, new DummyNotificationCondition { IsValidResult = true }, new DummyNotificationActor { HandleResult = false });
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, pipeline, null);
 
             NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.ActorFailed, result);
@@ -222,7 +223,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier, new DummyNotificationCondition { IsValidResult = false }, new DummyNotificationActor { HandleResult = true });
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, pipeline, null);
 
             NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.ConditionNotMatched, result);
@@ -234,7 +235,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications
             Random random = new Random();
 
             var pipeline = CreatePipleline(random, out string triggerIdentifier);
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
+            var tracingStream = new TracingStream(255, 255, pipeline, null);
 
             NotifactionPipelineExecutionResults result = await pipeline.Execute(new DummyNotifcationTrigger(triggerIdentifier.Substring(1)), tracingStream);
             Assert.Equal(NotifactionPipelineExecutionResults.TriggerNotMatch, result);

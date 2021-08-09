@@ -5,11 +5,13 @@ using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Core.Scopes.DHCPv4;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
+using Beer.DaAPI.Core.Tracing;
 using Beer.DaAPI.Infrastructure.Helper;
 using Beer.DaAPI.Infrastructure.Services;
 using Beer.DaAPI.Infrastructure.StorageEngine.Converters;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
+using Beer.DaAPI.Shared.Helper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -26,7 +28,9 @@ using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4PacketHandledEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6LeaseEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
+using static Beer.DaAPI.Shared.Requests.TracingRequests.V1;
 using static Beer.DaAPI.Shared.Responses.StatisticsControllerResponses.V1;
+using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
 
 namespace Beer.DaAPI.Infrastructure.StorageEngine
 {
@@ -51,11 +55,26 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public DbSet<DeviceEntryDataModel> Devices { get; set; }
 
+        public DbSet<TracingStreamDataModel> TracingStreams { get; set; }
+        public DbSet<TracingStreamEntryDataModel> TracingStreamRecords { get; set; }
+
         #endregion
 
         public StorageContext(DbContextOptions<StorageContext> options) : base(options)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<TracingStreamDataModel>()
+                .Property(b => b.FirstEntryData)
+                .HasJsonConversion();
+
+            modelBuilder.Entity<TracingStreamEntryDataModel>()
+                 .Property(b => b.AddtionalData)
+                 .HasJsonConversion();
         }
 
         private async Task<Boolean> SaveChangesAsyncInternal() => await SaveChangesAsync() > 0;
@@ -207,8 +226,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             leaseEntry.IsActive = false;
                         }
 
-                        leaseEntry.EndOfRenewalTime =  e.Timestamp + e.RenewSpan;
-                        leaseEntry.EndOfPreferredLifetime = e.Timestamp +  e.ReboundSpan;
+                        leaseEntry.EndOfRenewalTime = e.Timestamp + e.RenewSpan;
+                        leaseEntry.EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan;
                     });
                     break;
 
@@ -493,6 +512,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     IsInitilized = true,
                     LeaseLifeTime = TimeSpan.FromDays(15),
                     HandledLifeTime = TimeSpan.FromDays(15),
+                    TracingStreamLifeTime = TimeSpan.FromDays(7),
                     MaximumHandldedCounter = 100_000,
                     ServerDuid = new UUIDDUID(Guid.Parse("bbd541ea-8499-44b4-ad9d-d398c4643e79"))
                 };
@@ -1060,6 +1080,109 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return result;
         }
 
+        public async Task<Boolean> AddTracingStream(TracingStream stream)
+        {
+            TracingStreamDataModel dataModel = new(stream);
+            TracingStreamEntryDataModel entry = new(stream, dataModel);
 
+            TracingStreams.Add(dataModel);
+            TracingStreamRecords.Add(entry);
+
+            return await SaveChangesAsyncInternal();
+        }
+
+        public async Task<Boolean> AddTracingRecord(TracingRecord record)
+        {
+            TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == record.StreamId);
+            if (dataModel == null) { return false; }
+
+            dataModel.RecordCount += 1;
+
+            TracingStreamEntryDataModel entry = new(record, dataModel);
+            TracingStreamRecords.Add(entry);
+
+            return await SaveChangesAsyncInternal();
+        }
+
+        public async Task<Boolean> CloseTracingStream(Guid streamId)
+        {
+            TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == streamId);
+            if (dataModel == null) { return false; }
+
+            dataModel.ClosedAt = DateTime.UtcNow;
+            return await SaveChangesAsyncInternal();
+        }
+
+        public async Task<Boolean> RemoveTracingStreamsOlderThan(DateTime tracingStreamThreshold)
+        {
+            var streams = await ((IQueryable<TracingStreamDataModel>)TracingStreams).Where(x => x.CreatedAt <= tracingStreamThreshold).ToListAsync();
+            var entries = await ((IQueryable<TracingStreamEntryDataModel>)TracingStreamRecords).Where(x => x.Stream.CreatedAt <= tracingStreamThreshold).ToListAsync();
+
+            TracingStreamRecords.RemoveRange(entries);
+            await SaveChangesAsyncInternal();
+
+            TracingStreams.RemoveRange(streams);
+            await SaveChangesAsyncInternal();
+
+            return true;
+        }
+
+        public async Task<FilteredResult<TracingStreamOverview>> GetTracingOverview(FilterTracingRequest request)
+        {
+            IQueryable<TracingStreamDataModel> streams = TracingStreams;
+
+            if (request.ModuleIdentifier.HasValue == true)
+            {
+                streams = streams.Where(x => x.SystemIdentifier == request.ModuleIdentifier.Value);
+            }
+            if (request.ProcedureIdentifier.HasValue == true)
+            {
+                streams = streams.Where(x => x.ProcedureIdentifier == request.ProcedureIdentifier.Value);
+            }
+            if (request.StartedBefore.HasValue == true)
+            {
+                streams = streams.Where(x => x.CreatedAt >= request.StartedBefore.Value);
+            }
+            if (request.EntitiyId.HasValue == true)
+            {
+                streams = streams.Where(x => x.Entries.Any(y => y.EntityId == request.EntitiyId.Value) == true);
+            }
+
+            Int32 total = await streams.CountAsync();
+
+            streams = streams.OrderByDescending(x => x.CreatedAt).Skip(request.Start).Take(request.Amount);
+
+            var result = await streams.Select(x => new TracingStreamOverview
+            {
+                Id = x.Id,
+                IsInProgress = x.ClosedAt.HasValue == false,
+                Timestamp = x.CreatedAt,
+                RecordAmount = x.RecordCount,
+                ProcedureIdentifier = x.ProcedureIdentifier,
+                ModuleIdentifier = x.SystemIdentifier,
+                FirstEntryData = x.FirstEntryData
+            }).ToListAsync();
+
+            return new (result, total);
+        }
+
+        public async Task<IEnumerable<TracingStreamRecord>> GetTracingStreamRecords(Guid traceid, Guid? entityId)
+        {
+            IQueryable<TracingStreamEntryDataModel> preResult = ((IQueryable<TracingStreamEntryDataModel>)TracingStreamRecords).Where(x => x.StreamId == traceid);
+            if (entityId.HasValue == true)
+            {
+                preResult.Where(x => x.EntityId == entityId.Value);
+            }
+
+            var result = await preResult.OrderBy(x => x.Timestamp).Select(x => new TracingStreamRecord
+                {
+                    Identifier = x.Identifier,
+                    AddtionalData = x.AddtionalData,
+                    EntityId = x.EntityId,
+                    Timestamp = x.Timestamp,
+                }).ToListAsync();
+
+            return result;
+        }
     }
 }
