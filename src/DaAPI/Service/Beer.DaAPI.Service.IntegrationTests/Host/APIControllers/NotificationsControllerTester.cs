@@ -25,6 +25,7 @@ using Beer.DaAPI.Service.Infrastructure.StorageEngine;
 using EventStore.Client;
 using Beer.TestHelper;
 using Beer.DaAPI.Service.IntegrationTests;
+using Beer.DaAPI.Core.Tracing;
 
 namespace DaAPI.IntegrationTests.Host.APIControllers
 {
@@ -135,9 +136,10 @@ namespace DaAPI.IntegrationTests.Host.APIControllers
 
                 var actorServiceMock = serviceInteractions.ActorServiceMock;
 
+
                 Int32 actorFired = 0; ;
-                actorServiceMock.Setup(x => x.Connect("https://192.168.1.1", "5353535", "36363636")).ReturnsAsync(true).Verifiable();
-                actorServiceMock.Setup(x => x.AddIPv6StaticRoute(newPrefix.Prefix, newPrefix.Mask.Identifier, newPrefix.Host)).ReturnsAsync(true).Callback(() => actorFired++).Verifiable();
+                actorServiceMock.Setup(x => x.Connect("https://192.168.1.1", "5353535", "36363636",It.IsAny<TracingStream>())).ReturnsAsync(true).Verifiable();
+                actorServiceMock.Setup(x => x.AddIPv6StaticRoute(newPrefix.Prefix, newPrefix.Mask.Identifier, newPrefix.Host, It.IsAny<TracingStream>())).ReturnsAsync(true).Callback(() => actorFired++).Verifiable();
 
                 await serviceInteractions.ServiceBus.Publish(new NewTriggerHappendMessage(new[] { PrefixEdgeRouterBindingUpdatedTrigger.WithNewBinding(scopeId, newPrefix) }));
 

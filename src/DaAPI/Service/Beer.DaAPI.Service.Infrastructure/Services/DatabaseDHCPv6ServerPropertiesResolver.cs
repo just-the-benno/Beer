@@ -24,5 +24,6 @@ namespace Beer.DaAPI.Infrastructure.Services
         public TimeSpan GetLeaseLifeTime() => GetServerConfigModel().LeaseLifeTime;
         public TimeSpan GetHandledLifeTime() => GetServerConfigModel().HandledLifeTime;
         public UInt32 GetMaximumHandledCounter() => GetServerConfigModel().MaximumHandldedCounter;
+        public TimeSpan GetTracingStreamLifeTime() => GetServerConfigModel().TracingStreamLifeTime;
     }
 }

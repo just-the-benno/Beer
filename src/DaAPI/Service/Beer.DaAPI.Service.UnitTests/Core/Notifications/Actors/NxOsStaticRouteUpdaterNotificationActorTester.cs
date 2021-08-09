@@ -125,7 +125,6 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Actors
             PrefixBinding newPrefix = new PrefixBinding(IPv6Address.FromString("1cff:50::0"), new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(38)), IPv6Address.FromString("fe80::CC"));
             Guid scopeId = random.NextGuid();
             
-            var tracingStream = new TracingStream(255, 255, new TracingRecord("255.255", new Dictionary<String, String>(), null), null);
 
             PrefixEdgeRouterBindingUpdatedTrigger trigger;
             if (newPrefixHasValue == true && oldPrefixHasValue == true)
@@ -146,7 +145,10 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Actors
             }
 
             Mock<INxOsDeviceConfigurationService> deviceServiceMock = new Mock<INxOsDeviceConfigurationService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(x => x.Connect(address, username, password, tracingStream)).ReturnsAsync(true).Verifiable();
+            deviceServiceMock.Setup(x => x.Connect(address, username, password, It.IsAny<TracingStream>())).ReturnsAsync(true).Verifiable();
+            var actor = new NxOsStaticRouteUpdaterNotificationActor(deviceServiceMock.Object,
+Mock.Of<ILogger<NxOsStaticRouteUpdaterNotificationActor>>());
+            var tracingStream = new TracingStream(255, 255, actor, null);
 
             if (oldPrefixHasValue == true)
             {
@@ -156,10 +158,7 @@ namespace Beer.DaAPI.UnitTests.Core.Notifications.Actors
             if (newPrefixHasValue == true)
             {
                 deviceServiceMock.Setup(x => x.AddIPv6StaticRoute(newPrefix.Prefix, newPrefix.Mask.Identifier, newPrefix.Host, tracingStream)).ReturnsAsync(true).Verifiable();
-
             }
-            var actor = new NxOsStaticRouteUpdaterNotificationActor(deviceServiceMock.Object,
-    Mock.Of<ILogger<NxOsStaticRouteUpdaterNotificationActor>>());
 
             actor.ApplyValues(new Dictionary<String, String>
             {

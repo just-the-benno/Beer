@@ -1,0 +1,113 @@
+﻿@using Humanizer
+
+<BeerShowCircularLoadingIndicatorWhileNull Item="_streams" Text="Loading...">
+    <MudExpansionPanels MultiExpansion="true">
+        @foreach (var item in _streams)
+        {
+            <MudExpansionPanel IsExpandedChanged="@( async (Boolean e) => await LoadStream(e, item.Id))">
+                <TitleContent>
+                      <div class="d-flex">
+                        @if (ShowModuleIdentifier)
+                        {
+                                    <MudText>@GetModuleIdentifierName(item.ModuleIdentifier)</MudText>
+                        }
+                        @if (ShowProcedureIdentifier)
+                        {
+                                    <div class="d-flex flex-column">
+                                        <MudText Typo="Typo.h6">@GetProcedureIdentifierName(item.ModuleIdentifier,item.ProcedureIdentifier) </MudText>
+                                        <MudText Typo="Typo.subtitle2"> @GetProcedureIdentifierFirstItemPreview(item)</MudText>
+                                    </div>
+                        }
+                            <MudSpacer />
+                            <MudText Class="text-center"> @item.RecordAmount Entries </MudText>
+                            <div class="d-flex flex-column text-center">
+                                @{ TimeSpan diff = DateTime.UtcNow - item.Timestamp;  }
+                                <MudText>@(diff.Humanize()) @L["Ago"]</MudText>
+                            @if (diff.TotalHours > 2)
+                            {
+                                <MudText>@item.Timestamp</MudText>
+                            }
+                            </div>
+                        @if (item.IsInProgress == true)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.HourglassTop" Color="Color.Info" class="mr-3" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" class="mr-3" />
+                        }
+                       </div>
+                </TitleContent>
+                <ChildContent>
+                    @if (_cachedRecords.ContainsKey(item.Id) == false)
+                    {
+                       <BeerCenteredCircularLoading />
+                    }
+                    else
+                    {
+                       <MudTimeline>
+                            @foreach (var record in _cachedRecords[item.Id])
+                            {
+                                 <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+                                     <MudCard Outlined="true" Elevation="25">
+                                          <MudCardHeader>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.h5">@GetRecordTitle(record)</MudText>
+                                            </CardHeaderContent>
+                                        </MudCardHeader>
+                                         <MudCardContent>
+                                            @foreach (var entryDetails in GetRecordDetails(record))
+                                            {
+                                                 <MudText Typo="Typo.h6">@entryDetails.Label</MudText>
+                                                switch (entryDetails)
+                                                {
+                                                    case StringBasedProceduceTracingRecordValue value:
+                                                        <MudText Typo="Typo.body2"><small>@value.Value</small></MudText>
+                                                    break;
+                                                    case LinkBasedProceduceTracingRecordValue value:
+                                                        @if (String.IsNullOrEmpty(value.Title) == false)
+                                                        {
+                                                            <MudLink Href="@value.Url"><small>@value.Title</small></MudLink>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudText Typo="Typo.body2"><small>@L["EntityNotFound"]</small></MudText>
+                                                        }
+                                                    break;
+                                                    case LinkListBasedProceduceTracingRecordValue value:
+                                                        @foreach (var link in value.Links)
+                                                        {
+                                                            @if (String.IsNullOrEmpty(link.Value) == false)
+                                                            {
+                                                                <MudLink Href="@link.Key"><small>@link.Value</small></MudLink>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudText Typo="Typo.body2"><small>@L["EntityNotFound"]</small></MudText>
+                                                            }
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                        </MudCardContent>
+                                     </MudCard>
+                                 </MudTimelineItem>
+                            }
+                         </MudTimeline>
+                    }
+             </ChildContent>
+         </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
+     <div class="d-flex flex-wrap">
+    @for(int i = 1; i <= _total / _amount; i++)
+    {
+            var temp = i;
+            <MudButton Color="Color.Primary"  OnClick="@( () => GotoPage(temp) )" Variant="@( (temp - 1) * _amount  == _start ? Variant.Filled : Variant.Outlined)">@temp</MudButton>
+    }
+    </div>
+</BeerShowCircularLoadingIndicatorWhileNull>
+
+@code {
+
+}

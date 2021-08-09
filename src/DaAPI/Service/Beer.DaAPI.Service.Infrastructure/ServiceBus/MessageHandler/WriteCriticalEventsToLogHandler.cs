@@ -23,6 +23,7 @@ namespace Beer.DaAPI.Infrastructure.ServiceBus.MessageHandler
         public WriteCriticalEventsToLogHandler(
             ILogger<WriteCriticalEventsToLogHandler> logger)
         {
+            _logger = logger;
         }
 
         private async Task Handle(String subSystem, String message, CancellationToken cancellationToken)

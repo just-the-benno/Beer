@@ -174,15 +174,15 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
 
             foreach (var scopeId in pseudoRootScope.ScopeIds)
             {
-                var events = await EventStore.GetEvents<PseudoDHCPv6Scope>(scopeId, 100);
+                var events = await EventStore.GetEvents<PseudoDHCPv6Scope>(scopeId, 500);
                 eventsToApply.AddRange(events);
             }
 
-            foreach (var leaseId in pseudoRootScope.LeaseIds)
-            {
-                var events = await EventStore.GetEvents<PseudoDHCPv6Lease>(leaseId, 100);
-                eventsToApply.AddRange(events);
-            }
+            //foreach (var leaseId in pseudoRootScope.LeaseIds)
+            //{
+            //    var events = await EventStore.GetEvents<PseudoDHCPv6Lease>(leaseId, 100);
+            //    eventsToApply.AddRange(events);
+            //}
 
             rootScope.Load(eventsToApply.OrderBy(x => x.Timestamp));
             return rootScope;

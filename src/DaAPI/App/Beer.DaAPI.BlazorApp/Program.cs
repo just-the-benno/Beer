@@ -21,6 +21,8 @@ using FluentValidation;
 using MudBlazor;
 using Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes;
 using Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes;
+using Microsoft.Extensions.Localization;
+using Beer.DaAPI.BlazorApp.Services.TracingEnricher;
 
 namespace Beer.DaAPI.BlazorApp
 {
@@ -42,13 +44,15 @@ namespace Beer.DaAPI.BlazorApp
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
 
-         
+
             builder.Services.AddValidatorsFromAssemblyContaining<Program>(ServiceLifetime.Singleton,
-                (x =>  x.InterfaceType != typeof(String)));
+                (x => x.InterfaceType != typeof(String)));
 
             builder.Services.AddHttpClient<DaAPIService>(client =>
                 client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
                  .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+
+            builder.Services.AddSingleton<ITracingEntityCache, SimpleTracingEntityCache>();
 
             builder.Services.AddSingleton<DHCPPacketResponseCodeHelper>();
 
@@ -71,6 +75,11 @@ namespace Beer.DaAPI.BlazorApp
            {
                opt.ResourcesPath = "Resources";
            });
+
+
+            builder.Services.AddSingleton<TracingEnricherService>();
+            builder.Services.AddSingleton<NotificationSystemNewTriggerTracingEnricher>();
+            builder.Services.AddSingleton<RootTracingEnricher, NotificationSystemRootTracingEnricher>(sp => new NotificationSystemRootTracingEnricher(sp.GetRequiredService<IStringLocalizer<NotificationSystemRootTracingEnricher>>(), sp.GetService<NotificationSystemNewTriggerTracingEnricher>()));
 
             HttpClient configurationLoader = new()
             {
@@ -98,6 +107,9 @@ namespace Beer.DaAPI.BlazorApp
                 CultureInfo.DefaultThreadCurrentCulture = culture;
                 CultureInfo.DefaultThreadCurrentUICulture = culture;
             }
+
+            var entityCache = host.Services.GetRequiredService<ITracingEntityCache>();
+            await entityCache.Initilze();
 
             await host.RunAsync();
         }

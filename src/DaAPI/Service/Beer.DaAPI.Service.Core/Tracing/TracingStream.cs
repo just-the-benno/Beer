@@ -22,7 +22,7 @@ namespace Beer.DaAPI.Core.Tracing
 
         public TracingStream(
             Int32 systemIdentifier, Int32 procedureIdentfier,
-            TracingRecord firstRecord,
+            ITracingRecord firstRecord,
             Func<TracingRecord, Boolean, Task<Boolean>> appendCallback)
         {
             SystemIdentifier = systemIdentifier;
@@ -32,10 +32,10 @@ namespace Beer.DaAPI.Core.Tracing
 
             _appendCallback = appendCallback;
 
-            _records = new List<TracingRecord>();
-            _records.Add(firstRecord);
-
             _level = $"{systemIdentifier}.{procedureIdentfier}";
+
+            _records = new List<TracingRecord>();
+            _records.Add(new TracingRecord(Id, _level, firstRecord));
         }
 
         public async Task<Boolean> Append(TracingRecord record, Boolean close)
@@ -49,14 +49,14 @@ namespace Beer.DaAPI.Core.Tracing
             return await _appendCallback(record, close);
         }
 
-        public async Task<Boolean> Append(Int32 eventIdenfifier, ITracingRecord input) => await Append(new TracingRecord($"{_level}.{eventIdenfifier}", input));
-        public async Task<Boolean> Append(Int32 eventIdenfifier, IDictionary<String, String> data) => await Append(new TracingRecord($"{_level}.{eventIdenfifier}", data, _entityId));
-        public async Task<Boolean> Append(Int32 eventIdenfifier, IDictionary<String, String> data, Guid entityId) => await Append(new TracingRecord($"{_level}.{eventIdenfifier}", data, entityId));
+        public async Task<Boolean> Append(Int32 eventIdenfifier, ITracingRecord input) => await Append(new TracingRecord(this.Id, $"{_level}.{eventIdenfifier}", input));
+        public async Task<Boolean> Append(Int32 eventIdenfifier, IDictionary<String, String> data) => await Append(new TracingRecord(this.Id, $"{_level}.{eventIdenfifier}", data, _entityId));
+        public async Task<Boolean> Append(Int32 eventIdenfifier, IDictionary<String, String> data, Guid entityId) => await Append(new TracingRecord(this.Id, $"{_level}.{eventIdenfifier}", data, entityId));
         public async Task<Boolean> Append(Int32 eventIdenfifier) => await Append(eventIdenfifier, new Dictionary<String, String>());
 
         private async Task<Boolean> Append(TracingRecord record) => await Append(record, false);
 
-        public async Task<Boolean> AppendAndClose(Int32 eventIdenfifier, ITracingRecord input) => await AppendAndClose(new TracingRecord($"{_level}.{eventIdenfifier}", input));
+        public async Task<Boolean> AppendAndClose(Int32 eventIdenfifier, ITracingRecord input) => await AppendAndClose(new TracingRecord(this.Id, $"{_level}.{eventIdenfifier}", input));
 
         public void SetEntityId(Guid id) => _entityId = id;
 
