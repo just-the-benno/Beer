@@ -8,7 +8,5 @@ using System.Threading.Tasks;
 namespace Beer.DaAPI.Infrastructure.ServiceBus.Messages
 {
     public record TracingStreamStartedMessage(TracingStream Stream) : IMessage;
-    public record TracingRecordAppended(TracingRecord Record, Boolean StreamClosed) : IMessage;
-
-    
+    public record TracingRecordAppendedMessage(TracingRecord Record, Boolean StreamClosed) : IMessage;
 }

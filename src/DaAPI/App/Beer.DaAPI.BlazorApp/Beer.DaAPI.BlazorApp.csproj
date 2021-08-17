@@ -45,6 +45,7 @@
 
   <ItemGroup>
     <!--<PackageReference Include="Accelist.FluentValidation.Blazor" Version="4.0.0" />-->
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.9" />
     <PackageReference Include="PPioli.FluentValidation.Blazor" Version="5.0.0" />
     <PackageReference Include="FluentValidation" Version="10.1.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.1.0" />

@@ -53,16 +53,8 @@
             </MudCardContent>
         </MudCard>
 
-        <MudCard Class="mt-5">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Tracing</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <DaAPITracingStream ShowProcedureIdentifier="true" ShowModuleIdentifier="false" ModuleIdentifier="_tracingService.NotificationSystemIdentifier" />
-            </MudCardContent>
-        </MudCard>
+        <DaAPITracingStreamCard ShowProcedureIdentifier="true" ShowModuleIdentifier="false" ModuleIdentifier="@_tracingService.NotificationSystemIdentifier" />
+       
     }
 
 </BeerShowCircularLoadingIndicatorWhileNull>

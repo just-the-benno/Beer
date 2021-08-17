@@ -48,7 +48,7 @@ namespace Beer.DaAPI.Core.Notifications.Actors
 
             _logger.LogDebug("connection to nx os device {address}", Url);
 
-            await tracingStream.Append(1, new Dictionary<String, String>(){
+            await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>(){
                 { "Url", Url }
                 });
 
@@ -59,7 +59,7 @@ namespace Beer.DaAPI.Core.Notifications.Actors
 
             if (isReachabled == false)
             {
-                await tracingStream.Append(2, new Dictionary<String, String>(){
+                await tracingStream.Append(2, TracingRecordStatus.Informative, new Dictionary<String, String>(){
                 { "Url", Url }
                 });
 
@@ -76,7 +76,7 @@ namespace Beer.DaAPI.Core.Notifications.Actors
                 { "OldBinding", JsonSerializer.Serialize(new { Host = castedTrigger.OldBinding.Host.ToString(), Network = castedTrigger.OldBinding.Prefix.ToString(), Mask = castedTrigger.OldBinding.Mask.Identifier.ToString() }) }
                 };
 
-                await tracingStream.Append(3, info);
+                await tracingStream.Append(3,  TracingRecordStatus.Informative, info);
                 tracingStream.OpenNextLevel(3);
                 tracingStream.OpenNextLevel(_nxosDeviceSerive.GetTracingIdenfier());
 
@@ -88,12 +88,12 @@ namespace Beer.DaAPI.Core.Notifications.Actors
 
                 if (removeResult == false)
                 {
-                    await tracingStream.Append(4, info);
+                    await tracingStream.Append(4, TracingRecordStatus.Informative, info);
                     _logger.LogError("unable to remve old route form device {address}. Cancel actor", Url);
                     return false;
                 }
 
-                await tracingStream.Append(5, info);
+                await tracingStream.Append(5, TracingRecordStatus.Informative, info);
                 _logger.LogDebug("static route {prefix}/{mask} via {host} has been removed from {device}",
                      castedTrigger.OldBinding.Prefix, castedTrigger.OldBinding.Mask.Identifier, castedTrigger.OldBinding.Host, Url);
             }
@@ -105,7 +105,7 @@ namespace Beer.DaAPI.Core.Notifications.Actors
                     { "NewBinding", JsonSerializer.Serialize(new { Host = castedTrigger.NewBinding.Host.ToString(), Network = castedTrigger.NewBinding.Prefix.ToString(), Mask = castedTrigger.NewBinding.Mask.Identifier.ToString() }) }
                 };
 
-                await tracingStream.Append(6, info);
+                await tracingStream.Append(6, TracingRecordStatus.Informative, info);
                 tracingStream.OpenNextLevel(6);
                 tracingStream.OpenNextLevel(_nxosDeviceSerive.GetTracingIdenfier());
 
@@ -117,19 +117,19 @@ namespace Beer.DaAPI.Core.Notifications.Actors
 
                 if (addResult == false)
                 {
-                    await tracingStream.Append(7, info);
+                    await tracingStream.Append(7, TracingRecordStatus.Informative, info);
 
                     _logger.LogError("unable to add a static route to device {address}. Cancel actor", Url);
                     return false;
                 }
 
-                await tracingStream.Append(8, info);
+                await tracingStream.Append(8, TracingRecordStatus.Informative, info);
 
                 _logger.LogDebug("static route {prefix}/{mask} via {host} has been added from {device}",
                      castedTrigger.NewBinding.Prefix, castedTrigger.NewBinding.Mask.Identifier, castedTrigger.NewBinding.Host, Url);
             }
 
-            await tracingStream.Append(9);
+            await tracingStream.Append(9, TracingRecordStatus.Informative);
 
             _logger.LogDebug("actor {name} successfully finished", nameof(NxOsStaticRouteUpdaterNotificationActor));
             return true;

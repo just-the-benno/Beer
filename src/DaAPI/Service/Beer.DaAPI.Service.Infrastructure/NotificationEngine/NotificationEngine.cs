@@ -68,11 +68,11 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
             foreach (var item in _pipelines)
             {
                 tracingStream.SetEntityId(item.Id);
-                await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted, item);
+                await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted, TracingRecordStatus.Informative, item);
 
                 if (item.CanExecute(trigger) == true)
                 {
-                    await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.PipelineCanHandleTrigger, item);
+                    await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.PipelineCanHandleTrigger, TracingRecordStatus.Informative, item);
                     tracingStream.OpenNextLevel(TracingManagerConstants.NotifcationEngineSubModels.ExecutionPipelineStarted);
 
                     await item.Execute(trigger, tracingStream);
@@ -81,7 +81,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                 }
                 else
                 {
-                    await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.PipelineCanNotHandleTrigger, item);
+                    await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.PipelineCanNotHandleTrigger, TracingRecordStatus.Informative, item);
                 }
 
                 tracingStream.ClearEntity();

@@ -1097,6 +1097,14 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             if (dataModel == null) { return false; }
 
             dataModel.RecordCount += 1;
+            if (record.Status == TracingRecordStatus.Error)
+            {
+                dataModel.ResultType = (Int32)TracingRecordStatus.Error;
+            }
+            else if (record.Status == TracingRecordStatus.Success)
+            {
+                dataModel.ResultType = (Int32)TracingRecordStatus.Success;
+            }
 
             TracingStreamEntryDataModel entry = new(record, dataModel);
             TracingStreamRecords.Add(entry);
@@ -1160,10 +1168,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 RecordAmount = x.RecordCount,
                 ProcedureIdentifier = x.ProcedureIdentifier,
                 ModuleIdentifier = x.SystemIdentifier,
-                FirstEntryData = x.FirstEntryData
+                FirstEntryData = x.FirstEntryData,
+                Status = (TracingRecordStatusForResponses)x.ResultType,
             }).ToListAsync();
 
-            return new (result, total);
+            return new(result, total);
         }
 
         public async Task<IEnumerable<TracingStreamRecord>> GetTracingStreamRecords(Guid traceid, Guid? entityId)
@@ -1175,12 +1184,13 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             }
 
             var result = await preResult.OrderBy(x => x.Timestamp).Select(x => new TracingStreamRecord
-                {
-                    Identifier = x.Identifier,
-                    AddtionalData = x.AddtionalData,
-                    EntityId = x.EntityId,
-                    Timestamp = x.Timestamp,
-                }).ToListAsync();
+            {
+                Identifier = x.Identifier,
+                AddtionalData = x.AddtionalData,
+                EntityId = x.EntityId,
+                Timestamp = x.Timestamp,
+                Status = (TracingRecordStatusForResponses)x.ResultType,
+            }).ToListAsync();
 
             return result;
         }

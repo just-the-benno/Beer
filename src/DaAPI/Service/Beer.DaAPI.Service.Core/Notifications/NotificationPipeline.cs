@@ -85,7 +85,7 @@ namespace Beer.DaAPI.Core.Notifications
 
         public async Task<NotifactionPipelineExecutionResults> Execute(NotifcationTrigger trigger, TracingStream tracingStream)
         {
-            await tracingStream.Append(_startExecutionTracingNumber, this);
+            await tracingStream.Append(_startExecutionTracingNumber, TracingRecordStatus.Informative, this);
             _logger.LogDebug("start of {name} pipeline", Name);
 
             if (TriggerIdentifier != trigger.GetTypeIdentifier())
@@ -114,7 +114,7 @@ namespace Beer.DaAPI.Core.Notifications
             }
             else
             {
-                await tracingStream.Append(_defaultConditionTracingNumber, this);
+                await tracingStream.Append(_defaultConditionTracingNumber, TracingRecordStatus.Informative, this);
 
                 _logger.LogDebug("no conditions applied. actor enabled");
             }

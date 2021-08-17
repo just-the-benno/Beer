@@ -89,6 +89,12 @@ namespace Beer.DaAPI.BlazorApp
             var apiUrlDict = (await configurationLoader.GetFromJsonAsync<Dictionary<String, String>>("/Configuration/APIs")).ToDictionary(x => x.Key.ToLower(), x => x.Value);
             var appUrlDict = (await configurationLoader.GetFromJsonAsync<Dictionary<String, String>>("/Configuration/Apps")).ToDictionary(x => x.Key.ToLower(), x => x.Value);
 
+
+            builder.Services.AddSingleton(new EndpointOptions
+            {
+                ApiEndpoint = new Uri(apiUrlDict["daapi"]),
+                HubEndpoint = new Uri(apiUrlDict["daapi"]),
+            });
             builder.Services.AddSingleton(new BeerAppsService(appUrlDict));
 
             builder.Services.AddHttpClient<DaAPIService>(client =>

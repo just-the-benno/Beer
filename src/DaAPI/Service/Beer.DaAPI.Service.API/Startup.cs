@@ -54,6 +54,7 @@ using Beer.DaAPI.Service.Infrastructure.StorageEngine;
 using EventStore.Client;
 using Beer.DaAPI.Infrastructure.Tracing;
 using System.Net.Http;
+using Beer.DaAPI.Service.API.Hubs.Tracing;
 
 namespace Beer.DaAPI.Service.API
 {
@@ -161,7 +162,7 @@ namespace Beer.DaAPI.Service.API
 
             var esdbSettings = EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"));
             esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.Username, appSettings.EventStoreSettings.Password);
-            
+
             services.AddSingleton(new EventStoreBasedStoreConnenctionOptions(new EventStoreClient(esdbSettings), appSettings.EventStoreSettings.Prefix));
 
             services.AddSingleton<IDHCPv6EventStore, EventStoreBasedStore>();
@@ -187,18 +188,21 @@ namespace Beer.DaAPI.Service.API
             services.AddTransient<INotificationHandler<UnableToSentPacketMessage>>(sp => new WriteCriticalEventsToLogHandler(
                 sp.GetService<ILogger<WriteCriticalEventsToLogHandler>>()));
 
+            services.AddTransient<INotificationHandler<TracingRecordAppendedMessage>, TracingRecordAppendedMessageHandler>();
+            services.AddTransient<INotificationHandler<TracingStreamStartedMessage>, TracingStreamStartedMessageHandler>();
+
             services.AddTransient<DHCPv6RateLimitBasedFilter>();
             services.AddTransient<DHCPv6PacketConsistencyFilter>();
 
             services.AddSingleton<INotificationEngine, NotificationEngine>();
             services.AddSingleton<INotificationActorFactory, ServiceProviderBasedNotificationActorFactory>();
             services.AddSingleton<INotificationConditionFactory, ServiceProviderBasedNotificationConditionFactory>();
-            services.AddTransient<INxOsDeviceConfigurationService, HttpBasedNxOsDeviceConfigurationService>( sp => new HttpBasedNxOsDeviceConfigurationService(
-                new HttpClient(new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                }),sp.GetService<ILogger<HttpBasedNxOsDeviceConfigurationService>>()
-                ));
+            services.AddTransient<INxOsDeviceConfigurationService, HttpBasedNxOsDeviceConfigurationService>(sp => new HttpBasedNxOsDeviceConfigurationService(
+               new HttpClient(new HttpClientHandler
+               {
+                   ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+               }), sp.GetService<ILogger<HttpBasedNxOsDeviceConfigurationService>>()
+               ));
 
             services.AddTransient<NxOsStaticRouteUpdaterNotificationActor>();
             services.AddTransient<DHCPv6ScopeIdNotificationCondition>();
@@ -248,6 +252,7 @@ namespace Beer.DaAPI.Service.API
                 typeof(Startup).Assembly);
             services.AddHostedService<HostedService.LeaseTimerHostedService>();
             services.AddHostedService<HostedService.CleanupDatabaseTimerHostedService>();
+            services.AddHostedService<HostedService.FakeTracingStreamEmitter>();
 
             services.Configure<IISServerOptions>(options =>
             {
@@ -265,7 +270,11 @@ namespace Beer.DaAPI.Service.API
             });
 
             services.AddTransient<ITracingManager, TracingManager>();
-           
+            services.AddSignalR((opt) =>
+           {
+
+           });
+
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider provider)
@@ -284,6 +293,7 @@ namespace Beer.DaAPI.Service.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<TracingHub>("/tracing");
             });
 
             var storageContext = provider.GetService<StorageContext>();

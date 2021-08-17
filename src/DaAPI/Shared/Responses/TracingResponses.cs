@@ -16,6 +16,13 @@ namespace Beer.DaAPI.Shared.Responses
     {
         public static class V1
         {
+            public enum TracingRecordStatusForResponses
+            {
+                Informative = 0,
+                Error = 10,
+                Success = 20,
+            }
+
             public class TracingStreamOverview
             {
                 public Guid Id { get; set; }
@@ -25,6 +32,7 @@ namespace Beer.DaAPI.Shared.Responses
                 public IDictionary<String, String> FirstEntryData { get; set; }
                 public Int32 RecordAmount { get; set; }
                 public Boolean IsInProgress { get; set; }
+                public TracingRecordStatusForResponses Status { get; set; }
             }
 
             public class TracingStreamRecord
@@ -33,8 +41,9 @@ namespace Beer.DaAPI.Shared.Responses
 
                 public DateTime Timestamp { get; set; }
                 public Guid? EntityId { get; set; }
+                public TracingRecordStatusForResponses Status { get; set; }
 
-                public Dictionary<String, String> AddtionalData { get; set; }
+                public IDictionary<String, String> AddtionalData { get; set; }
             }
         }
     }
