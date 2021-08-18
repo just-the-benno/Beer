@@ -9,14 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
 
-namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
+namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 {
-    public partial class ImportScopeStructureDialog : DaAPIDialogBase
+    public partial class DHCPv6ImportScopeStructureDialog : DaAPIDialogBase
     {
         [Inject] DaAPIService Service { get; set; }
-        [CascadingParameter] MudDialogInstance Instance {get; set; }
+        [CascadingParameter] MudDialogInstance Instance { get; set; }
 
         private String _content;
         private Int32 _numberOfScopes = 0;
@@ -27,7 +26,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         private JsonSerializerSettings _jsonSettings;
 
-        public ImportScopeStructureDialog()
+        public DHCPv6ImportScopeStructureDialog()
         {
             _jsonSettings =
                 new JsonSerializerSettings
@@ -44,23 +43,20 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         {
             try
             {
-                var requests =  JsonConvert.DeserializeObject<List<ExportDHCPRequest>>(input, _jsonSettings);
-                Console.WriteLine(requests.Count);
-
-                return requests.Count > 1;   
+                var requests = JsonConvert.DeserializeObject<List<DHCPv6ExportRequest>>(input, _jsonSettings);
+                return requests.Count > 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.ToString());
                 return false;
             }
         }
 
-        private  async  Task StartImport()
+        private async Task StartImport()
         {
-            if(IsInputValid() == false) { return; }
+            if (IsInputValid() == false) { return; }
 
-            var requests = JsonConvert.DeserializeObject<List<ExportDHCPRequest>>(_content, _jsonSettings);
+            var requests = JsonConvert.DeserializeObject<List<DHCPv6ExportRequest>>(_content, _jsonSettings);
 
             _numberOfScopes = requests.Count();
             _inProgress = true;
@@ -70,12 +66,12 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
             foreach (var request in requests)
             {
-                if(request.Request.ParentId.HasValue == true)
+                if (request.Request.ParentId.HasValue == true)
                 {
                     request.Request.ParentId = parentIdMapper[request.Request.ParentId.Value];
                 }
 
-                var result = await Service.CreateDHCPv4Scope(request.Request);
+                var result = await Service.CreateDHCPv6Scope(request.Request);
                 _currentScope++;
                 StateHasChanged();
 
@@ -85,7 +81,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
                 }
                 else
                 {
-                   
+
                 }
             }
 

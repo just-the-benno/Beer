@@ -105,6 +105,36 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             }
         }
 
+
+        public async Task OpenExportDialog()
+        {
+            var messageForm = _dialogService.Show<DHCPv6ExportScopeStructureDialog>(L["ExportScopesTitle"], new DialogOptions
+            {
+                FullWidth = true,
+            });
+            await messageForm.Result;
+        }
+
+        public async Task OpenImportDialog()
+        {
+            var messageForm = _dialogService.Show<DHCPv6ImportScopeStructureDialog>(L["ImportScopesTitle"], new DialogOptions
+            {
+                FullWidth = true,
+                DisableBackdropClick = true,
+                CloseButton = false,
+            });
+
+            var result = await messageForm.Result;
+
+            if (result.IsSuccess() == true)
+            {
+                _snackBarService.Add(L["ImportSuccessSnackbarContent"], Severity.Success);
+                _items.Clear();
+                StateHasChanged();
+                await LoadItems();
+            }
+        }
+
         //private String GetExcludedAddressAsString(DHCPv6ScopeTreeViewItem item)
         //{
         //    StringBuilder builder = new(300);

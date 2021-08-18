@@ -1,4 +1,5 @@
 ﻿using Beer.DaAPI.BlazorApp.Dialogs;
+using Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes;
 using Beer.DaAPI.BlazorApp.Services;
 using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
@@ -7,37 +8,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
-using static Beer.DaAPI.Shared.Responses.DHCPv4ScopeResponses.V1;
+using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
+using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1;
 
-namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
+namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 {
-    public class ExportDHCPRequest
+    public class DHCPv6ExportRequest
     {
         public Guid Id { get; set; }
-        public CreateOrUpdateDHCPv4ScopeRequest Request { get; set; }
+        public CreateOrUpdateDHCPv6ScopeRequest Request { get; set; }
     }
 
-    public partial class ExportScopeStructureDialog : DaAPIDialogBase
+    public partial class DHCPv6ExportScopeStructureDialog : DaAPIDialogBase
     {
         [Inject] public DaAPIService Service { get; set; }
         private Boolean _loading = true;
 
         private String _content;
 
-        private List<ExportDHCPRequest> _requests = new();
-        private IEnumerable<DHCPv4ScopeResolverDescription> _resolverDescriptions;
+        private List<DHCPv6ExportRequest> _requests = new();
+        private IEnumerable<DHCPv6ScopeResolverDescription> _resolverDescriptions;
 
-        private async Task GetDetails(DHCPv4ScopeTreeViewItem item, DHCPv4ScopePropertiesResponse parentValue)
+        private async Task GetDetails(DHCPv6ScopeTreeViewItem item, DHCPv6ScopePropertiesResponse parentValue)
         {
-            var details = await Service.GetDHCPv4ScopeProperties(item.Id, false);
+            var details = await Service.GetDHCPv6ScopeProperties(item.Id, false);
 
-            CreateOrUpdateDHCPv4ScopeViewModel vm = new CreateOrUpdateDHCPv4ScopeViewModel
+            CreateOrUpdateDHCPv6ScopeViewModel vm = new()
             {
-                GenerellProperties = new CreateOrUpdateDHCPv4ScopeGenerellPropertiesViewModel(),
-                AddressRelatedProperties = new CreateOrUpdateDHCPv4ScopeAddressRelatedPropertiesViewModel(),
-                ResolverProperties = new CreateOrUpdateDHCPv4ScopeResolverRelatedViewModel(),
-                ScopeProperties = new CreateOrUpdateDHCPv4ScopePropertiesViewModel(),
+                GenerellProperties = new CreateOrUpdateDHCPv6ScopeGenerellPropertiesViewModel(),
+                AddressRelatedProperties = new CreateOrUpdateDHCPv6ScopeAddressRelatedPropertiesViewModel(),
+                ResolverProperties = new CreateOrUpdateDHCPv6ScopeResolverRelatedViewModel(),
+                ScopeProperties = new CreateOrUpdateDHCPv6ScopePropertiesViewModel(),
             };
 
             vm.GenerellProperties.Name = details.Name;
@@ -57,7 +58,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             vm.ResolverProperties.LoadFromResponse(details, _resolverDescriptions.FirstOrDefault(x => x.TypeName == details.Resolver.Typename));
 
 
-            _requests.Add(new ExportDHCPRequest
+            _requests.Add(new DHCPv6ExportRequest
             {
                 Id = item.Id,
                 Request = vm.GetRequest()
@@ -68,7 +69,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
                 if (details.ParentId.HasValue == true)
                 {
-                    details = await Service.GetDHCPv4ScopeProperties(item.Id, true);
+                    details = await Service.GetDHCPv6ScopeProperties(item.Id, true);
                 }
 
                 foreach (var child in item.ChildScopes)
@@ -82,8 +83,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         {
             await base.OnInitializedAsync();
 
-            var items = await Service.GetDHCPv4ScopesAsTree();
-            _resolverDescriptions = await Service.GetDHCPv4ScopeResolverDescription();
+            var items = await Service.GetDHCPv6ScopesAsTree();
+            _resolverDescriptions = await Service.GetDHCPv6ScopeResolverDescription();
             foreach (var item in items)
             {
                 await GetDetails(item, null);

@@ -117,76 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddChildScopeToolTip" xml:space="preserve">
-    <value>Add a child Scope</value>
+  <data name="ImportInputError" xml:space="preserve">
+    <value>Ungültige Eingabe</value>
   </data>
-  <data name="ChangeParentScopesSuccessSnackbarContent" xml:space="preserve">
-    <value>The parent of the scope '{0}' has been changed successfully</value>
+  <data name="ImportInputPlaceholder" xml:space="preserve">
+    <value>Fügen Sie den Inhalt (json) des Exports ein. Danach kann der Import starten</value>
   </data>
-  <data name="ChangeParentScopeTitle" xml:space="preserve">
-    <value>Change parent of the scope {0}</value>
+  <data name="StartImportCaption" xml:space="preserve">
+    <value>Import starten</value>
   </data>
-  <data name="ChangeParentsTooltip" xml:space="preserve">
-    <value>Change Parent</value>
-  </data>
-  <data name="CopyButtonTooltip" xml:space="preserve">
-    <value>Copy this Scope</value>
-  </data>
-  <data name="CreateNewScopeToolTipText" xml:space="preserve">
-    <value>Create a new root Scope</value>
-  </data>
-  <data name="DeleteButtonTooltip" xml:space="preserve">
-    <value>Delete this Scope</value>
-  </data>
-  <data name="DeleteDialogTitle" xml:space="preserve">
-    <value>Delete the scope {0}</value>
-  </data>
-  <data name="DeleteScopeModalHeader" xml:space="preserve">
-    <value>Delete scope {0}</value>
-  </data>
-  <data name="DeleteScopesSuccessSnackbarContent" xml:space="preserve">
-    <value>The scope '{0}' has been successfully deleted</value>
-  </data>
-  <data name="DeleteScopeSuccessCaption" xml:space="preserve">
-    <value>Success!</value>
-  </data>
-  <data name="DeleteScopeSuccessText" xml:space="preserve">
-    <value>scope {0} deleted. Reloading scopes...</value>
-  </data>
-  <data name="DetailsButtonTooltip" xml:space="preserve">
-    <value>Show Details like Leases, Packets, Events...</value>
-  </data>
-  <data name="EditButtonTooltip" xml:space="preserve">
-    <value>Edit this Scope</value>
-  </data>
-  <data name="ExcludedAddressLabel" xml:space="preserve">
-    <value>Without</value>
-  </data>
-  <data name="ExportScopesTitle" xml:space="preserve">
-    <value>Export Scope Structure</value>
-  </data>
-  <data name="ExportScopesToolTipText" xml:space="preserve">
-    <value>Open the dialog to export the scope structure</value>
-  </data>
-  <data name="ImportScopesTitle" xml:space="preserve">
-    <value>Import Scope Structure</value>
-  </data>
-  <data name="ImportScopesToolTipText" xml:space="preserve">
-    <value>Open the dialog to import a scope structure</value>
-  </data>
-  <data name="ImportSuccessSnackbarContent" xml:space="preserve">
-    <value>DHCPv6 Scopes Structure has been successfully imported </value>
-  </data>
-  <data name="LoadingMessage" xml:space="preserve">
-    <value>Scopes are loading...</value>
-  </data>
-  <data name="NewScopeButtonCaption" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="NoScopesFound" xml:space="preserve">
-    <value>No scopes found. You can create a scope</value>
-  </data>
-  <data name="PageTitle" xml:space="preserve">
-    <value>DHCPv6 Scopes</value>
+  <data name="StartImportInProgressCaption" xml:space="preserve">
+    <value>Import wird bearbeitet...</value>
   </data>
 </root>

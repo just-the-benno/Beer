@@ -122,8 +122,8 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<Boolean> SendDeleteDHCPv6InterfaceRequest(Guid interfaceId) =>
             await ExecuteCommand(() => _client.DeleteAsync($"api/interfaces/dhcpv6/{interfaceId}"));
 
-        public async Task<Boolean> CreateDHCPv6Scope(CreateOrUpdateDHCPv6ScopeRequest request) =>
-            await ExecuteCommand(() => _client.PostAsync("api/scopes/dhcpv6/", GetStringContentAsJson(request)));
+        public async Task<Guid> CreateDHCPv6Scope(CreateOrUpdateDHCPv6ScopeRequest request) =>
+            await ExecuteCommand<Guid> (() => _client.PostAsync("api/scopes/dhcpv6/", GetStringContentAsJson(request)));
 
         public async Task<Boolean> SendDeleteNotificationPipelineRequest(Guid pipelineId) =>
             await ExecuteCommand(() => _client.DeleteAsync($"/api/notifications/pipelines/{pipelineId}"));

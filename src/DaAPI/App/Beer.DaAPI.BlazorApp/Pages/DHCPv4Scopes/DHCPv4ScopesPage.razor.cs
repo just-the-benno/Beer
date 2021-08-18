@@ -96,7 +96,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         public async Task OpenExportDialog()
         {
-            var messageForm = _dialogService.Show<ExportScopeStructureDialog>(L["ExportScopesTitle"],new DialogOptions
+            var messageForm = _dialogService.Show<DHCPv4ExportScopeStructureDialog>(L["ExportScopesTitle"],new DialogOptions
             {
                 FullWidth = true,
             });
@@ -105,7 +105,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
         public async Task OpenImportDialog()
         {
-            var messageForm = _dialogService.Show<ImportScopeStructureDialog>(L["ImportScopesTitle"], new DialogOptions
+            var messageForm = _dialogService.Show<DHCPv4ImportScopeStructureDialog>(L["ImportScopesTitle"], new DialogOptions
             {
                 FullWidth = true,
                 DisableBackdropClick = true,
