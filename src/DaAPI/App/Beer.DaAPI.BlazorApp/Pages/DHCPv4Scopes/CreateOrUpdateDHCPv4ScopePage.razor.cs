@@ -266,7 +266,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 
             try
             {
-                var result = _isCreateMode == true ? await _service.CreateDHCPv4Scope(model.GetRequest()) : await _service.UpdateDHCPv4Scope(model.GetRequest(), ScopeId);
+                var result = _isCreateMode == true ? (await _service.CreateDHCPv4Scope(model.GetRequest()) != default) : await _service.UpdateDHCPv4Scope(model.GetRequest(), ScopeId);
                 if (result == true)
                 {
                     _snackBarService.Add(String.Format(_isCreateMode == true ? L["CreateScopeSuccessSnackbarContent"] : L["UpdateScopeSuccessSnackbarContent"], _generellPropertiesModel.Name), Severity.Success);

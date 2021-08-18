@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
 
-namespace Beer.DaAPI.Service.API.Infrastrucutre
+namespace Beer.DaAPI.Shared.JsonConverters
 {
     public class DHCPv4ScopePropertyRequestJsonConverter : JsonConverter
     {

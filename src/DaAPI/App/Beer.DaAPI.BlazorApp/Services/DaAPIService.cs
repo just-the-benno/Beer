@@ -77,17 +77,42 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<Boolean> InitilizeServer(InitilizeServeRequest request) =>
             await ExecuteCommand(() => _client.PostAsJsonAsync("api/Server/Initialize", request));
 
-        private async Task<Boolean> ExecuteCommand(Func<Task<HttpResponseMessage>> serviceCaller)
+
+        private async Task<HttpResponseMessage> ExecuteCommandInternal(Func<Task<HttpResponseMessage>> serviceCaller)
         {
             try
             {
                 var result = await serviceCaller();
-                return result.IsSuccessStatusCode;
+                return result;
             }
             catch (Exception)
             {
                 _logger.LogError("unable to send service request");
-                return false;
+                return null;
+            }
+        }
+
+        private async Task<Boolean> ExecuteCommand(Func<Task<HttpResponseMessage>> serviceCaller)
+        {
+            var message = await ExecuteCommandInternal(serviceCaller);
+            return message is not null && message.IsSuccessStatusCode;
+        }
+
+        private async Task<T> ExecuteCommand<T>(Func<Task<HttpResponseMessage>> serviceCaller)
+        {
+            var message = await ExecuteCommandInternal(serviceCaller);
+            if(message == null) { return default; }
+            else
+            {
+                try
+                {
+                    return await message.Content.ReadFromJsonAsync<T>();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "unable to parse response form service requests");
+                    return default;
+                }
             }
         }
 
@@ -329,8 +354,8 @@ namespace Beer.DaAPI.BlazorApp.Services
           await ExecuteCommand(() => _client.DeleteAsync($"/api/scopes/dhcpv4/{request.Id}/?includeChildren={request.IncludeChildren}"));
 
 
-        public async Task<Boolean> CreateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request) =>
-        await ExecuteCommand(() => _client.PostAsync("api/scopes/dhcpv4/", GetStringContentAsJson(request)));
+        public async Task<Guid> CreateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request) =>
+        await ExecuteCommand<Guid>(() => _client.PostAsync("api/scopes/dhcpv4/", GetStringContentAsJson(request)));
 
         public async Task<Boolean> SendChangeDHCPv4ScopeParentRequest(Guid scopeId, Guid? parentId) =>
             await ExecuteCommand(() => _client.PutAsync($"/api/scopes/dhcpv4/changeScopeParent/{scopeId}/{parentId}", GetStringContentAsJson(new { })));
