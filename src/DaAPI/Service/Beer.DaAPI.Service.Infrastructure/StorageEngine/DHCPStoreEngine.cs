@@ -28,11 +28,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public virtual async Task<Boolean> Save(AggregateRootWithEvents aggregateRoot)
         {
             var events = aggregateRoot.GetChanges();
-            Boolean writeResult = await EventStore.Save(aggregateRoot, 20);
-            if (writeResult == false)
-            {
-                return false;
-            }
+            await EventStore.Save(aggregateRoot, 20);
 
             aggregateRoot.ClearChanges();
 
