@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Core.Tracing
 {
+    public enum TracingRecordStatus
+    {
+        Informative = 0,
+        Error = 10,
+        Success = 20,
+    }
+
     public class TracingRecord
     {
         public Guid StreamId { get; init; }
@@ -14,8 +21,9 @@ namespace Beer.DaAPI.Core.Tracing
         public IDictionary<String, String> Data { get; init; }
         public DateTime Timestamp { get; init; }
         public Guid? EntityId { get; init; }
+        public TracingRecordStatus Status { get; init; }
 
-        public TracingRecord(Guid streamId, String identifier, IDictionary<String, String> data, Guid? entityId)
+        public TracingRecord(Guid streamId, String identifier, IDictionary<String, String> data, TracingRecordStatus status, Guid? entityId)
         {
             StreamId = streamId;
             Timestamp = DateTime.UtcNow;
@@ -23,10 +31,10 @@ namespace Beer.DaAPI.Core.Tracing
             Identifier = identifier;
 
             EntityId = entityId;
+            Status = status;
         }
 
-
-        public TracingRecord(Guid streamId, String identifier, ITracingRecord input) : this(streamId, identifier, input.GetTracingRecordDetails(), input.Id)
+        public TracingRecord(Guid streamId, String identifier, TracingRecordStatus status, ITracingRecord input) : this(streamId, identifier, input.GetTracingRecordDetails(), status, input.Id)
         {
         }
 

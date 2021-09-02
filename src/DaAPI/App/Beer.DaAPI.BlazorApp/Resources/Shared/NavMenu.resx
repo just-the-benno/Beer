@@ -147,6 +147,9 @@
   <data name="MenuMainMenuCaption" xml:space="preserve">
     <value>Main</value>
   </data>
+  <data name="MenuMainPacketMonitorCaption" xml:space="preserve">
+    <value>Packet Monitor</value>
+  </data>
   <data name="MenuMainPipelinesCaption" xml:space="preserve">
     <value>Pipelines</value>
   </data>

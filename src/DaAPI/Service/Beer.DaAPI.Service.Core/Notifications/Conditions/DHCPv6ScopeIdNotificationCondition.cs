@@ -65,7 +65,7 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
 
             var castedTrigger = (PrefixEdgeRouterBindingUpdatedTrigger)trigger;
 
-            await tracingStream.Append(1, new Dictionary<String, String>
+            await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>
             {
                { "ScopeId", castedTrigger.ScopeId.ToString()  },
                { "ScopeIds", JsonSerializer.Serialize(ScopeIds) }
@@ -73,7 +73,7 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
 
             if (ScopeIds.Contains(castedTrigger.ScopeId) == true)
             {
-                await tracingStream.Append(2);
+                await tracingStream.Append(2, TracingRecordStatus.Informative);
 
                 _logger.LogDebug("triggers scope id {scopeId} found in condtition. Condition is true", castedTrigger.ScopeId);
                 return true;
@@ -83,7 +83,7 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
                 _logger.LogDebug("triggers scope id {scopeId} not found scope list. Checking if children are included", castedTrigger.ScopeId);
                 if (IncludesChildren == false)
                 {
-                    await tracingStream.Append(3);
+                    await tracingStream.Append(3, TracingRecordStatus.Informative);
 
                     _logger.LogDebug("children shouldn't be included. Conditition evalutated to false");
                     return false;
@@ -95,7 +95,7 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
                         _logger.LogDebug("checking scopes recursivly for machting id");
                         _logger.LogDebug("check if {triggerId} is a child of {scopeId}", castedTrigger.ScopeId, castedTrigger.ScopeId);
 
-                        await tracingStream.Append(4);
+                        await tracingStream.Append(4, TracingRecordStatus.Informative);
 
                         var scope = _rootScope.GetScopeById(scopeId);
                         if(scope == null)
@@ -109,13 +109,13 @@ namespace Beer.DaAPI.Core.Notifications.Conditions
                             Boolean found = SearchChildScope(item, castedTrigger.ScopeId);
                             if (found == true)
                             {
-                                await tracingStream.Append(5);
+                                await tracingStream.Append(5, TracingRecordStatus.Informative);
                                 return true;
                             }
                         }
                     }
 
-                    await tracingStream.Append(6);
+                    await tracingStream.Append(6, TracingRecordStatus.Informative);
 
                     _logger.LogDebug("no child found. Condition evaluted to false");
                     return false;

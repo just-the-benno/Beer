@@ -23,13 +23,13 @@ namespace Beer.DaAPI.Infrastructure.Tracing
 
         public async Task<Boolean> SaveTracingEntry(TracingRecord record, Boolean streamClosed)
         {
-            await _serviceBus.Publish(new TracingRecordAppended(record,streamClosed));
             await _store.AddTracingRecord(record);
             if(streamClosed == true)
             {
                 await _store.CloseTracingStream(record.StreamId);
             }
 
+            await _serviceBus.Publish(new TracingRecordAppendedMessage(record, streamClosed));
             return true;
         }
 

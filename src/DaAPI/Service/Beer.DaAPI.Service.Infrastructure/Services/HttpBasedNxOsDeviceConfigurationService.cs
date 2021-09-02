@@ -43,6 +43,7 @@ namespace Beer.DaAPI.Infrastructure.Services
         private HttpClient _client;
         private readonly ILogger<HttpBasedNxOsDeviceConfigurationService> _logger;
         private String _username;
+        private Boolean _connected;
 
         public HttpBasedNxOsDeviceConfigurationService(HttpClient client,
             ILogger<HttpBasedNxOsDeviceConfigurationService> logger)
@@ -53,12 +54,15 @@ namespace Beer.DaAPI.Infrastructure.Services
 
         public Task<Boolean> Connect(String endpoint, String username, String password, TracingStream tracingStream)
         {
+            if(_connected == true) { return Task.FromResult(true); }
+
             String authHeaderValue = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}"));
 
             _client.BaseAddress = new Uri(endpoint);
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeaderValue);
 
             _username = username;
+            _connected = true;
 
             return Task.FromResult(true);
         }
@@ -85,7 +89,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
         private async Task<Boolean> ExecuteCLICommand(String command, TracingStream tracingStream)
         {
-            await tracingStream.Append(1, new Dictionary<String, String>
+            await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>
             {
                 { "Command", command },
                 { "Url", _client.BaseAddress + "/ins" },
@@ -93,7 +97,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             var result = await _client.PostAsync("/ins", ExecuteCLICommandContent(command));
 
-            await tracingStream.Append(2, new Dictionary<String, String>
+            await tracingStream.Append(2, TracingRecordStatus.Informative, new Dictionary<String, String>
             {
                 { "Command", command },
                 { "Url", _client.BaseAddress + "/ins" },
@@ -105,7 +109,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                await tracingStream.Append(3, new Dictionary<String, String>
+                await tracingStream.Append(3, TracingRecordStatus.Error, new Dictionary<String, String>
                 {
                     { "Command", command },
                     { "Url", _client.BaseAddress.ToString() },
@@ -121,7 +125,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             if (result.IsSuccessStatusCode == false)
             {
-                await tracingStream.Append(4, new Dictionary<String, String>
+                await tracingStream.Append(4, TracingRecordStatus.Error, new Dictionary<String, String>
                 {
                     { "Command", command },
                     { "Url", _client.BaseAddress.ToString() },
@@ -135,7 +139,7 @@ namespace Beer.DaAPI.Infrastructure.Services
                 return false;
             }
 
-            await tracingStream.Append(5);
+            await tracingStream.Append(5, TracingRecordStatus.Success);
 
             return response.Errror == null;
         }

@@ -42,3 +42,12 @@
 {
     text-align: center;
 }
+
+.long-content-textbox {
+    height: 70vh;
+    overflow-y: auto;
+
+    textarea {
+        overflow-y: hidden;
+    }
+}

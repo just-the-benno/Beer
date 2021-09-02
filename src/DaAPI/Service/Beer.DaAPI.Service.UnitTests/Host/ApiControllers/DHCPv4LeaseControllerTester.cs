@@ -2,6 +2,7 @@
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv4;
+using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Service.API.ApiControllers;
 using Beer.DaAPI.Service.API.Application.Commands.DHCPv4Leases;
 using Beer.DaAPI.Service.TestHelper;
@@ -133,7 +134,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             });;
 
 
-            var controller = new DHCPv4LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv4LeaseController>>());
+            var controller = new DHCPv4LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<IDHCPv4ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv4LeaseController>>());
 
             var actionResult = controller.GetLeasesByScope(scopeId);
             var result = actionResult.EnsureOkObjectResult<IEnumerable<DHCPv4LeaseOverview>>(true);
@@ -244,7 +245,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             });
 
 
-            var controller = new DHCPv4LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv4LeaseController>>());
+            var controller = new DHCPv4LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<IDHCPv4ReadStore>(MockBehavior.Strict),Mock.Of<ILogger<DHCPv4LeaseController>>());
 
             var actionResult = controller.GetLeasesByScope(grantParentId, true);
             var result = actionResult.EnsureOkObjectResult<IEnumerable<DHCPv4LeaseOverview>>(true);
@@ -268,7 +269,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 .Setup(x => x.Send(It.Is<CancelDHCPv4LeaseCommand>(y => y.LeaseId == leaseId), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mediatorResult).Verifiable();
 
-            var controller = new DHCPv4LeaseController(GetRootScope(), mediatorMock.Object, Mock.Of<ILogger<DHCPv4LeaseController>>());
+            var controller = new DHCPv4LeaseController(GetRootScope(), mediatorMock.Object, Mock.Of<IDHCPv4ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv4LeaseController>>());
             var actionResult = await controller.CancelLease(leaseId);
 
             if(mediatorResult == true)

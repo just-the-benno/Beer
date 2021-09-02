@@ -94,6 +94,35 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             }
         }
 
+        public async Task OpenExportDialog()
+        {
+            var messageForm = _dialogService.Show<DHCPv4ExportScopeStructureDialog>(L["ExportScopesTitle"],new DialogOptions
+            {
+                FullWidth = true,
+            });
+            await messageForm.Result;
+        }
+
+        public async Task OpenImportDialog()
+        {
+            var messageForm = _dialogService.Show<DHCPv4ImportScopeStructureDialog>(L["ImportScopesTitle"], new DialogOptions
+            {
+                FullWidth = true,
+                DisableBackdropClick = true,
+                CloseButton = false,
+            });
+
+            var result = await messageForm.Result;
+
+            if (result.IsSuccess() == true)
+            {
+                _snackBarService.Add(L["ImportSuccessSnackbarContent"], Severity.Success);
+                _items.Clear();
+                StateHasChanged();
+                await LoadItems();
+            }
+        }
+
         private String GetScopeAddressRangeAsString(DHCPv4ScopeTreeViewItem item)
         {
             if (item.StartAddress == item.EndAddress)

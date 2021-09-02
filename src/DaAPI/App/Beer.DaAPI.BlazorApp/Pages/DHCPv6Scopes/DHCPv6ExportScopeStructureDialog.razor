@@ -1,0 +1,20 @@
+﻿@inherits DaAPIDialogBase
+@inject IStringLocalizer<DHCPv6ExportScopeStructureDialog> L
+@inject IStringLocalizer<SharedRessources> LShared
+
+<MudDialog>
+    <DialogContent>
+        @if(_loading == true)
+        {
+            <BeerCenteredCircularLoading />
+        }
+        else
+        {
+            <MudTextField T="string" Lines="@(_content.Count(x => x == '\n'))" Class="long-content-textbox" Value="@_content" />
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@LShared["OkayCaption"]</MudButton>
+    </DialogActions>
+</MudDialog>
+

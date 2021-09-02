@@ -46,7 +46,8 @@ namespace Beer.DaAPI.Service.IntegrationTests.Tracing
         public async Task TracingStream_EdgePrefixBinding()
         {
             Random random = new Random();
-            String dbName = random.GetAlphanumericString();
+            //String dbName = random.GetAlphanumericString();
+            String dbName = "DaAPI";
 
             var context = DatabaseTestingUtility.GetTestDatabaseContext(dbName);
             try
@@ -128,11 +129,14 @@ namespace Beer.DaAPI.Service.IntegrationTests.Tracing
 
                 await engine.Initialize();
 
-                await engine.HandleTrigger(trigger);
+                for (int i = 0; i < 1000; i++)
+                {
+                    await engine.HandleTrigger(trigger);
+                }
             }
             finally
             {
-                await DatabaseTestingUtility.DeleteDatabase(dbName);
+                //await DatabaseTestingUtility.DeleteDatabase(dbName);
             }
         }
 

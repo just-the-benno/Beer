@@ -34,7 +34,18 @@
                         }
                         else
                         {
-                            <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" class="mr-3" />
+                            if (item.Status == DaAPI.Shared.Responses.TracingResponses.V1.TracingRecordStatusForResponses.Success)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" class="mr-3" />
+                            }
+                            else if (item.Status == DaAPI.Shared.Responses.TracingResponses.V1.TracingRecordStatusForResponses.Error)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" class="mr-3" />
+                            }
+                            else if (item.Status == DaAPI.Shared.Responses.TracingResponses.V1.TracingRecordStatusForResponses.Informative)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Info" class="mr-3" />
+                            }
                         }
                        </div>
                 </TitleContent>
@@ -48,7 +59,7 @@
                        <MudTimeline>
                             @foreach (var record in _cachedRecords[item.Id])
                             {
-                                 <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+                                 <MudTimelineItem Size="Size.Medium" Color="@GetTimelineColorBasedOnRecord(record)" Elevation="25">
                                      <MudCard Outlined="true" Elevation="25">
                                           <MudCardHeader>
                                             <CardHeaderContent>

@@ -5,6 +5,7 @@ using Beer.DaAPI.Infrastructure.StorageEngine;
 using Beer.DaAPI.Infrastructure.StorageEngine.Converters;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
+using Beer.DaAPI.Shared.JsonConverters;
 using EventStore.Client;
 using Newtonsoft.Json;
 using System;
@@ -34,22 +35,8 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
             this._client = options.Client;
             this._eventPrefix = options.EventPrefix;
             _jsonSerializerSettings = new JsonSerializerSettings();
-            _jsonSerializerSettings.Converters.Add(new DUIDJsonConverter());
-
-            _jsonSerializerSettings.Converters.Add(new IPv6AddressJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv6PacketJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv6ScopeAddressPropertiesConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv6PrefixDelgationInfoJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv6ScopePropertyJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv6ScopePropertiesJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new IPv6HeaderInformationJsonConverter());
-
-            _jsonSerializerSettings.Converters.Add(new IPv4AddressJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv4PacketJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv4ScopeAddressPropertiesConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv4ScopePropertyJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new DHCPv4ScopePropertiesJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new IPv4HeaderInformationJsonConverter());
+            _jsonSerializerSettings.LoadCustomerConverters();
+           
         }
 
         private String GetStreamTypeIdentifer(Type type) => $"{type.Name}";
@@ -73,7 +60,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
 
         public async Task<Boolean> Save(AggregateRootWithEvents aggregateRoot, Int32 eventsPerRequest = 100)
         {
-            var events = aggregateRoot.GetChanges();
+            var events = aggregateRoot.GetChangesToPersists();
+            if(events.Any() == false) { return false; }
+
             String streamName = GetStreamId(aggregateRoot.GetType(), aggregateRoot.Id);
 
             var encoding = new UTF8Encoding();

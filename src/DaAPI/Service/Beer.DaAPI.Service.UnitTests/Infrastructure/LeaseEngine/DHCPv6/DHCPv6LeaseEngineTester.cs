@@ -130,5 +130,59 @@ namespace Beer.DaAPI.UnitTests.Infrastructure.LeaseEngine.DHCPv6
             propertyResolver.Verify();
             serviceBusMock.Verify();
         }
+
+        [Fact]
+        public async Task HandlePackets_Concurrently()
+        {
+            Random random = new Random();
+
+            DHCPv6RootScope rootScope = GetRootScope(random, out DHCPv6Packet request);
+
+            Mock<IDHCPv6StorageEngine> storageMock = new Mock<IDHCPv6StorageEngine>(MockBehavior.Strict);
+            storageMock.Setup(x => x.Save(rootScope)).ReturnsAsync(true).Verifiable();
+
+            Mock<IDHCPv6ServerPropertiesResolver> propertyResolver = new Mock<IDHCPv6ServerPropertiesResolver>(MockBehavior.Strict);
+            propertyResolver.Setup(x => x.GetServerDuid()).Returns(new UUIDDUID(Guid.NewGuid())).Verifiable();
+
+            Mock<IServiceBus> serviceBusMock = new Mock<IServiceBus>();
+            serviceBusMock.Setup(x => x.Publish(It.Is<NewTriggerHappendMessage>(y =>
+            y.Triggers.Count() == 1))).Returns(Task.FromResult(true));
+
+            DHCPv6LeaseEngine engine = new DHCPv6LeaseEngine(
+                storageMock.Object,
+                rootScope,
+                propertyResolver.Object,
+                serviceBusMock.Object,
+                Mock.Of<ILogger<DHCPv6LeaseEngine>>());
+
+            List<Task> tasksToExecute = new();
+            for (int i = 0; i < 10; i++)
+            {
+                Task task = Task.Run( () => engine.HandlePacket(request));
+                tasksToExecute.Add(task);
+            }
+
+            Boolean allFinished = false;
+            for (int i = 0; i < 1000; i++)
+            {
+                Int32 finishedTasks = tasksToExecute.Count(x => x.IsCompleted == true);
+                if(finishedTasks != tasksToExecute.Count)
+                {
+                    await Task.Delay(10);
+                }
+                else
+                {
+                    allFinished = true;
+                    break;
+                }
+            }
+
+            Assert.True(allFinished);
+            Assert.Equal(0, tasksToExecute.Count(x => x.IsFaulted));
+
+            storageMock.Verify();
+            propertyResolver.Verify();
+            serviceBusMock.Verify();
+        }
     }
 }

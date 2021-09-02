@@ -1,12 +1,14 @@
 ﻿using Beer.DaAPI.Core.Listeners;
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Infrastructure.Services;
+using Beer.DaAPI.Shared.Helper;
 using Beer.DaAPI.Shared.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4LeaseEvents;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
 
 namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
@@ -28,5 +30,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         Task<Boolean> LogInvalidDHCPv4Packet(DHCPv4Packet packet);
 
         IEnumerable<Device> GetAllDevices();
+        Task<IDictionary<Guid, IEnumerable<DHCPv4LeaseCreatedEvent>>> GetLatestDHCPv4LeasesForHydration();
+        Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv4LeaseEvents(DateTime? startTime, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount);
     }
 }

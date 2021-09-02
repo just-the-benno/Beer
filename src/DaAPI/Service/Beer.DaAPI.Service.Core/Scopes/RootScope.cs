@@ -567,7 +567,13 @@ namespace Beer.DaAPI.Core.Scopes
             return _scopes[childId];
         }
 
+        public IEnumerable<Guid> GetAllChildScopeIds(Guid parentId)
+        {
+            TScope scope = GetScopeById(parentId);
+            if(scope == null) { return Array.Empty<Guid>(); }
 
+            return scope.GetChildIds(false);
+        }
 
         #endregion
 

@@ -1,5 +1,8 @@
-﻿using Beer.DaAPI.Core.Scopes.DHCPv6;
+﻿using Beer.DaAPI.Core.Common.DHCPv6;
+using Beer.DaAPI.Core.Scopes.DHCPv6;
+using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using Beer.DaAPI.Service.API.Application.Commands.DHCPv6Leases;
+using Beer.DaAPI.Shared.Helper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Beer.DaAPI.Shared.Requests.CommenRequests.V1;
+using static Beer.DaAPI.Shared.Responses.CommenResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv6LeasesResponses.V1;
 
 namespace Beer.DaAPI.Service.API.ApiControllers
@@ -19,11 +24,13 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         private readonly DHCPv6RootScope _rootScope;
         private readonly IMediator _mediator;
         private readonly ILogger<DHCPv6LeaseController> _logger;
+        private readonly IDHCPv6ReadStore _readStore;
 
-        public DHCPv6LeaseController(DHCPv6RootScope rootScope, IMediator mediator, ILogger<DHCPv6LeaseController> logger)
+        public DHCPv6LeaseController(DHCPv6RootScope rootScope, IMediator mediator, IDHCPv6ReadStore readStore, ILogger<DHCPv6LeaseController> logger)
         {
             _rootScope = rootScope ?? throw new ArgumentNullException(nameof(rootScope));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _readStore = readStore ?? throw new ArgumentNullException(nameof(readStore));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -37,7 +44,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             Prefix = lease.PrefixDelegation != DHCPv6PrefixDelegation.None ? new PrefixOverview { Address = lease.PrefixDelegation.NetworkAddress.ToString(), Mask = lease.PrefixDelegation.Mask.Identifier } : null,
             UniqueIdentifier = lease.UniqueIdentifier,
             State = lease.State,
-            Scope = new ScopeOverview
+            Scope = new()
             {
                 Id = scope.Id,
                 Name = scope.Name,
@@ -96,10 +103,58 @@ namespace Beer.DaAPI.Service.API.ApiControllers
 
             if (result == false)
             {
-                return BadRequest("unable to delete lease");
+                return BadRequest("una ble to delete lease");
             }
 
             return Ok(true);
+        }
+
+        [HttpGet("/api/leases/dhcpv6/events")]
+        public async Task<IActionResult> GetLeaseEvents([FromQuery]FilterLeaseHistoryRequest filter)
+        {
+            List<Guid> scopeIds = new List<Guid>();
+            if (filter.ScopeId.HasValue == true)
+            {
+                scopeIds.Add(filter.ScopeId.Value);
+
+                if (filter.IncludeChildren == true)
+                {
+                    scopeIds.AddRange(_rootScope.GetAllChildScopeIds(filter.ScopeId.Value));
+                }
+            }
+
+            if (String.IsNullOrEmpty(filter.Address) == false)
+            {
+                try
+                {
+                    filter.Address = IPv6Address.FromString(filter.Address).ToString();
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            FilteredResult<LeaseEventOverview> result = await _readStore.GetDHCPv6LeaseEvents(
+                filter.StartTime, filter.EndTime, filter.Address, scopeIds, filter.Start, filter.Amount);
+
+            Dictionary<Guid, String> nameMapper = new();
+
+            foreach (var item in result.Result)
+            {
+                if (item.Scope != null && item.Scope.Id != default)
+                {
+                    if (nameMapper.ContainsKey(item.Scope.Id) == false)
+                    {
+                        var scope = _rootScope.GetScopeById(item.Scope.Id);
+                        nameMapper.Add(scope.Id, scope.Name);
+                    }
+
+                    item.Scope.Name = nameMapper[item.Scope.Id];
+                }
+            }
+
+            return Ok(result);
+
         }
     }
 }

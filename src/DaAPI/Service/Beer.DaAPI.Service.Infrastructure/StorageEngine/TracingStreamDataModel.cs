@@ -23,8 +23,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public Dictionary<String,String> FirstEntryData { get; set; }
 
         public Int32 RecordCount { get; set; }
-
-        public Boolean HasFailed { get; set; }
+        public Int32 ResultType { get; set; }
 
         public virtual ICollection<TracingStreamEntryDataModel> Entries { get; set; }
 

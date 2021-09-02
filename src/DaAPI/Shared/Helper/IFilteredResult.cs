@@ -19,7 +19,8 @@ namespace Beer.DaAPI.Shared.Helper
 
         public FilteredResult()
         {
-
+            Result = Array.Empty<T>();
+            Total = 0;
         }
 
         public FilteredResult(IEnumerable<T> result, Int32 total)

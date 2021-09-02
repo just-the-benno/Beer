@@ -1,0 +1,178 @@
+﻿@using Beer.DaAPI.Core.Packets.DHCPv4
+@using Beer.DaAPI.Core.Packets.DHCPv6
+@inject DHCPPacketResponseCodeHelper ResponseCodeHelper
+
+@inject IStringLocalizer<PacketFilter> L
+
+<EditForm EditContext="_context">
+	<MudGrid>
+    <MudItem xs="12">
+		   <MudSelect T="PacketFilterMode" @bind-Value="_filter.FilterMode" For="@(() => _filter.FilterMode)" Label="@L["PacketFilterModeLabel"]">
+            <MudSelectItem Value="@PacketFilterMode.Both">@L["PacketFilter_Both"]</MudSelectItem>
+            <MudSelectItem Value="@PacketFilterMode.OnlyIPv4" >@L["PacketFilter_OnlyIPv4"]</MudSelectItem>
+            <MudSelectItem Value="@PacketFilterMode.OnlyIPv6" >@L["PacketFilter_OnlyIPv6"]</MudSelectItem>
+        </MudSelect>
+	</MudItem>
+    <MudItem xs="6" md="3">
+        <MudDatePicker Label="@L["FromLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Date="_filter.From" For="@(() => _filter.From)"   />
+	</MudItem>
+    <MudItem xs="6" md="3">
+        <MudTimePicker Label="@L["FromTimeLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Time="_filter.FromTime" For="@(() => _filter.FromTime)"   />
+	</MudItem>
+    <MudItem xs="6" md="3">
+        <MudDatePicker Label="@L["ToLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Date="_filter.To" For="@(() => _filter.To)"   />
+	</MudItem>
+    <MudItem xs="6" md="3">
+        <MudTimePicker Label="@L["ToTimeLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Time="_filter.ToTime" For="@(() => _filter.ToTime)"   />
+	</MudItem>
+    <MudItem xs="12" md="6">
+        <MudTextField T="String" Placeholder="@L["SourceAddressPlaceholder"]" Label="@L["SourceAddressLabel"]" @bind-Value="_filter.SourceAddress" For="@(() => _filter.SourceAddress)"  />
+	</MudItem>
+     <MudItem xs="12" md="6">
+        <MudTextField T="String" Placeholder="@L["DestionationAddressPlaceholder"]" Label="@L["DestinationAddressLabel"]" @bind-Value="_filter.DestinationAddress" For="@(() => _filter.DestinationAddress)"  />
+	</MudItem>
+    <MudItem xs="12" md="6" lg="@(_filter.FilterMode == PacketFilterMode.OnlyIPv6 ? 3 : 6)">
+        <MudTextField T="String" Placeholder="@L["RequestedIpPlaceholder"]" Label="@L["RequestedIpLabel"]" @bind-Value="_filter.RequestedIp" For="@(() => _filter.RequestedIp)"  />
+	</MudItem>
+    @if(_filter.FilterMode == PacketFilterMode.OnlyIPv6)
+    {
+        <MudItem xs="12" md="6" lg="3">
+            <MudTextField T="String" Placeholder="@L["RequestedPrefixPlaceholder"]" Label="@L["RequestedPrefixLabel"]" @bind-Value="_filter.RequestedPrefix" For="@(() => _filter.RequestedPrefix)"  />
+	    </MudItem>
+    }
+    <MudItem xs="12" md="6" lg="@(_filter.FilterMode == PacketFilterMode.OnlyIPv6 ? 3 : 6)">
+        <MudTextField T="String" Placeholder="@L["LeasedIpPlaceholder"]" Label="@L["LeasedIpLabel"]" @bind-Value="_filter.LeasedIp" For="@(() => _filter.LeasedIp)"  />
+	</MudItem>
+    @if(_filter.FilterMode == PacketFilterMode.OnlyIPv6)
+    {
+        <MudItem xs="12" md="6" lg="3">
+            <MudTextField T="String" Placeholder="@L["LeasedPrefixPlaceholder"]" Label="@L["LeasedPrefixLabel"]" @bind-Value="_filter.LeasedPrefix" For="@(() => _filter.LeasedPrefix)"  />
+	    </MudItem>
+    }
+    <MudItem xs="12">
+        <MudTextField T="String" Placeholder="@L["MacAddressPlaceholder"]" Label="@L["MacAddressLabel"]" @bind-Value="_filter.MacAddress" For="@(() => _filter.MacAddress)"  />
+	</MudItem>
+    <MudItem xs="6">
+        <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["FilteredLabel"]" @bind-Checked="_filter.Filtered" For="@(() => _filter.Filtered)" />
+	</MudItem>
+    <MudItem xs="6">
+        <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["InvalidLabel"]" @bind-Checked="_filter.Invalid" For="@(() => _filter.Invalid)" />
+	</MudItem>
+    @if(_filter.FilterMode == PacketFilterMode.OnlyIPv4 || _filter.FilterMode == PacketFilterMode.Both)
+    {
+         <MudItem xs="6">
+		       <MudSelect T="DHCPv4MessagesTypes?" @bind-Value="_filter.DHCPv4RequestMessageType" For="@(() => _filter.DHCPv4RequestMessageType)" Label="@L["DHCPv4RequestMessageTypeModeLabel"]">
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@null">@L["DHCPv4RequestMessageType_Null"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Discover" >@L["DHCPv4RequestMessageType_Discover"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Request" >@L["DHCPv4RequestMessageType_Request"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Release" >@L["DHCPv4RequestMessageType_Release"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Inform" >@L["DHCPv4RequestMessageType_Inform"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Decline" >@L["DHCPv4RequestMessageType_Decline"]</MudSelectItem>
+            </MudSelect>
+	    </MudItem>
+         <MudItem xs="6">
+		       <MudSelect T="DHCPv4MessagesTypes?" @bind-Value="_filter.DHCPv4ResponseMessageType" For="@(() => _filter.DHCPv4ResponseMessageType)" Label="@L["DHCPv4ResponseMessageTypeLabel"]">
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@null">@L["DHCPv4ResponseMessageType_Null"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Offer" >@L["DHCPv4ResponseMessageType_Offer"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.Acknowledge" >@L["DHCPv4ResponseMessageType_Acknowledge"]</MudSelectItem>
+                <MudSelectItem T="DHCPv4MessagesTypes?" Value="@DHCPv4MessagesTypes.NotAcknowledge" >@L["DHCPv4ResponseMessageType_NotAcknowledge"]</MudSelectItem>
+            </MudSelect>
+	    </MudItem>
+    }
+
+    @if(_filter.FilterMode == PacketFilterMode.OnlyIPv6 || _filter.FilterMode == PacketFilterMode.Both)
+    {
+         <MudItem xs="6">
+		       <MudSelect T="DHCPv6PacketTypes?" @bind-Value="_filter.DHCPv6RequestMessageType" For="@(() => _filter.DHCPv6RequestMessageType)" Label="@L["DHCPv6RequestMessageTypeModeLabel"]">
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@null">@L["DHCPv6PacketTypes_Null"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.Solicit" >@L["DHCPv6PacketTypes_Solicit"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.REBIND" >@L["DHCPv6PacketTypes_REBIND"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.RENEW" >@L["DHCPv6PacketTypes_RENEW"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.CONFIRM" >@L["DHCPv6PacketTypes_CONFIRM"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.RELEASE" >@L["DHCPv6PacketTypes_RELEASE"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.DECLINE" >@L["DHCPv6PacketTypes_DECLINE"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.INFORMATION_REQUEST" >@L["DHCPv6PacketTypes_INFORMATION_REQUEST"]</MudSelectItem>
+            </MudSelect>
+	    </MudItem>
+         <MudItem xs="6">
+		       <MudSelect T="DHCPv6PacketTypes?" @bind-Value="_filter.DHCPv6ResponseMessageType" For="@(() => _filter.DHCPv6ResponseMessageType)" Label="@L["DHCPv6ResponseMessageTypeModeLabel"]">
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@null">@L["DHCPv6PacketTypes_Null"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.ADVERTISE" >@L["DHCPv6PacketTypes_ADVERTISE"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.REPLY" >@L["DHCPv6PacketTypes_REPLY"]</MudSelectItem>
+                <MudSelectItem T="DHCPv6PacketTypes?" Value="@DHCPv6PacketTypes.RECONFIGURE" >@L["DHCPv6PacketTypes_RECONFIGURE"]</MudSelectItem>
+            </MudSelect>
+	    </MudItem>
+    }
+    
+    <MudItem xs="6">
+        <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["HasAnswerLabel"]" @bind-Checked="_filter.HasAnswer" For="@(() => _filter.HasAnswer)" />
+	</MudItem>
+     <MudItem xs="6">
+          <MudSelect T="Int32?" @bind-Value="_filter.ResultCode" For="@(() => _filter.ResultCode)" Label="@L["ResultCodeLabel"]">
+                <MudSelectItem T="Int32?" Value="@null">@L["ResultCode_Null"]</MudSelectItem>
+                <MudSelectItem T="Int32?" Value="@(0)">@L["ResultCode_NoError"]</MudSelectItem>
+                @if (_filter.FilterMode == PacketFilterMode.OnlyIPv4 || _filter.FilterMode == PacketFilterMode.Both)
+                {
+                    <MudText Typo="Typo.subtitle2">@L["ResultCode_DHCPv4Heading"]</MudText>
+                    @foreach (var item in ResponseCodeHelper.GetDHCPv4ErrorsPerRequestType())
+                    {
+                        <MudText Typo="Typo.subtitle2">@(L[$"ResultCode_DHCPv4MessageType_{item.Key}"])</MudText>
+                        @foreach(var entry in item.Value)
+                        {
+                            <MudSelectItem T="Int32?" Value="@entry.errorCode">@entry.error</MudSelectItem>
+                        }
+                    }
+
+                }
+                @if (_filter.FilterMode == PacketFilterMode.OnlyIPv6 || _filter.FilterMode == PacketFilterMode.Both)
+                {
+                    <MudText Typo="Typo.subtitle2">@L["ResultCode_DHCPv6Heading"]</MudText>
+                    @foreach (var item in ResponseCodeHelper.GetDHCPv6ErrorsPerRequestType())
+                    {
+                        <MudText Typo="Typo.subtitle2">@(L[$"ResultCode_DHCPv6PacketType_{item.Key}"])</MudText>
+                        @foreach(var entry in item.Value)
+                        {
+                            <MudSelectItem T="Int32?" Value="@entry.errorCode">@entry.error</MudSelectItem>
+                        }
+                    }
+                }
+            </MudSelect>
+	</MudItem>
+          <MudSelect T="Guid?" @bind-Value="_filter.ScopeId" For="@(() => _filter.ScopeId)" Label="@L["ScopeIdLabel"]">
+                <MudSelectItem T="Guid?" Value="@null">@L["ScopeId_Null"]</MudSelectItem>
+                @if (_dhcpv4Scopes != null && (_filter.FilterMode == PacketFilterMode.OnlyIPv4 || _filter.FilterMode == PacketFilterMode.Both))
+                {
+                   <MudText Typo="Typo.subtitle2">@L["DHCPv4Scopes_Headline"]</MudText>
+                    foreach(var item in _dhcpv4Scopes)
+                     {
+                        <MudSelectItem T="Guid?" Value="@item.Scope.Id" Style="@($"margin-left:{item.Depth * 3}px")" >@item.Scope.Name</MudSelectItem>
+                     }
+                    <MudDivider />
+                }
+
+                 @if (_dhcpv6Scopes != null && (_filter.FilterMode == PacketFilterMode.OnlyIPv6 || _filter.FilterMode == PacketFilterMode.Both))
+                {
+                   <MudText Typo="Typo.subtitle2">@L["DHCPv6Scopes_Headline"]</MudText>
+                    foreach(var item in _dhcpv6Scopes)
+                     {
+                        <MudSelectItem T="Guid?" Value="@item.Scope.Id" Style="@($"margin-left:{item.Depth * 3}px")" >@item.Scope.Name</MudSelectItem>
+                     }
+
+                    <MudDivider />
+
+                }
+          </MudSelect>
+
+    @if(_filter.ScopeId.HasValue == true)
+    {
+     <MudItem xs="6">
+        <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["IncludeChildScopesLabel"]" @bind-Checked="_filter.IncludeScopeChildren" For="@(() => _filter.IncludeScopeChildren)" />
+	</MudItem>
+    }
+</MudGrid>
+</EditForm>
+
+
+@code {
+
+}

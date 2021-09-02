@@ -27,7 +27,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         [ForeignKey(nameof(Stream))]
         public Guid StreamId { get; set; }
 
-        public Boolean IsError { get; set; }
+        public Int32 ResultType { get; set; }
 
         public virtual TracingStreamDataModel Stream { get; set; }
 
@@ -47,6 +47,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             Stream = streamDataModel;
 
             AddtionalData = new Dictionary<string, string>(record.Data ?? new Dictionary<string, string>());
+
+            ResultType = (Int32)record.Status;
         }
 
         public TracingStreamEntryDataModel(TracingStream stream, TracingStreamDataModel streamDataModel) : this(stream.Record.First(), streamDataModel)

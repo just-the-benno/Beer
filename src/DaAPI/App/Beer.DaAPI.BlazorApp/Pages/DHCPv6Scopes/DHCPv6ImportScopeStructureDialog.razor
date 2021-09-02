@@ -1,0 +1,22 @@
+﻿@inherits DaAPIDialogBase
+@inject IStringLocalizer<DHCPv6ImportScopeStructureDialog> L
+@inject IStringLocalizer<SharedRessources> LShared
+
+<MudDialog>
+	<DialogContent>
+		@if (_inProgress == false)
+		{
+			<MudTextField T="string" 
+			 Error="IsInputValid() == false" ErrorText="@L["ImportInputError"]" Immediate="true" 
+			  Lines="200" Placeholder="@L["ImportInputPlaceholder"]" Class="long-content-textbox" Value="_content" ValueChanged="@( (x) => _content = x )" />
+		}
+		else
+		{
+			<MudProgressLinear Color="Color.Primary" Min="0" Max="_numberOfScopes" Value="_currentScope" Indeterminate="false" Class="my-7" />
+		}
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel">@LShared["CancelCaption"]</MudButton>
+		<BeerSendingAwareButton IsExecuting="_inProgress" OnClick="StartImport" ButtonType="ButtonType.Button" DefaultText="@L["StartImportCaption"]" InProgressText="@L["StartImportInProgressCaption"]"  Disabled="@(IsInputValid() == false)" />
+	</DialogActions>
+</MudDialog>

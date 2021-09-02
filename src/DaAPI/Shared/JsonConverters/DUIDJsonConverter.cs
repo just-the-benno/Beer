@@ -13,6 +13,11 @@ namespace Beer.DaAPI.Shared.JsonConverters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             String rawValue = (String)reader.Value;
+            if(String.IsNullOrEmpty(rawValue) == true)
+            {
+                return DUID.Empty;
+            }
+
             Byte[] value = Convert.FromBase64String(rawValue);
 
             DUID address = DUIDFactory.GetDUID(value);

@@ -11,7 +11,10 @@ using Beer.DaAPI.Infrastructure.Services;
 using Beer.DaAPI.Infrastructure.StorageEngine.Converters;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4;
 using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
+using Beer.DaAPI.Shared.Commands;
 using Beer.DaAPI.Shared.Helper;
+using Beer.DaAPI.Shared.JsonConverters;
+using Beer.DaAPI.Shared.Responses;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -29,6 +32,7 @@ using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6LeaseEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
 using static Beer.DaAPI.Shared.Requests.TracingRequests.V1;
+using static Beer.DaAPI.Shared.Responses.PacketMonitorResponses.V1;
 using static Beer.DaAPI.Shared.Responses.StatisticsControllerResponses.V1;
 using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
 
@@ -57,6 +61,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public DbSet<TracingStreamDataModel> TracingStreams { get; set; }
         public DbSet<TracingStreamEntryDataModel> TracingStreamRecords { get; set; }
+
+        public DbSet<LeaseEventEntryDataModel> LeaseEventEntries { get; set; }
 
         #endregion
 
@@ -130,6 +136,37 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return listeners;
         }
 
+        public async Task<IDictionary<Guid, IEnumerable<DHCPv6LeaseCreatedEvent>>> GetLatestDHCPv6LeasesForHydration()
+        {
+            var filteredLeases = await ((IQueryable<ILeaseEntry>)DHCPv6LeaseEntries).Where(x => x.EndReason == ReasonToEndLease.Nothing && x.IsActive == true).ToArrayAsync();
+            var firstGroupResult = (from lease in filteredLeases
+                                    group lease by lease.ScopeId into g
+                                    select new
+                                    {
+                                        Id = g.Key,
+                                        Items = (from subLease in g
+                                                 group subLease by subLease.Address into subG
+                                                 select subG.OrderByDescending(x => x.Timestamp).Cast<DHCPv6LeaseEntryDataModel>().FirstOrDefault())
+                                    }).ToDictionary(x => x.Id, x => x.Items.ToArray());
+
+            return firstGroupResult.ToDictionary(x => x.Key, x => x.Value.Select(y => new DHCPv6LeaseCreatedEvent
+            {
+                Address = IPv6Address.FromString(y.Address),
+                DelegatedNetworkAddress = String.IsNullOrEmpty(y.Prefix) == true ? null : IPv6Address.FromString(y.Prefix),
+                HasPrefixDelegation = String.IsNullOrEmpty(y.Prefix),
+                PrefixLength = y.PrefixLength,
+                IdentityAssocationId = y.IdentityAssocationId,
+                IdentityAssocationIdForPrefix = y.IdentityAssocationIdForPrefix,
+                ClientIdentifier = DUIDFactory.GetDUID(y.ClientIdentifier),
+                EntityId = y.LeaseId,
+                ScopeId = y.ScopeId,
+                StartedAt = y.Start,
+                ValidUntil = y.End,
+                Timestamp = y.Timestamp,
+                UniqueIdentiifer = y.UniqueIdentifier,
+            }));
+        }
+
         private async Task<Boolean?> ProjectDHCPv6PacketAndLeaseRelatedEvents(DomainEvent @event)
         {
             Boolean? hasChanges = new Boolean?();
@@ -137,33 +174,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             {
 
                 case DHCPv6PacketHandledEvent e:
-                    DHCPv6PacketHandledEntryDataModel entry = new DHCPv6PacketHandledEntryDataModel
-                    {
-                        HandledSuccessfully = e.WasSuccessfullHandled,
-                        ErrorCode = e.ErrorCode,
-                        Id = Guid.NewGuid(),
-                        ScopeId = e.ScopeId,
-                        Timestamp = e.Timestamp,
-
-                        RequestSize = e.Request.GetSize(),
-                        RequestType = e.Request.GetInnerPacket().PacketType,
-                        RequestSource = e.Request.Header.Source.ToString(),
-                        RequestDestination = e.Request.Header.Destionation.ToString(),
-                        RequestStream = e.Request.GetAsStream(),
-                    };
-
-                    if (e.Response != null)
-                    {
-                        entry.ResponseSize = e.Response.GetSize();
-                        entry.ResponseType = e.Response.GetInnerPacket().PacketType;
-                        entry.ResponseSource = e.Response.Header.Source.ToString();
-                        entry.ResponseDestination = e.Response.Header.Destionation.ToString();
-                        entry.ResponseStream = e.Response.GetAsStream();
-                    }
-
-                    entry.SetTimestampDates();
+                    var entry = new DHCPv6PacketHandledEntryDataModel();
 
                     DHCPv6PacketEntries.Add(entry);
+                    await SetLeaseEventAndPacketEntryRelation(entry.Id, e.Response != null);
+
                     hasChanges = true;
                     break;
 
@@ -181,8 +196,23 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             ScopeId = e.ScopeId,
                             Prefix = e.HasPrefixDelegation == true ? e.DelegatedNetworkAddress.ToString() : null,
                             PrefixLength = e.HasPrefixDelegation == true ? e.PrefixLength : (Byte)0,
+                            IdentityAssocationIdForPrefix = e.HasPrefixDelegation == true ? e.IdentityAssocationIdForPrefix : 0,
+                            IdentityAssocationId = e.IdentityAssocationId,
                             Timestamp = e.Timestamp,
+                            ClientIdentifier = e.ClientIdentifier?.GetAsByteStream(),
+                            UniqueIdentifier = e.UniqueIdentiifer,
                         };
+
+                        var oldLeases = await ((IQueryable<ILeaseEntry>)DHCPv6LeaseEntries).Where(x =>
+                            x.Address == e.Address.ToString() &&
+                            x.ScopeId == e.ScopeId &&
+                            x.EndReason == ReasonToEndLease.Nothing)
+                            .Cast<DHCPv6LeaseEntryDataModel>().ToArrayAsync();
+
+                        if (oldLeases.Length > 0)
+                        {
+                            DHCPv6LeaseEntries.RemoveRange(oldLeases);
+                        }
 
                         DHCPv6LeaseEntries.Add(leaseEntry);
                         hasChanges = true;
@@ -247,41 +277,60 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return hasChanges;
         }
 
+        public async Task<IDictionary<Guid, IEnumerable<DHCPv4LeaseCreatedEvent>>> GetLatestDHCPv4LeasesForHydration()
+        {
+            var filteredLeases = await ((IQueryable<ILeaseEntry>)DHCPv4LeaseEntries).Where(x => x.EndReason == ReasonToEndLease.Nothing && x.IsActive == true).ToArrayAsync();
+            var firstGroupResult = (from lease in filteredLeases
+                                    group lease by lease.ScopeId into g
+                                    select new
+                                    {
+                                        Id = g.Key,
+                                        Items = (from subLease in g
+                                                 group subLease by subLease.Address into subG
+                                                 select subG.OrderByDescending(x => x.Timestamp).Cast<DHCPv4LeaseEntryDataModel>().FirstOrDefault())
+                                    }).ToDictionary(x => x.Id, x => x.Items.ToArray());
+
+            return firstGroupResult.ToDictionary(x => x.Key, x => x.Value.Select(y => new DHCPv4LeaseCreatedEvent
+            {
+                Address = IPv4Address.FromString(y.Address),
+                ClientIdenfier = y.ClientIdentifier,
+                ClientMacAddress = y.ClientMacAddress,
+                EntityId = y.LeaseId,
+                ScopeId = y.ScopeId,
+                StartedAt = y.Start,
+                ValidUntil = y.End,
+                Timestamp = y.Timestamp,
+                UniqueIdentifier = y.UniqueIdentifier,
+            }));
+        }
+
+        private async Task SetLeaseEventAndPacketEntryRelation(Guid id, Boolean hasResponse)
+        {
+
+            if (_latestLeaseEvents.Count > 0)
+            {
+                var items = await ((IQueryable<LeaseEventEntryDataModel>)LeaseEventEntries).Where(x =>
+                _latestLeaseEvents.Contains(x.Id)).ToListAsync();
+
+                items.ForEach(x =>
+                {
+                    x.PacketHandledEntryId = id;
+                    x.HasResponse = hasResponse;
+                });
+            }
+        }
+
         private async Task<Boolean?> ProjectDHCPv4PacketAndLeaseRelatedEvents(DomainEvent @event)
         {
             Boolean? hasChanges = new Boolean?();
             switch (@event)
             {
-
                 case DHCPv4PacketHandledEvent e:
-                    DHCPv4PacketHandledEntryDataModel entry = new DHCPv4PacketHandledEntryDataModel
-                    {
-                        HandledSuccessfully = e.WasSuccessfullHandled,
-                        ErrorCode = e.ErrorCode,
-                        Id = Guid.NewGuid(),
 
-                        RequestSize = e.Request.GetSize(),
-                        RequestDestination = e.Request.Header.Destionation.ToString(),
-                        RequestSource = e.Request.Header.Source.ToString(),
-                        RequestStream = e.Request.GetAsStream(),
-
-                        ScopeId = e.ScopeId,
-                        RequestType = e.Request.MessageType,
-                        Timestamp = e.Timestamp,
-                    };
-
-                    if (e.Response != null)
-                    {
-                        entry.ResponseSize = e.Response.GetSize();
-                        entry.ResponseType = e.Response.MessageType;
-                        entry.ResponseDestination = e.Response.Header.Destionation.ToString();
-                        entry.ResponseSource = e.Response.Header.Source.ToString();
-                        entry.ResponseStream = e.Response.GetAsStream();
-                    }
-
-                    entry.SetTimestampDates();
-
+                    var entry = new DHCPv4PacketHandledEntryDataModel(e);
                     DHCPv4PacketEntries.Add(entry);
+                    await SetLeaseEventAndPacketEntryRelation(entry.Id, e.Response != null);
+
                     hasChanges = true;
                     break;
 
@@ -297,9 +346,22 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             ScopeId = e.ScopeId,
                             Timestamp = e.Timestamp,
                             IsActive = false,
+                            ClientIdentifier = e.ClientIdenfier,
+                            ClientMacAddress = e.ClientMacAddress,
+                            UniqueIdentifier = e.UniqueIdentifier,
                             EndOfRenewalTime = e.StartedAt + e.RenewalTime,
                             EndOfPreferredLifetime = e.StartedAt + e.PreferredLifetime,
                         };
+
+                        var oldLeases = await ((IQueryable<ILeaseEntry>)DHCPv4LeaseEntries).Where(x =>
+                        x.Address == e.Address.ToString() &&
+                        x.ScopeId == e.ScopeId &&
+                        x.EndReason == ReasonToEndLease.Nothing).Cast<DHCPv4LeaseEntryDataModel>().ToArrayAsync();
+
+                        if (oldLeases.Length > 0)
+                        {
+                            DHCPv4LeaseEntries.RemoveRange(oldLeases);
+                        }
 
                         DHCPv4LeaseEntries.Add(leaseEntry);
                         hasChanges = true;
@@ -352,8 +414,12 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return hasChanges;
         }
 
+        private List<Guid> _latestLeaseEvents = new();
+
         public async Task<Boolean> Project(IEnumerable<DomainEvent> events)
         {
+            _latestLeaseEvents.Clear();
+
             Boolean hasChanges = true;
             foreach (var item in events)
             {
@@ -428,7 +494,41 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         hasChanges = true;
                     }
                 }
+
+                Dictionary<Guid, String> leaseAddressMapper = new();
+                var settings = new JsonSerializerSettings();
+                settings.LoadCustomerConverters();
+
+                if (item is DHCPv4ScopeRelatedEvent || item is DHCPv6ScopeRelatedEvent)
+                {
+                    var entry = new LeaseEventEntryDataModel
+                    {
+                        Id = Guid.NewGuid(),
+                        EventType = item.GetType().Name,
+                        FullEventType = item.GetType().FullName,
+                        ScopeId = item is DHCPv4ScopeRelatedEvent ? ((DHCPv4ScopeRelatedEvent)item).ScopeId : ((DHCPv6ScopeRelatedEvent)item).ScopeId,
+                        Timestamp = DateTime.UtcNow,
+                        LeaseId = item is DHCPv4ScopeRelatedEvent ? ((DHCPv4ScopeRelatedEvent)item).EntityId : ((DHCPv6ScopeRelatedEvent)item).EntityId,
+                        EventData = JsonConvert.SerializeObject(item, settings)
+                    };
+
+                    if (leaseAddressMapper.ContainsKey(entry.LeaseId) == false)
+                    {
+                        IQueryable<ILeaseEntry> collection = item is DHCPv4ScopeRelatedEvent ? DHCPv4LeaseEntries : DHCPv6LeaseEntries;
+
+                        var address = await collection.Where(x => x.LeaseId == entry.LeaseId).Select(x => x.Address).FirstOrDefaultAsync();
+                        leaseAddressMapper.Add(entry.LeaseId, address);
+                    }
+
+                    entry.Address = leaseAddressMapper[entry.LeaseId];
+
+                    _latestLeaseEvents.Add(entry.Id);
+                    LeaseEventEntries.Add(entry);
+
+                    hasChanges = true;
+                }
             }
+
 
             if (hasChanges == false) { return true; }
 
@@ -495,6 +595,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         {
             DHCPv4LeaseEntryDataModel entry = await GetLatestDHCPv4LeaseEntry(e);
             if (entry != null) { return false; }
+
 
             DHCPv4LeaseEntries.Remove(entry);
             return true;
@@ -933,9 +1034,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
                 Id = Guid.NewGuid(),
             };
+
             modifier?.Invoke(entry);
 
             entry.SetTimestampDates();
+            entry.UpgradeToVersion2();
 
             DHCPv6PacketEntries.Add(entry);
             return await SaveChangesAsyncInternal();
@@ -964,6 +1067,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             modifier?.Invoke(entry);
 
             entry.SetTimestampDates();
+            entry.UpgradeToVersion2();
 
             DHCPv4PacketEntries.Add(entry);
             return await SaveChangesAsyncInternal();
@@ -1097,6 +1201,14 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             if (dataModel == null) { return false; }
 
             dataModel.RecordCount += 1;
+            if (record.Status == TracingRecordStatus.Error)
+            {
+                dataModel.ResultType = (Int32)TracingRecordStatus.Error;
+            }
+            else if (record.Status == TracingRecordStatus.Success)
+            {
+                dataModel.ResultType = (Int32)TracingRecordStatus.Success;
+            }
 
             TracingStreamEntryDataModel entry = new(record, dataModel);
             TracingStreamRecords.Add(entry);
@@ -1160,10 +1272,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 RecordAmount = x.RecordCount,
                 ProcedureIdentifier = x.ProcedureIdentifier,
                 ModuleIdentifier = x.SystemIdentifier,
-                FirstEntryData = x.FirstEntryData
+                FirstEntryData = x.FirstEntryData,
+                Status = (TracingRecordStatusForResponses)x.ResultType,
             }).ToListAsync();
 
-            return new (result, total);
+            return new(result, total);
         }
 
         public async Task<IEnumerable<TracingStreamRecord>> GetTracingStreamRecords(Guid traceid, Guid? entityId)
@@ -1175,14 +1288,282 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             }
 
             var result = await preResult.OrderBy(x => x.Timestamp).Select(x => new TracingStreamRecord
-                {
-                    Identifier = x.Identifier,
-                    AddtionalData = x.AddtionalData,
-                    EntityId = x.EntityId,
-                    Timestamp = x.Timestamp,
-                }).ToListAsync();
+            {
+                Identifier = x.Identifier,
+                AddtionalData = x.AddtionalData,
+                EntityId = x.EntityId,
+                Timestamp = x.Timestamp,
+                Status = (TracingRecordStatusForResponses)x.ResultType,
+            }).ToListAsync();
 
             return result;
         }
+
+        private IQueryable<IPacketHandledEntry<TPacketType>> FilterPackers<TPacketType>(
+            IQueryable<IPacketHandledEntry<TPacketType>> items, PacketMonitorRequest.V1.IPacketFilter<TPacketType> filter)
+            where TPacketType : struct
+        {
+            if (filter.From.HasValue == true)
+            {
+                items = items.Where(x => x.Timestamp >= filter.From.Value);
+            }
+            if (filter.To.HasValue == true)
+            {
+                items = items.Where(x => x.Timestamp <= filter.To.Value);
+            }
+            if (String.IsNullOrEmpty(filter.MacAddress) == false)
+            {
+                String searchPattern = $"%{filter.MacAddress.Replace(".", String.Empty).Replace(":", String.Empty).ToUpper()}%";
+                items = items.Where(x => EF.Functions.Like(x.MacAddress, searchPattern));
+            }
+            if (String.IsNullOrEmpty(filter.RequestedIp) == false)
+            {
+                items = items.Where(x => EF.Functions.Like(x.RequestedAddress, $"%{filter.RequestedIp.ToLower()}%"));
+            }
+            if (String.IsNullOrEmpty(filter.LeasedIp) == false)
+            {
+                items = items.Where(x => EF.Functions.Like(x.LeasedAddressInResponse, $"%{filter.LeasedIp.ToLower()}%"));
+            }
+            if (filter.Filtered.HasValue == true)
+            {
+                items = items.Where(x => string.IsNullOrEmpty(x.FilteredBy) == !filter.Filtered);
+            }
+            if (filter.Invalid.HasValue == true)
+            {
+                items = items.Where(x => x.InvalidRequest == filter.Invalid.Value);
+            }
+            if (String.IsNullOrEmpty(filter.SourceAddress) == false)
+            {
+                items = items.Where(x => EF.Functions.Like(x.RequestSource, $"%{filter.SourceAddress.ToLower()}%"));
+            }
+            if (String.IsNullOrEmpty(filter.DestinationAddress) == false)
+            {
+                items = items.Where(x => EF.Functions.Like(x.ResponseDestination, $"%{filter.DestinationAddress.ToLower()}%"));
+            }
+
+            if (filter.ScopeId.HasValue == true)
+            {
+                items = items.Where(x => x.ScopeId == filter.ScopeId.Value);
+            }
+
+            if (filter.RequestMessageType.HasValue == true)
+            {
+                items = items.Where(x => x.RequestType.Equals(filter.RequestMessageType.Value));
+            }
+
+            if (filter.ResponseMessageType.HasValue == true)
+            {
+                items = items.Where(x => x.ResponseType.HasValue == true && x.ResponseType.Value.Equals(filter.ResponseMessageType.Value));
+            }
+
+            if (filter.HasAnswer.HasValue == true)
+            {
+                items = items.Where(x => x.ResponseType.HasValue == true);
+            }
+
+            if (filter.ResultCode.HasValue == true)
+            {
+                items = items.Where(x => x.ErrorCode == filter.ResultCode.Value);
+            }
+
+            items = items.OrderByDescending(x => x.Timestamp);
+
+            return items;
+
+        }
+
+        public async Task<FilteredResult<PacketMonitorResponses.V1.DHCPv4PacketOverview>> GetDHCPv4Packet(PacketMonitorRequest.V1.DHCPv4PacketFilter filter)
+        {
+            IQueryable<IPacketHandledEntry<DHCPv4MessagesTypes>> items = DHCPv4PacketEntries;
+            items = FilterPackers(items, filter);
+
+            int total = await items.CountAsync();
+            var result = await items.Cast<DHCPv4PacketHandledEntryDataModel>().Select(x => new DHCPv4PacketOverview
+            {
+                DestinationAddress = x.ResponseDestination ?? x.RequestDestination,
+                Filtered = String.IsNullOrEmpty(x.FilteredBy) == false,
+                Id = x.Id,
+                Invalid = x.InvalidRequest,
+                LeasedIp = x.LeasedAddressInResponse,
+                MacAddress = x.MacAddress,
+                RequestedIp = x.RequestedAddress,
+                RequestMessageType = x.RequestType,
+                ResponseMessageType = x.ResponseType,
+                ResultCode = x.ErrorCode,
+                Scope = x.ScopeId == null ? null : new ScopeOverview
+                {
+                    Id = x.ScopeId.Value,
+                },
+                SourceAddress = x.RequestSource,
+                Timestamp = x.Timestamp,
+                RequestSize = x.RequestSize,
+                ResponseSize = x.ResponseSize.HasValue == true ? x.ResponseSize.Value : 0
+            }).Skip(filter.Start).Take(filter.Amount).ToListAsync();
+
+            return new FilteredResult<PacketMonitorResponses.V1.DHCPv4PacketOverview>
+            {
+                Result = result,
+                Total = total,
+            };
+        }
+
+        public async Task<FilteredResult<PacketMonitorResponses.V1.DHCPv6PacketOverview>> GetDHCPv6Packet(PacketMonitorRequest.V1.DHCPv6PacketFilter filter)
+        {
+            IQueryable<IPacketHandledEntry<DHCPv6PacketTypes>> items = DHCPv6PacketEntries;
+            items = FilterPackers(items, filter);
+
+            var castedItems = items.Cast<DHCPv6PacketHandledEntryDataModel>();
+            if (String.IsNullOrEmpty(filter.LeasedPrefix) == false)
+            {
+                castedItems = castedItems.Where(x => EF.Functions.Like(x.LeaseddPrefixCombined, $"&{filter.LeasedPrefix}&"));
+            }
+            if (String.IsNullOrEmpty(filter.RequestedPrefix) == false)
+            {
+                castedItems = castedItems.Where(x => EF.Functions.Like(x.RequestedPrefixCombined, $"&{filter.LeasedPrefix}&"));
+            }
+
+            int total = await castedItems.CountAsync();
+            var result = await castedItems.Select(x => new DHCPv6PacketOverview
+            {
+                DestinationAddress = x.ResponseDestination ?? x.RequestDestination,
+                Filtered = String.IsNullOrEmpty(x.FilteredBy) == false,
+                Id = x.Id,
+                Invalid = x.InvalidRequest,
+                LeasedIp = x.LeasedAddressInResponse,
+                MacAddress = x.MacAddress,
+                RequestedIp = x.RequestedAddress,
+                RequestMessageType = x.RequestType,
+                ResponseMessageType = x.ResponseType,
+                RequestedPrefix = x.RequestedPrefixLength == 0 ? null : new DHCPv6PrefixModel
+                {
+                    Length = x.RequestedPrefixLength,
+                    Network = x.RequestedPrefix,
+                },
+                LeasedPrefix = x.LeasedPrefixLength == 0 ? null : new DHCPv6PrefixModel
+                {
+                    Length = x.LeasedPrefixLength,
+                    Network = x.LeasedPrefix,
+                },
+                ResultCode = x.ErrorCode,
+                Scope = x.ScopeId == null ? null : new ScopeOverview
+                {
+                    Id = x.ScopeId.Value,
+                },
+                SourceAddress = x.RequestSource,
+                Timestamp = x.Timestamp,
+                RequestSize = x.RequestSize,
+                ResponseSize = x.ResponseSize.HasValue == true ? x.ResponseSize.Value : 0
+            }).Skip(filter.Start).Take(filter.Amount).ToListAsync();
+
+            return new FilteredResult<DHCPv6PacketOverview>
+            {
+                Result = result,
+                Total = total,
+            };
+        }
+
+        public async Task<PacketInfo> GetDHCPv6PacketRequestDataById(Guid packetEnrtyId)
+        {
+            IQueryable<DHCPv6PacketHandledEntryDataModel> items = DHCPv6PacketEntries;
+
+            var query = items.Where(x => x.Id == packetEnrtyId).Select(x => new PacketInfo
+            {
+                Content = x.RequestStream,
+                Source = x.RequestSource,
+                Destination = x.RequestDestination,
+            });
+
+            return await query.FirstOrDefaultAsync();
+
+        }
+
+        public async Task<PacketInfo> GetDHCPv6PacketResponseDataById(Guid packetEnrtyId)
+        {
+            IQueryable<DHCPv6PacketHandledEntryDataModel> items = DHCPv6PacketEntries;
+
+            var query = items.Where(x => x.Id == packetEnrtyId).Select(x => new PacketInfo
+            {
+                Content = x.ResponseStream,
+                Source = x.ResponseSource,
+                Destination = x.ResponseDestination,
+            });
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<PacketInfo> GetDHCPv4PacketRequestDataById(Guid packetEnrtyId)
+        {
+            IQueryable<DHCPv4PacketHandledEntryDataModel> items = DHCPv4PacketEntries;
+
+            var query = items.Where(x => x.Id == packetEnrtyId).Select(x => new PacketInfo
+            {
+                Content = x.RequestStream,
+                Source = x.RequestSource,
+                Destination = x.RequestDestination,
+            });
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<PacketInfo> GetDHCPv4PacketResponseDataById(Guid packetEnrtyId)
+        {
+            IQueryable<DHCPv4PacketHandledEntryDataModel> items = DHCPv4PacketEntries;
+
+            var query = items.Where(x => x.Id == packetEnrtyId).Select(x => new PacketInfo
+            {
+                Content = x.ResponseStream,
+                Source = x.ResponseSource,
+                Destination = x.ResponseDestination,
+            });
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        private async Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetLeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount, string eventName)
+        {
+            var items = ((IQueryable<LeaseEventEntryDataModel>)LeaseEventEntries).Where(x => x.EventType.Contains(eventName));
+
+            if (startDate.HasValue == true)
+            {
+                items = items.Where(x => x.Timestamp >= startDate.Value);
+            }
+            if (endDate.HasValue == true)
+            {
+                items = items.Where(x => x.Timestamp <= endDate.Value);
+            }
+            if (String.IsNullOrEmpty(ipAddress) == false)
+            {
+                items = items.Where(x => EF.Functions.Like(x.Address, $"%{ipAddress}%"));
+            }
+            if (scopeIds.Any() == true)
+            {
+                items = items.Where(x => scopeIds.Contains(x.ScopeId));
+            }
+
+            Int32 total = await items.CountAsync();
+
+            var result = await items.Skip(start).Take(amount).ToArrayAsync();
+            return new FilteredResult<CommenResponses.V1.LeaseEventOverview>(result.Select(x => new CommenResponses.V1.LeaseEventOverview
+            {
+                Address = x.Address,
+                EventData = x.EventData,
+                EventName = x.EventType,
+                EventType = x.EventType,
+                HasResponsePacket = x.HasResponse,
+                PacketHandledId = x.PacketHandledEntryId,
+                Scope = new()
+                {
+                    Id = x.ScopeId,
+                },
+                Timestamp = x.Timestamp,
+            }), total);
+        }
+
+        public async Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv6LeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount) =>
+            await GetLeaseEvents(startDate, endDate, ipAddress, scopeIds, start, amount, "DHCPv6");
+
+        public async Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv4LeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount) =>
+                        await GetLeaseEvents(startDate, endDate, ipAddress, scopeIds, start, amount, "DHCPv4");
+
     }
 }

@@ -37,6 +37,10 @@
         </MudGrid>
     }
 
+    	<DaAPILeaseEventHistory ScopeId="Guid.Parse(ScopeId)" DisplayIPv6Packets="true"
+							PacketRequestLoader="@( (id,response) => response == true ? _service.GetDHCPv6PacketResponse(id) :  _service.GetDHCPv6PacketRequest(id) )"
+							FilterMethod="@_service.GetDHCPv6LeaseHistory" />
+
 </BeerShowCircularLoadingIndicatorWhileNull>
 
 @code {

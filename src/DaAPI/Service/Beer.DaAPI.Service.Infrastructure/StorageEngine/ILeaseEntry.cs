@@ -19,5 +19,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public Boolean IsActive { get; set; }
         public DateTime EndOfRenewalTime { get; set; }
         public DateTime EndOfPreferredLifetime { get; set; }
+        public Byte[] ClientIdentifier { get; set; }
+        public Byte[] UniqueIdentifier { get; set; }
     }
 }

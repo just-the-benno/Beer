@@ -72,6 +72,14 @@
             </MudTreeView>
         }
     </MudPaper>
+    <div class="d-flex justify-end mr-3 mb-2">
+        <MudTooltip Text="@L["ExportScopesToolTipText"]">
+            <MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="OpenExportDialog"  Color="Color.Inherit" />
+        </MudTooltip>
+         <MudTooltip Text="@L["ImportScopesToolTipText"]">
+            <MudIconButton Icon="@Icons.Material.Filled.ImportExport" OnClick="OpenImportDialog"  Color="Color.Inherit" />
+        </MudTooltip>
+    </div>
 </BeerShowCircularLoadingIndicatorWhileNull>
 
 @code {

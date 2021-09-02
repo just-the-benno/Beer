@@ -44,6 +44,16 @@ namespace Beer.DaAPI.Core.Common
         }
 
         public IEnumerable<DomainEvent> GetChanges() => _changes.ToList().AsEnumerable();
+        
+        public IEnumerable<DomainEvent> GetChangesToPersists()
+        {
+            var itemsToSave = from item in _changes
+                       let attributes = item.GetType().GetCustomAttributes(typeof(DoNotPersistAttribute), true)
+                       where attributes.Any() == false
+                       select item;
+
+            return itemsToSave.ToArray();
+        }
 
         public void Load(IEnumerable<DomainEvent> history)
         {

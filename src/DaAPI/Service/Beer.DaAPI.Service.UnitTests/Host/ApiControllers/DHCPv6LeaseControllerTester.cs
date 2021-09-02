@@ -3,6 +3,7 @@ using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Core.Scopes;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
+using Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6;
 using Beer.DaAPI.Service.API.ApiControllers;
 using Beer.DaAPI.Service.API.Application.Commands.DHCPv6Leases;
 using Beer.DaAPI.Service.TestHelper;
@@ -168,7 +169,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             });
 
 
-            var controller = new DHCPv6LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
+            var controller = new DHCPv6LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<IDHCPv6ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
 
             var actionResult = controller.GetLeasesByScope(scopeId);
             var result = actionResult.EnsureOkObjectResult<IEnumerable<DHCPv6LeaseOverview>>(true);
@@ -292,7 +293,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             });
 
 
-            var controller = new DHCPv6LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
+            var controller = new DHCPv6LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<IDHCPv6ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
 
             var actionResult = controller.GetLeasesByScope(grantParentId, true);
             var result = actionResult.EnsureOkObjectResult<IEnumerable<DHCPv6LeaseOverview>>(true);
@@ -316,7 +317,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 .Setup(x => x.Send(It.Is<CancelDHCPv6LeaseCommand>(y => y.LeaseId == leaseId), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mediatorResult).Verifiable();
 
-            var controller = new DHCPv6LeaseController(GetRootScope(), mediatorMock.Object, Mock.Of<ILogger<DHCPv6LeaseController>>());
+            var controller = new DHCPv6LeaseController(GetRootScope(), mediatorMock.Object, Mock.Of<IDHCPv6ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
             var actionResult = await controller.CancelLease(leaseId);
 
             if (mediatorResult == true)

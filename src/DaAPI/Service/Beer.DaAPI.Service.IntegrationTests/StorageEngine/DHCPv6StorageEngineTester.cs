@@ -432,15 +432,7 @@ namespace Beer.DaAPI.Service.IntegrationTests.StorageEngine
 
                  Assert.Single(rehydratedRoot.GetRootScopes());
 
-                 Assert.Single(rehydratedRoot.GetRootScopes().First().Leases.GetAllLeases());
-
-                 var rehydratedFirstLease = rehydratedRoot.GetRootScopes().First().Leases.GetAllLeases().First();
-
-                 Assert.Equal(firstLease.Id, rehydratedFirstLease.Id);
-                 Assert.Equal(firstLease.Address, rehydratedFirstLease.Address);
-                 Assert.Equal(firstLease.Start, rehydratedFirstLease.Start);
-                 Assert.Equal(firstLease.End, rehydratedFirstLease.End);
-                 Assert.Equal(firstLease.State, rehydratedFirstLease.State);
+                 Assert.Empty(rehydratedRoot.GetRootScopes().First().Leases.GetAllLeases());
              });
         }
 

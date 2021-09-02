@@ -162,6 +162,21 @@
   <data name="ExcludedAddressLabel" xml:space="preserve">
     <value>Ohne</value>
   </data>
+  <data name="ExportScopesTitle" xml:space="preserve">
+    <value>Export der Bereichsstruktur</value>
+  </data>
+  <data name="ExportScopesToolTipText" xml:space="preserve">
+    <value>Öffnet den Dialog zum exportieren der Bereiche</value>
+  </data>
+  <data name="ImportScopesTitle" xml:space="preserve">
+    <value>Import der Bereichsstruktur</value>
+  </data>
+  <data name="ImportScopesToolTipText" xml:space="preserve">
+    <value>Öffnet den Dialog um Bereiche zu importieren</value>
+  </data>
+  <data name="ImportSuccessSnackbarContent" xml:space="preserve">
+    <value>DHCPv4 Bereiche wurden erfolgreich importiert</value>
+  </data>
   <data name="LoadingMessage" xml:space="preserve">
     <value>Bereiche werden geladen</value>
   </data>

@@ -20,5 +20,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
         public Boolean IsActive { get; set; }
         public DateTime EndOfRenewalTime { get; set; }
         public DateTime EndOfPreferredLifetime { get; set; }
+        public Byte[] ClientIdentifier { get; set; }
+        public Byte[] UniqueIdentifier { get; set; }
+        public UInt32 IdentityAssocationId { get;  set; }
+        public UInt32 IdentityAssocationIdForPrefix { get;  set; }
     }
 }

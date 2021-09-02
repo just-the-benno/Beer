@@ -105,7 +105,22 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
 
             }
 
-            return SendAsync(remoteEndpoint, packetAsStream);
+            var result = SendAsync(remoteEndpoint, packetAsStream);
+            if (result == false)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Restart();
+                    result = SendAsync(remoteEndpoint, packetAsStream);
+                    if(result == true)
+                    {
+                        break;
+                    }
+                }
+            }
+
+
+            return result;
         }
 
         protected override void OnSent(EndPoint endpoint, long sent)

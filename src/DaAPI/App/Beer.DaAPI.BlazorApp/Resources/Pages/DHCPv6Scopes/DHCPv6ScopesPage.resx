@@ -162,6 +162,21 @@
   <data name="ExcludedAddressLabel" xml:space="preserve">
     <value>Without</value>
   </data>
+  <data name="ExportScopesTitle" xml:space="preserve">
+    <value>Export Scope Structure</value>
+  </data>
+  <data name="ExportScopesToolTipText" xml:space="preserve">
+    <value>Open the dialog to export the scope structure</value>
+  </data>
+  <data name="ImportScopesTitle" xml:space="preserve">
+    <value>Import Scope Structure</value>
+  </data>
+  <data name="ImportScopesToolTipText" xml:space="preserve">
+    <value>Open the dialog to import a scope structure</value>
+  </data>
+  <data name="ImportSuccessSnackbarContent" xml:space="preserve">
+    <value>DHCPv6 Scopes Structure has been successfully imported </value>
+  </data>
   <data name="LoadingMessage" xml:space="preserve">
     <value>Scopes are loading...</value>
   </data>

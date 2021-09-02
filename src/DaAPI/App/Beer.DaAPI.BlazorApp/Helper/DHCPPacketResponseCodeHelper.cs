@@ -17,9 +17,9 @@ namespace Beer.DaAPI.BlazorApp.Helper
         {
             this._localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 
-            if(_dhcpv6ResponseCodesMapper == null)
+            if (_dhcpv6ResponseCodesMapper == null)
 
-            _dhcpv6ResponseCodesMapper = new Dictionary<DHCPv6PacketTypes, Dictionary<Int32, (String Name, String Color)>>
+                _dhcpv6ResponseCodesMapper = new Dictionary<DHCPv6PacketTypes, Dictionary<Int32, (String Name, String Color)>>
 {
                 { DHCPv6PacketTypes.Solicit, new Dictionary<Int32, (String Name, String Color)> {
                         { 0, (_localizer["DHCPv6_Solicit_0"],"#28a745") },
@@ -127,8 +127,8 @@ namespace Beer.DaAPI.BlazorApp.Helper
         private readonly Dictionary<DHCPv6PacketTypes, Dictionary<Int32, (String Name, String Color)>> _dhcpv6ResponseCodesMapper;
         private readonly Dictionary<DHCPv4MessagesTypes, Dictionary<Int32, (String Name, String Color)>> _dhcpv4ResponseCodesMapper;
 
-        public  Dictionary<DHCPv6PacketTypes, Dictionary<Int32, (String Name, String Color)>> GetDHCPv6ResponseCodesMapper() => _dhcpv6ResponseCodesMapper;
-        public  Dictionary<DHCPv4MessagesTypes, Dictionary<Int32, (String Name, String Color)>> GetDHCPv4ResponseCodesMapper() => _dhcpv4ResponseCodesMapper;
+        public Dictionary<DHCPv6PacketTypes, Dictionary<Int32, (String Name, String Color)>> GetDHCPv6ResponseCodesMapper() => _dhcpv6ResponseCodesMapper;
+        public Dictionary<DHCPv4MessagesTypes, Dictionary<Int32, (String Name, String Color)>> GetDHCPv4ResponseCodesMapper() => _dhcpv4ResponseCodesMapper;
 
 
         public String GetErrorName(DHCPv6PacketTypes request, Int32 errorCode)
@@ -142,5 +142,12 @@ namespace Beer.DaAPI.BlazorApp.Helper
             return _dhcpv4ResponseCodesMapper.ContainsKey(request) == true ?
             (_dhcpv4ResponseCodesMapper[request].ContainsKey(errorCode) == true ? _dhcpv4ResponseCodesMapper[request][errorCode].Name : errorCode.ToString()) : errorCode.ToString();
         }
+
+        public IDictionary<DHCPv4MessagesTypes, IEnumerable<(String error, Int32 errorCode)>> GetDHCPv4ErrorsPerRequestType() =>
+            _dhcpv4ResponseCodesMapper.ToDictionary(x => x.Key, x => x.Value.Select(y => (y.Value.Name, y.Key)).ToArray() as IEnumerable<(String error, Int32 errorCode)>);
+
+        public IDictionary<DHCPv6PacketTypes, IEnumerable<(String error, Int32 errorCode)>> GetDHCPv6ErrorsPerRequestType() =>
+            _dhcpv6ResponseCodesMapper.ToDictionary(x => x.Key, x => x.Value.Select(y => (y.Value.Name, y.Key)).ToArray() as IEnumerable<(String error, Int32 errorCode)>);
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using Beer.DaAPI.BlazorApp.Helper;
+﻿using Beer.DaAPI.BlazorApp.Components;
+using Beer.DaAPI.BlazorApp.Helper;
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Shared.Commands;
@@ -16,6 +17,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using static Beer.DaAPI.Shared.Commands.PacketMonitorRequest.V1;
+using static Beer.DaAPI.Shared.Requests.CommenRequests.V1;
 using static Beer.DaAPI.Shared.Requests.DHCPv4InterfaceRequests.V1;
 using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1;
 using static Beer.DaAPI.Shared.Requests.DHCPv6InterfaceRequests.V1;
@@ -23,6 +26,7 @@ using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1;
 using static Beer.DaAPI.Shared.Requests.NotificationPipelineRequests.V1;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
 using static Beer.DaAPI.Shared.Requests.TracingRequests.V1;
+using static Beer.DaAPI.Shared.Responses.CommenResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DeviceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4InterfaceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv4LeasesResponses.V1;
@@ -31,6 +35,7 @@ using static Beer.DaAPI.Shared.Responses.DHCPv6InterfaceResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv6LeasesResponses.V1;
 using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1;
 using static Beer.DaAPI.Shared.Responses.NotificationPipelineResponses.V1;
+using static Beer.DaAPI.Shared.Responses.PacketMonitorResponses.V1;
 using static Beer.DaAPI.Shared.Responses.ServerControllerResponses;
 using static Beer.DaAPI.Shared.Responses.ServerControllerResponses.V1;
 using static Beer.DaAPI.Shared.Responses.StatisticsControllerResponses.V1;
@@ -59,6 +64,8 @@ namespace Beer.DaAPI.BlazorApp.Services
                 serialziedObject, Encoding.UTF8, "application/json");
         }
 
+
+
         private static JsonSerializerSettings GetDefaultSettings()
         {
             JsonSerializerSettings settings = new()
@@ -77,17 +84,42 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<Boolean> InitilizeServer(InitilizeServeRequest request) =>
             await ExecuteCommand(() => _client.PostAsJsonAsync("api/Server/Initialize", request));
 
-        private async Task<Boolean> ExecuteCommand(Func<Task<HttpResponseMessage>> serviceCaller)
+
+        private async Task<HttpResponseMessage> ExecuteCommandInternal(Func<Task<HttpResponseMessage>> serviceCaller)
         {
             try
             {
                 var result = await serviceCaller();
-                return result.IsSuccessStatusCode;
+                return result;
             }
             catch (Exception)
             {
                 _logger.LogError("unable to send service request");
-                return false;
+                return null;
+            }
+        }
+
+        private async Task<Boolean> ExecuteCommand(Func<Task<HttpResponseMessage>> serviceCaller)
+        {
+            var message = await ExecuteCommandInternal(serviceCaller);
+            return message is not null && message.IsSuccessStatusCode;
+        }
+
+        private async Task<T> ExecuteCommand<T>(Func<Task<HttpResponseMessage>> serviceCaller)
+        {
+            var message = await ExecuteCommandInternal(serviceCaller);
+            if (message == null) { return default; }
+            else
+            {
+                try
+                {
+                    return await message.Content.ReadFromJsonAsync<T>();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "unable to parse response form service requests");
+                    return default;
+                }
             }
         }
 
@@ -97,8 +129,8 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<Boolean> SendDeleteDHCPv6InterfaceRequest(Guid interfaceId) =>
             await ExecuteCommand(() => _client.DeleteAsync($"api/interfaces/dhcpv6/{interfaceId}"));
 
-        public async Task<Boolean> CreateDHCPv6Scope(CreateOrUpdateDHCPv6ScopeRequest request) =>
-            await ExecuteCommand(() => _client.PostAsync("api/scopes/dhcpv6/", GetStringContentAsJson(request)));
+        public async Task<Guid> CreateDHCPv6Scope(CreateOrUpdateDHCPv6ScopeRequest request) =>
+            await ExecuteCommand<Guid>(() => _client.PostAsync("api/scopes/dhcpv6/", GetStringContentAsJson(request)));
 
         public async Task<Boolean> SendDeleteNotificationPipelineRequest(Guid pipelineId) =>
             await ExecuteCommand(() => _client.DeleteAsync($"/api/notifications/pipelines/{pipelineId}"));
@@ -329,8 +361,8 @@ namespace Beer.DaAPI.BlazorApp.Services
           await ExecuteCommand(() => _client.DeleteAsync($"/api/scopes/dhcpv4/{request.Id}/?includeChildren={request.IncludeChildren}"));
 
 
-        public async Task<Boolean> CreateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request) =>
-        await ExecuteCommand(() => _client.PostAsync("api/scopes/dhcpv4/", GetStringContentAsJson(request)));
+        public async Task<Guid> CreateDHCPv4Scope(CreateOrUpdateDHCPv4ScopeRequest request) =>
+        await ExecuteCommand<Guid>(() => _client.PostAsync("api/scopes/dhcpv4/", GetStringContentAsJson(request)));
 
         public async Task<Boolean> SendChangeDHCPv4ScopeParentRequest(Guid scopeId, Guid? parentId) =>
             await ExecuteCommand(() => _client.PutAsync($"/api/scopes/dhcpv4/changeScopeParent/{scopeId}/{parentId}", GetStringContentAsJson(new { })));
@@ -397,6 +429,75 @@ namespace Beer.DaAPI.BlazorApp.Services
 
         public async Task<IEnumerable<TracingStreamRecord>> GetTracingStreamRecords(Guid traceid, Guid? entityId) =>
               await GetResponse<IEnumerable<TracingStreamRecord>>($"/api/tracing/streams/{traceid}/records/{entityId}");
+
+
+        private String AppendModelAsQuery<T>(T model)
+        {
+            var properties = typeof(T).GetProperties();
+
+            StringBuilder builder = new StringBuilder(128);
+
+            Boolean first = true;
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(model);
+                string stringRepresentation;
+                if (ReferenceEquals(value, null) == true)
+                {
+                    continue;
+                    //stringRepresentation = "null";
+                }
+                else
+                {
+                    if (property.PropertyType == typeof(String))
+                    {
+                        stringRepresentation = (String)value;
+                        if(String.IsNullOrEmpty(stringRepresentation) == true)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        stringRepresentation = JsonConvert.SerializeObject(value).Replace("\"",String.Empty);
+                    }
+                }
+
+                builder.Append(first == true ? '?' : '&');
+                builder.Append(property.Name);
+                builder.Append('=');
+                builder.Append(stringRepresentation);
+
+                first = false;
+            }
+
+            return builder.ToString();
+        }
+
+        public async Task<FilteredResult<DHCPv4PacketOverview>> GetGetDHCPv4PacketFromMonitor(DHCPv4PacketFilter dhcpv4PacketFilter) =>
+              await GetResponse<FilteredResult<DHCPv4PacketOverview>>($"/api/PacketMonitor/DHCPv4{AppendModelAsQuery(dhcpv4PacketFilter)}");
+
+        public async Task<FilteredResult<DHCPv6PacketOverview>> GetGetDHCPv6PacketFromMonitor(DHCPv6PacketFilter dhcpv6PacketFilter) =>
+             await GetResponse<FilteredResult<DHCPv6PacketOverview>>($"/api/PacketMonitor/DHCPv6{AppendModelAsQuery(dhcpv6PacketFilter)}");
+
+        public async Task<PacketInfo> GetDHCPv6PacketRequest(Guid id) =>
+              await GetResponse<PacketInfo>($"/api/PacketMonitor/Requests/DHCPv6/{id}");
+
+        public async Task<PacketInfo> GetDHCPv6PacketResponse(Guid id) =>
+            await GetResponse<PacketInfo>($"/api/PacketMonitor/Responses/DHCPv6/{id}");
+
+        public async Task<PacketInfo> GetDHCPv4PacketRequest(Guid id) =>
+            await GetResponse<PacketInfo>($"/api/PacketMonitor/Requests/DHCPv4/{id}");
+
+        public async Task<PacketInfo> GetDHCPv4PacketResponse(Guid id) =>
+            await GetResponse<PacketInfo>($"/api/PacketMonitor/Responses/DHCPv4/{id}");
+
+        public async Task<FilteredResult<LeaseEventOverview>> GetDHCPv4LeaseHistory(FilterLeaseHistoryRequest filter) =>
+      await GetResponse<FilteredResult<LeaseEventOverview>>($"/api/leases/dhcpv4/events{AppendModelAsQuery(filter)}");
+
+        public async Task<FilteredResult<LeaseEventOverview>> GetDHCPv6LeaseHistory(FilterLeaseHistoryRequest filter) =>
+             await GetResponse<FilteredResult<LeaseEventOverview>>($"/api/leases/dhcpv6/events{AppendModelAsQuery(filter)}");
 
     }
 }
