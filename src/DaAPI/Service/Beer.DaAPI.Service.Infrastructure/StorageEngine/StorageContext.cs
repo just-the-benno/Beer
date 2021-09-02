@@ -499,6 +499,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 var settings = new JsonSerializerSettings();
                 settings.LoadCustomerConverters();
 
+                await SaveChangesAsyncInternal();
+                
                 if (item is DHCPv4ScopeRelatedEvent || item is DHCPv6ScopeRelatedEvent)
                 {
                     var entry = new LeaseEventEntryDataModel
@@ -526,6 +528,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     LeaseEventEntries.Add(entry);
 
                     hasChanges = true;
+                    await SaveChangesAsyncInternal();
                 }
             }
 
