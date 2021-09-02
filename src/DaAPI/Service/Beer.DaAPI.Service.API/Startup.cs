@@ -252,8 +252,9 @@ namespace Beer.DaAPI.Service.API
                 typeof(Startup).Assembly);
             services.AddHostedService<HostedService.LeaseTimerHostedService>();
             services.AddHostedService<HostedService.CleanupDatabaseTimerHostedService>();
+#if DEBUG
             services.AddHostedService<HostedService.FakeTracingStreamEmitter>();
-
+#endif
             services.Configure<IISServerOptions>(options =>
             {
                 options.AutomaticAuthentication = false;
@@ -277,7 +278,7 @@ namespace Beer.DaAPI.Service.API
 
         }
 
-        public void Configure(IApplicationBuilder app, IServiceProvider provider)
+        public async void Configure(IApplicationBuilder app, IServiceProvider provider)
         {
             if (Environment.IsDevelopment())
             {
@@ -300,6 +301,22 @@ namespace Beer.DaAPI.Service.API
             if (storageContext.Database.IsNpgsql() == true)
             {
                 storageContext.Database.Migrate();
+                {
+                    var packetsToMigrate = ((IQueryable<DHCPv4PacketHandledEntryDataModel>)storageContext.DHCPv4PacketEntries).Where(x => x.Version < 2).ToList();
+                    foreach (var item in packetsToMigrate)
+                    {
+                        item.UpgradeToVersion2();
+                    }
+                }
+                {
+                    var packetsToMigrate = ((IQueryable<DHCPv6PacketHandledEntryDataModel>)storageContext.DHCPv6PacketEntries).Where(x => x.Version < 2).ToList();
+                    foreach (var item in packetsToMigrate)
+                    {
+                        item.UpgradeToVersion2();
+                    }
+                }
+
+                storageContext.SaveChanges();
             }
 
             var deviceService = provider.GetService<IDeviceService>() as IManagleableDeviceService;

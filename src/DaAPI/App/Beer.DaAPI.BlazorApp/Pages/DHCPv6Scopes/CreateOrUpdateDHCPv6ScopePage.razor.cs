@@ -1,4 +1,5 @@
-﻿using Humanizer;
+﻿using Beer.DaAPI.BlazorApp.Helper;
+using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
@@ -13,6 +14,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
 {
     public partial class CreateOrUpdateDHCPv6ScopePage : IDisposable
     {
+        [Inject] public DHCPScopeHelper ScopeHelper { get; set; }
+
         private MudTabs _tabs;
 
         private CreateOrUpdateDHCPv6ScopeGenerellPropertiesViewModel _generellPropertiesModel;
@@ -28,7 +31,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         private Boolean _submitInProgress;
         private Boolean _isCreateMode = true;
 
-        private List<(Int32 Depth, DHCPv6ScopeTreeViewItem Scope)> _parents;
+        private IEnumerable<(Int32 Depth, DHCPv6ScopeTreeViewItem Scope)> _parents;
 
         private Object _loadingParentInProgress = null;
         private Boolean _shouldRevalidate = false;
@@ -87,12 +90,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
         {
             _loadingParentInProgress = null;
 
-            var scopes = await _service.GetDHCPv6ScopesAsTree();
-            _parents = new();
-            foreach (var item in scopes)
-            {
-                GenereteScopeTreeItems(0, item);
-            }
+            _parents = await ScopeHelper.GetDHCPv6scopeAsListWithDepth(_service);
         }
 
         private async Task LoadDevicesIfNeeded()
@@ -216,18 +214,6 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv6Scopes
             if (model.RemoveValue(index) == false) { return; }
 
             _shouldRevalidate = true;
-        }
-
-        private void GenereteScopeTreeItems(Int32 currentDepth, DHCPv6ScopeTreeViewItem treeItem)
-        {
-            _parents.Add((currentDepth, treeItem));
-            if (treeItem.ChildScopes.Any() == true)
-            {
-                foreach (var item in treeItem.ChildScopes)
-                {
-                    GenereteScopeTreeItems(currentDepth + 1, item);
-                }
-            }
         }
 
         private void NavigateToStep(Int32 step)

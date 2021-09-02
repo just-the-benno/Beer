@@ -80,6 +80,7 @@ namespace Beer.DaAPI.BlazorApp
             builder.Services.AddSingleton<TracingEnricherService>();
             builder.Services.AddSingleton<NotificationSystemNewTriggerTracingEnricher>();
             builder.Services.AddSingleton<RootTracingEnricher, NotificationSystemRootTracingEnricher>(sp => new NotificationSystemRootTracingEnricher(sp.GetRequiredService<IStringLocalizer<NotificationSystemRootTracingEnricher>>(), sp.GetService<NotificationSystemNewTriggerTracingEnricher>()));
+            builder.Services.AddSingleton<DHCPScopeHelper>();
 
             HttpClient configurationLoader = new()
             {

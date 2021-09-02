@@ -67,5 +67,15 @@ namespace Beer.DaAPI.Core.Tracing
         public void OpenNextLevel(Int32 identifier) => _level = $"{_level}.{identifier}";
         public void RevertLevel() => _level = _level.Substring(0, _level.LastIndexOf('.'));
         public void ClearEntity() => _entityId = null;
+
+        public int GetCurrentLevel() => _level.Count(x => x == '.') + 1;
+
+        internal void RevertToLevel(int expectedLevel)
+        {
+            while(GetCurrentLevel() > expectedLevel)
+            {
+                RevertLevel();
+            }
+        }
     }
 }

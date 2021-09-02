@@ -13,6 +13,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
 {
     public partial class CreateOrUpdateDHCPv4ScopePage : IDisposable
     {
+        [Inject] public DHCPScopeHelper ScopeHelper { get; set; }
+
         private MudTabs _tabs;
 
         private CreateOrUpdateDHCPv4ScopeGenerellPropertiesViewModel _generellPropertiesModel;
@@ -28,7 +30,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         private Boolean _submitInProgress;
         private Boolean _isCreateMode = true;
 
-        private List<(Int32 Depth, DHCPv4ScopeTreeViewItem Scope)> _parents;
+        private IEnumerable<(Int32 Depth, DHCPv4ScopeTreeViewItem Scope)> _parents;
 
         private Object _loadingParentInProgress = null;
         private Boolean _shouldRevalidate = false;
@@ -87,12 +89,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
         {
             _loadingParentInProgress = null;
 
-            var scopes = await _service.GetDHCPv4ScopesAsTree();
-            _parents = new();
-            foreach (var item in scopes)
-            {
-                GenereteScopeTreeItems(0, item);
-            }
+            _parents = await ScopeHelper.GetDHCPv4scopeAsListWithDepth(_service);
         }
 
         private async Task LoadDevicesIfNeeded()
@@ -204,18 +201,6 @@ namespace Beer.DaAPI.BlazorApp.Pages.DHCPv4Scopes
             if (model.RemoveValue(index) == false) { return; }
 
             _shouldRevalidate = true;
-        }
-
-        private void GenereteScopeTreeItems(Int32 currentDepth, DHCPv4ScopeTreeViewItem treeItem)
-        {
-            _parents.Add((currentDepth, treeItem));
-            if (treeItem.ChildScopes.Any() == true)
-            {
-                foreach (var item in treeItem.ChildScopes)
-                {
-                    GenereteScopeTreeItems(currentDepth + 1, item);
-                }
-            }
         }
 
         private void NavigateToStep(Int32 step) => _tabs.ActivatePanel(step - 1);

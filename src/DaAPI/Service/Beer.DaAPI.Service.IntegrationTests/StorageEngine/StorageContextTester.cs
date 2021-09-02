@@ -252,14 +252,15 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 }
                 {
                     DateTime expectedEndTime = DateTime.UtcNow.AddHours(random.Next(50, 100));
-
+                    DateTime timestamp = DateTime.UtcNow;
                     Boolean actual = await context.Project(new[] {
                         new DHCPv6LeaseRenewedEvent {
                      EntityId = leaseId,
                      ScopeId = scopeId,
                      End = expectedEndTime,
-                     RenewSpan = TimeSpan.FromHours(-2),
-                     ReboundSpan = TimeSpan.FromHours(-4),
+                     RenewSpan = TimeSpan.FromHours(2),
+                     ReboundSpan = TimeSpan.FromHours(4),
+                     Timestamp = timestamp,
                     } });
 
                     Assert.True(actual);
@@ -267,8 +268,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     DHCPv6LeaseEntryDataModel dataModel = await context.DHCPv6LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     CheckLeaseEntry(scopeId, leaseId, dataModel);
                     Assert.Equal(expectedEndTime, dataModel.End);
-                    Assert.Equal(expectedEndTime.AddHours(-2), dataModel.EndOfPreferredLifetime);
-                    Assert.Equal(expectedEndTime.AddHours(-4), dataModel.EndOfRenewalTime);
+                    Assert.Equal(timestamp.AddHours(4), dataModel.EndOfPreferredLifetime);
+                    Assert.Equal(timestamp.AddHours(2), dataModel.EndOfRenewalTime);
                 }
                 {
                     Boolean actual = await context.Project(new[] {
@@ -402,7 +403,30 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 Guid scopeId = Guid.NewGuid();
                 Guid leaseId = Guid.NewGuid();
 
-                IPv4Address leaseAddress = IPv4Address.FromString("192.178.10.30");
+                String address = "192.178.10.30";
+
+                for (int i = 0; i < 4; i++)
+                {
+                    DHCPv4LeaseEntryDataModel oldEntry = new DHCPv4LeaseEntryDataModel
+                    {
+                        ScopeId = scopeId,
+                        LeaseId = random.NextGuid(),
+                        EndReason = 0,
+                        Id = random.NextGuid(),
+                        Start = DateTime.Now,
+                        End = DateTime.Now.AddHours(5),
+                        Address = address
+                    };
+
+                    context.DHCPv4LeaseEntries.Add(oldEntry);
+                }
+
+                await context.SaveChangesAsync();
+
+                Int32 count = await context.DHCPv4LeaseEntries.AsQueryable().CountAsync();
+                Assert.Equal(4, count);
+
+                IPv4Address leaseAddress = IPv4Address.FromString(address);
                 DateTime startedAt = DateTime.UtcNow.AddHours(-random.Next(3, 10));
                 var createdEvent = new DHCPv4LeaseCreatedEvent
                 {
@@ -419,6 +443,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     Assert.True(actual);
 
                     DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
+                    count = await context.DHCPv4LeaseEntries.AsQueryable().CountAsync();
+                    Assert.Equal(1, count);
 
                     CheckLeaseEntry(scopeId, leaseId, dataModel, leaseAddress);
 
@@ -429,7 +455,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 }
                 {
                     DateTime expectedEndTime = DateTime.UtcNow.AddHours(random.Next(50, 100));
-
+                    DateTime timeStamp = DateTime.UtcNow;
                     Boolean actual = await context.Project(new[] {
                         new DHCPv4LeaseRenewedEvent {
                      EntityId = leaseId,
@@ -437,6 +463,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
                      End = expectedEndTime,
                      RenewSpan = TimeSpan.FromHours(-2),
                      ReboundSpan = TimeSpan.FromHours(-4),
+                     Timestamp = timeStamp
                     } });
 
                     Assert.True(actual);
@@ -445,8 +472,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     CheckLeaseEntry(scopeId, leaseId, dataModel, leaseAddress);
                     Assert.Equal(expectedEndTime, dataModel.End);
 
-                    Assert.Equal(expectedEndTime.AddHours(-3), dataModel.EndOfRenewalTime);
-                    Assert.Equal(expectedEndTime.AddHours(-2), dataModel.EndOfPreferredLifetime);
+                    Assert.Equal(timeStamp.AddHours(-2), dataModel.EndOfRenewalTime);
+                    Assert.Equal(timeStamp.AddHours(-4), dataModel.EndOfPreferredLifetime);
                 }
                 {
                     DateTime timesstamp = DateTime.UtcNow.AddHours(random.NextDouble());
@@ -1377,6 +1404,60 @@ namespace DaAPI.IntegrationTests.StorageEngine
                 var actualResult = context.GetAllDevices();
 
                 Assert.Equal(new[] { secondExpectedDevice, firstExpectedDevice, thirdExpectedDevice }, actualResult, new DeviceEqualityComparer());
+            }
+            finally
+            {
+                await context.Database.EnsureDeletedAsync();
+            }
+        }
+        [Fact]
+        public async Task GetLatestDHCPv4LeasesForHydration()
+        {
+            Random random = new Random();
+
+            var preContext = GetContext(random);
+            StorageContext context = preContext.Item1;
+
+            String sqlInsertStatements = File.ReadAllText("DatabaseScriptsForTesting/import-leases.txt");
+
+            await context.Database.ExecuteSqlRawAsync(sqlInsertStatements);
+
+            try
+            {
+                var result = await context.GetLatestDHCPv4LeasesForHydration();
+
+                var firstScopeId = Guid.Parse("32f26646-3b3c-41a5-bb2d-35feb958d245");
+                var secondScopeId = Guid.Parse("e8421f99-cee6-4427-a990-78eab33ae3cc");
+
+                Assert.Equal(2, result.Count);
+
+                Assert.Contains(firstScopeId, result.Keys);
+                Assert.Contains(secondScopeId, result.Keys);
+
+                Assert.Equal(2, result[firstScopeId].Count());
+                Assert.Single(result[secondScopeId]);
+
+                var thirdCreateEvent = result[secondScopeId].First();
+
+                Assert.Equal("194.55.99.244", thirdCreateEvent.Address.ToString());
+                Assert.Equal("2021-09-01 09:47:09", thirdCreateEvent.StartedAt.ToString("yyyy-MM-dd HH:mm:ss"));
+                Assert.Equal("2021-09-02 10:47:09", thirdCreateEvent.ValidUntil.ToString("yyyy-MM-dd HH:mm:ss"));
+                Assert.Equal(secondScopeId, thirdCreateEvent.ScopeId);
+
+                var firstCreatedEvent = result[firstScopeId].ElementAt(0);
+
+                Assert.Equal("10.202.0.16", firstCreatedEvent.Address.ToString());
+                Assert.Equal("2021-09-02 00:57:33", firstCreatedEvent.StartedAt.ToString("yyyy-MM-dd HH:mm:ss"));
+                Assert.Equal("2021-09-03 02:52:52", firstCreatedEvent.ValidUntil.ToString("yyyy-MM-dd HH:mm:ss"));
+                Assert.Equal(firstScopeId, firstCreatedEvent.ScopeId);
+
+                var secondCreatdEvent = result[firstScopeId].ElementAt(1);
+
+                Assert.Equal("10.202.0.15", secondCreatdEvent.Address.ToString());
+                Assert.Equal("2021-09-02 00:57:22", secondCreatdEvent.StartedAt.ToString("yyyy-MM-dd HH:mm:ss"));
+                Assert.Equal("2021-09-03 02:58:03", secondCreatdEvent.ValidUntil.ToString("yyyy-MM-dd HH:mm:ss"));
+                Assert.Equal(firstScopeId, secondCreatdEvent.ScopeId);
+
             }
             finally
             {

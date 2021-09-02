@@ -48,6 +48,12 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("text");
 
+                    b.Property<byte[]>("ClientIdentifier")
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("ClientMacAddress")
+                        .HasColumnType("bytea");
+
                     b.Property<DateTime>("End")
                         .HasColumnType("timestamp without time zone");
 
@@ -75,6 +81,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<byte[]>("UniqueIdentifier")
+                        .HasColumnType("bytea");
+
                     b.HasKey("Id");
 
                     b.ToTable("DHCPv4LeaseEntries");
@@ -85,6 +94,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("ClientIdentifiier")
+                        .HasColumnType("text");
 
                     b.Property<int>("ErrorCode")
                         .HasColumnType("integer");
@@ -97,6 +109,12 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 
                     b.Property<bool>("InvalidRequest")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("LeasedAddressInResponse")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MacAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("RequestDestination")
                         .HasColumnType("text");
@@ -112,6 +130,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 
                     b.Property<int>("RequestType")
                         .HasColumnType("integer");
+
+                    b.Property<string>("RequestedAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("ResponseDestination")
                         .HasColumnType("text");
@@ -142,6 +163,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 
                     b.Property<DateTime>("TimestampWeek")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -177,6 +201,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("text");
 
+                    b.Property<byte[]>("ClientIdentifier")
+                        .HasColumnType("bytea");
+
                     b.Property<DateTime>("End")
                         .HasColumnType("timestamp without time zone");
 
@@ -188,6 +215,12 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 
                     b.Property<int>("EndReason")
                         .HasColumnType("integer");
+
+                    b.Property<long>("IdentityAssocationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("IdentityAssocationIdForPrefix")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -209,6 +242,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<byte[]>("UniqueIdentifier")
+                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -233,6 +269,21 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.Property<bool>("InvalidRequest")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("LeasedAddressInResponse")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LeasedPrefix")
+                        .HasColumnType("text");
+
+                    b.Property<byte>("LeasedPrefixLength")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("LeaseddPrefixCombined")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MacAddress")
+                        .HasColumnType("text");
+
                     b.Property<string>("RequestDestination")
                         .HasColumnType("text");
 
@@ -246,6 +297,18 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                         .HasColumnType("bytea");
 
                     b.Property<byte>("RequestType")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("RequestedAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestedPrefix")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestedPrefixCombined")
+                        .HasColumnType("text");
+
+                    b.Property<byte>("RequestedPrefixLength")
                         .HasColumnType("smallint");
 
                     b.Property<string>("ResponseDestination")
@@ -277,6 +340,9 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
 
                     b.Property<DateTime>("TimestampWeek")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -316,6 +382,44 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("Helper");
+                });
+
+            modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.LeaseEventEntryDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventData")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FullEventType")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("HasResponse")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LeaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PacketHandledEntryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ScopeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LeaseEventEntries");
                 });
 
             modelBuilder.Entity("Beer.DaAPI.Infrastructure.StorageEngine.NotificationPipelineOverviewEntry", b =>

@@ -1,6 +1,7 @@
 ﻿using Beer.DaAPI.Core.Common;
 using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Infrastructure.StorageEngine.Converters;
+using Beer.DaAPI.Shared.JsonConverters;
 using Beer.TestHelper;
 using Newtonsoft.Json;
 using System;

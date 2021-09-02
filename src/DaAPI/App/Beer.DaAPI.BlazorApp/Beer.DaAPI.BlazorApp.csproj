@@ -22,9 +22,13 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Remove="Resources\Shared\Layout\**" />
     <Compile Remove="wwwroot\js\**" />
+    <Content Remove="Resources\Shared\Layout\**" />
     <Content Remove="wwwroot\js\**" />
+    <EmbeddedResource Remove="Resources\Shared\Layout\**" />
     <EmbeddedResource Remove="wwwroot\js\**" />
+    <None Remove="Resources\Shared\Layout\**" />
     <None Remove="wwwroot\js\**" />
   </ItemGroup>
 
@@ -110,7 +114,6 @@
 
   <ItemGroup>
     <Folder Include="FrontendAssets\temp\" />
-    <Folder Include="Resources\Shared\Layout\" />
     <Folder Include="wwwroot\css\lib\" />
   </ItemGroup>
 

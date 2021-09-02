@@ -9,6 +9,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
     public static class DHCPv4PacketHandledEvents
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public abstract class DHCPv4PacketHandledEvent : DomainEvent
         {
             #region Properties

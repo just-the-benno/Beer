@@ -21,6 +21,12 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public String ResponseSource { get; set; }
         public Byte[] ResponseStream { get; set; }
 
+        public String MacAddress { get; set; }
+        public String LeasedAddressInResponse { get; set; }
+        public String RequestedAddress { get; set; }
+
+        public Int32 Version { get; set; }
+
         Boolean HandledSuccessfully { get; set; }
         Int32 ErrorCode { get; set; }
         String FilteredBy { get; set; }

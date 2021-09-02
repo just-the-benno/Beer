@@ -29,7 +29,6 @@ namespace Beer.DaAPI.Shared.Responses
                 public DHCPv4ScopeOverview Scope { get; set; }
                 public LeaseStates State { get; set; }
             }
-
         }
     }
 }

@@ -25,6 +25,8 @@ namespace Beer.DaAPI.Core.Notifications
         private const Int32 _checkingNotDefaultConditionTracingNumber = 2;
         private const Int32 _defaultConditionTracingNumber = 3;
         private const Int32 _startActorTracingNumber = 4;
+        private const Int32 _actorFailedTracingNumber = 5;
+        private const Int32 _actorFailedWithErrorTracingNumber = 10;
 
         private readonly ILogger<NotificationPipeline> _logger;
         private readonly INotificationConditionFactory _conditionFactory;
@@ -120,28 +122,42 @@ namespace Beer.DaAPI.Core.Notifications
             }
 
             _logger.LogDebug("executing actor...");
+
+            Int32 expectedLevel = tracingStream.GetCurrentLevel();
+
+            tracingStream.OpenNextLevel(_startActorTracingNumber);
+            tracingStream.OpenNextLevel(Actor.GetTracingIdentifier());
+
             try
             {
-                tracingStream.OpenNextLevel(_startActorTracingNumber);
-                tracingStream.OpenNextLevel(Actor.GetTracingIdentifier());
-
                 Boolean actorResult = await Actor.Handle(trigger, tracingStream);
                 if (actorResult == false)
                 {
+                    tracingStream.RevertToLevel(expectedLevel);
+
+                    await tracingStream.Append(_actorFailedTracingNumber, TracingRecordStatus.Error, new Dictionary<String, String>());
                     _logger.LogError("Actor {actor} of pipeline {name} failed.", Actor, Name);
                     return NotifactionPipelineExecutionResults.ActorFailed;
                 }
-
-                tracingStream.RevertLevel();
-                tracingStream.RevertLevel();
-
-                return NotifactionPipelineExecutionResults.Success;
             }
             catch (Exception ex)
             {
-                _logger.LogError("unable to execute actor", ex.ToString());
+                _logger.LogError(ex, "unable to execute actor");
+                tracingStream.RevertToLevel(expectedLevel);
+
+                await tracingStream.Append(_actorFailedWithErrorTracingNumber, TracingRecordStatus.Error, new Dictionary<String, String> {
+                    {  "ErrorType", ex.GetType().Name },
+                    {  "ErrorMessage", ex.Message },
+                    {  "ErrorDetails", ex.ToString() },
+                    });
+
                 return NotifactionPipelineExecutionResults.ActorFailed;
             }
+
+            tracingStream.RevertToLevel(expectedLevel);
+
+            return NotifactionPipelineExecutionResults.Success;
+
         }
 
         #endregion
@@ -173,7 +189,7 @@ namespace Beer.DaAPI.Core.Notifications
             base.Apply(new NotificationPipelineDeletedEvent(Id));
         }
 
-        public IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String,String>
+        public IDictionary<string, string> GetTracingRecordDetails() => new Dictionary<String, String>
         {
             { "Id", Id.ToString() },
             { "Name", Name.Value },

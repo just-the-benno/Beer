@@ -1,0 +1,28 @@
+﻿@inject IStringLocalizer<DaAPILeaseEventHistoryFilter> L
+
+<EditForm EditContext="_context">
+	<MudGrid>
+		<MudItem xs="6" md="3">
+			<MudDatePicker Label="@L["FromLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Date="_filter.From" For="@(() => _filter.From)" />
+		</MudItem>
+		<MudItem xs="6" md="3">
+			<MudTimePicker Label="@L["FromTimeLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Time="_filter.FromTime" For="@(() => _filter.FromTime)" />
+		</MudItem>
+		<MudItem xs="6" md="3">
+			<MudDatePicker Label="@L["ToLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Date="_filter.To" For="@(() => _filter.To)" />
+		</MudItem>
+		<MudItem xs="6" md="3">
+			<MudTimePicker Label="@L["ToTimeLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Time="_filter.ToTime" For="@(() => _filter.ToTime)" />
+		</MudItem>
+		<MudItem xs="12">
+			<MudTextField T="String" Placeholder="@L["AddressPlaceholder"]" Label="@L["AddressLabel"]" @bind-Value="_filter.Address" For="@(() => _filter.Address)" />
+		</MudItem>
+		    <MudItem xs="6">
+        <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["IncludeChildScopesLabel"]" @bind-Checked="_filter.IncludeChildScopes" For="@(() => _filter.IncludeChildScopes)" />
+	</MudItem>
+	</MudGrid>
+</EditForm>
+
+@code {
+
+}

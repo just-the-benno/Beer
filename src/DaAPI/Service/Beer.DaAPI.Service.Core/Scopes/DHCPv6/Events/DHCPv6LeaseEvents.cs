@@ -23,6 +23,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             }
         }
 
+        [DoNotPersist]
         public class DHCPv6AddressSuspendedEvent : DHCPv6ScopeRelatedEvent
         {
             public IPv6Address Address { get; set; }
@@ -41,6 +42,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public class DHCPv6LeaseActivatedEvent : DHCPv6ScopeRelatedEvent
         {
             public DHCPv6LeaseActivatedEvent()
@@ -55,6 +57,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public class DHCPv6LeaseExpiredEvent : DHCPv6ScopeRelatedEvent
         {
             public DHCPv6LeaseExpiredEvent()
@@ -68,6 +71,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             }
         }
 
+        [DoNotPersist]
         public class DHCPv6LeasePrefixAddedEvent : DHCPv6ScopeRelatedEvent
         {
             public Byte PrefixLength { get; set; }
@@ -86,6 +90,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             }
         }
 
+        [DoNotPersist]
         public class DHCPv6LeasePrefixActvatedEvent : DHCPv6ScopeRelatedEvent
         {
             public Byte PrefixLength { get; set; }
@@ -104,6 +109,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public class DHCPv6LeaseCanceledEvent : DHCPv6ScopeRelatedEvent
         {
             public LeaseCancelReasons Reason { get; set; }
@@ -130,6 +136,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public class DHCPv6LeaseCreatedEvent : DHCPv6ScopeRelatedEvent
         {
             #region Properties
@@ -159,7 +166,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
-
+        [DoNotPersist]
         public class DHCPv6LeaseReleasedEvent : DHCPv6ScopeRelatedEvent
         {
             public bool OnlyPrefix { get; set; }
@@ -177,6 +184,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public class DHCPv6LeaseRenewedEvent : DHCPv6ScopeRelatedEvent
         {
             public DateTime End { get; set; }
@@ -202,6 +210,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
+        [DoNotPersist]
         public class DHCPv6LeaseRevokedEvent : DHCPv6ScopeRelatedEvent
         {
             public DHCPv6LeaseRevokedEvent()
@@ -215,6 +224,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv6
             }
         }
 
+        [DoNotPersist]
         public class DHCPv6LeaseRemovedEvent : DHCPv6ScopeRelatedEvent
         {
             public DHCPv6LeaseRemovedEvent()

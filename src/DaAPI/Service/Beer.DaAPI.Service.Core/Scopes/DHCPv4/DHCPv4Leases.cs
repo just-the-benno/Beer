@@ -45,6 +45,7 @@ namespace Beer.DaAPI.Core.Scopes.DHCPv4
                 EntityId = id,
                 Address = address,
                 ClientIdenfier = identifier.GetBytes(),
+                ClientMacAddress = identifier.HwAddress,
                 UniqueIdentifier = uniqueIdentifier,
                 StartedAt = DateTime.UtcNow,
                 ValidUntil = DateTime.UtcNow + lifetime,

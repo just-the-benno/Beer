@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Infrastructure.LeaseEngines
@@ -22,6 +23,8 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
         protected TScope RootScope { get; init; }
         private readonly IServiceBus _serviceBus;
         private readonly IDHCPStoreEngine<TScope> _store;
+
+        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1,1);
 
         public DHCPLeaseEngine(TScope rootScope, IServiceBus serviceBus, IDHCPStoreEngine<TScope> store, ILogger<TEngine> logger)
         {
@@ -37,8 +40,12 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
         {
             TPacket response = null;
 
+            
+
             try
             {
+                await _semaphoreSlim.WaitAsync();
+
                 response = GetResponse(input);
 
                 var changes = RootScope.GetChanges();
@@ -48,6 +55,18 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
                     await _store.Save(RootScope);
                     Logger.LogDebug("changes saved");
                 }
+
+                if (response == null)
+                {
+                    Logger.LogDebug("unable to get a response for {packet}", input);
+                }
+
+                var triggers = RootScope.GetTriggers();
+                if (triggers.Any() == true)
+                {
+                    RootScope.ClearTriggers();
+                    await _serviceBus.Publish(new NewTriggerHappendMessage(triggers));
+                }
             }
             catch (Exception ex)
             {
@@ -55,20 +74,8 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
             }
             finally
             {
-                // _logger.LogDebug("releasing semaphore. Ready for next process");
-                // _semaphoreSlim.Release();
-            }
-
-            if (response == null)
-            {
-                Logger.LogDebug("unable to get a response for {packet}", input);
-            }
-
-            var triggers = RootScope.GetTriggers();
-            if (triggers.Any() == true)
-            {
-                RootScope.ClearTriggers();
-                await _serviceBus.Publish(new NewTriggerHappendMessage(triggers));
+                Logger.LogDebug("releasing semaphore. Ready for next process");
+                _semaphoreSlim.Release();
             }
 
             return response;

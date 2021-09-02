@@ -11,6 +11,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TestAssets\**" />
+    <Content Remove="TestAssets\**" />
+    <EmbeddedResource Remove="TestAssets\**" />
+    <None Remove="TestAssets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="DatabaseScriptsForTesting\import-leases.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="DatabaseScriptsForTesting\import-leases.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
@@ -27,16 +44,6 @@
     <ProjectReference Include="..\Beer.DaAPI.Service.Core\Beer.DaAPI.Service.Core.csproj" />
     <ProjectReference Include="..\Beer.DaAPI.Service.Infrastructure\Beer.DaAPI.Service.Infrastructure.csproj" />
     <ProjectReference Include="..\Beer.DaAPI.Service.TestHelper\Beer.DaAPI.Service.TestHelper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="TestAssets\daapi.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TestAssets\" />
   </ItemGroup>
 
 </Project>

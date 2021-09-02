@@ -13,6 +13,7 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading.Tasks;
 using static Beer.DaAPI.Core.Packets.DHCPv4.DHCPv4Packet;
+using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4LeaseEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv4.DHCPv4PacketHandledEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents.DHCPv6DeclineHandledEvent;
@@ -23,7 +24,7 @@ namespace Beer.DaAPI.Service.API
     {
         private Byte[] GetRandomBytes(Random random, Int32 min = 5, Int32 max = 15)
         {
-            Int32 length = random.Next(min, max);
+            Int32 length = min == max ? min : random.Next(min, max);
             Byte[] result = new byte[length];
             random.NextBytes(result);
 
@@ -48,6 +49,11 @@ namespace Beer.DaAPI.Service.API
 
                     storageContext.RemoveRange(packets);
                     storageContext.RemoveRange(entries);
+                }
+
+                {
+                    var entries = await storageContext.LeaseEventEntries.AsQueryable().ToListAsync();
+                    storageContext.LeaseEventEntries.RemoveRange(entries);
                 }
 
                 await storageContext.SaveChangesAsync();
@@ -297,6 +303,9 @@ namespace Beer.DaAPI.Service.API
                     dhcpv4LeaseEntries.Add(entryDataModel);
                 }
 
+              
+           
+
                 storageContext.AddRange(dhcpv6PacketEntries);
                 storageContext.AddRange(dhcpv6LeaseEntries);
 
@@ -304,6 +313,59 @@ namespace Beer.DaAPI.Service.API
                 storageContext.AddRange(dhcpv4LeaseEntries);
 
                 storageContext.SaveChanges();
+
+                Guid[] scopeGuids = new[] { Guid.Parse("159b9e07-181c-42f8-9643-1030d630bf68"), Guid.Parse("6321f65e-aa81-499c-b4f7-c58074235ae9"), Guid.Parse("f858a664-ed84-4eaa-aba5-90e148935040") };
+                Guid[] leases = dhcpv6LeaseEntries.Select(x => x.LeaseId).Take(100).Union(dhcpv4LeaseEntries.Select(x => x.LeaseId).Take(100)).ToArray();
+
+                Int32 projectEventCylces = 500;
+                for (int i = 0; i < projectEventCylces; i++)
+                {
+                    Guid scopeId = scopeGuids[random.Next(0, scopeGuids.Length)];
+                    Guid leaseId = leases[random.Next(0, leases.Length)];
+
+                    DHCPv4LeaseCreatedEvent createdEvent = new DHCPv4LeaseCreatedEvent
+                    {
+                        Address = IPv4Address.FromString("10.10.10.10"),
+                        EntityId = leaseId,
+                        ScopeId = scopeId,
+                        StartedAt = DateTime.UtcNow.AddMinutes(-random.Next(10, 1000)),
+                        RenewalTime = TimeSpan.FromHours(2),
+                        PreferredLifetime = TimeSpan.FromHours(4),
+                        UniqueIdentifier = GetRandomBytes(random),
+                        ClientMacAddress = GetRandomBytes(random, 6, 6),
+                        ClientIdenfier = DHCPv4ClientIdentifier.FromIdentifierValue("My Identifier").GetBytes(),
+                        ValidUntil = DateTime.UtcNow.AddMinutes(random.Next(10, 1000)),
+                    };
+
+                    DHCPv4LeaseActivatedEvent activatedEvent = new DHCPv4LeaseActivatedEvent
+                    {
+                        EntityId = leaseId,
+                        ScopeId = scopeId,
+                        Timestamp = createdEvent.Timestamp.AddSeconds(random.Next(3, 20)),
+                    };
+
+                    DHCPv4DiscoverHandledEvent handledEvent = new DHCPv4DiscoverHandledEvent(scopeId,
+                        new DHCPv4Packet(new IPv4HeaderInformation(IPv4Address.FromString("192.168.0.1"), IPv4Address.FromString("10.10.10.10")),
+                        GetRandomBytes(random, 6, 6), (UInt32)random.Next(), IPv4Address.FromString("0.0.0.0"), IPv4Address.FromString("192.168.0.5"), IPv4Address.FromString("0.0.0.0"),
+                        DHCPv4PacketFlags.Unicast,
+                        new DHCPv4PacketParameterRequestListOption(new DHCPv4OptionTypes[] { DHCPv4OptionTypes.NetworkTimeProtocolServers, DHCPv4OptionTypes.DNSServers, DHCPv4OptionTypes.Router, DHCPv4OptionTypes.DomainName }),
+                        new DHCPv4PacketRawByteOption((Byte)DHCPv4OptionTypes.Option82, GetRandomBytes(random))
+                        ),
+                            new DHCPv4Packet(new IPv4HeaderInformation(IPv4Address.FromString("10.10.10.10"), IPv4Address.FromString("192.168.0.1")),
+                            GetRandomBytes(random, 6, 6), (UInt32)random.Next(), IPv4Address.FromString("0.0.0.0"), IPv4Address.FromString("192.168.0.5"), IPv4Address.FromString("192.168.0.15"),
+                            DHCPv4PacketFlags.Unicast,
+                            new DHCPv4PacketAddressListOption(DHCPv4OptionTypes.DNSServers, new[] { IPv4Address.FromString("1.1.1.1"), IPv4Address.FromString("8.8.8.8") }),
+                            new DHCPv4PacketAddressOption(DHCPv4OptionTypes.Router, IPv4Address.FromString("192.168.0.253"))
+                            )
+                        , DHCPv4DiscoverHandledEvent.DisoverErros.NoError);
+
+
+
+                    createdEvent.Timestamp = createdEvent.StartedAt;
+
+                    await storageContext.Project(new DomainEvent[] { createdEvent, activatedEvent, handledEvent });
+
+                }
             }
         }
     }

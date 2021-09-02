@@ -1,0 +1,205 @@
+﻿@using static Beer.DaAPI.Shared.Responses.PacketMonitorResponses.V1
+
+@page "/packet-monitor"
+@attribute [Authorize]
+@inject IStringLocalizer<PacketMonitorPage> L
+@inject DHCPPacketResponseCodeHelper ResponseCodeHelper
+@inject DaAPIService Service
+@inject IDialogService DialogService
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["Title"]</MudText>
+
+<MudPaper Elevation="25" Class="my-5">
+	<MudExpansionPanels>
+		<MudExpansionPanel Text="@L["FilterCaption"]">
+			<MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">@L["HeadingCommonProperties"]</MudText>
+			<PacketFilter OnFilterChanged="UpdateFilter" />
+		</MudExpansionPanel>
+	</MudExpansionPanels>
+</MudPaper>
+
+<MudCard Elevation="25">
+	<MudCardHeader>
+		<CardHeaderContent>
+			<MudText Typo="Typo.h6">@L["IncomingPacketsCardTitle"]</MudText>
+		</CardHeaderContent>
+	</MudCardHeader>
+	<MudCardContent Class="px-0">
+		<MudTable @ref="_table" ServerData="LoadPackets" FixedHeader="true" Hover="true" Bordered="true" Striped="true">
+			<HeaderContent>
+				<MudTh>@L["TypeTableHeader"]</MudTh>
+				<MudTh>@L["TimestampTableHeader"]</MudTh>
+				<MudTh>@L["RequestResponseTypeTableHeader"]</MudTh>
+				<MudTh>@L["MacAddressTableHeader"]</MudTh>
+				<MudTh>@L["SourceAddressTableHeader"]</MudTh>
+				<MudTh>@L["DestinationAddressTableHeader"]</MudTh>
+				<MudTh>@L["ResultCodeTableHeader"]</MudTh>
+				<MudTh>@L["RequestAddressTableHeader"]</MudTh>
+				<MudTh>@L["LeasesAddressTableHeader"]</MudTh>
+				<MudTh>@L["FilteredTableHeader"]</MudTh>
+				<MudTh>@L["InvalidTableHeader"]</MudTh>
+				<MudTh>@L["ScopeTableHeader"]</MudTh>
+				<MudTh>@L["RequestDetailsHeader"]</MudTh>
+				<MudTh>@L["ResponseDetailsHeader"]</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd DataLabel="@L["TypeTableHeader"]">
+					@if (context is DHCPv6PacketOverview)
+					{
+						<MudChip Label="true" Color="Color.Primary" Variant="Variant.Outlined">IPv6</MudChip>
+					}
+					else
+					{
+						<MudChip Label="true" Color="Color.Dark" Variant="Variant.Outlined">IPv4</MudChip>
+					}
+				</MudTd>
+
+				<MudTd DataLabel="@L["TimestampTableHeader"]">
+					<MudText Typo="Typo.body1">
+						@context.Timestamp.ToString("HH:mm:ss")
+						<br />
+						@context.Timestamp.ToString("dd.MM.yy")
+					</MudText>
+				</MudTd>
+				<MudTd DataLabel="@L["RequestResponseTypeTableHeader"]">
+					<div class="d-flex flex-column align-center">
+						@switch (context)
+						{
+							case DHCPv4PacketOverview e:
+								<MudChip OnClick="@( () => OpenPacketDetailsDialog(context,false))" Color="Color.Primary">@e.RequestMessageType</MudChip>
+								break;
+							case DHCPv6PacketOverview e:
+								<MudChip OnClick="@( () => OpenPacketDetailsDialog(context,false))" Color="Color.Primary">@e.RequestMessageType</MudChip>
+								break;
+						}
+						@if (HasResponseType(context) == true)
+						{
+							<MudChip OnClick="@( () => OpenPacketDetailsDialog(context,true))" Color="Color.Success">@GetResponseType(context)</MudChip>
+						}
+						else
+						{
+							if (context.ResultCode == 0)
+							{
+								<MudChip Color="Color.Success">@L["NoResponse"]</MudChip>
+							}
+							else
+							{
+								<MudChip Color="Color.Error">@L["NoResponse"]</MudChip>
+							}
+						}
+					</div>
+				</MudTd>
+
+				<MudTd DataLabel="@L["MacAddressTableHeader"]">@context.MacAddress</MudTd>
+				<MudTd DataLabel="@L["SourceAddressTableHeader"]">@context.SourceAddress</MudTd>
+				<MudTd DataLabel="@L["DestinationAddressTableHeader"]">@context.DestinationAddress</MudTd>
+
+				<MudTd DataLabel="@L["ResultCodeTableHeader"]">
+					<div class="d-flex flex-column align-center">
+
+						@if (context.ResultCode == 0)
+						{
+							<MudIcon Icon="@Icons.Filled.CheckCircleOutline" Color="Color.Success" />
+						}
+						else
+						{
+							<MudIcon Icon="@Icons.Filled.ErrorOutline" Color="Color.Error" />
+							<MudText Typo="Typo.body2">@GetPacketHandledError(context)</MudText>
+
+						}
+					</div>
+				</MudTd>
+				<MudTd DataLabel="@L["RequestAddressTableHeader"]">
+					<MudText>@context.RequestedIp</MudText>
+
+					@switch (context)
+					{
+						case DHCPv6PacketOverview e:
+							@if (e.RequestedPrefix != null)
+							{
+								<br />
+								<MudText>@e.RequestedPrefix.Network/@e.RequestedPrefix.Network</MudText>
+							}
+							break;
+						default:
+							break;
+					}
+				</MudTd>
+				<MudTd DataLabel="@L["LeasesAddressTableHeader"]">
+					<MudText>@context.LeasedIp</MudText>
+
+					@switch (context)
+					{
+						case DHCPv6PacketOverview e:
+							@if (e.LeasedPrefix != null)
+							{
+								<br />
+								<MudText>@e.LeasedPrefix.Network/@e.LeasedPrefix.Network</MudText>
+							}
+							break;
+						default:
+							break;
+					}
+				</MudTd>
+				<MudTd DataLabel="@L["FilteredTableHeader"]">
+					@if (context.Filtered == true)
+					{
+						<div class="d-flex flex-column align-center">
+							<MudIcon Icon="@Icons.Outlined.Delete" Color="Color.Error" />
+						</div>
+					}
+				</MudTd>
+				<MudTd DataLabel="@L["InvalidTableHeader"]">
+					<div class="d-flex flex-column align-center">
+						@if (context.Invalid == true)
+						{
+							<MudIcon Icon="@Icons.Outlined.ErrorOutline" Color="Color.Error" />
+						}
+						else
+						{
+							<MudIcon Icon="@Icons.Outlined.CheckCircleOutline" Color="Color.Success" />
+
+						}
+					</div>
+
+				</MudTd>
+				<MudTd DataLabel="@L["ScopeTableHeader"]">
+					@if (context.Scope != null)
+					{
+						<MudLink Href="@GetScopeLink(context)">@context.Scope.Name</MudLink>
+					}
+				</MudTd>
+				<MudTd DataLabel="@L["RequestDetailsHeader"]">
+					<div class="d-flex flex-column align-center">
+						<MudText Typo="Typo.body2">@($"{context.RequestSize} Bytes")</MudText>
+						<MudTooltip Text="@L["ShowPacketDetailsTooltipText"]">
+							<MudIconButton Icon="@Icons.Outlined.OpenInFull" Color="Color.Info" OnClick="@(() => OpenPacketDetailsDialog(context,false))" />
+						</MudTooltip>
+					</div>
+				</MudTd>
+				<MudTd DataLabel="@L["ResponseDetailsHeader"]">
+					<div class="d-flex flex-column align-center">
+						@if (context.ResponseSize > 0)
+						{
+							<MudText Typo="Typo.body2">@($"{context.ResponseSize} Bytes")</MudText>
+							<MudTooltip Text="@L["ShowPacketDetailsTooltipText"]">
+								<MudIconButton Icon="@Icons.Outlined.OpenInFull" Color="Color.Info" OnClick="@(() => OpenPacketDetailsDialog(context,true))" />
+							</MudTooltip>
+						}
+						else
+						{
+							<MudText Typo="Typo.body2">@L["NoReponseByte"]</MudText>
+						}
+					</div>
+				</MudTd>
+			</RowTemplate>
+			<PagerContent>
+				<MudTablePager />
+			</PagerContent>
+		</MudTable>
+	</MudCardContent>
+</MudCard>
+
+@code {
+
+}

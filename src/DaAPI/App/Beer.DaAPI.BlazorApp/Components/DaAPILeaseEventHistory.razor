@@ -1,0 +1,90 @@
+﻿@attribute [Authorize]
+@inject IStringLocalizer<DaAPILeaseEventHistory> L
+@inject DHCPPacketResponseCodeHelper ResponseCodeHelper
+@inject DaAPIService Service
+@inject IDialogService DialogService
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["Title"]</MudText>
+
+<MudPaper Elevation="25" Class="my-5">
+	<MudExpansionPanels>
+		<MudExpansionPanel Text="@L["FilterCaption"]">
+			<DaAPILeaseEventHistoryFilter OnFilterChanged="UpdateFilter" />
+		</MudExpansionPanel>
+	</MudExpansionPanels>
+</MudPaper>
+<MudCard Elevation="25">
+	<MudCardHeader>
+		<CardHeaderContent>
+			<MudText Typo="Typo.h6">@L["LeaseHistoryHeading"]</MudText>
+		</CardHeaderContent>
+	</MudCardHeader>
+	<MudCardContent Class="px-0">
+		<MudTable @ref="_table" ServerData="LoadEvents" FixedHeader="false" Hover="true" Bordered="true" Height="100vh" Striped="true">
+			<HeaderContent>
+				<MudTh>@L["TimestampTableHeader"]</MudTh>
+				@if (_filter.IncludeChildScopes == true)
+				{
+					<MudTh>@L["ScopeTableHeader"]</MudTh>
+				}
+				<MudTh>@L["AddressTableHeader"]</MudTh>
+				<MudTh>@L["EventTypeTableHeader"]</MudTh>
+				<MudTh>@L["EventDetailsTableHeader"]</MudTh>
+				<MudTh>@L["RequestResponseTableHeader"]</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd DataLabel="@L["TimestampTableHeader"]">
+					<MudText Typo="Typo.body1">
+						@context.Timestamp.ToString("HH:mm:ss")
+						<br />
+						@context.Timestamp.ToString("dd.MM.yy")
+					</MudText>
+				</MudTd>
+				@if (_filter.IncludeChildScopes == true)
+				{
+					<MudTd DataLabel="@L["ScopeTableHeader"]">
+						@if (context.Scope != null)
+						{
+							<MudLink Href="@GetScopeLink(context)">@context.Scope.Name</MudLink>
+						}
+					</MudTd>
+				}
+				<MudTd DataLabel="@L["AddressTableHeader"]">
+					<MudText>@context.Address</MudText>
+				</MudTd>
+				<MudTd DataLabel="@L["EventTypeTableHeader"]">
+					<MudText>@context.EventType</MudText>
+				</MudTd>
+				<MudTd DataLabel="@L["EventDetailsTableHeader"]">
+					<MudText>@context.EventData</MudText>
+				</MudTd>
+				<MudTd DataLabel="@L["RequestResponseTableHeader"]">
+					@if (context.PacketHandledId != default)
+					{
+						<MudButtonGroup Color="Color.Default" Variant="Variant.Outlined">
+							<MudTooltip Text="@L["OpenRequestPacketDialog"]">
+								<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="@( () => OpenPacketDetailsDialog(context,false) )"></MudIconButton>
+							</MudTooltip>
+							@if (context.HasResponsePacket == true)
+							{
+								<MudTooltip Text="@L["OpenResponsePacketDialog"]">
+									<MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" OnClick="@( () => OpenPacketDetailsDialog(context,true) )"></MudIconButton>
+								</MudTooltip>
+							}
+						</MudButtonGroup>
+					}
+					else
+					{
+						<MudText>@L["NoPacketAssociated"]</MudText>
+					}
+				</MudTd>
+			</RowTemplate>
+			<PagerContent>
+				<MudTablePager />
+			</PagerContent>
+		</MudTable>
+	</MudCardContent>
+</MudCard>
+@code {
+
+}

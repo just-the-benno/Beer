@@ -20,30 +20,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
 {
     public class DHCPv6StorageEngine : DHCPStoreEngine<IDHCPv6EventStore, IDHCPv6ReadStore>, IDHCPv6StorageEngine
     {
-        private static Guid _rootScopeid = Guid.Parse("87a59af9-5da3-4aa4-9709-9dbf15f6efb2");
-
-        private class PseudoDHCPv6RootScope : PseudoDHCPRootScope
-        {
-            public PseudoDHCPv6RootScope() : base(_rootScopeid)
-            {
-            }
-        }
-
-        private class PseudoDHCPv6Scope : PseudoAggregateRootWithEvents
-        {
-            public PseudoDHCPv6Scope(Guid id) : base(id)
-            {
-
-            }
-        }
-
-        private class PseudoDHCPv6Lease : PseudoAggregateRootWithEvents
-        {
-            public PseudoDHCPv6Lease(Guid id) : base(id)
-            {
-
-            }
-        }
+        private static Guid _rootScopeid = Guid.Parse("87a59af9-5da3-4aa4-9709-9dbf15f6efb3");
 
         public DHCPv6StorageEngine(IServiceProvider provider) : base(
             provider,
@@ -55,136 +32,55 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
 
         public Task<IEnumerable<DHCPv6Listener>> GetDHCPv6Listener() => ReadStore.GetDHCPv6Listener();
 
-        public override async Task<bool> Save(AggregateRootWithEvents aggregateRoot)
-        {
-            if (aggregateRoot is DHCPv6RootScope == false)
-            {
-                return await base.Save(aggregateRoot);
-            }
-
-            PseudoDHCPv6RootScope pseudoRootScope = new();
-
-            var events = aggregateRoot.GetChanges();
-
-            List<AggregateRootWithEvents> aggregatesToSave = new();
-            aggregatesToSave.Add(pseudoRootScope);
-
-            HashSet<Guid> scopesToDelete = new();
-            HashSet<Guid> leasesToDelete = new();
-
-            foreach (var item in events)
-            {
-                switch (item)
-                {
-                    case DHCPv6ScopeAddedEvent e:
-                        {
-                            pseudoRootScope.AddScope(e.Instructions.Id);
-                            var pseudoScope = new PseudoDHCPv6Scope(e.Instructions.Id);
-                            pseudoScope.AddChange(e);
-                            aggregatesToSave.Add(pseudoScope);
-                        }
-                        break;
-                    case DHCPv6ScopeDeletedEvent e:
-                        {
-                            pseudoRootScope.RemoveScope(e.EntityId);
-                            scopesToDelete.Add(e.EntityId);
-                        }
-                        break;
-                    case EntityBasedDomainEvent e when
-                        item is DHCPv6ScopePropertiesUpdatedEvent ||
-                        item is DHCPv6ScopeNameUpdatedEvent ||
-                        item is DHCPv6ScopeDescriptionUpdatedEvent ||
-                        item is DHCPv6ScopeResolverUpdatedEvent ||
-                        item is DHCPv6ScopeAddressPropertiesUpdatedEvent ||
-                        item is DHCPv6ScopeParentUpdatedEvent ||
-                        item is DHCPv6ScopeAddressesAreExhaustedEvent ||
-                        item is DHCPv6ScopeSuspendedEvent ||
-                        item is DHCPv6ScopeReactivedEvent:
-                        {
-                            var pseudoScope = new PseudoDHCPv6Scope(e.EntityId);
-                            pseudoScope.AddChange(e);
-                            aggregatesToSave.Add(pseudoScope);
-                        }
-                        break;
-                    case DHCPv6LeaseCreatedEvent e:
-                        {
-                            pseudoRootScope.AddLease(e.EntityId);
-                            var pseudoScope = new PseudoDHCPv6Lease(e.EntityId);
-                            pseudoScope.AddChange(e);
-                            aggregatesToSave.Add(pseudoScope);
-                        }
-                        break;
-                    case DHCPv6LeaseRemovedEvent e:
-                        {
-                            pseudoRootScope.RemoveLease(e.EntityId);
-                            leasesToDelete.Add(e.EntityId);
-                        }
-                        break;
-
-                    case DHCPv6ScopeRelatedEvent e:
-                        {
-                            var pseudoLease = new PseudoDHCPv6Lease(e.EntityId);
-                            pseudoLease.AddChange(e);
-                            aggregatesToSave.Add(pseudoLease);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            foreach (var item in aggregatesToSave)
-            {
-                await EventStore.Save(item, 20);
-                if (item is PseudoDHCPv6Lease)
-                {
-                    var propertyResolver = Provider.GetService<IDHCPv6ServerPropertiesResolver>();
-
-                    await EventStore.ApplyMetaValuesForStream<PseudoDHCPv6Lease>(
-                        item.Id,
-                        new EventStoreStreamMetaValues(EventStoreStreamMetaValues.DoNotTruncate, propertyResolver.GetLeaseLifeTime()));
-                }
-            }
-
-            foreach (var item in scopesToDelete)
-            {
-                await EventStore.DeleteAggregateRoot<PseudoDHCPv6Scope>(item);
-            }
-
-            foreach (var item in leasesToDelete)
-            {
-                await EventStore.DeleteAggregateRoot<PseudoDHCPv6Lease>(item);
-            }
-
-            aggregateRoot.ClearChanges();
-
-            Boolean projectResult = await ReadStore.Project(events);
-            return projectResult;
-        }
-
         public async Task<DHCPv6RootScope> GetRootScope()
         {
             DHCPv6RootScope rootScope = new DHCPv6RootScope(_rootScopeid, Provider.GetRequiredService<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(), Provider.GetRequiredService<ILoggerFactory>());
 
-            PseudoDHCPv6RootScope pseudoRootScope = new PseudoDHCPv6RootScope();
-            await EventStore.HydrateAggragate(pseudoRootScope);
+            await EventStore.HydrateAggragate(rootScope);
 
-            List<DomainEvent> eventsToApply = new();
-
-            foreach (var scopeId in pseudoRootScope.ScopeIds)
+            IDictionary<Guid, IEnumerable<DHCPv6LeaseCreatedEvent>> currentLeases = new Dictionary<Guid, IEnumerable<DHCPv6LeaseCreatedEvent>>();
+            try
             {
-                var events = await EventStore.GetEvents<PseudoDHCPv6Scope>(scopeId, 500);
-                eventsToApply.AddRange(events);
+                currentLeases = await ReadStore.GetLatestDHCPv6LeasesForHydration();
+            }
+            catch (Exception)
+            {
+
             }
 
-            //foreach (var leaseId in pseudoRootScope.LeaseIds)
-            //{
-            //    var events = await EventStore.GetEvents<PseudoDHCPv6Lease>(leaseId, 100);
-            //    eventsToApply.AddRange(events);
-            //}
+            DateTime now = DateTime.Today;
 
-            rootScope.Load(eventsToApply.OrderBy(x => x.Timestamp));
+            foreach (var item in currentLeases)
+            {
+                List<DomainEvent> events = new();
+
+                foreach (var createEvent in item.Value)
+                {
+                    if (createEvent.ValidUntil < now || rootScope.GetScopeById(createEvent.ScopeId) == null)
+                    {
+                        continue;
+                    }
+
+                    var activateEvent = new DHCPv6LeaseActivatedEvent
+                    {
+                        ScopeId = createEvent.ScopeId,
+                        EntityId = createEvent.EntityId,
+                        Timestamp = createEvent.Timestamp,
+                    };
+
+                    events.Add(createEvent);
+                    events.Add(activateEvent);
+                }
+
+                try
+                {
+                    rootScope.Load(events);
+                }
+                catch (Exception)
+                {
+                }
+            }
+
             return rootScope;
         }
 
