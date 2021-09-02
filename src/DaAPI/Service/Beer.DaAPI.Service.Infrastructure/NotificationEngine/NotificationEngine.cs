@@ -96,7 +96,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
             var result = _pipelines.Select(x => new NotificationPipelineReadModel
             {
                 Id = x.Id,
-                Name = x.Name,
+                Name = x.Name?.Value,
                 TrigerName = x.TriggerIdentifier,
                 ActorName = x.Actor.GetType().Name,
                 ConditionName = x.Condition == null ? "None" : x.Condition.GetType().Name,
