@@ -110,7 +110,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         }
 
         [HttpGet("/api/leases/dhcpv6/events")]
-        public async Task<IActionResult> GetLeaseEvents([FromQuery]FilterLeaseHistoryRequest filter)
+        public async Task<IActionResult> GetLeaseEvents([FromQuery] FilterLeaseHistoryRequest filter)
         {
             List<Guid> scopeIds = new List<Guid>();
             if (filter.ScopeId.HasValue == true)
@@ -141,16 +141,13 @@ namespace Beer.DaAPI.Service.API.ApiControllers
 
             foreach (var item in result.Result)
             {
-                if (item.Scope != null && item.Scope.Id != default)
+                if (nameMapper.ContainsKey(item.Scope.Id) == false)
                 {
-                    if (nameMapper.ContainsKey(item.Scope.Id) == false)
-                    {
-                        var scope = _rootScope.GetScopeById(item.Scope.Id);
-                        nameMapper.Add(scope.Id, scope.Name);
-                    }
-
-                    item.Scope.Name = nameMapper[item.Scope.Id];
+                    var scope = _rootScope.GetScopeById(item.Scope.Id);
+                    nameMapper.Add(scope.Id, scope?.Name);
                 }
+
+                item.Scope.Name = nameMapper[item.Scope.Id];
             }
 
             return Ok(result);

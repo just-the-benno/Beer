@@ -1543,6 +1543,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 items = items.Where(x => scopeIds.Contains(x.ScopeId));
             }
 
+            items = items.OrderByDescending(x => x.Timestamp);
+
             Int32 total = await items.CountAsync();
 
             var result = await items.Skip(start).Take(amount).ToArrayAsync();
@@ -1566,7 +1568,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             await GetLeaseEvents(startDate, endDate, ipAddress, scopeIds, start, amount, "DHCPv6");
 
         public async Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv4LeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount) =>
-                        await GetLeaseEvents(startDate, endDate, ipAddress, scopeIds, start, amount, "DHCPv4");
+            await GetLeaseEvents(startDate, endDate, ipAddress, scopeIds, start, amount, "DHCPv4");
 
     }
 }

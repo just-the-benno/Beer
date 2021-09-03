@@ -70,7 +70,7 @@ namespace Beer.DaAPI.Core.Tracing
 
         public int GetCurrentLevel() => _level.Count(x => x == '.') + 1;
 
-        internal void RevertToLevel(int expectedLevel)
+        public void RevertToLevel(int expectedLevel)
         {
             while(GetCurrentLevel() > expectedLevel)
             {
