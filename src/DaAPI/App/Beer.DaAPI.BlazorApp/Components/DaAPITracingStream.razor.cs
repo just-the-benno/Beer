@@ -69,8 +69,11 @@ namespace Beer.DaAPI.BlazorApp.Components
             {
                 if (_start == 0 && _streams != null)
                 {
-                    _streams.Insert(0, stream);
-                    InvokeAsync(StateHasChanged);
+                    if(_streams.FirstOrDefault(x => x.Id == stream.Id) == null)
+					{
+                        _streams.Insert(0, stream);
+                        InvokeAsync(StateHasChanged);
+                    }
                 }
             });
 

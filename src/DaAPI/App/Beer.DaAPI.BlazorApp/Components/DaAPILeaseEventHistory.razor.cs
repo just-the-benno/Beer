@@ -87,7 +87,7 @@ namespace Beer.DaAPI.BlazorApp.Components
 
             _timerExecutionInProgress = true;
 
-            var filter = _filter ?? new DaAPILeaseEventHistoryFilterModel();
+            var filter = _filter ?? new DaAPILeaseEventHistoryFilterModel { IncludeChildScopes = true, };
             var filterRequest = GetFilterAsRequest(0, 0, filter);
 
 			FilteredResult<LeaseEventOverview> result = await FilterMethod.Invoke(filterRequest);

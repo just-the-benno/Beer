@@ -20,7 +20,7 @@
                         }
                             <MudSpacer />
                             <MudText Class="text-center"> @item.RecordAmount Entries </MudText>
-                            <div class="d-flex flex-column text-center">
+                            <div class="d-flex flex-column text-center ml-4">
                                 @{ TimeSpan diff = DateTime.UtcNow - item.Timestamp;  }
                                 <MudText>@(diff.Humanize()) @L["Ago"]</MudText>
                             @if (diff.TotalHours > 2)

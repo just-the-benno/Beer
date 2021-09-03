@@ -40,7 +40,6 @@ namespace Beer.DaAPI.BlazorApp.Services.TracingEnricher
                 {
                     case "PrefixEdgeRouterBindingUpdatedTrigger":
                         var trigger = JsonSerializer.Deserialize<PrefixEdgeRouterBindingUpdatedTrigger>(dictAsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        Console.WriteLine(trigger.Name);
                         if (trigger.OldBinding != null && trigger.NewBinding != null)
                         {
                             return String.Format(_localizer["PrefixEdgeRouterBindingUpdatedTriggerFirstItem_BothBindings"],
@@ -123,7 +122,6 @@ namespace Beer.DaAPI.BlazorApp.Services.TracingEnricher
             }
 
             var data = (TracingInfoData)JsonSerializer.Deserialize(rawData, dataType, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            Console.WriteLine(data.GetType().Name);
             return data.GetValues(_localizer, _entityCache);
         }
 

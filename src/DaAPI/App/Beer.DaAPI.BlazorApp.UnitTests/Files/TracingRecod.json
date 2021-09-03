@@ -1,0 +1,400 @@
+[
+  {
+    "identifier": "10.1",
+    "timestamp": "2021-09-02T22:56:37.12767",
+    "entityId": null,
+    "status": 0,
+    "addtionalData": {
+      "name": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:b0b4:138:acf2:ad9d\",\"Network\":\"2a0c:cac2:202:7eb0::\",\"Mask\":\"60\"}",
+      "oldBinding": "null"
+    }
+  },
+  {
+    "identifier": "10.1.1",
+    "timestamp": "2021-09-02T22:56:37.131977",
+    "entityId": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+    "status": 0,
+    "addtionalData": {
+      "id": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+      "name": "MAR-COR-CS1 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.2\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00228fd1854e-4ad1-4b14-842c-3f76c689a010\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.3",
+    "timestamp": "2021-09-02T22:56:37.133948",
+    "entityId": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+    "status": 0,
+    "addtionalData": {
+      "id": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+      "name": "MAR-COR-CS1 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.2\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00228fd1854e-4ad1-4b14-842c-3f76c689a010\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.1",
+    "timestamp": "2021-09-02T22:56:37.136135",
+    "entityId": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+    "status": 0,
+    "addtionalData": {
+      "id": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+      "name": "MAR-COR-CS1 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.2\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00228fd1854e-4ad1-4b14-842c-3f76c689a010\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.1.1",
+    "timestamp": "2021-09-02T22:56:37.138246",
+    "entityId": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+    "status": 0,
+    "addtionalData": {
+      "scopeId": "a150df86-2dc6-48ec-94bf-c1a196b61c6f",
+      "scopeIds": "[\"8fd1854e-4ad1-4b14-842c-3f76c689a010\"]"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.1.4",
+    "timestamp": "2021-09-02T22:56:37.140251",
+    "entityId": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.1.6",
+    "timestamp": "2021-09-02T22:56:37.142082",
+    "entityId": "f2f41a43-06c1-4f70-9e46-d3ba08e7f4f9",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.1",
+    "timestamp": "2021-09-02T22:56:37.143888",
+    "entityId": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+    "status": 0,
+    "addtionalData": {
+      "id": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+      "name": "MAR-COR-CS2 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.3\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00228fd1854e-4ad1-4b14-842c-3f76c689a010\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.3",
+    "timestamp": "2021-09-02T22:56:37.145708",
+    "entityId": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+    "status": 0,
+    "addtionalData": {
+      "id": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+      "name": "MAR-COR-CS2 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.3\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00228fd1854e-4ad1-4b14-842c-3f76c689a010\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.1",
+    "timestamp": "2021-09-02T22:56:37.147518",
+    "entityId": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+    "status": 0,
+    "addtionalData": {
+      "id": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+      "name": "MAR-COR-CS2 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.3\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00228fd1854e-4ad1-4b14-842c-3f76c689a010\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.1.1",
+    "timestamp": "2021-09-02T22:56:37.149363",
+    "entityId": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+    "status": 0,
+    "addtionalData": {
+      "scopeId": "a150df86-2dc6-48ec-94bf-c1a196b61c6f",
+      "scopeIds": "[\"8fd1854e-4ad1-4b14-842c-3f76c689a010\"]"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.1.4",
+    "timestamp": "2021-09-02T22:56:37.151169",
+    "entityId": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.1.6",
+    "timestamp": "2021-09-02T22:56:37.153097",
+    "entityId": "fbdaee2c-8675-45d2-a27e-17efa8a659fa",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.1",
+    "timestamp": "2021-09-02T22:56:37.154928",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "id": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+      "name": "STM-COR-CS1 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.102\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00220a57a591-7f77-4e24-b162-2fd05af9eb27\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.3",
+    "timestamp": "2021-09-02T22:56:37.156772",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "id": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+      "name": "STM-COR-CS1 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.102\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00220a57a591-7f77-4e24-b162-2fd05af9eb27\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.1",
+    "timestamp": "2021-09-02T22:56:37.159978",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "id": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+      "name": "STM-COR-CS1 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.102\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00220a57a591-7f77-4e24-b162-2fd05af9eb27\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.2.1.1",
+    "timestamp": "2021-09-02T22:56:37.162915",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "scopeId": "a150df86-2dc6-48ec-94bf-c1a196b61c6f",
+      "scopeIds": "[\"0a57a591-7f77-4e24-b162-2fd05af9eb27\"]"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.2.1.4",
+    "timestamp": "2021-09-02T22:56:37.164923",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.2.1.5",
+    "timestamp": "2021-09-02T22:56:37.166913",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.1",
+    "timestamp": "2021-09-02T22:56:37.168944",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": { "url": "https://172.27.10.102" }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6",
+    "timestamp": "2021-09-02T22:56:37.170929",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.102",
+      "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:b0b4:138:acf2:ad9d\",\"Network\":\"2a0c:cac2:202:7eb0::\",\"Mask\":\"60\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6.1.1",
+    "timestamp": "2021-09-02T22:56:37.172993",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.102//ins",
+      "command": "ipv6 route 2a0c:cac2:202:7eb0::/60 2a0c:cac6:2000:202:b0b4:138:acf2:ad9d 60"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6.1.2",
+    "timestamp": "2021-09-02T22:56:37.198476",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.102//ins",
+      "command": "ipv6 route 2a0c:cac2:202:7eb0::/60 2a0c:cac6:2000:202:b0b4:138:acf2:ad9d 60",
+      "statusCode": "200"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6.1.5",
+    "timestamp": "2021-09-02T22:56:37.200797",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 20,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.8",
+    "timestamp": "2021-09-02T22:56:37.202957",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.102",
+      "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:b0b4:138:acf2:ad9d\",\"Network\":\"2a0c:cac2:202:7eb0::\",\"Mask\":\"60\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.9",
+    "timestamp": "2021-09-02T22:56:37.205165",
+    "entityId": "f404b48e-205e-4e9d-8eb3-ab8d665f68a1",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.1",
+    "timestamp": "2021-09-02T22:56:37.207365",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "id": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+      "name": "STM-COR-CS2 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.103\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00220a57a591-7f77-4e24-b162-2fd05af9eb27\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.3",
+    "timestamp": "2021-09-02T22:56:37.210458",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "id": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+      "name": "STM-COR-CS2 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.103\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00220a57a591-7f77-4e24-b162-2fd05af9eb27\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.1",
+    "timestamp": "2021-09-02T22:56:37.213426",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "id": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+      "name": "STM-COR-CS2 Präfix Update",
+      "actor": "{\"Name\":\"NxOsStaticRouteUpdaterNotificationActor\",\"Url\":\"https://172.27.10.103\",\"Username\":\"dhcp\"}",
+      "trigger": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "condition": "{\"Name\":\"DHCPv6ScopeIdNotificationCondition\",\"IncludesChildren\":\"true\",\"ScopeIds\":\"[\\u00220a57a591-7f77-4e24-b162-2fd05af9eb27\\u0022]\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.2.1.1",
+    "timestamp": "2021-09-02T22:56:37.215914",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "scopeId": "a150df86-2dc6-48ec-94bf-c1a196b61c6f",
+      "scopeIds": "[\"0a57a591-7f77-4e24-b162-2fd05af9eb27\"]"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.2.1.4",
+    "timestamp": "2021-09-02T22:56:37.218152",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.2.1.5",
+    "timestamp": "2021-09-02T22:56:37.220422",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.1",
+    "timestamp": "2021-09-02T22:56:37.222568",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": { "url": "https://172.27.10.103" }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6",
+    "timestamp": "2021-09-02T22:56:37.224824",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.103",
+      "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:b0b4:138:acf2:ad9d\",\"Network\":\"2a0c:cac2:202:7eb0::\",\"Mask\":\"60\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6.1.1",
+    "timestamp": "2021-09-02T22:56:37.22702",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.103//ins",
+      "command": "ipv6 route 2a0c:cac2:202:7eb0::/60 2a0c:cac6:2000:202:b0b4:138:acf2:ad9d 60"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6.1.2",
+    "timestamp": "2021-09-02T22:56:37.253074",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.103//ins",
+      "command": "ipv6 route 2a0c:cac2:202:7eb0::/60 2a0c:cac6:2000:202:b0b4:138:acf2:ad9d 60",
+      "statusCode": "200"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.6.1.5",
+    "timestamp": "2021-09-02T22:56:37.256127",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 20,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.8",
+    "timestamp": "2021-09-02T22:56:37.258578",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {
+      "url": "https://172.27.10.103",
+      "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:b0b4:138:acf2:ad9d\",\"Network\":\"2a0c:cac2:202:7eb0::\",\"Mask\":\"60\"}"
+    }
+  },
+  {
+    "identifier": "10.1.6.2.6.2.6.4.1.9",
+    "timestamp": "2021-09-02T22:56:37.260792",
+    "entityId": "7ac8b07c-d66d-4c28-be09-5babf9e3c8a0",
+    "status": 0,
+    "addtionalData": {}
+  },
+  {
+    "identifier": "10.1.6.2.6.2.5",
+    "timestamp": "2021-09-02T22:56:37.263165",
+    "entityId": null,
+    "status": 0,
+    "addtionalData": {
+      "name": "PrefixEdgeRouterBindingUpdatedTrigger",
+      "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:b0b4:138:acf2:ad9d\",\"Network\":\"2a0c:cac2:202:7eb0::\",\"Mask\":\"60\"}",
+      "oldBinding": "null"
+    }
+  }
+]

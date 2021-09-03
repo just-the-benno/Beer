@@ -1551,7 +1551,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 Address = x.Address,
                 EventData = x.EventData,
                 EventName = x.EventType,
-                EventType = x.EventType,
+                EventType = x.FullEventType,
                 HasResponsePacket = x.HasResponse,
                 PacketHandledId = x.PacketHandledEntryId,
                 Scope = new()

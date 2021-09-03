@@ -11,7 +11,7 @@ namespace Beer.DaAPI.BlazorApp.Components
         public TimeSpan? FromTime { get; set; }
         public DateTime? To { get; set; }
         public TimeSpan? ToTime { get; set; }
-        public Boolean? IncludeChildScopes { get; set; }
+        public Boolean? IncludeChildScopes { get; set; } = true;
         public String Address { get; set; }
     }
 }
