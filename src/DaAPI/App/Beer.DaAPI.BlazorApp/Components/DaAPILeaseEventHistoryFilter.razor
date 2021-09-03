@@ -15,7 +15,7 @@
 			<MudTimePicker Label="@L["ToTimeLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Time="_filter.ToTime" For="@(() => _filter.ToTime)" />
 		</MudItem>
 		<MudItem xs="12">
-			<MudTextField T="String" Placeholder="@L["AddressPlaceholder"]" Label="@L["AddressLabel"]" @bind-Value="_filter.Address" For="@(() => _filter.Address)" />
+			<MudTextField T="String" Placeholder="@L["AddressPlaceholder"]" Label="@L["AddressLabel"]" @bind-Value="_filter.Address" For="@(() => _filter.Address)" DebounceInterval="50" Immediate="true" />
 		</MudItem>
 		    <MudItem xs="6">
         <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["IncludeChildScopesLabel"]" @bind-Checked="_filter.IncludeChildScopes" For="@(() => _filter.IncludeChildScopes)" />
