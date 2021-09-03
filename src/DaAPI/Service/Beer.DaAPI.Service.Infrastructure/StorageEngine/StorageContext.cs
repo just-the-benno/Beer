@@ -1561,7 +1561,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     Id = x.ScopeId,
                 },
                 Timestamp = x.Timestamp,
-            }), total);
+            }).ToArray(), total);
         }
 
         public async Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv6LeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount) =>
