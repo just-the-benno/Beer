@@ -1302,7 +1302,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return result;
         }
 
-        private IQueryable<IPacketHandledEntry<TPacketType>> FilterPackers<TPacketType>(
+        private IQueryable<IPacketHandledEntry<TPacketType>> FilterPackets<TPacketType>(
             IQueryable<IPacketHandledEntry<TPacketType>> items, PacketMonitorRequest.V1.IPacketFilter<TPacketType> filter)
             where TPacketType : struct
         {
@@ -1378,7 +1378,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public async Task<FilteredResult<PacketMonitorResponses.V1.DHCPv4PacketOverview>> GetDHCPv4Packet(PacketMonitorRequest.V1.DHCPv4PacketFilter filter)
         {
             IQueryable<IPacketHandledEntry<DHCPv4MessagesTypes>> items = DHCPv4PacketEntries;
-            items = FilterPackers(items, filter);
+            items = FilterPackets(items, filter);
 
             int total = await items.CountAsync();
             var result = await items.Cast<DHCPv4PacketHandledEntryDataModel>().Select(x => new DHCPv4PacketOverview
@@ -1413,7 +1413,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         public async Task<FilteredResult<PacketMonitorResponses.V1.DHCPv6PacketOverview>> GetDHCPv6Packet(PacketMonitorRequest.V1.DHCPv6PacketFilter filter)
         {
             IQueryable<IPacketHandledEntry<DHCPv6PacketTypes>> items = DHCPv6PacketEntries;
-            items = FilterPackers(items, filter);
+            items = FilterPackets(items, filter);
 
             var castedItems = items.Cast<DHCPv6PacketHandledEntryDataModel>();
             if (String.IsNullOrEmpty(filter.LeasedPrefix) == false)

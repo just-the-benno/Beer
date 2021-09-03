@@ -26,31 +26,31 @@
         <MudTimePicker Label="@L["ToTimeLabel"]" PickerVariant="PickerVariant.Dialog" @bind-Time="_filter.ToTime" For="@(() => _filter.ToTime)"   />
 	</MudItem>
     <MudItem xs="12" md="6">
-        <MudTextField T="String" Placeholder="@L["SourceAddressPlaceholder"]" Label="@L["SourceAddressLabel"]" @bind-Value="_filter.SourceAddress" For="@(() => _filter.SourceAddress)"  />
+        <MudTextField T="String" Placeholder="@L["SourceAddressPlaceholder"]" Label="@L["SourceAddressLabel"]" @bind-Value="_filter.SourceAddress" For="@(() => _filter.SourceAddress)" DebounceInterval="50" Immediate="true"  />
 	</MudItem>
      <MudItem xs="12" md="6">
-        <MudTextField T="String" Placeholder="@L["DestionationAddressPlaceholder"]" Label="@L["DestinationAddressLabel"]" @bind-Value="_filter.DestinationAddress" For="@(() => _filter.DestinationAddress)"  />
+        <MudTextField T="String" Placeholder="@L["DestionationAddressPlaceholder"]" Label="@L["DestinationAddressLabel"]" @bind-Value="_filter.DestinationAddress" For="@(() => _filter.DestinationAddress)" DebounceInterval="50" Immediate="true"  />
 	</MudItem>
     <MudItem xs="12" md="6" lg="@(_filter.FilterMode == PacketFilterMode.OnlyIPv6 ? 3 : 6)">
-        <MudTextField T="String" Placeholder="@L["RequestedIpPlaceholder"]" Label="@L["RequestedIpLabel"]" @bind-Value="_filter.RequestedIp" For="@(() => _filter.RequestedIp)"  />
+        <MudTextField T="String" Placeholder="@L["RequestedIpPlaceholder"]" Label="@L["RequestedIpLabel"]" @bind-Value="_filter.RequestedIp" For="@(() => _filter.RequestedIp)" DebounceInterval="50" Immediate="true"  />
 	</MudItem>
     @if(_filter.FilterMode == PacketFilterMode.OnlyIPv6)
     {
         <MudItem xs="12" md="6" lg="3">
-            <MudTextField T="String" Placeholder="@L["RequestedPrefixPlaceholder"]" Label="@L["RequestedPrefixLabel"]" @bind-Value="_filter.RequestedPrefix" For="@(() => _filter.RequestedPrefix)"  />
+            <MudTextField T="String" Placeholder="@L["RequestedPrefixPlaceholder"]" Label="@L["RequestedPrefixLabel"]" @bind-Value="_filter.RequestedPrefix" For="@(() => _filter.RequestedPrefix)"  DebounceInterval="50" Immediate="true" />
 	    </MudItem>
     }
     <MudItem xs="12" md="6" lg="@(_filter.FilterMode == PacketFilterMode.OnlyIPv6 ? 3 : 6)">
-        <MudTextField T="String" Placeholder="@L["LeasedIpPlaceholder"]" Label="@L["LeasedIpLabel"]" @bind-Value="_filter.LeasedIp" For="@(() => _filter.LeasedIp)"  />
+        <MudTextField T="String" Placeholder="@L["LeasedIpPlaceholder"]" Label="@L["LeasedIpLabel"]" @bind-Value="_filter.LeasedIp" For="@(() => _filter.LeasedIp)" DebounceInterval="50" Immediate="true"  />
 	</MudItem>
     @if(_filter.FilterMode == PacketFilterMode.OnlyIPv6)
     {
         <MudItem xs="12" md="6" lg="3">
-            <MudTextField T="String" Placeholder="@L["LeasedPrefixPlaceholder"]" Label="@L["LeasedPrefixLabel"]" @bind-Value="_filter.LeasedPrefix" For="@(() => _filter.LeasedPrefix)"  />
+            <MudTextField T="String" Placeholder="@L["LeasedPrefixPlaceholder"]" Label="@L["LeasedPrefixLabel"]" @bind-Value="_filter.LeasedPrefix" For="@(() => _filter.LeasedPrefix)" DebounceInterval="50" Immediate="true"  />
 	    </MudItem>
     }
     <MudItem xs="12">
-        <MudTextField T="String" Placeholder="@L["MacAddressPlaceholder"]" Label="@L["MacAddressLabel"]" @bind-Value="_filter.MacAddress" For="@(() => _filter.MacAddress)"  />
+        <MudTextField T="String" Placeholder="@L["MacAddressPlaceholder"]" Label="@L["MacAddressLabel"]" @bind-Value="_filter.MacAddress" For="@(() => _filter.MacAddress)" DebounceInterval="50" Immediate="true"  />
 	</MudItem>
     <MudItem xs="6">
         <MudCheckBox Color="@Color.Primary" TriState="true"  Label="@L["FilteredLabel"]" @bind-Checked="_filter.Filtered" For="@(() => _filter.Filtered)" />
