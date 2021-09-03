@@ -1,0 +1,19 @@
+{
+  "result": [
+    {
+      "id": "bd93ad1e-4abe-4ec7-9a8a-ba2fc5b93932",
+      "timestamp": "2021-09-02T23:41:52.723453",
+      "moduleIdentifier": 10,
+      "procedureIdentifier": 1,
+      "firstEntryData": {
+        "name": "PrefixEdgeRouterBindingUpdatedTrigger",
+        "newBinding": "{\"Host\":\"2a0c:cac6:2000:202:abef:853f:2f82:a604\",\"Network\":\"2a0c:cac2:202:b920::\",\"Mask\":\"60\"}",
+        "oldBinding": null
+      },
+      "recordAmount": 40,
+      "isInProgress": false,
+      "status": 20
+    }
+  ],
+  "total": 57
+}

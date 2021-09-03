@@ -24,9 +24,9 @@ namespace Beer.DaAPI.BlazorApp.Services.TracingEnricher
 
         protected String NormalizeJsonOutput(IDictionary<String, String> input)
         {
-            var dict = input.ToDictionary(x => x.Key, x => x.Value.Replace("\\u0022", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\"[", "[").Replace("]\"", "]"));
+            var dict = input.Where(x => String.IsNullOrEmpty(x.Value) == false).ToDictionary(x => x.Key, x => x.Value.Replace("\\u0022", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\"[", "[").Replace("]\"", "]"));
             var raw = JsonSerializer.Serialize(dict);
-            return raw.Replace("\"{", "{").Replace("}\"", "}").Replace("\"[", "[").Replace("]\"", "]").Replace("\\u0022", "\"");
+            return raw.Replace("\"{", "{").Replace("}\"", "}").Replace("\"[", "[").Replace("]\"", "]").Replace("\\u0022", "\"").Replace("\"null\"","null");
         }
     }
 }
