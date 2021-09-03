@@ -110,6 +110,23 @@ namespace Beer.DaAPI.BlazorApp.Pages.PacketMonitor
             return result;
         }
 
+        private String FormatMacAddresse(String address)
+		{
+            address = address.ToLower();
+            String result = String.Empty;
+			for (int i = 0; i < address.Length; i += 2)
+			{
+                if(i != 0)
+				{
+                    result += ":";
+				}
+
+                result += $"{address[i]}{address[i + 1]}";
+			}
+
+            return result;
+		}
+
 
         private async Task<TableData<IPacketOverview>> LoadPackets(TableState state)
         {

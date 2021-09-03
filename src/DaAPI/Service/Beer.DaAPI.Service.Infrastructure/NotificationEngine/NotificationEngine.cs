@@ -67,6 +67,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
 
             foreach (var item in _pipelines)
             {
+                Int32 level = tracingStream.GetCurrentLevel();
                 tracingStream.SetEntityId(item.Id);
                 await tracingStream.Append(TracingManagerConstants.NotifcationEngineSubModels.HandleTriggerStarted, TracingRecordStatus.Informative, item);
 
@@ -85,6 +86,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                 }
 
                 tracingStream.ClearEntity();
+                tracingStream.RevertToLevel(level);
             }
 
             await tracingStream.AppendAndClose(TracingManagerConstants.NotifcationEngineSubModels.TriggerHandled, trigger);

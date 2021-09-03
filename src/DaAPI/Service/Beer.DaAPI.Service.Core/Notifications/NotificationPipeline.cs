@@ -98,11 +98,14 @@ namespace Beer.DaAPI.Core.Notifications
 
             if (Condition != NotificationCondition.True)
             {
+                Int32 level = tracingStream.GetCurrentLevel();
                 tracingStream.OpenNextLevel(_checkingNotDefaultConditionTracingNumber);
                 tracingStream.OpenNextLevel(Condition.GetTracingIdentifier());
 
                 if (await Condition.IsValid(trigger, tracingStream) == false)
                 {
+                    tracingStream.RevertToLevel(level);
+
                     _logger.LogDebug("the trigger doens't satisfy the condition. Execution of pipeline stopped");
                     return NotifactionPipelineExecutionResults.ConditionNotMatched;
                 }
@@ -111,8 +114,7 @@ namespace Beer.DaAPI.Core.Notifications
                     _logger.LogDebug("the trigger {trgger} meet the condtion {condition}", trigger, Condition);
                 }
 
-                tracingStream.RevertLevel();
-                tracingStream.RevertLevel();
+                tracingStream.RevertToLevel(level);
             }
             else
             {
