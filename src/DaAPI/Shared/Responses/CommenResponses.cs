@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Beer.DaAPI.Core.Scopes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,19 @@ namespace Beer.DaAPI.Shared.Responses
     {
         public static class V1
         {
+            public interface ILeaseOverview
+            {
+                public Guid Id { get; set; }
+                public DateTime Started { get; set; }
+                public DateTime ExpectedEnd { get; set; }
+                public DateTime RenewTime { get; set; }
+                public DateTime ReboundTime { get; set; }
+                public Byte[] UniqueIdentifier { get; set; }
+                public String Address { get; set; }
+                public ScopeOverview Scope { get; set; }
+                public LeaseStates State { get; set; }
+            }
+
             public class ScopeOverview
             {
                 public Guid Id { get; set; }

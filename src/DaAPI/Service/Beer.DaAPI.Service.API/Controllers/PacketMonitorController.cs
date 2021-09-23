@@ -142,7 +142,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         }
 
         [HttpGet("/api/PacketMonitor/Requests/DHCPv6/{id}")]
-        public async Task<IActionResult> GetDHCPv6PacketRequest([FromRoute(Name ="id")] Guid packetEnrtyId)
+        public async Task<IActionResult> GetDHCPv6PacketRequest([FromRoute(Name = "id")] Guid packetEnrtyId)
         {
             var result = await _store.GetDHCPv6PacketRequestDataById(packetEnrtyId);
             return base.Ok(result);
@@ -166,6 +166,18 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         public async Task<IActionResult> GetDHCPv4PacketResponse([FromRoute(Name = "id")] Guid packetEnrtyId)
         {
             var result = await _store.GetDHCPv4PacketResponseDataById(packetEnrtyId);
+            return base.Ok(result);
+        }
+
+        [HttpGet("/api/PacketMonitor/InAndOut/{id}")]
+        public async Task<IActionResult> GetInAndOutgoingPackets([FromRoute(Name = "id")] Guid scopeId,[FromQuery(Name = "referenceTime")] DateTime? referenceTime)
+        {
+            if (referenceTime.HasValue == false)
+            {
+                referenceTime = DateTime.UtcNow;
+            }
+
+            var result = await _store.GetIncomingAndOutgoingPacketAmount(scopeId, referenceTime.Value);
             return base.Ok(result);
         }
     }

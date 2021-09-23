@@ -45,7 +45,9 @@
 
     private String GetFriendlyDUID()
     {
-        switch (Lease.ClientIdentifier)
+        var inputDuid = DUIDFactory.GetDUID(Lease.ClientIdentifier);
+
+        switch (inputDuid)
         {
             case UUIDDUID duid:
                 return duid.UUID.ToString();
@@ -56,7 +58,7 @@
             case VendorBasedDUID duid:
                 return $"{L["DUIDVendorIDLabel"]}: | {L["DUIDVendorIdentifierLabel"]} {ByteHelper.ToString(duid.Identifier, ':')}";
             default:
-                return ByteHelper.ToString(Lease.ClientIdentifier.GetAsByteStream(), ':');
+                return ByteHelper.ToString(Lease.ClientIdentifier, ':');
         }
     }
 

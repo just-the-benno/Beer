@@ -16,8 +16,13 @@ namespace Beer.DaAPI.Service.API
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Warning()
+#if DEBUG
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("System", LogEventLevel.Information)
+#else
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
+#endif
                 .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 // uncomment to write to Azure diagnostics stream

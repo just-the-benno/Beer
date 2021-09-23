@@ -1,0 +1,122 @@
+﻿@inject IStringLocalizer<DHCPv4LeaseTable> L
+
+<BeerShowLoadingIndicatorWhileNull Item="_packetStatistics">
+	<MudGrid>
+		<MudItem xs="12" sm="6">
+			<DaAPISmallInfoCard Icon="far fa-handshake" Color="Color.Primary" Caption="@L["LeaseCaption"]" Values="@(new []{
+					$"{_activeLeasesAmount} {L["ActiveLeaseCaption"]}",
+					$"{_reboundingLeasesAmount} {L["ReboundingLeaseCaption"]}",
+
+				})" />
+		</MudItem>
+		<MudItem xs="12" sm="6">
+			<DaAPISmallInfoCard Icon="fas fa-exchange-alt" Color="Color.Info" Caption="@L["InAndOutgoingPacketsCpation"]" Values="@(new [] {
+					$"{GetHourlyPacketStatistics().IncomingPacketAmount} {L["IncomingPacketCaption"]}",
+					$"{GetHourlyPacketStatistics().OutgoingPacketAmount} {L["OutcomingPacketCaption"]}",
+
+				})" />
+		</MudItem>
+
+		<MudItem xs="12">
+			<MudSimpleTable Elevation="0" Hover="true">
+				<thead>
+					<tr>
+						<th>@L["TableHeaderForStatus"]</th>
+						<th>@L["TableHeaderTimestamp"]</th>
+						<th>@L["TableHeaderForMacAddress"]</th>
+						<th>@L["TableHeaderForLeasedAddress"]</th>
+						@if (IncludeChildren == true)
+						{
+							<th>@L["TableHeaderForScope"]</th>
+						}
+						<th>@L["TableHeaderForRenew"]</th>
+						<th>@L["TableHeaderForRebind"]</th>
+						<th>@L["TableHeaderForExpectedEnd"]</th>
+
+						@if (PointOfView.HasValue == false)
+						{
+							<th></th>
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in _entries.Skip( (PageIndex -1) * _itemsPerPage).Take(_itemsPerPage))
+					{
+						<tr>
+							<td>
+								<DHCPLeaseStateComponent State="GetState(item)" />
+							</td>
+							<td>
+								<MudText Typo="Typo.body1">
+									@(item.Started.ToString("HH:mm:ss"))
+									<br />
+									@(item.Started.ToString("dd.MM.yy"))
+								</MudText>
+							</td>
+							<td>
+								@if(item.MacAddress != null)
+								{
+								<MudText Typo="Typo.subtitle2">@(Beer.DaAPI.Core.Common.ByteHelper.ToString(item.MacAddress,':'))</MudText>
+								}
+								else
+								{
+									<span>@L["NoMacAddressFound"]</span>
+								}
+							</td>
+							<td>
+								<MudText Typo="Typo.subtitle2">@item.Address</MudText>
+							</td>
+							@if (IncludeChildren == true)
+							{
+								<td>
+									<MudLink Href="@($"/scopes/dhcpv4/details/{item.Scope.Id}")">@item.Scope.Name</MudLink>
+								</td>
+							}
+							<td>
+								<TimeLeft Time="@item.RenewTime" ReferenceTime="@(PointOfView ?? DateTime.UtcNow)" />
+							</td>
+							<td>
+								<TimeLeft Time="@item.ReboundTime" ReferenceTime="@(PointOfView ?? DateTime.UtcNow)" />
+							</td>
+							<td>
+								<TimeLeft Time="@item.ExpectedEnd" ReferenceTime="@(PointOfView ?? DateTime.UtcNow)" />
+							</td>
+
+							@if (PointOfView.HasValue == false)
+							{
+								<td>
+									<MudTooltip Text="@L["CancelLeaseTooltipText"]">
+										<MudIconButton Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="@( () => CancelLease(item))" />
+									</MudTooltip>
+								</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</MudSimpleTable>
+			<MudPagination Color="Color.Primary" Count="@((Int32)Math.Floor((double)_entries.Count/_itemsPerPage))" @bind-Selected="PageIndex" />
+			<div class="d-flex flex-row">
+				<MudSpacer />
+				<MudSwitch @bind-Checked="EnableHistory" Label="@L["EnableHistoryLabel"]" />
+				@if (_enableHistory == true)
+				{
+					<MudTooltip Text="@L["GoBackTooltipText"]">
+						<MudIconButton Icon="@Icons.Material.Outlined.FastRewind" OnClick="GoBackward" />
+					</MudTooltip>
+					<MudTimePicker PickerVariant="PickerVariant.Dialog" Label="@L["SelectTimeLabel"]" @bind-Time="ReferenceTimeSpan" />
+					<MudDatePicker PickerVariant="PickerVariant.Dialog" Label="@L["SelectDateLabel"]" @bind-Date="ReferenceDate" />
+					<MudTooltip Text="@L["GoForwardTooltipText"]">
+						<MudIconButton Icon="@Icons.Material.Outlined.FastForward" OnClick="GoForward" />
+					</MudTooltip>
+
+				}
+			</div>
+		</MudItem>
+
+	</MudGrid>
+
+</BeerShowLoadingIndicatorWhileNull>
+
+@code {
+
+}

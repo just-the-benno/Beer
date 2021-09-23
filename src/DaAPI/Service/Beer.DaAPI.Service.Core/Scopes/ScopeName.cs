@@ -11,7 +11,7 @@ namespace Beer.DaAPI.Core.Scopes
         #region consts
 
         public const Int32 MaxLength = 250;
-        public const Int32 MinLenth = 10;
+        public const Int32 MinLenth = 3;
 
         public const String AllowedChars = @"^[\w]*((-|\s|\+|&|\#|\$|\*)*[\w])*$";
 

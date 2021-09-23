@@ -178,10 +178,10 @@
     <value>Not authorized to NS OS API</value>
   </data>
   <data name="10.1.6.4.1.3.1.4" xml:space="preserve">
-    <value>Comment sent successfully</value>
+    <value>Command  sent successfully</value>
   </data>
   <data name="10.1.6.4.1.3.1.5" xml:space="preserve">
-    <value>Comment handling finishind</value>
+    <value>Command handling finishind</value>
   </data>
   <data name="10.1.6.4.1.4" xml:space="preserve">
     <value>Remove of old binding failed</value>
@@ -277,13 +277,13 @@
     <value>NxOS Device URL</value>
   </data>
   <data name="PrefixEdgeRouterBindingUpdatedTriggerFirstItem_BothBindings" xml:space="preserve">
-    <value>IPv6 Präfix Binding changed from {0}/{1} via {2} to {3}/{4} via {5}</value>
+    <value>IPv6 Prefix Binding changed from {0}/{1} via {2} to {3}/{4} via {5}</value>
   </data>
   <data name="PrefixEdgeRouterBindingUpdatedTriggerFirstItem_OnlyNewBinding" xml:space="preserve">
-    <value>IPv6 Präfix Binding added {0}/{1} via {2}</value>
+    <value>IPv6 Prefix Binding added {0}/{1} via {2}</value>
   </data>
   <data name="PrefixEdgeRouterBindingUpdatedTriggerFirstItem_OnlyOldBinding" xml:space="preserve">
-    <value>IPv6 Präfix Binding removed {0}/{1} via {2}</value>
+    <value>IPv6 Prefix Binding removed {0}/{1} via {2}</value>
   </data>
   <data name="PrefixEdgeRouterBindingUpdated_Name" xml:space="preserve">
     <value>Prefix Changed</value>

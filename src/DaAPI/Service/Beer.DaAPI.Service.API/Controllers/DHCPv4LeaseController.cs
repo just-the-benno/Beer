@@ -43,7 +43,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             Id = lease.Id,
             UniqueIdentifier = lease.UniqueIdentifier,
             State = lease.State,
-            Scope = new DHCPv4ScopeOverview
+            Scope = new ScopeOverview
             {
                 Id = scope.Id,
                 Name = scope.Name,
@@ -70,10 +70,10 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             }
         }
 
-        [HttpGet("/api/leases/dhcpv4/scopes/{id}")]
-        public IActionResult GetLeasesByScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery(Name = "includeChildren")] Boolean includeChildren = false)
+        [HttpGet("/api/leases/live/dhcpv4/scopes/{id}")]
+        public IActionResult GetCurrentLeasesByScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery(Name = "includeChildren")] Boolean includeChildren = false)
         {
-            _logger.LogDebug("GetLeasesByScope");
+            _logger.LogDebug("GetCurrentLeasesByScope");
 
             var scope = _rootScope.GetScopeById(scopeId);
             if (scope == DHCPv4Scope.NotFound)
@@ -94,6 +94,22 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             return base.Ok(result.OrderBy(x => x.State).ThenBy(x => x.Address).ToList());
         }
 
+        [HttpGet("/api/leases/dhcpv4/scopes/{id}")]
+        public async Task<IActionResult> GetLeasesByScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery(Name = "includeChildren")] Boolean includeChildren = false, [FromQuery(Name = "pointOfView")] DateTime? pointOfView = null)
+        {
+            _logger.LogDebug("GetLeasesByScope");
+
+            List<Guid> scopeIds = GetScopeIds(scopeId, includeChildren);
+            var result = await _readStore.GetDHCPv4LeasesOverview(scopeIds, pointOfView ?? DateTime.UtcNow);
+
+            foreach (var item in result)
+            {
+                item.Scope.Name = GetScopeName(item.Scope.Id);
+            }
+
+            return base.Ok(result);
+        }
+
         [HttpDelete("/api/leases/dhcpv4/{id}")]
         public async Task<IActionResult> CancelLease([FromRoute(Name = "id")] Guid leaseId)
         {
@@ -108,38 +124,49 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             return Ok(true);
         }
 
+        Dictionary<Guid, String> _scopeNameMapper = new();
+
+        private String GetScopeName(Guid scopeId)
+        {
+            if (_scopeNameMapper.ContainsKey(scopeId) == false)
+            {
+                var scope = _rootScope.GetScopeById(scopeId);
+                _scopeNameMapper.Add(scope.Id, scope?.Name);
+            }
+
+            return _scopeNameMapper[scopeId];
+        }
+
         [HttpGet("/api/leases/dhcpv4/events")]
         public async Task<IActionResult> GetLeaseEvents([FromQuery] FilterLeaseHistoryRequest filter)
         {
-            List<Guid> scopeIds = new List<Guid>();
-            if (filter.ScopeId.HasValue == true)
-            {
-                scopeIds.Add(filter.ScopeId.Value);
-
-                if (filter.IncludeChildren == true)
-                {
-                    scopeIds.AddRange(_rootScope.GetAllChildScopeIds(filter.ScopeId.Value));
-                }
-            }
+            List<Guid> scopeIds = GetScopeIds(filter.ScopeId, filter.IncludeChildren); ;
 
             FilteredResult<LeaseEventOverview> result = await _readStore.GetDHCPv4LeaseEvents(
                 filter.StartTime, filter.EndTime, filter.Address, scopeIds, filter.Start, filter.Amount);
 
-            Dictionary<Guid, String> nameMapper = new();
-
             foreach (var item in result.Result)
             {
-                if (nameMapper.ContainsKey(item.Scope.Id) == false)
-                {
-                    var scope = _rootScope.GetScopeById(item.Scope.Id);
-                    nameMapper.Add(scope.Id, scope?.Name);
-                }
-
-                item.Scope.Name = nameMapper[item.Scope.Id];
+                item.Scope.Name = GetScopeName(item.Scope.Id);
             }
 
             return Ok(result);
+        }
 
+        private List<Guid> GetScopeIds(Guid? scopeId, Boolean? includeChildren)
+        {
+            List<Guid> scopeIds = new List<Guid>();
+            if (scopeId.HasValue == true)
+            {
+                scopeIds.Add(scopeId.Value);
+
+                if (includeChildren == true)
+                {
+                    scopeIds.AddRange(_rootScope.GetAllChildScopeIds(scopeId.Value));
+                }
+            }
+
+            return scopeIds;
         }
     }
 }

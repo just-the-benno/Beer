@@ -117,6 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceBasedDHCPv4MacAddressResolver_Caption" xml:space="preserve">
+    <value>Device Based Device Based MAC Address Resolver</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceBasedDHCPv4MacAddressResolver_Content" xml:space="preserve">
+    <value>Diese Zuordner prüft ob die MAC Addresse im Header des DHCPv4 Packets order aber die ClientIdentifier Option, mit dem des angebenen Gerätes übereinstimmt.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Gerät</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceId_Content" xml:space="preserve">
+    <value>Wählen Sie ein Gerät aus der Liste aus. Geräte werden erstellt und verwaltet durch den Beer Gerätedienst.</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_SearchClientIdenfifier_Caption" xml:space="preserve">
+    <value>Prüfe auch die ClientIdentifier Option</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_SearchClientIdenfifier_Content" xml:space="preserve">
+    <value>Wenn dieser Wert aktiv ist und die MAC Adresse nicht bereits im Header gefunden wurde, wird auch die ClientIdentifierOption nach der entsprechenden MAC Adresse durchsucht.</value>
+  </data>
   <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
     <value>Gerätebasieter Cisco SG Switch</value>
   </data>
@@ -164,6 +182,24 @@
   </data>
   <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
     <value>Die Nummer des Ports (1 ... 80) mit dem Kunden verbunden wurde</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_DHCPv4MacAddressResolver_Caption" xml:space="preserve">
+    <value>MAC Adress Zuordner</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_DHCPv4MacAddressResolver_Content" xml:space="preserve">
+    <value>Diese Zuordner prüft ob die MAC Addresse im Header des DHCPv4 Packets order aber die ClientIdentifier Option, mit dem eingegeben Wert übereinstimmt.</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_MacAddress_Caption" xml:space="preserve">
+    <value>MAC Adresse</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_MacAddress_Content" xml:space="preserve">
+    <value>Die MAC Adresse die erwartet wird</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_SearchClientIdenfifier_Caption" xml:space="preserve">
+    <value>Prüfe auch die ClientIdentifier Option</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_SearchClientIdenfifier_Content" xml:space="preserve">
+    <value>Wenn dieser Wert aktiv ist und die MAC Adresse nicht bereits im Header gefunden wurde, wird auch die ClientIdentifierOption nach der entsprechenden MAC Adresse durchsucht.</value>
   </data>
   <data name="DHCPv4Option82Resolver_DHCPv4Option82Resolver_Caption" xml:space="preserve">
     <value>Benutzerdefinierte Option82</value>

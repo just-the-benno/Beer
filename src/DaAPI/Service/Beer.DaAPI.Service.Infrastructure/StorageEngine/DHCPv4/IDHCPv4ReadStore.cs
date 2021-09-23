@@ -32,5 +32,6 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         IEnumerable<Device> GetAllDevices();
         Task<IDictionary<Guid, IEnumerable<DHCPv4LeaseCreatedEvent>>> GetLatestDHCPv4LeasesForHydration();
         Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv4LeaseEvents(DateTime? startTime, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount);
+        Task<IEnumerable<DHCPv4LeasesResponses.V1.DHCPv4LeaseOverview>> GetDHCPv4LeasesOverview(IEnumerable<Guid> scopeIds, DateTime pointOfView);
     }
 }

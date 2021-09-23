@@ -171,7 +171,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
 
             var controller = new DHCPv6LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<IDHCPv6ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
 
-            var actionResult = controller.GetLeasesByScope(scopeId);
+            var actionResult = controller.GetCurrentLeasesByScope(scopeId);
             var result = actionResult.EnsureOkObjectResult<IEnumerable<DHCPv6LeaseOverview>>(true);
 
             Assert.Equal(new[] { activeLeaseWithoutPrefix, expiredLeaseWithPrefix }, result, new LeaseOverviewEqualityComparer());
@@ -295,7 +295,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
 
             var controller = new DHCPv6LeaseController(rootScope, Mock.Of<IMediator>(MockBehavior.Strict), Mock.Of<IDHCPv6ReadStore>(MockBehavior.Strict), Mock.Of<ILogger<DHCPv6LeaseController>>());
 
-            var actionResult = controller.GetLeasesByScope(grantParentId, true);
+            var actionResult = controller.GetCurrentLeasesByScope(grantParentId, true);
             var result = actionResult.EnsureOkObjectResult<IEnumerable<DHCPv6LeaseOverview>>(true);
 
             Assert.Equal(new[] { activeLeaseWithoutPrefix, expiredLeaseWithPrefix }, result, new LeaseOverviewEqualityComparer());

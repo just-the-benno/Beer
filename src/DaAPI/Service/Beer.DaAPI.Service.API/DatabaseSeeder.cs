@@ -278,16 +278,22 @@ namespace Beer.DaAPI.Service.API
                 {
                     Byte[] addressBytes = new byte[4];
                     random.NextBytes(addressBytes);
+                    var address = IPv4Address.FromByteArray(addressBytes);
+
+                    Byte[] macADdress = new byte[6];
+                    random.NextBytes(macADdress);
 
                     DHCPv4LeaseEntryDataModel entryDataModel = new DHCPv4LeaseEntryDataModel
                     {
                         Id = Guid.NewGuid(),
                         Timestamp = start.AddMinutes(random.Next(0, diff)),
                         LeaseId = Guid.NewGuid(),
-                        Address = IPv4Address.FromByteArray(addressBytes).ToString(),
+                        Address = address.ToString(),
                         EndReason = StatisticsControllerResponses.V1.ReasonToEndLease.Nothing,
                         ScopeId = Guid.NewGuid(),
                         Start = start.AddMinutes(random.Next(0, diff - 50)),
+                        ClientMacAddress = macADdress,
+                        OrderNumber = address.GetNumericValue(),
                     };
 
                     Int32 leaseDiff = (Int32)(end.AddDays(4) - entryDataModel.Start).TotalMinutes;

@@ -169,6 +169,11 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             foreach (var item in options)
             {
                 AddOption(item);
+
+                if(item is DHCPv4PacketMessageTypeOption msgTypeOpt)
+                {
+                    MessageType = msgTypeOpt.Value;
+                }
             }
 
             SetClientIdentifier();
@@ -598,6 +603,11 @@ namespace Beer.DaAPI.Core.Packets.DHCPv4
             else
             {
                 _clientIdenfier = DHCPv4ClientIdentifier.FromHwAddress((Byte)HardwareType, ClientHardwareAddress);
+            }
+
+            if (_clientIdenfier.HasHardwareAddress() == false)
+            {
+                _clientIdenfier = _clientIdenfier.AddHardwareAddress(ClientHardwareAddress);
             }
         }
 

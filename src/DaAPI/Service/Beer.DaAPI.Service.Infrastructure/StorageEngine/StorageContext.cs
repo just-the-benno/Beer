@@ -32,6 +32,8 @@ using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6LeaseEvents;
 using static Beer.DaAPI.Core.Scopes.DHCPv6.DHCPv6PacketHandledEvents;
 using static Beer.DaAPI.Shared.Requests.StatisticsControllerRequests.V1;
 using static Beer.DaAPI.Shared.Requests.TracingRequests.V1;
+using static Beer.DaAPI.Shared.Responses.DHCPv4LeasesResponses.V1;
+using static Beer.DaAPI.Shared.Responses.DHCPv6LeasesResponses.V1;
 using static Beer.DaAPI.Shared.Responses.PacketMonitorResponses.V1;
 using static Beer.DaAPI.Shared.Responses.StatisticsControllerResponses.V1;
 using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
@@ -203,16 +205,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             UniqueIdentifier = e.UniqueIdentiifer,
                         };
 
-                        var oldLeases = await ((IQueryable<ILeaseEntry>)DHCPv6LeaseEntries).Where(x =>
-                            x.Address == e.Address.ToString() &&
-                            x.ScopeId == e.ScopeId &&
-                            x.EndReason == ReasonToEndLease.Nothing)
-                            .Cast<DHCPv6LeaseEntryDataModel>().ToArrayAsync();
-
-                        if (oldLeases.Length > 0)
-                        {
-                            DHCPv6LeaseEntries.RemoveRange(oldLeases);
-                        }
+                        await RemoveOldDHCPv6Leases(e.ScopeId, e.Address.ToString());
 
                         DHCPv6LeaseEntries.Add(leaseEntry);
                         hasChanges = true;
@@ -247,18 +240,35 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     break;
 
                 case DHCPv6LeaseRenewedEvent e:
-                    hasChanges = await UpdateLastestDHCPv6LeaseEntry(e, (leaseEntry) =>
+                    DHCPv6LeaseEntryDataModel oldEntry = await GetLatestDHCPv6LeaseEntry(e);
+                    hasChanges = await UpdateEndToDHCPv6LeaseEntry(e, ReasonToEndLease.PseudoCancel);
+                    if (hasChanges == true)
                     {
-                        leaseEntry.End = e.End;
-
-                        if (e.Reset == true)
+                        DHCPv6LeaseEntryDataModel leaseEntry = new DHCPv6LeaseEntryDataModel
                         {
-                            leaseEntry.IsActive = false;
-                        }
+                            Id = Guid.NewGuid(),
+                            Address = oldEntry.Address,
+                            Start = e.Timestamp,
+                            End = e.End,
+                            IsActive = e.Reset == false,
+                            EndOfRenewalTime = e.Timestamp + e.RenewSpan,
+                            EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan,
+                            LeaseId = e.EntityId,
+                            ScopeId = e.ScopeId,
+                            Prefix = oldEntry.Prefix,
+                            PrefixLength = oldEntry.PrefixLength,
+                            IdentityAssocationIdForPrefix = oldEntry.IdentityAssocationIdForPrefix,
+                            IdentityAssocationId = oldEntry.IdentityAssocationId,
+                            Timestamp = e.Timestamp,
+                            ClientIdentifier = oldEntry.ClientIdentifier,
+                            UniqueIdentifier = oldEntry.UniqueIdentifier,
+                        };
 
-                        leaseEntry.EndOfRenewalTime = e.Timestamp + e.RenewSpan;
-                        leaseEntry.EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan;
-                    });
+                        await RemoveOldDHCPv6Leases(e.ScopeId, oldEntry.Address);
+
+                        DHCPv6LeaseEntries.Add(leaseEntry);
+                    }
+
                     break;
 
                 case DHCPv6LeaseRevokedEvent e:
@@ -275,6 +285,20 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             }
 
             return hasChanges;
+        }
+
+        private async Task RemoveOldDHCPv6Leases(Guid scopeId, String address)
+        {
+            var oldLeases = await ((IQueryable<ILeaseEntry>)DHCPv6LeaseEntries).Where(x =>
+                x.Address == address &&
+                x.ScopeId == scopeId &&
+                x.EndReason == ReasonToEndLease.Nothing)
+                .Cast<DHCPv6LeaseEntryDataModel>().ToArrayAsync();
+
+            if (oldLeases.Length > 0)
+            {
+                DHCPv6LeaseEntries.RemoveRange(oldLeases);
+            }
         }
 
         public async Task<IDictionary<Guid, IEnumerable<DHCPv4LeaseCreatedEvent>>> GetLatestDHCPv4LeasesForHydration()
@@ -351,17 +375,10 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             UniqueIdentifier = e.UniqueIdentifier,
                             EndOfRenewalTime = e.StartedAt + e.RenewalTime,
                             EndOfPreferredLifetime = e.StartedAt + e.PreferredLifetime,
+                            OrderNumber = e.Address.GetNumericValue(),
                         };
 
-                        var oldLeases = await ((IQueryable<ILeaseEntry>)DHCPv4LeaseEntries).Where(x =>
-                        x.Address == e.Address.ToString() &&
-                        x.ScopeId == e.ScopeId &&
-                        x.EndReason == ReasonToEndLease.Nothing).Cast<DHCPv4LeaseEntryDataModel>().ToArrayAsync();
-
-                        if (oldLeases.Length > 0)
-                        {
-                            DHCPv4LeaseEntries.RemoveRange(oldLeases);
-                        }
+                        await RemoveOldDHCPv4Leases(e.ScopeId, e.Address.ToString());
 
                         DHCPv4LeaseEntries.Add(leaseEntry);
                         hasChanges = true;
@@ -385,17 +402,38 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     break;
 
                 case DHCPv4LeaseRenewedEvent e:
-                    hasChanges = await UpdateLastestDHCPv4LeaseEntry(e, (leaseEntry) =>
+                    DHCPv4LeaseEntryDataModel exisitingentry = await GetLatestDHCPv4LeaseEntry(e);
+                    hasChanges = await UpdateEndToDHCPv4LeaseEntry(e, ReasonToEndLease.PseudoCancel);
+                    if (hasChanges == true)
                     {
-                        leaseEntry.End = e.End;
-                        if (e.Reset == true)
+                        await SaveChangesAsyncInternal();
+
+                        DHCPv4LeaseEntryDataModel leaseEntry = new DHCPv4LeaseEntryDataModel
                         {
-                            leaseEntry.IsActive = false;
+                            Id = Guid.NewGuid(),
+                            Address = exisitingentry.Address,
+                            Start = e.Timestamp,
+                            End = e.End,
+                            LeaseId = e.EntityId,
+                            ScopeId = e.ScopeId,
+                            Timestamp = e.Timestamp,
+                            IsActive = e.Reset == false,
+                            ClientIdentifier = exisitingentry.ClientIdentifier,
+                            ClientMacAddress = exisitingentry.ClientMacAddress,
+                            UniqueIdentifier = exisitingentry.UniqueIdentifier,
+                            EndOfRenewalTime = e.Timestamp + e.RenewSpan,
+                            EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan,
+                            OrderNumber =  exisitingentry.OrderNumber,
+                        };
+
+                        if(leaseEntry.OrderNumber == 0)
+                        {
+                            leaseEntry.OrderNumber = IPv4Address.FromString(exisitingentry.Address).GetNumericValue();
                         }
 
-                        leaseEntry.EndOfRenewalTime = e.Timestamp + e.RenewSpan;
-                        leaseEntry.EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan;
-                    });
+                        await RemoveOldDHCPv4Leases(e.ScopeId, exisitingentry.Address);
+                        DHCPv4LeaseEntries.Add(leaseEntry);
+                    }
                     break;
 
                 case DHCPv4LeaseRevokedEvent e:
@@ -412,6 +450,19 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             }
 
             return hasChanges;
+        }
+
+        private async Task RemoveOldDHCPv4Leases(Guid scopeId, String address)
+        {
+            var oldLeases = await ((IQueryable<ILeaseEntry>)DHCPv4LeaseEntries).Where(x =>
+            x.Address == address &&
+            x.ScopeId == scopeId &&
+            x.EndReason == ReasonToEndLease.Nothing).Cast<DHCPv4LeaseEntryDataModel>().ToArrayAsync();
+
+            if (oldLeases.Length > 0)
+            {
+                DHCPv4LeaseEntries.RemoveRange(oldLeases);
+            }
         }
 
         private List<Guid> _latestLeaseEvents = new();
@@ -500,7 +551,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 settings.LoadCustomerConverters();
 
                 await SaveChangesAsyncInternal();
-                
+
                 if (item is DHCPv4ScopeRelatedEvent || item is DHCPv6ScopeRelatedEvent)
                 {
                     var entry = new LeaseEventEntryDataModel
@@ -535,7 +586,9 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
             if (hasChanges == false) { return true; }
 
-            return await SaveChangesAsyncInternal();
+            await SaveChangesAsyncInternal();
+
+            return hasChanges;
         }
 
         private async Task<Boolean> UpdateEndToDHCPv6LeaseEntry(DHCPv6ScopeRelatedEvent e, ReasonToEndLease reason) =>
@@ -1393,7 +1446,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 RequestMessageType = x.RequestType,
                 ResponseMessageType = x.ResponseType,
                 ResultCode = x.ErrorCode,
-                Scope = x.ScopeId == null ? null : new ScopeOverview
+                Scope = x.ScopeId == null ? null : new PacketMonitorResponses.V1.ScopeOverview
                 {
                     Id = x.ScopeId.Value,
                 },
@@ -1448,7 +1501,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                     Network = x.LeasedPrefix,
                 },
                 ResultCode = x.ErrorCode,
-                Scope = x.ScopeId == null ? null : new ScopeOverview
+                Scope = x.ScopeId == null ? null : new PacketMonitorResponses.V1.ScopeOverview
                 {
                     Id = x.ScopeId.Value,
                 },
@@ -1569,6 +1622,133 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public async Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv4LeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount) =>
             await GetLeaseEvents(startDate, endDate, ipAddress, scopeIds, start, amount, "DHCPv4");
+
+        public async Task<IDictionary<PacketStatisticTimePeriod, IncomingAndOutgoingPacketStatisticItem>> GetIncomingAndOutgoingPacketAmount(Guid scopeId, DateTime referenceTime)
+        {
+            IQueryable<DHCPv4PacketHandledEntryDataModel> packetOverviews = DHCPv4PacketEntries;
+            var hourBefore = referenceTime.AddHours(-1);
+            var dayBefore = referenceTime.AddDays(-1);
+            var weekBefore = referenceTime.AddDays(-7);
+
+            var items = await packetOverviews.Where(x => x.ScopeId == scopeId && x.Timestamp >= weekBefore && x.Timestamp <= referenceTime)
+                .Select(x => new
+                {
+                    Timestamp = x.Timestamp,
+                    RequestSize = x.RequestSize,
+                    ResponseSize = x.ResponseSize
+                }).ToArrayAsync();
+
+            if (items.Length == 0)
+            {
+                IQueryable<DHCPv6PacketHandledEntryDataModel> dhcpv6PacketOverview = DHCPv6PacketEntries;
+                items = await dhcpv6PacketOverview.Where(x => x.ScopeId == scopeId && x.Timestamp >= weekBefore && x.Timestamp <= referenceTime)
+                .Select(x => new
+                {
+                    Timestamp = x.Timestamp,
+                    RequestSize = x.RequestSize,
+                    ResponseSize = x.ResponseSize
+                }).ToArrayAsync();
+            }
+
+            var lastHourInfo = new IncomingAndOutgoingPacketStatisticItem();
+            var lastDayInfo = new IncomingAndOutgoingPacketStatisticItem();
+            var lastWeekInfo = new IncomingAndOutgoingPacketStatisticItem();
+            foreach (var item in items)
+            {
+                IncomingAndOutgoingPacketStatisticItem statisticItem = lastWeekInfo;
+                if (item.Timestamp >= hourBefore)
+                {
+                    statisticItem = lastHourInfo;
+                }
+                else if (item.Timestamp >= dayBefore)
+                {
+                    statisticItem = lastDayInfo;
+                }
+
+                statisticItem.IncomingPacketAmount += 1;
+                statisticItem.IncomingPacketTotalSize += item.RequestSize;
+
+                if (item.ResponseSize.HasValue == true)
+                {
+                    statisticItem.OutgoingPacketAmount += 1;
+                    statisticItem.OutgoingPacketAmount += item.ResponseSize.Value;
+                }
+            }
+
+            return new Dictionary<PacketStatisticTimePeriod, IncomingAndOutgoingPacketStatisticItem>()
+            {
+                { PacketStatisticTimePeriod.LastHour, lastHourInfo},
+                { PacketStatisticTimePeriod.LastDay, lastDayInfo},
+                { PacketStatisticTimePeriod.LastWeek, lastWeekInfo},
+            };
+        }
+
+        private IQueryable<T> GetLeaseEntries<T>(IQueryable<T> leaseEntries, IEnumerable<Guid> scopeIds, DateTime pointOfView)
+            where T : ILeaseEntry
+        {
+            leaseEntries = leaseEntries.Where(x => scopeIds.Contains(x.ScopeId) == true &&
+             pointOfView >= x.Start && pointOfView <= x.End);
+
+            return leaseEntries;
+        }
+
+        public async Task<IEnumerable<DHCPv6LeaseOverview>> GetDHCPv6LeasesOverview(IEnumerable<Guid> scopeIds, DateTime pointOfView)
+        {
+            var leaseEntries = GetLeaseEntries(DHCPv6LeaseEntries, scopeIds, pointOfView);
+
+            var result = await leaseEntries.Select(x => new DHCPv6LeaseOverview
+            {
+                Id = x.LeaseId,
+                Address = x.Address,
+                ExpectedEnd = x.End,
+                Started = x.Start,
+                ReboundTime = x.EndOfPreferredLifetime,
+                RenewTime = x.EndOfRenewalTime,
+                ClientIdentifier = x.ClientIdentifier,
+                Prefix = x.PrefixLength == 0 ? null : new PrefixOverview
+                {
+                    Address = x.Prefix,
+                    Mask = x.PrefixLength,
+                },
+                Scope = new CommenResponses.V1.ScopeOverview
+                {
+                    Id = x.ScopeId,
+                },
+                UniqueIdentifier = x.UniqueIdentifier,
+                State = x.IsActive == true ? Core.Scopes.LeaseStates.Active : Core.Scopes.LeaseStates.Pending
+            }).ToListAsync();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<DHCPv4LeaseOverview>> GetDHCPv4LeasesOverview(IEnumerable<Guid> scopeIds, DateTime pointOfView)
+        {
+            var leaseEntries = GetLeaseEntries(DHCPv4LeaseEntries, scopeIds, pointOfView);
+
+            leaseEntries = leaseEntries.OrderBy(x => x.OrderNumber);
+
+            var result = await leaseEntries.Select(x => new DHCPv4LeaseOverview
+            {
+                Id = x.LeaseId,
+                Address = x.Address,
+                ExpectedEnd = x.End,
+                Started = x.Start,
+                MacAddress = x.ClientMacAddress,
+                ReboundTime = x.EndOfPreferredLifetime,
+                RenewTime = x.EndOfRenewalTime,
+                Scope = new CommenResponses.V1.ScopeOverview
+                {
+                    Id = x.ScopeId,
+                },
+                UniqueIdentifier = x.UniqueIdentifier,
+                State = x.IsActive == true ? Core.Scopes.LeaseStates.Active : Core.Scopes.LeaseStates.Pending
+            }).ToArrayAsync();
+
+            return result;
+
+
+        }
+
 
     }
 }

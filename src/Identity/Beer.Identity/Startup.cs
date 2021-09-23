@@ -110,7 +110,7 @@ namespace Beer.Identity
                           });
                    });
                     storeOptions.Connection(cString);
-                    storeOptions.AutoCreateSchemaObjects = AutoCreate.All;
+                    storeOptions.AutoCreateSchemaObjects = Weasel.Postgresql.AutoCreate.All;
                 });
             }
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using static Beer.DaAPI.Core.Scopes.ScopeResolverPropertyDescription;
 using static Beer.DaAPI.Shared.Requests.DHCPv6ScopeRequests.V1.DHCPv6ScopeAddressPropertyReqest;
+using static Beer.DaAPI.Shared.Responses.CommenResponses.V1;
 
 namespace Beer.DaAPI.Shared.Responses
 {
@@ -15,29 +16,25 @@ namespace Beer.DaAPI.Shared.Responses
     {
         public static class V1
         {
-            public class ScopeOverview
-            {
-                public Guid Id { get; set; }
-                public String Name { get; set; }
-            }
-
             public class PrefixOverview
             {
                 public String Address { get; set; }
                 public Byte Mask { get; set; }
             }
 
-            public class DHCPv6LeaseOverview
+            public class DHCPv6LeaseOverview : ILeaseOverview
             {
                 public Guid Id { get; set; }
                 public DateTime Started { get; set; }
                 public DateTime ExpectedEnd { get; set; }
                 public Byte[] UniqueIdentifier { get; set; }
-                public DUID ClientIdentifier { get; set; }
+                public Byte[] ClientIdentifier { get; set; }
                 public String Address { get; set; }
                 public PrefixOverview Prefix { get; set; }
                 public ScopeOverview Scope { get; set; }
                 public LeaseStates State { get; set; }
+                public DateTime ReboundTime { get; set; }
+                public DateTime RenewTime { get; set; }
             }
 
         }

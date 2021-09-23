@@ -65,6 +65,28 @@ namespace Beer.DaAPI.Core.Common
             };
         }
 
+        public byte[] GetHwAddress()
+        {
+            if (DUID != DUID.Empty)
+            {
+                if (DUID is LinkLayerAddressDUID a)
+                {
+                    return  ByteHelper.CopyData(a.LinkLayerAddress);
+                }
+                else if (DUID is LinkLayerAddressAndTimeDUID b)
+                {
+                    return ByteHelper.CopyData(b.LinkLayerAddress);
+                }
+            }
+            
+            if(HwAddress != null && HwAddress.Length > 0)
+            {
+                 return ByteHelper.CopyData(HwAddress);
+            }
+
+            return Array.Empty<Byte>();
+        }
+
         public byte[] GetBytes()
         {
             if (DUID != DUID.Empty)
@@ -121,6 +143,8 @@ namespace Beer.DaAPI.Core.Common
 
         public DHCPv4ClientIdentifier AddHardwareAddress(byte[] clientHardwareAddress)
         {
+            clientHardwareAddress ??= Array.Empty<Byte>();
+
             return new DHCPv4ClientIdentifier
             {
                 DUID = this.DUID,
