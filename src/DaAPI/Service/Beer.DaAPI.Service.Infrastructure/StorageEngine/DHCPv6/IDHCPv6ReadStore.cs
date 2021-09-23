@@ -41,5 +41,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv6
         Task<PacketMonitorResponses.V1.PacketInfo> GetDHCPv4PacketRequestDataById(Guid packetEnrtyId);
         Task<PacketMonitorResponses.V1.PacketInfo> GetDHCPv4PacketResponseDataById(Guid packetEnrtyId);
         Task<FilteredResult<CommenResponses.V1.LeaseEventOverview>> GetDHCPv6LeaseEvents(DateTime? startDate, DateTime? endDate, string ipAddress, IEnumerable<Guid> scopeIds, int start, int amount);
+        Task<IDictionary<PacketMonitorResponses.V1.PacketStatisticTimePeriod,PacketMonitorResponses.V1.IncomingAndOutgoingPacketStatisticItem>> GetIncomingAndOutgoingPacketAmount(Guid scopeId, DateTime referenceTime);
+        Task<IEnumerable<DHCPv6LeasesResponses.V1.DHCPv6LeaseOverview>> GetDHCPv6LeasesOverview(IEnumerable<Guid> scopeIds, DateTime dateTime);
     }
 }

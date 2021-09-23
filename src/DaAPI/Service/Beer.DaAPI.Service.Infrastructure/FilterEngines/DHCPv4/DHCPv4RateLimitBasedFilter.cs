@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Infrastructure.FilterEngines.DHCPv4
 {
-    public class DHCPv4RateLimiterBasedFilter : RateLimitBasedFilter<IPv4Address>, IDHCPv4PacketFilter
+    public class DHCPv4RateLimitBasedFilter : RateLimitBasedFilter<IPv4Address>, IDHCPv4PacketFilter
     {
         #region Fields
 
@@ -26,7 +26,7 @@ namespace Beer.DaAPI.Infrastructure.FilterEngines.DHCPv4
 
         #region Constructor
 
-        public DHCPv4RateLimiterBasedFilter()
+        public DHCPv4RateLimitBasedFilter()
         {
         }
 

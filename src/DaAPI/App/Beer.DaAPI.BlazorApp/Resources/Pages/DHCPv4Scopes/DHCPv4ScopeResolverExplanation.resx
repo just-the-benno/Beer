@@ -117,6 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceBasedDHCPv4MacAddressResolver_Caption" xml:space="preserve">
+    <value>Device Based Device Based MAC Address Resolver</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceBasedDHCPv4MacAddressResolver_Content" xml:space="preserve">
+    <value>This resolver checks if the MAC Address in the header or the client identifier option contains exactly the MAC Address of the saved device</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceId_Caption" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_DeviceId_Content" xml:space="preserve">
+    <value>Choose a device from the list. Devices are created and mantained through the devices server. To use a device here, you have to create a new device inside the device service</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_SearchClientIdenfifier_Caption" xml:space="preserve">
+    <value>Look in the ClientIdentifier option as well</value>
+  </data>
+  <data name="DeviceBasedDHCPv4MacAddressResolver_SearchClientIdenfifier_Content" xml:space="preserve">
+    <value>If this value is true and the MAC address in the packet header doesn't match the specified one, the client identifier is search for the MAC Address as well</value>
+  </data>
   <data name="DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_DeviceBasedDHCPv4SimpleCiscoSGSeriesResolver_Caption" xml:space="preserve">
     <value>Device based Cisco SG Switch</value>
   </data>
@@ -164,6 +182,24 @@
   </data>
   <data name="DeviceBasedDHCPv4SimpleZyxelIESResolver_PortNumber_Content" xml:space="preserve">
     <value>The port number (1 ... 80) of the port, where the customer/user is connected.</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_DHCPv4MacAddressResolver_Caption" xml:space="preserve">
+    <value>MAC Address Resolver</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_DHCPv4MacAddressResolver_Content" xml:space="preserve">
+    <value>This resolver checks if the MAC Address in the header or the client identifier option contains exactly the specified mac address</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_MacAddress_Caption" xml:space="preserve">
+    <value>MAC Address</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_MacAddress_Content" xml:space="preserve">
+    <value>The MAC Address that is expacted</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_SearchClientIdenfifier_Caption" xml:space="preserve">
+    <value>Look in the ClientIdentifier option as well</value>
+  </data>
+  <data name="DHCPv4MacAddressResolver_SearchClientIdenfifier_Content" xml:space="preserve">
+    <value>If this value is true and the MAC address in the packet header doesn't match the specified one, the client identifier is search for the MAC Address as well </value>
   </data>
   <data name="DHCPv4Option82Resolver_DHCPv4Option82Resolver_Caption" xml:space="preserve">
     <value>Custom Option82</value>

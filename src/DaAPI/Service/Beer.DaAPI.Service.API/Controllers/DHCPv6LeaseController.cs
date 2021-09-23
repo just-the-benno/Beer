@@ -37,7 +37,7 @@ namespace Beer.DaAPI.Service.API.ApiControllers
         private DHCPv6LeaseOverview GetLeaseOverview(DHCPv6Lease lease, DHCPv6Scope scope) => new DHCPv6LeaseOverview
         {
             Address = lease.Address.ToString(),
-            ClientIdentifier = lease.ClientDUID,
+            ClientIdentifier = lease.ClientDUID.GetAsByteStream(),
             Started = lease.Start,
             ExpectedEnd = lease.End,
             Id = lease.Id,
@@ -71,8 +71,8 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             }
         }
 
-        [HttpGet("/api/leases/dhcpv6/scopes/{id}")]
-        public IActionResult GetLeasesByScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery(Name = "includeChildren")] Boolean includeChildren = false)
+        [HttpGet("/api/leases/live/dhcpv6/scopes/{id}")]
+        public IActionResult GetCurrentLeasesByScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery(Name = "includeChildren")] Boolean includeChildren = false)
         {
             _logger.LogDebug("GetLeasesByScope");
 
@@ -95,6 +95,32 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             return base.Ok(result.OrderBy(x => x.State).ThenBy(x => x.Address).ToList());
         }
 
+        [HttpGet("/api/leases/dhcpv6/scopes/{id}")]
+        public async Task<IActionResult> GetLeasesByScope([FromRoute(Name = "id")] Guid scopeId, [FromQuery(Name = "includeChildren")] Boolean includeChildren = false, [FromQuery(Name = "pointOfView")] DateTime? pointOfView = null)
+        {
+            _logger.LogDebug("GetLeasesByScope");
+
+            List<Guid> scopeIds = GetScopeIds(scopeId, includeChildren);
+            var result = await _readStore.GetDHCPv6LeasesOverview(scopeIds, pointOfView ?? DateTime.UtcNow);
+
+            foreach (var item in result)
+            {
+                item.Scope.Name = GetScopeName(item.Scope.Id);
+            }
+
+            var addressDict = result.Select(x => x.Address).Distinct().ToDictionary(x => x, x => IPv6Address.FromString(x));
+
+            result = result.OrderBy(x => x.Address, Comparer<String>.Create((x1, x2) =>
+           {
+               var firstAddress = addressDict[x1];
+               var secondAddress = addressDict[x2];
+
+               return firstAddress.CompareTo(secondAddress);
+           })).ToArray();
+
+            return base.Ok(result);
+        }
+
         [HttpDelete("/api/leases/dhcpv6/{id}")]
         public async Task<IActionResult> CancelLease([FromRoute(Name = "id")] Guid leaseId)
         {
@@ -103,25 +129,29 @@ namespace Beer.DaAPI.Service.API.ApiControllers
 
             if (result == false)
             {
-                return BadRequest("una ble to delete lease");
+                return BadRequest("unable to delete lease");
             }
 
             return Ok(true);
         }
 
+        private Dictionary<Guid, String> _scopeNameMapper = new();
+
+        private String GetScopeName(Guid scopeId)
+        {
+            if (_scopeNameMapper.ContainsKey(scopeId) == false)
+            {
+                var scope = _rootScope.GetScopeById(scopeId);
+                _scopeNameMapper.Add(scope.Id, scope?.Name);
+            }
+
+            return _scopeNameMapper[scopeId];
+        }
+
         [HttpGet("/api/leases/dhcpv6/events")]
         public async Task<IActionResult> GetLeaseEvents([FromQuery] FilterLeaseHistoryRequest filter)
         {
-            List<Guid> scopeIds = new List<Guid>();
-            if (filter.ScopeId.HasValue == true)
-            {
-                scopeIds.Add(filter.ScopeId.Value);
-
-                if (filter.IncludeChildren == true)
-                {
-                    scopeIds.AddRange(_rootScope.GetAllChildScopeIds(filter.ScopeId.Value));
-                }
-            }
+            List<Guid> scopeIds = GetScopeIds(filter.ScopeId, filter.IncludeChildren);
 
             if (String.IsNullOrEmpty(filter.Address) == false)
             {
@@ -137,21 +167,30 @@ namespace Beer.DaAPI.Service.API.ApiControllers
             FilteredResult<LeaseEventOverview> result = await _readStore.GetDHCPv6LeaseEvents(
                 filter.StartTime, filter.EndTime, filter.Address, scopeIds, filter.Start, filter.Amount);
 
-            Dictionary<Guid, String> nameMapper = new();
 
             foreach (var item in result.Result)
             {
-                if (nameMapper.ContainsKey(item.Scope.Id) == false)
-                {
-                    var scope = _rootScope.GetScopeById(item.Scope.Id);
-                    nameMapper.Add(scope.Id, scope?.Name);
-                }
-
-                item.Scope.Name = nameMapper[item.Scope.Id];
+                item.Scope.Name = GetScopeName(item.Scope.Id);
             }
 
             return Ok(result);
 
+        }
+
+        private List<Guid> GetScopeIds(Guid? scopeId, Boolean? includeChildren)
+        {
+            List<Guid> scopeIds = new List<Guid>();
+            if (scopeId.HasValue == true)
+            {
+                scopeIds.Add(scopeId.Value);
+
+                if (includeChildren == true)
+                {
+                    scopeIds.AddRange(_rootScope.GetAllChildScopeIds(scopeId.Value));
+                }
+            }
+
+            return scopeIds;
         }
     }
 }

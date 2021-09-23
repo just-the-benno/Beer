@@ -22,6 +22,7 @@ namespace Beer.DaAPI.Shared.Responses
                 Revoked = 6,
                 Released = 10,
                 Expired = 11,
+                PseudoCancel = 12,
             }
 
             public interface ILeaseEntry

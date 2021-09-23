@@ -30,8 +30,14 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
             public TimeSpan? ValidLeaseTime { get; set; }
             public Boolean? RapitCommitEnabled { get; set; }
 
+            public Boolean? UseDynamicAddress { get; set; }
+            public Int32? DynamicAddressHour { get; set; }
+            public Int32? DynamicAddressMinute { get; set; }
+            public Int32? DynamicAddressReboundingInterval { get; set; }
+            public Int32? DynamicAddressLeaseInterval { get; set; }
+
             public IEnumerable<IPv6Address> ExcludedAddresses { get; set; }
-            public DHCPv6ScopeAddressProperties.AddressAllocationStrategies? AddressAllocationStrategy { get;  set; }
+            public DHCPv6ScopeAddressProperties.AddressAllocationStrategies? AddressAllocationStrategy { get; set; }
 
             public DHCPv6PrefixDelgationInfo PrefixDelgationInfo { get; set; }
         }
@@ -41,13 +47,28 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var info = serializer.Deserialize<EeasySerialibleVersionOfDHCPv6ScopeAddressProperties>(reader);
+            DHCPv6ScopeAddressProperties result = null;
+            if (info.UseDynamicAddress == true)
+            {
+                DynamicRenewTime time = DynamicRenewTime.WithSpecificRange(
+                   info.DynamicAddressHour.Value, info.DynamicAddressMinute.Value,
+                   info.DynamicAddressReboundingInterval.Value, info.DynamicAddressLeaseInterval.Value);
 
-            DHCPv6ScopeAddressProperties result = new DHCPv6ScopeAddressProperties(info.Start, info.End, info.ExcludedAddresses,
-                t1: info.T1.HasValue == true ? DHCPv6TimeScale.FromDouble(info.T1.Value) : null,
-                t2: info.T2.HasValue == true ? DHCPv6TimeScale.FromDouble(info.T2.Value) : null,
-                preferredLifeTime: info.PreferredLeaseTime, validLifeTime: info.ValidLeaseTime, reuseAddressIfPossible: info.ReuseAddressIfPossible, addressAllocationStrategy: info.AddressAllocationStrategy ,
-                supportDirectUnicast: info.SupportDirectUnicast, acceptDecline: info.AcceptDecline, informsAreAllowd: info.InformsAreAllowd,
-                rapitCommitEnabled: info.RapitCommitEnabled,info.PrefixDelgationInfo);
+                result = new DHCPv6ScopeAddressProperties(info.Start, info.End, info.ExcludedAddresses, time,
+                    reuseAddressIfPossible: info.ReuseAddressIfPossible,addressAllocationStrategy: info.AddressAllocationStrategy,
+                    supportDirectUnicast: info.SupportDirectUnicast, acceptDecline: info.AcceptDecline,informsAreAllowd: info.InformsAreAllowd,
+                    rapitCommitEnabled: info.RapitCommitEnabled,info.PrefixDelgationInfo);
+            }
+            else
+            {
+                result = new DHCPv6ScopeAddressProperties(info.Start, info.End, info.ExcludedAddresses,
+                    t1: info.T1.HasValue == true ? DHCPv6TimeScale.FromDouble(info.T1.Value) : null,
+                    t2: info.T2.HasValue == true ? DHCPv6TimeScale.FromDouble(info.T2.Value) : null,
+                    preferredLifeTime: info.PreferredLeaseTime, validLifeTime: info.ValidLeaseTime, reuseAddressIfPossible: info.ReuseAddressIfPossible, addressAllocationStrategy: info.AddressAllocationStrategy,
+                    supportDirectUnicast: info.SupportDirectUnicast, acceptDecline: info.AcceptDecline, informsAreAllowd: info.InformsAreAllowd,
+                    rapitCommitEnabled: info.RapitCommitEnabled, info.PrefixDelgationInfo);
+            }
+
 
             return result;
         }
@@ -56,7 +77,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
         {
             DHCPv6ScopeAddressProperties item = (DHCPv6ScopeAddressProperties)value;
 
-            serializer.Serialize(writer, new EeasySerialibleVersionOfDHCPv6ScopeAddressProperties
+            var model = new EeasySerialibleVersionOfDHCPv6ScopeAddressProperties
             {
                 AcceptDecline = item.AcceptDecline,
                 AddressAllocationStrategy = item.AddressAllocationStrategy,
@@ -72,7 +93,18 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.Converters
                 PrefixDelgationInfo = item.PrefixDelgationInfo,
                 T1 = item.T1?.Value,
                 T2 = item.T2?.Value,
-            });
+                UseDynamicAddress = item.UseDynamicRewnewTime
+            };
+
+            if (model.UseDynamicAddress == true)
+            {
+                model.DynamicAddressHour = item.DynamicRenewTime.Hour;
+                model.DynamicAddressMinute = item.DynamicRenewTime.Minutes;
+                model.DynamicAddressReboundingInterval = (Int32)item.DynamicRenewTime.MinutesToRebound;
+                model.DynamicAddressLeaseInterval = (Int32)item.DynamicRenewTime.MinutesToEndOfLife;
+            }
+
+            serializer.Serialize(writer, model);
         }
     }
 }

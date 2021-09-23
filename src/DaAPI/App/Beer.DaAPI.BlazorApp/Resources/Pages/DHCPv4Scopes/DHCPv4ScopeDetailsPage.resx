@@ -132,6 +132,9 @@
   <data name="NoLeasesFound" xml:space="preserve">
     <value>No leases found for this scope</value>
   </data>
+  <data name="NoMacAddressFound" xml:space="preserve">
+    <value>No MAC Address found</value>
+  </data>
   <data name="PageTitle" xml:space="preserve">
     <value>DHCPv4 Scope {0} Details</value>
   </data>

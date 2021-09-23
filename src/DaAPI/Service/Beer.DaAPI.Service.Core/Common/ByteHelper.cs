@@ -125,6 +125,22 @@ namespace Beer.DaAPI.Core.Common
             return result;
         }
 
+        public static String ToString(byte[] data, char seperationChar, Boolean withPrefix = true)
+        {
+            String result = withPrefix == true ? "0x" : String.Empty;
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                result += data[i].ToString("X2");
+                if(i < data.Length - 1)
+                {
+                    result += seperationChar;
+                }
+            }
+
+            return result;
+        }
+
         private static readonly List<Byte> evenBitValues = new List<byte>()
         {
             0b_1111_1111,

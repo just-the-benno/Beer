@@ -21,5 +21,12 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
         public Byte[] ClientIdentifier { get; set; }
         public Byte[] UniqueIdentifier { get; set; }
         public Byte[] ClientMacAddress { get; set; }
+        public UInt32 OrderNumber { get; set; }
+
+
+        public DHCPv4LeaseEntryDataModel()
+        {
+
+        }
     }
 }

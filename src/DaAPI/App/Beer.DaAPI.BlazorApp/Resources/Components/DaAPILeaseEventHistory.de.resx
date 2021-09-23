@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddressTableHeader" xml:space="preserve">
+    <value>Addresse</value>
+  </data>
+  <data name="DHCPv4AddressSuspendedEvent_Property_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="DHCPv4AddressSuspendedEvent_Property_SuspendedTill" xml:space="preserve">
+    <value>Supspendiert bis</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_ForceRemove" xml:space="preserve">
+    <value>Überschreibendes Entfernen</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reason" xml:space="preserve">
+    <value>Grund</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_AddressRangeChanged" xml:space="preserve">
+    <value>Addressbreich geändert</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_NotSpecified" xml:space="preserve">
+    <value>Nicht angegeben</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_RequestedByAdmin" xml:space="preserve">
+    <value>Durch einen Admin veranlasst</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_ResolverChanged" xml:space="preserve">
+    <value>Bereichtszuordner geändert</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_ToLongPending" xml:space="preserve">
+    <value>Zu lange im Wartenzustand</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_ClientIdenfier" xml:space="preserve">
+    <value>Client Identifizierung</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_PreferredLifetime" xml:space="preserve">
+    <value>Bevorzuge Lebenszeit</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_RenewalTime" xml:space="preserve">
+    <value>Erneuerungszeit</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_StartedAt" xml:space="preserve">
+    <value>Gestartet am</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_ValidUntil" xml:space="preserve">
+    <value>Gültig bis</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_End" xml:space="preserve">
+    <value>Ende</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_ReboundSpan" xml:space="preserve">
+    <value>Widerfinden Intervall</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_RenewSpan" xml:space="preserve">
+    <value>Erneuerung Intervall</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_Reset" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="DHCPv6AddressSuspendedEvent_Property_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="DHCPv6AddressSuspendedEvent_Property_SuspendedTill" xml:space="preserve">
+    <value>Suspendiert bis</value>
+  </data>
+  <data name="DHCPv6LeaseCanceledEvent_Property_Reason" xml:space="preserve">
+    <value>Grund</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_DelegatedNetworkAddress" xml:space="preserve">
+    <value>Präfix</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_IdentityAssocationId" xml:space="preserve">
+    <value>IAID</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_IdentityAssocationIdForPrefix" xml:space="preserve">
+    <value>IAID für Präfix</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_PreferredLifetime" xml:space="preserve">
+    <value>Bevorzuge Lebenszeit</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_PrefixLength" xml:space="preserve">
+    <value>Präfixlänge</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_RenewalTime" xml:space="preserve">
+    <value>Erneuerungszeit</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_StartedAt" xml:space="preserve">
+    <value>Gestartet am</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_ValidUntil" xml:space="preserve">
+    <value>Valid Until</value>
+  </data>
+  <data name="DHCPv6LeasePrefixActvatedEvent_Property_Prefix" xml:space="preserve">
+    <value>Präfix</value>
+  </data>
+  <data name="DHCPv6LeasePrefixActvatedEvent_Property_PrefixAssociationId" xml:space="preserve">
+    <value>Präfix IAID</value>
+  </data>
+  <data name="DHCPv6LeasePrefixActvatedEvent_Property_PrefixLength" xml:space="preserve">
+    <value>Länge</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_Prefix" xml:space="preserve">
+    <value>Präfix</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_PrefixAssociationId" xml:space="preserve">
+    <value>Präfix IAID</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_PrefixLength" xml:space="preserve">
+    <value>Länge</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_Started" xml:space="preserve">
+    <value>Gestartet</value>
+  </data>
+  <data name="DHCPv6LeaseReleasedEvent_Property_OnlyPrefix" xml:space="preserve">
+    <value>Nur Präfix</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_End" xml:space="preserve">
+    <value>Ende</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_ReboundSpan" xml:space="preserve">
+    <value>Widerfinden Intervall</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_RenewSpan" xml:space="preserve">
+    <value>Erneuerung Intervall</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_Reset" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_ResetPrefix" xml:space="preserve">
+    <value>Präfix zurücksetzen</value>
+  </data>
+  <data name="EventDetailsTableHeader" xml:space="preserve">
+    <value>Ereignisdetails</value>
+  </data>
+  <data name="EventTypeTableHeader" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="false" xml:space="preserve">
+    <value>nein</value>
+  </data>
+  <data name="FilterCaption" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="FriendlyName_DHCPv4AddressSuspendedEvent" xml:space="preserve">
+    <value>DHCPv4 Adresse suspendiert</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseActivatedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Aktiviert</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseCanceledEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Beendet</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseCreatedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Erstellt</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseExpiredEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Abgelaufen</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseReleasedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Freigegeben</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseRemovedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Entfernt</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseRenewedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Erneuert</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseRevokedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Zurückgezogen</value>
+  </data>
+  <data name="FriendlyName_DHCPv6AddressSuspendedEvent" xml:space="preserve">
+    <value>DHCPv6 Adresse suspendiert</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseActivatedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Aktiviert</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseCanceledEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Beendet</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseCreatedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Erstellt</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseExpiredEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Abgelaufen</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeasePrefixActvatedEvent" xml:space="preserve">
+    <value>DHCPv6 Präfix Aktiviert</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeasePrefixAddedEvent" xml:space="preserve">
+    <value>DHCPv6 Präfix Erstellt</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseReleasedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Freigegeben</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseRemovedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Entfernt</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseRenewedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Erneuert</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseRevokedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Zurückgezogen</value>
+  </data>
+  <data name="LeaseHistoryHeading" xml:space="preserve">
+    <value>Ereignisse</value>
+  </data>
+  <data name="NoPacketAssociated" xml:space="preserve">
+    <value>Kein Anforderungspaket gefunden </value>
+  </data>
+  <data name="OpenRequestPacketDialog" xml:space="preserve">
+    <value>Öffnen einen Dialog mit der Anforderung</value>
+  </data>
+  <data name="OpenResponsePacketDialog" xml:space="preserve">
+    <value>Öffnen einen Dialog mit der Antwort</value>
+  </data>
+  <data name="RequestResponseTableHeader" xml:space="preserve">
+    <value>Anfrage und Antwort</value>
+  </data>
+  <data name="ScopeTableHeader" xml:space="preserve">
+    <value>Bereich</value>
+  </data>
+  <data name="TimestampTableHeader" xml:space="preserve">
+    <value>Zeitstempel</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Ereignissanzeige</value>
+  </data>
+  <data name="true" xml:space="preserve">
+    <value>ja</value>
+  </data>
+</root>

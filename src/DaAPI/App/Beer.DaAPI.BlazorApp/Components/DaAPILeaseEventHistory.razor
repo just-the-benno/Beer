@@ -53,10 +53,22 @@
 					<MudText>@context.Address</MudText>
 				</MudTd>
 				<MudTd DataLabel="@L["EventTypeTableHeader"]">
-					<MudText>@context.EventName</MudText>
+					<MudText>@GetFriendlyEventName(context.EventName)</MudText>
 				</MudTd>
 				<MudTd DataLabel="@L["EventDetailsTableHeader"]">
-					<MudText>@context.EventData</MudText>
+					@*<MudText>@GetFriendlyEventMessage(context)</MudText>*@
+					<MudList Dense="true">
+						@foreach (var item in GetEventProperties(context))
+						{
+							<MudListItem>
+								<div class="d-flex flex-row">
+									<MudText><strong>@item.Property</strong></MudText>
+									<MudSpacer />
+									<MudText>@item.Value</MudText>
+								</div>
+							</MudListItem>
+						}
+					</MudList>
 				</MudTd>
 				<MudTd DataLabel="@L["RequestResponseTableHeader"]">
 					@if (context.PacketHandledId != default)

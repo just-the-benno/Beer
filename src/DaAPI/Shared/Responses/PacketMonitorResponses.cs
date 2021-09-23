@@ -95,6 +95,21 @@ namespace Beer.DaAPI.Shared.Responses
                 public String Destination { get; set; }
             }
 
+            public enum PacketStatisticTimePeriod
+            {
+                LastHour = 0,
+                LastDay = 1,
+                LastWeek = 2,
+            }
+
+            public class IncomingAndOutgoingPacketStatisticItem
+            {
+                public Int32 OutgoingPacketAmount { get; set; }
+                public Int32 OutgoingPacketTotalSize { get; set; }
+                public Int32 IncomingPacketAmount { get; set; }
+                public Int32 IncomingPacketTotalSize { get; set; }
+            }
+
         }
     }
 }

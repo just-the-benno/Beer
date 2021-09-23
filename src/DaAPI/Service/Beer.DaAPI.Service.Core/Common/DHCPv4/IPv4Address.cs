@@ -154,7 +154,7 @@ namespace Beer.DaAPI.Core.Common
             return true;
         }
 
-        private UInt32 GetNumericValue()
+        public UInt32 GetNumericValue()
         {
             UInt32 result =
                 (UInt32)(_addressBytes[3] * _conversations[3]) +

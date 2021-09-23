@@ -415,7 +415,8 @@ namespace DaAPI.IntegrationTests.StorageEngine
                         Id = random.NextGuid(),
                         Start = DateTime.Now,
                         End = DateTime.Now.AddHours(5),
-                        Address = address
+                        Address = address,
+                        OrderNumber = IPv4Address.FromString(address).GetNumericValue(),
                     };
 
                     context.DHCPv4LeaseEntries.Add(oldEntry);
@@ -467,13 +468,20 @@ namespace DaAPI.IntegrationTests.StorageEngine
                     } });
 
                     Assert.True(actual);
+                    var leaseEntries =  await context.DHCPv4LeaseEntries.AsQueryable().Where(x => x.LeaseId == leaseId).ToArrayAsync();
+                    Assert.Equal(2, leaseEntries.Length);
 
-                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
-                    CheckLeaseEntry(scopeId, leaseId, dataModel, leaseAddress);
-                    Assert.Equal(expectedEndTime, dataModel.End);
+                    DHCPv4LeaseEntryDataModel oldDataModel = leaseEntries[0];
+                    Assert.Equal(timeStamp, oldDataModel.End);
+                    Assert.Equal(ReasonToEndLease.PseudoCancel, oldDataModel.EndReason);
+                    Assert.False(oldDataModel.IsActive);
 
-                    Assert.Equal(timeStamp.AddHours(-2), dataModel.EndOfRenewalTime);
-                    Assert.Equal(timeStamp.AddHours(-4), dataModel.EndOfPreferredLifetime);
+                    DHCPv4LeaseEntryDataModel newDataModel = leaseEntries[1];
+                    CheckLeaseEntry(scopeId, leaseId, newDataModel, leaseAddress);
+                    Assert.Equal(expectedEndTime, newDataModel.End);
+
+                    Assert.Equal(timeStamp.AddHours(-2), newDataModel.EndOfRenewalTime);
+                    Assert.Equal(timeStamp.AddHours(-4), newDataModel.EndOfPreferredLifetime);
                 }
                 {
                     DateTime timesstamp = DateTime.UtcNow.AddHours(random.NextDouble());
@@ -487,7 +495,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                     Assert.True(actual);
 
-                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
+                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().Skip(1).FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     Assert.Equal(ReasonToEndLease.Revoked, dataModel.EndReason);
                     Assert.Equal(timesstamp, dataModel.End);
                 }
@@ -503,7 +511,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                     Assert.True(actual);
 
-                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
+                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().Skip(1).FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     Assert.Equal(ReasonToEndLease.Canceled, dataModel.EndReason);
                     Assert.Equal(timesstamp, dataModel.End);
                 }
@@ -519,7 +527,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                     Assert.True(actual);
 
-                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
+                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().Skip(1).FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     Assert.Equal(ReasonToEndLease.Released, dataModel.EndReason);
                     Assert.Equal(timesstamp, dataModel.End);
                 }
@@ -535,7 +543,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                     Assert.True(actual);
 
-                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
+                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().Skip(1).FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     Assert.Equal(ReasonToEndLease.Expired, dataModel.EndReason);
                     Assert.Equal(timesstamp, dataModel.End);
                 }
@@ -548,7 +556,7 @@ namespace DaAPI.IntegrationTests.StorageEngine
 
                     Assert.True(nonFoundLease);
 
-                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().FirstOrDefaultAsync(x => x.LeaseId == leaseId);
+                    DHCPv4LeaseEntryDataModel dataModel = await context.DHCPv4LeaseEntries.AsQueryable().Skip(1).FirstOrDefaultAsync(x => x.LeaseId == leaseId);
                     Assert.Equal(ReasonToEndLease.Expired, dataModel.EndReason);
                 }
             }

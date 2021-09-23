@@ -1,6 +1,7 @@
 ﻿@page "/scopes/dhcpv6/details/{ScopeId}"
 
 @using Humanizer
+@using Beer.DaAPI.Core.Common
 
 @attribute [Authorize]
 @inject DaAPIService _service
@@ -9,35 +10,54 @@
 @inject ISnackbar _snackBarService
 
 <BeerShowCircularLoadingIndicatorWhileNull Item="_properties" Text="@L["LoadingDetailsMessage"]">
-    <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-4">@String.Format(L["PageTitle"], _properties.Name)</MudText>
+	<MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-4">@String.Format(L["PageTitle"], _properties.Name)</MudText>
 
-    @if (_leases.Any() == false)
-    {
-        <MudAlert Severity="Severity.Info">@L["NoLeasesFound"]</MudAlert>
-    }
-    else
-    {
-        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["ActiveLeaseHeading"]</MudText>
-        <MudGrid>
-            @{ Int32 index = 0; }
-            @foreach (var item in GetActiveLeases())
-            {
-                var temp = index++;
-                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" CancelLease="@( () => CancelLease(GetActiveLeases().ElementAt(temp)))" Class="pa-4 white-text light-green lighten-2" />
-            }
-        </MudGrid>
-        <MudText Typo="Typo.h5" Color="Color.Primary" Class="my-4">@L["PendingLeaseHeading"]</MudText>
-        <MudGrid>
-            @{ Int32 index = 0; }
-            @foreach (var item in GetPendingLeases())
-            {
-                var temp = index++;
-                <DHCPv6LeaseView Lease="item" ScopeId="@ScopeId" CancelLease="@( () => CancelLease(GetPendingLeases().ElementAt(temp)))" Class="pa-4 white-text light-blue lighten-2" />
-            }
-        </MudGrid>
-    }
+	<DaAPIDHCPLeaseTable ScopeId="Guid.Parse(ScopeId)" IncludeChildren="true" TLease="DHCPv6LeaseOverview"
+						 LeaseGetter="_service.GetDHCPv6LeasesByScope" LeaseDeleter="_service.SendCancelDHCPv6LeaseRequest"
+						 ScopeLinkGetter="@( (x) => $"/scopes/dhcpv6/details/{x}")">
+		<AddressContent>
+			<MudText Typo="Typo.subtitle2">@context.Address</MudText>
+			@if (context.Prefix != null && context.Prefix.Mask > 0)
+			{
+				<MudText Typo="Typo.subtitle2">@context.Prefix.Address/@context.Prefix.Mask</MudText>
+			}
+		</AddressContent>
+		<ClientIdentifierContent>
+			@if (context.ClientIdentifier != null)
+			{
+				var duid = DUIDFactory.GetDUID(context.ClientIdentifier);
 
-    	<DaAPILeaseEventHistory ScopeId="Guid.Parse(ScopeId)" DisplayIPv6Packets="true"
+
+				switch (duid)
+				{
+
+					case UUIDDUID cd:
+						<MudText Typo="Typo.subtitle2">@cd.UUID.ToString()</MudText>
+						break;
+					case VendorBasedDUID cd:
+						<MudText Typo="Typo.subtitle2">@L["VendorDuidLabel"]: @cd.EnterpriseNumber.ToString()</MudText>
+						<MudText Typo="Typo.subtitle2">@Beer.DaAPI.Core.Common.ByteHelper.ToString(cd.Identifier,true)</MudText>
+						break;
+					case LinkLayerAddressAndTimeDUID cd:
+						<MudText Typo="Typo.subtitle2">@(Beer.DaAPI.Core.Common.ByteHelper.ToString(cd.LinkLayerAddress,':'))</MudText>
+						<MudText Typo="Typo.subtitle2">@cd.Time.ToString("dd.MM.yyyy HH:mm") </MudText>
+						break;
+					case LinkLayerAddressDUID cd:
+						<MudText Typo="Typo.subtitle2">@(Beer.DaAPI.Core.Common.ByteHelper.ToString(cd.LinkLayerAddress,':'))</MudText>
+						break;
+					default:
+						<MudText Typo="Typo.subtitle2">@(Beer.DaAPI.Core.Common.ByteHelper.ToString(context.ClientIdentifier,true))</MudText>
+						break;
+				}
+			}
+			else
+			{
+				<span>@L["NoMacAddressFound"]</span>
+			}
+		</ClientIdentifierContent>
+	</DaAPIDHCPLeaseTable>
+
+	<DaAPILeaseEventHistory ScopeId="Guid.Parse(ScopeId)" DisplayIPv6Packets="true"
 							PacketRequestLoader="@( (id,response) => response == true ? _service.GetDHCPv6PacketResponse(id) :  _service.GetDHCPv6PacketRequest(id) )"
 							FilterMethod="@_service.GetDHCPv6LeaseHistory" />
 

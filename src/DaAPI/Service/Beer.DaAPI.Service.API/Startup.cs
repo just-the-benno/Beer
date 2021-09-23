@@ -71,6 +71,7 @@ namespace Beer.DaAPI.Service.API
 
         protected virtual void SetUrlsByTyeConfig(AppSettings settings)
         {
+
             var authorityUrl = Configuration.GetServiceUri("identity", "https");
             if (authorityUrl != null)
             {
@@ -193,6 +194,9 @@ namespace Beer.DaAPI.Service.API
 
             services.AddTransient<DHCPv6RateLimitBasedFilter>();
             services.AddTransient<DHCPv6PacketConsistencyFilter>();
+
+            services.AddTransient<DHCPv4RateLimitBasedFilter>();
+            services.AddTransient<UnkownDHCPv4RequestTypePaketFilter>();
 
             services.AddSingleton<INotificationEngine, NotificationEngine>();
             services.AddSingleton<INotificationActorFactory, ServiceProviderBasedNotificationActorFactory>();
@@ -328,15 +332,19 @@ namespace Beer.DaAPI.Service.API
             //var seeder = new DatabaseSeeder();
             //seeder.SeedDatabase(false, storageContext).GetAwaiter().GetResult();
 #endif
-            IDHCPv6PacketFilterEngine packetFilterEngine = provider.GetService<IDHCPv6PacketFilterEngine>();
-            packetFilterEngine.AddFilter(provider.GetService<DHCPv6RateLimitBasedFilter>());
-            packetFilterEngine.AddFilter(provider.GetService<DHCPv6PacketConsistencyFilter>());
+            IDHCPv6PacketFilterEngine dhcpv6PacketFilterEngine = provider.GetService<IDHCPv6PacketFilterEngine>();
+            dhcpv6PacketFilterEngine.AddFilter(provider.GetRequiredService<DHCPv6RateLimitBasedFilter>());
+            dhcpv6PacketFilterEngine.AddFilter(provider.GetRequiredService<DHCPv6PacketConsistencyFilter>());
+
+            IDHCPv4PacketFilterEngine dhcpv4PacketFilterEngine = provider.GetService<IDHCPv4PacketFilterEngine>();
+            dhcpv4PacketFilterEngine.AddFilter(provider.GetRequiredService<DHCPv4RateLimitBasedFilter>());
+            dhcpv4PacketFilterEngine.AddFilter(provider.GetRequiredService<UnkownDHCPv4RequestTypePaketFilter>());
 
             var storage = provider.GetService<IDHCPv6ReadStore>();
             var serverproperties = storage.GetServerProperties().GetAwaiter().GetResult();
             if (serverproperties != null && serverproperties.ServerDuid != null)
             {
-                packetFilterEngine.AddFilter(new DHCPv6PacketServerIdentifierFilter(serverproperties.ServerDuid, provider.GetService<ILogger<DHCPv6PacketServerIdentifierFilter>>()));
+                dhcpv6PacketFilterEngine.AddFilter(new DHCPv6PacketServerIdentifierFilter(serverproperties.ServerDuid, provider.GetService<ILogger<DHCPv6PacketServerIdentifierFilter>>()));
             }
 
             var dhcpv6InterfaceEngine = provider.GetService<IDHCPv6InterfaceEngine>();

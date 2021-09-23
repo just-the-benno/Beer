@@ -120,14 +120,209 @@
   <data name="AddressTableHeader" xml:space="preserve">
     <value>Address</value>
   </data>
+  <data name="DHCPv4AddressSuspendedEvent_Property_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="DHCPv4AddressSuspendedEvent_Property_SuspendedTill" xml:space="preserve">
+    <value>Suspened until</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_ForceRemove" xml:space="preserve">
+    <value>Force removal</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_AddressRangeChanged" xml:space="preserve">
+    <value>Address Range Changed</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_NotSpecified" xml:space="preserve">
+    <value>Not Specified</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_RequestedByAdmin" xml:space="preserve">
+    <value>Requested by an admin</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_ResolverChanged" xml:space="preserve">
+    <value>Resolver Changed</value>
+  </data>
+  <data name="DHCPv4LeaseCanceledEvent_Property_Reasons_ToLongPending" xml:space="preserve">
+    <value>To long pending</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_ClientIdenfier" xml:space="preserve">
+    <value>Client Identifier</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_PreferredLifetime" xml:space="preserve">
+    <value>Preferred Lifetime</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_RenewalTime" xml:space="preserve">
+    <value>Renewal Time</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_StartedAt" xml:space="preserve">
+    <value>Started At</value>
+  </data>
+  <data name="DHCPv4LeaseCreatedEvent_Property_ValidUntil" xml:space="preserve">
+    <value>Valid Until</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_ReboundSpan" xml:space="preserve">
+    <value>Rebound Interval</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_RenewSpan" xml:space="preserve">
+    <value>Renew Interval</value>
+  </data>
+  <data name="DHCPv4LeaseRenewedEvent_Property_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="DHCPv6AddressSuspendedEvent_Property_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="DHCPv6AddressSuspendedEvent_Property_SuspendedTill" xml:space="preserve">
+    <value>Suspened until</value>
+  </data>
+  <data name="DHCPv6LeaseCanceledEvent_Property_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_DelegatedNetworkAddress" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_IdentityAssocationId" xml:space="preserve">
+    <value>IAID</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_IdentityAssocationIdForPrefix" xml:space="preserve">
+    <value>IAID for Prefix</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_PreferredLifetime" xml:space="preserve">
+    <value>Preferred Lifetime</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_PrefixLength" xml:space="preserve">
+    <value>Prefix Length</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_RenewalTime" xml:space="preserve">
+    <value>Renewal Time</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_StartedAt" xml:space="preserve">
+    <value>Started At</value>
+  </data>
+  <data name="DHCPv6LeaseCreatedEvent_Property_ValidUntil" xml:space="preserve">
+    <value>Valid Until</value>
+  </data>
+  <data name="DHCPv6LeasePrefixActvatedEvent_Property_Prefix" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="DHCPv6LeasePrefixActvatedEvent_Property_PrefixAssociationId" xml:space="preserve">
+    <value>Prefix IAID</value>
+  </data>
+  <data name="DHCPv6LeasePrefixActvatedEvent_Property_PrefixLength" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_Prefix" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_PrefixAssociationId" xml:space="preserve">
+    <value>Prefix IAID</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_PrefixLength" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="DHCPv6LeasePrefixAddedEvent_Property_Started" xml:space="preserve">
+    <value>Started</value>
+  </data>
+  <data name="DHCPv6LeaseReleasedEvent_Property_OnlyPrefix" xml:space="preserve">
+    <value>Only Prefix</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_ReboundSpan" xml:space="preserve">
+    <value>Rebound Timespan</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_RenewSpan" xml:space="preserve">
+    <value>Renew Timespan</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="DHCPv6LeaseRenewedEvent_Property_ResetPrefix" xml:space="preserve">
+    <value>Reset Prefix</value>
+  </data>
   <data name="EventDetailsTableHeader" xml:space="preserve">
     <value>Event Details</value>
   </data>
   <data name="EventTypeTableHeader" xml:space="preserve">
     <value>Type</value>
   </data>
+  <data name="false" xml:space="preserve">
+    <value>false</value>
+  </data>
   <data name="FilterCaption" xml:space="preserve">
     <value>Filter</value>
+  </data>
+  <data name="FriendlyName_DHCPv4AddressSuspendedEvent" xml:space="preserve">
+    <value>DHCPv4 Address Suspended</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseActivatedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Activated</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseCanceledEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Canceled</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseCreatedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Created</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseExpiredEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Expired</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseReleasedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Released</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseRemovedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Removed</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseRenewedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Renewed</value>
+  </data>
+  <data name="FriendlyName_DHCPv4LeaseRevokedEvent" xml:space="preserve">
+    <value>DHCPv4 Lease Revoked</value>
+  </data>
+  <data name="FriendlyName_DHCPv6AddressSuspendedEvent" xml:space="preserve">
+    <value>DHCPv6 Address Suspended</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseActivatedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Activated</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseCanceledEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Canceled</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseCreatedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Created</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseExpiredEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Expired</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeasePrefixActvatedEvent" xml:space="preserve">
+    <value>DHCPv6 Prefix Activated</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeasePrefixAddedEvent" xml:space="preserve">
+    <value>DHCPv6 Prefix Added</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseReleasedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Released</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseRemovedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Removed</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseRenewedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Renewed</value>
+  </data>
+  <data name="FriendlyName_DHCPv6LeaseRevokedEvent" xml:space="preserve">
+    <value>DHCPv6 Lease Revoked</value>
   </data>
   <data name="LeaseHistoryHeading" xml:space="preserve">
     <value>Events</value>
@@ -152,5 +347,8 @@
   </data>
   <data name="Title" xml:space="preserve">
     <value>Event History</value>
+  </data>
+  <data name="true" xml:space="preserve">
+    <value>true</value>
   </data>
 </root>

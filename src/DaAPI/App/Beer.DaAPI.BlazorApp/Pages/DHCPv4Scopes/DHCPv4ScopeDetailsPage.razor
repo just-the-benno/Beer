@@ -12,35 +12,21 @@
 <BeerShowCircularLoadingIndicatorWhileNull Item="_properties" Text="@L["LoadingDetailsMessage"]">
 	<MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-4">@String.Format(L["PageTitle"], _properties.Name)</MudText>
 
-	@if (_leases.Any() == false)
-	{
-		<MudAlert Severity="Severity.Info">@L["NoLeasesFound"]</MudAlert>
-	}
-	else
-	{
-		<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@L["ActiveLeaseHeading"]</MudText>
-		<MudGrid>
-			@{
-				Int32 index = 0; 
-			}
-			@foreach (var item in GetActiveLeases())
+	<DaAPIDHCPLeaseTable ScopeId="Guid.Parse(ScopeId)" IncludeChildren="true" TLease="DHCPv4LeaseOverview"
+						 LeaseGetter="_service.GetDHCPv4LeasesByScope" LeaseDeleter="_service.SendCancelDHCPv4LeaseRequest"
+						 ScopeLinkGetter="@( (x) => $"/scopes/dhcpv4/details/{x}")">
+		<ClientIdentifierContent>
+			@if (context.MacAddress != null)
 			{
-				var temp = index++;
-				<DHCPv4LeaseView Lease="item" ScopeId="@ScopeId" CancelLease="@( () => CancelLease(GetActiveLeases().ElementAt(temp)))" Class="pa-4 white-text light-green lighten-2" />
+				<MudText Typo="Typo.subtitle2">@(Beer.DaAPI.Core.Common.ByteHelper.ToString(context.MacAddress,':'))</MudText>
 			}
-		</MudGrid>
-		<MudText Typo="Typo.h5" Color="Color.Primary" Class="my-4">@L["PendingLeaseHeading"]</MudText>
-		<MudGrid>
-			@{
-				Int32 index = 0; 
-			}
-			@foreach (var item in GetPendingLeases())
+			else
 			{
-				var temp = index++;
-				<DHCPv4LeaseView Lease="item" ScopeId="@ScopeId" CancelLease="@( () => CancelLease(GetPendingLeases().ElementAt(temp)))" Class="pa-4 white-text light-blue lighten-2" />
+				<span>@L["NoMacAddressFound"]</span>
 			}
-		</MudGrid>
-	}
+		</ClientIdentifierContent>
+	</DaAPIDHCPLeaseTable>
+
 
 	<DaAPILeaseEventHistory ScopeId="Guid.Parse(ScopeId)" DisplayIPv6Packets="false"
 							PacketRequestLoader="@( (id,response) => response == true ? _service.GetDHCPv4PacketResponse(id) :  _service.GetDHCPv4PacketRequest(id) )"

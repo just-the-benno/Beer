@@ -1,0 +1,51 @@
+﻿@using Humanizer
+@inject IStringLocalizer<TimeLeft> L
+
+<div class="d-flex flex-column align-start">
+	<MudChip Label="true" Color="@GetColorBasedOnTimespan()" Size="Size.Small" Class="mud-elevation-25">
+		@if (Time > ReferenceTime)
+		{
+			<span>@L["in"]</span>
+		}
+		else
+		{
+			<span>@L["before"]</span>
+		}
+		<span>:&nbsp;</span>
+		<span> @((ReferenceTime - Time).Humanize())</span>
+	</MudChip>
+	<MudText Typo="Typo.body2"> @Time.ToString("HH:mm dd.MM.yyyy") </MudText>
+</div>
+
+
+
+@code {
+	[Parameter] public DateTime Time { get; set; }
+	[Parameter] public DateTime ReferenceTime { get; set; } = DateTime.UtcNow;
+
+	private Color GetColorBasedOnTimespan()
+	{
+		var diff = Time - ReferenceTime;
+		if(diff.TotalSeconds < 0)
+		{
+			return Color.Error;
+		}
+		else
+		{
+			if(diff.TotalSeconds < 30)
+			{
+				return Color.Warning;
+			}
+			else if(diff.TotalSeconds < 120)
+			{
+				return Color.Info;
+			}
+			else
+			{
+				return Color.Default;
+			}
+		}
+
+	}
+
+}

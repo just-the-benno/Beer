@@ -215,11 +215,11 @@ namespace Beer.DaAPI.BlazorApp.Services
             }
         }
 
-        public async Task<IEnumerable<DHCPv6LeaseOverview>> GetDHCPv6LeasesByScope(String scopeId, Boolean includeChildScopes)
+        public async Task<IEnumerable<DHCPv6LeaseOverview>> GetDHCPv6LeasesByScope(Guid scopeId, Boolean includeChildScopes, DateTime? referenceDate)
         {
             try
             {
-                var result = await GetResult($"/api/leases/dhcpv6/scopes/{scopeId}?includeChildren={includeChildScopes}", new List<DHCPv6LeaseOverview>());
+                var result = await GetResult($"/api/leases/dhcpv6/scopes/{scopeId}?includeChildren={includeChildScopes}&pointOfView={referenceDate?.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}", new List<DHCPv6LeaseOverview>());
                 return result;
             }
             catch (Exception ex)
@@ -370,8 +370,8 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<Boolean> SendCancelDHCPv4LeaseRequest(Guid leaseId) =>
         await ExecuteCommand(() => _client.DeleteAsync($"/api/leases/dhcpv4/{leaseId}"));
 
-        public async Task<IEnumerable<DHCPv4LeaseOverview>> GetDHCPv4LeasesByScope(String scopeId, Boolean includeChildScopes) =>
-        await GetResponse<IEnumerable<DHCPv4LeaseOverview>>($"/api/leases/dhcpv4/scopes/{scopeId}?includeChildren={includeChildScopes}");
+        public async Task<IEnumerable<DHCPv4LeaseOverview>> GetDHCPv4LeasesByScope(Guid scopeId, Boolean includeChildScopes, DateTime? referenceDate) =>
+        await GetResponse<IEnumerable<DHCPv4LeaseOverview>>($"/api/leases/dhcpv4/scopes/{scopeId}?includeChildren={includeChildScopes}&pointOfView={referenceDate?.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}");
 
         public async Task<IEnumerable<DHCPv4PacketHandledEntry>> GetHandledDHCPv4PacketByScopeId(String scopeId, Int32 amount = 100) => await GetHandledDHCPv4PacketByScopeId<DHCPv4PacketHandledEntry>(scopeId, amount);
 
@@ -499,5 +499,7 @@ namespace Beer.DaAPI.BlazorApp.Services
         public async Task<FilteredResult<LeaseEventOverview>> GetDHCPv6LeaseHistory(FilterLeaseHistoryRequest filter) =>
              await GetResponse<FilteredResult<LeaseEventOverview>>($"/api/leases/dhcpv6/events{AppendModelAsQuery(filter)}");
 
+        public async Task<IDictionary<PacketStatisticTimePeriod, IncomingAndOutgoingPacketStatisticItem>> GetInAndOutgoingPackets(Guid scopeId, DateTime? referenceTime) =>
+             await GetResponse<IDictionary<PacketStatisticTimePeriod, IncomingAndOutgoingPacketStatisticItem>>($"/api/PacketMonitor/InAndOut/{scopeId}?referenceTime={referenceTime?.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}");
     }
 }

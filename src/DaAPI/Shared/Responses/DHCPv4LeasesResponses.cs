@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using static Beer.DaAPI.Core.Scopes.ScopeResolverPropertyDescription;
 using static Beer.DaAPI.Shared.Requests.DHCPv4ScopeRequests.V1.DHCPv4ScopeAddressPropertyReqest;
+using static Beer.DaAPI.Shared.Responses.CommenResponses.V1;
 
 namespace Beer.DaAPI.Shared.Responses
 {
@@ -18,15 +19,17 @@ namespace Beer.DaAPI.Shared.Responses
                 public String Name { get; set; }
             }
 
-            public class DHCPv4LeaseOverview
+            public class DHCPv4LeaseOverview : ILeaseOverview
             {
                 public Guid Id { get; set; }
                 public DateTime Started { get; set; }
                 public DateTime ExpectedEnd { get; set; }
+                public DateTime RenewTime { get; set; }
+                public DateTime ReboundTime { get; set; }
                 public Byte[] UniqueIdentifier { get; set; }
                 public Byte[] MacAddress { get; set; }
                 public String Address { get; set; }
-                public DHCPv4ScopeOverview Scope { get; set; }
+                public ScopeOverview Scope { get; set; }
                 public LeaseStates State { get; set; }
             }
         }

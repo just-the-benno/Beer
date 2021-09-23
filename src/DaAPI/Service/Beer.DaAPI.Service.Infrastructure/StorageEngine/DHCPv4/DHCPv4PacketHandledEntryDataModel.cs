@@ -66,7 +66,14 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
                 ClientIdentifiier = clientIdentifierString;
                 MacAddress = ByteHelper.ToString(macAddress, false);
                 RequestedAddress = request.ClientIPAdress.ToString();
-
+                if (request.MessageType == DHCPv4MessagesTypes.Request)
+                {
+                    var rawRequestedIpOption = request.GetOptionByIdentifier(DHCPv4OptionTypes.ClientIdentifier);
+                    if (rawRequestedIpOption != null && rawRequestedIpOption is DHCPv4PacketAddressOption requestedAddressOption)
+                    {
+                        RequestedAddress = requestedAddressOption.Address.ToString();
+                    }
+                }
                 if (ResponseStream != null && ResponseStream.Length > 0)
                 {
                     var response = DHCPv4Packet.FromByteArray(ResponseStream,
@@ -79,7 +86,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine.DHCPv4
             catch (Exception)
             {
             }
-          
+
             Version = 2;
         }
 
