@@ -1671,7 +1671,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 if (item.ResponseSize.HasValue == true)
                 {
                     statisticItem.OutgoingPacketAmount += 1;
-                    statisticItem.OutgoingPacketAmount += item.ResponseSize.Value;
+                    statisticItem.OutgoingPacketTotalSize += item.ResponseSize.Value;
                 }
             }
 
