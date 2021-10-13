@@ -40,8 +40,6 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
         {
             TPacket response = null;
 
-            
-
             try
             {
                 await _semaphoreSlim.WaitAsync();
@@ -75,6 +73,8 @@ namespace Beer.DaAPI.Infrastructure.LeaseEngines
             finally
             {
                 Logger.LogDebug("releasing semaphore. Ready for next process");
+                RootScope.ClearChanges();
+                RootScope.ClearTriggers();
                 _semaphoreSlim.Release();
             }
 
