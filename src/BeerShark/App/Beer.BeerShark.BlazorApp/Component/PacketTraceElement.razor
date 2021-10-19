@@ -1,0 +1,15 @@
+﻿<MudText> (@(Index + 1))  @Packet.Size</MudText>
+				@if (MatchIndex < 0)
+{
+	<MudText Color="Color.Error">Not Found</MudText>
+}
+else
+{
+	<MudText Color="Color.Success"> - @MatchIndex  -</MudText>
+}
+
+@code {
+	[Parameter] public SharpShark.Packets.Packet Packet { get; set; }
+	[Parameter] public Int32 Index { get; set; }
+	[Parameter] public Int32 MatchIndex { get; set; }
+}

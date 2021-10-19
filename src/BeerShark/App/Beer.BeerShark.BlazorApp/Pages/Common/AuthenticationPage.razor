@@ -1,0 +1,57 @@
+﻿@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject IStringLocalizer<AuthenticationPage> L
+@inject NavigationManager Navigation
+
+@layout SinglePageLayout
+
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        <BeerLoadingComponent Title="@L["SigninTitle"]" Text="@L["SigninText"]" />
+    </LoggingIn>
+    <LogInFailed>
+        <BeerDisplayErrorComponent Text="@L["LoginFailedTitle"]" />
+    </LogInFailed>
+    <CompletingLoggingIn>
+        <BeerLoadingComponent Title="@L["CompletingLogginInTitle"]" Text="@L["CompletingLogginInText"]" />
+    </CompletingLoggingIn>
+
+    <LogOutSucceeded>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@L["LogoutSuccessTitle"]</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>@L["LogoutSuccessContent"]</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton OnClick="LoginAgain" Variant="Variant.Text" Color="Color.Primary">@L["LogoutLoginAgainCaption"]</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </LogOutSucceeded>
+    <LogOutFailed>
+        <BeerDisplayErrorComponent Text="@L["LogoutFailed"]" />
+    </LogOutFailed>
+    <LogOut>
+        <BeerLoadingComponent Title="@L["LogoutTitle"]" Text="@L["LogoutText"]" />
+    </LogOut>
+    <CompletingLogOut>
+        <BeerLoadingComponent Title="@L["CompletingLogOutTitle"]" Text="@L["CompletingLogOutText"]" />
+    </CompletingLogOut>
+    <UserProfile>
+        <BeerLoadingComponent Title="@L["UserProfileTitle"]" Text="@L["UserProfileText"]" />
+    </UserProfile>
+</RemoteAuthenticatorView>
+
+@code {
+    [Parameter]
+    public string Action { get; set; }
+
+    private void LoginAgain()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+}

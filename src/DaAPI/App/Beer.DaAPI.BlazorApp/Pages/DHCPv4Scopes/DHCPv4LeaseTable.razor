@@ -3,14 +3,14 @@
 <BeerShowLoadingIndicatorWhileNull Item="_packetStatistics">
 	<MudGrid>
 		<MudItem xs="12" sm="6">
-			<DaAPISmallInfoCard Icon="far fa-handshake" Color="Color.Primary" Caption="@L["LeaseCaption"]" Values="@(new []{
+			<BeerSmallInfoCard Icon="far fa-handshake" Color="Color.Primary" Caption="@L["LeaseCaption"]" Values="@(new []{
 					$"{_activeLeasesAmount} {L["ActiveLeaseCaption"]}",
 					$"{_reboundingLeasesAmount} {L["ReboundingLeaseCaption"]}",
 
 				})" />
 		</MudItem>
 		<MudItem xs="12" sm="6">
-			<DaAPISmallInfoCard Icon="fas fa-exchange-alt" Color="Color.Info" Caption="@L["InAndOutgoingPacketsCpation"]" Values="@(new [] {
+			<BeerSmallInfoCard Icon="fas fa-exchange-alt" Color="Color.Info" Caption="@L["InAndOutgoingPacketsCpation"]" Values="@(new [] {
 					$"{GetHourlyPacketStatistics().IncomingPacketAmount} {L["IncomingPacketCaption"]}",
 					$"{GetHourlyPacketStatistics().OutgoingPacketAmount} {L["OutcomingPacketCaption"]}",
 

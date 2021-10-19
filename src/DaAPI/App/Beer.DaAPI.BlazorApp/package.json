@@ -9,7 +9,6 @@
     "build": "grunt build",
     "watch": "grunt watch",
     "clean": "grunt clean"
-
   },
   "devDependencies": {
     "grunt": "1.3.0",

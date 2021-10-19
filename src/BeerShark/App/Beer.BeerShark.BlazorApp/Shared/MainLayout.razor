@@ -1,0 +1,86 @@
+﻿@inherits LayoutComponentBase
+
+@inject IStringLocalizer<SharedRessources> LShared
+@inject SignOutSessionStateManager SignOutManager
+@inject NavigationManager _navigationManager
+
+<MudThemeProvider Theme="_default" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="4">
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudIcon Icon="fas fa-beer fa-2x" Size="Size.Large" />
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudIconButton Icon="fas fa-beer fa-2x" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Typo="Typo.h6" Class="ml-4">@LShared["AppName"]</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+            <MudText Typo="Typo.subtitle2">@LShared["AppName"]</MudText>
+        </MudHidden>
+        <MudSpacer />
+        <AuthorizeView>
+            <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                <ActivatorContent>
+                    <MudAvatar Image="@context.User.GetClaimsValue("picture")" />
+                </ActivatorContent>
+                <ChildContent>
+                    <BeerPersonCard Class="mt-n2" />
+                    <MudDivider Class="mb-2" />
+                    <MudListItem Text="@LShared["Logout"]" Icon="@Icons.Material.Filled.Logout" OnClick="BeginSignOut" />
+                </ChildContent>
+            </MudMenu>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="25" ClipMode="DrawerClipMode.Always">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+
+    private MudTheme _default = new MudTheme
+    {
+        Palette = new Palette
+        {
+            Background = "#fafafa",
+        },
+        LayoutProperties = new LayoutProperties
+        {
+            DefaultBorderRadius = "3",
+        },
+    };
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        _navigationManager.NavigateTo("authentication/logout");
+    }
+
+    public bool _drawerOpen = true;
+    public bool _themeManagerOpen = false;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+{
+        new BreadcrumbItem("Personal", href: "#"),
+        new BreadcrumbItem("Dashboard", href: "#"),
+    };
+}

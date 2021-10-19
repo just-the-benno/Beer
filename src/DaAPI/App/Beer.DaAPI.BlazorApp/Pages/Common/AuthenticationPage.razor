@@ -8,13 +8,13 @@
 
 <RemoteAuthenticatorView Action="@Action">
     <LoggingIn>
-        <DaAPILoadingComponent Title="@L["SigninTitle"]" Text="@L["SigninText"]" />
+        <BeerLoadingComponent Title="@L["SigninTitle"]" Text="@L["SigninText"]" />
     </LoggingIn>
     <LogInFailed>
-        <DaAPIDisplayErrorComponent Text="@L["LoginFailedTitle"]" />
+        <BeerDisplayErrorComponent Text="@L["LoginFailedTitle"]" />
     </LogInFailed>
     <CompletingLoggingIn>
-        <DaAPILoadingComponent Title="@L["CompletingLogginInTitle"]" Text="@L["CompletingLogginInText"]" />
+        <BeerLoadingComponent Title="@L["CompletingLogginInTitle"]" Text="@L["CompletingLogginInText"]" />
     </CompletingLoggingIn>
 
     <LogOutSucceeded>
@@ -33,16 +33,16 @@
         </MudCard>
     </LogOutSucceeded>
     <LogOutFailed>
-        <DaAPIDisplayErrorComponent Text="@L["LogoutFailed"]" />
+        <BeerDisplayErrorComponent Text="@L["LogoutFailed"]" />
     </LogOutFailed>
     <LogOut>
-        <DaAPILoadingComponent Title="@L["LogoutTitle"]" Text="@L["LogoutText"]" />
+        <BeerLoadingComponent Title="@L["LogoutTitle"]" Text="@L["LogoutText"]" />
     </LogOut>
     <CompletingLogOut>
-        <DaAPILoadingComponent Title="@L["CompletingLogOutTitle"]" Text="@L["CompletingLogOutText"]" />
+        <BeerLoadingComponent Title="@L["CompletingLogOutTitle"]" Text="@L["CompletingLogOutText"]" />
     </CompletingLogOut>
     <UserProfile>
-        <DaAPILoadingComponent Title="@L["UserProfileTitle"]" Text="@L["UserProfileText"]" />
+        <BeerLoadingComponent Title="@L["UserProfileTitle"]" Text="@L["UserProfileText"]" />
     </UserProfile>
 </RemoteAuthenticatorView>
 

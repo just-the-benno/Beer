@@ -27,22 +27,26 @@ namespace Beer.ControlCenter.Service.API
 
         protected virtual void SetUrlsByTyeConfig(AppSettings settings)
         {
+            var replacements = new[] { 
+                ("DaAPIApp", "DaAPI-Blazor"),
+                ("ControlCenterApp", "ControlCenter-BlazorApp"),
+                ("BeerShark", "BeerShark-BlazorApp"),
+            };
+
             var authorityUrl = Configuration.GetServiceUri("identity", "https");
             if (authorityUrl != null)
             {
                 settings.JwtTokenAuthenticationOptions.AuthorityUrl = authorityUrl.RemoveTrailingSlash();
             }
 
-            var daapiSpaClientUrl = Configuration.GetServiceUri("DaAPIApp", "https");
-            if (daapiSpaClientUrl != null)
+            foreach (var item in replacements)
             {
-                settings.AppURIs["DaAPI-Blazor"] = daapiSpaClientUrl.RemoveTrailingSlash();
-            }
-
-            var controlCenterSpaClientUrl = Configuration.GetServiceUri("ControlCenterApp", "https");
-            if (controlCenterSpaClientUrl != null)
-            {
-                settings.AppURIs["ControlCenter-BlazorApp"] = controlCenterSpaClientUrl.RemoveTrailingSlash();
+                var tyeUrl = Configuration.GetServiceUri(item.Item1, "https");
+                Console.WriteLine(tyeUrl.ToString());
+                if (tyeUrl != null)
+                {
+                    settings.AppURIs[item.Item2] = tyeUrl.RemoveTrailingSlash();
+                }
             }
         }
 

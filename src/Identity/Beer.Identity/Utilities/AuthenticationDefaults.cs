@@ -30,6 +30,7 @@ namespace Beer.Identity.Utilities
 
         public const String BeerAppClientId = "control-center-app";
         public const String DaAPIAppClientId = "daapi-app";
+        public const String BeerSharkClientId = "beershark";
 
         public const String DaAPIMangeScope = "daapi.manage";
         public const String DaAPIScopeName = "daapi";

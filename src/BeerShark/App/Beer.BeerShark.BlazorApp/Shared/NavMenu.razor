@@ -1,0 +1,47 @@
+﻿@inject IStringLocalizer<NavMenu> L
+@inject BeerAppsService appService
+
+<BeerPersonCard Style="background-color: var(--mud-palette-drawer-background);color: var(--mud-palette-drawer-text);" />
+<MudDivider Class="mb-4" />
+<MudNavMenu>
+    @foreach (var item in _sideNavMenu)
+    {
+        @if (item.DisplayCaption == true)
+        {
+            <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 mb-2 mt-5">@item.Caption</MudText>
+        }
+
+        foreach (var child in item.NavItems)
+        {
+            <MudNavLink Href="@child.Link" Match="NavLinkMatch.Prefix" Icon="@child.IconClass">@child.Caption</MudNavLink>
+        }
+    }
+</MudNavMenu>
+
+@code {
+
+    public record NavItemGroupViewModel(String Caption, Boolean DisplayCaption, IEnumerable<NavItemViewModel> NavItems);
+    public record NavItemViewModel(String Link, String IconClass, String Caption, Int32 NotifictionAmount);
+
+    private IEnumerable<NavItemGroupViewModel> _sideNavMenu;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _sideNavMenu = new List<NavItemGroupViewModel>
+{
+                new NavItemGroupViewModel(L["MenuMainAnalzyerCaption"],false, new List<NavItemViewModel>
+            {
+                        new NavItemViewModel("dashboard","fas fa-tachometer-alt",L["MenuMainDashboardCaption"],0),
+                        new NavItemViewModel("packet-loss","fas fa-bell",L["MenuMainPacketLossCaption"],0),
+                }
+                ),
+               new NavItemGroupViewModel(L["BeerAppsCaption"],true, new List<NavItemViewModel>
+                {
+                        new NavItemViewModel(appService.GetControlCenterAppUrl(),Icons.Material.Filled.GridView ,L["ControlCenterCaption"],0),
+                    }
+                ),
+        };
+    }
+}
