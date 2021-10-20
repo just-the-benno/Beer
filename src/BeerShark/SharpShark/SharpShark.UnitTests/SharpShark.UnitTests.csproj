@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\AFZ-SVR1-MPLS-short.pcap" />
-    <None Remove="Assets\AFZ-SVR1-MPLS.pcap" />
-    <None Remove="Assets\AFZ-SVR1-MPLSO.pcap" />
-    <None Remove="Assets\AFZ-SVR2-MPLS-short.pcap" />
-    <None Remove="Assets\AFZ-SVR2-MPLS.pcap" />
-    <None Remove="Assets\AFZ-SVR2-MPLSO.pcap" />
     <None Remove="Assets\demo.pcap" />
     <None Remove="Assets\ethernet-with-trailer.pcap" />
     <None Remove="Assets\ethernet-without-trailer.pcap" />
@@ -26,24 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\AFZ-SVR1-MPLS-short.pcap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AFZ-SVR1-MPLS.pcap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AFZ-SVR1-MPLSO.pcap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AFZ-SVR2-MPLS-short.pcap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AFZ-SVR2-MPLS.pcap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AFZ-SVR2-MPLSO.pcap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\demo.pcap">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
