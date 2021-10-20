@@ -18,7 +18,7 @@
 </MudGrid>
 
 
-<MudText Typo="Typo.h3">Trace</MudText>
+<MudText Typo="Typo.h3">@L["TraceHeading"]</MudText>
 
 <div class="d-flex flex-row">
 	@foreach (var item in Result.Files)
@@ -26,8 +26,8 @@
 		<div class="d-flex" style="@GetColumnWidth()">
 			<div class="d-flex flex-column">
 				<MudText Typo=Typo.h4>@item.File.Name</MudText>
-				<MudText Typo=Typo.caption>Start: @item.SkippedOffset</MudText>
-				<MudText Typo=Typo.caption>End: @item.AbandonOffset</MudText>
+				<MudText Typo=Typo.caption>@L["PacketStartIndexCaption"]: @item.SkippedOffset</MudText>
+				<MudText Typo=Typo.caption>@L["PacketEndIndexCaption"]: @item.AbandonOffset</MudText>
 			</div>
 		</div>
 	}
@@ -83,7 +83,7 @@
 
 					@if (matchingIndex < 0)
 					{
-						<MudText Color="Color.Error">Not Found</MudText>
+						<MudText Color="Color.Error">@L["NotFoundLabel"]</MudText>
 					}
 					else
 					{
@@ -108,18 +108,15 @@
 					}
 					else
 					{
-						<MudText Color="Color.Error">Not Found</MudText>
+						<MudText Color="Color.Error">@L["NotFoundLabel"]</MudText>
 					}
 				}
 			</div>
 		}
 		}
-
 	</div>
 	<hr />
 }
-
-
 
 
 <MudPagination BoundaryCount="2" MiddleCount="5" Count="@( (Int32)Result.UniquePackets/_itemsPerPage + 1 )"

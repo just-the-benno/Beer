@@ -117,22 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppName" xml:space="preserve">
-    <value>Beer Shark</value>
+  <data name="CompletingLogginInText" xml:space="preserve">
+    <value>Sie wurden erfolgreich angemeldet</value>
   </data>
-  <data name="CancelCaption" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="CompletingLogginInTitle" xml:space="preserve">
+    <value>Anmeldung</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="CompletingLogOutText" xml:space="preserve">
+    <value>Sie wurden abgemeldet</value>
   </data>
-  <data name="NoCaption" xml:space="preserve">
-    <value>No</value>
+  <data name="CompletingLogOutTitle" xml:space="preserve">
+    <value>Abmelden</value>
   </data>
-  <data name="OkayCaption" xml:space="preserve">
-    <value>Okay</value>
+  <data name="LoginFailedTitle" xml:space="preserve">
+    <value>Anmeldung fehlgeschlagen</value>
   </data>
-  <data name="YesCaption" xml:space="preserve">
-    <value>Yes</value>
+  <data name="LogoutFailed" xml:space="preserve">
+    <value>Abmeldung fehlgeschlagen</value>
+  </data>
+  <data name="LogoutLoginAgainCaption" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+  <data name="LogoutSuccessContent" xml:space="preserve">
+    <value>Sie wurden erfolgreich von DaAPI abgemeldet</value>
+  </data>
+  <data name="LogoutSuccessTitle" xml:space="preserve">
+    <value>Erfolg</value>
+  </data>
+  <data name="LogoutText" xml:space="preserve">
+    <value>Wir melden Sie ab...</value>
+  </data>
+  <data name="LogoutTitle" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="SigninText" xml:space="preserve">
+    <value>Wir melden Sie an...</value>
+  </data>
+  <data name="SigninTitle" xml:space="preserve">
+    <value>Anmeldung</value>
+  </data>
+  <data name="UserProfileText" xml:space="preserve">
+    <value>Wir laden Ihr Benutzerprofil</value>
+  </data>
+  <data name="UserProfileTitle" xml:space="preserve">
+    <value>Informationen werden geladen</value>
   </data>
 </root>

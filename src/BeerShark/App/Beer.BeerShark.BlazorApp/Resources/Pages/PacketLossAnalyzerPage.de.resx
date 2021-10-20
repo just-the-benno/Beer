@@ -117,22 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppName" xml:space="preserve">
-    <value>Beer Shark</value>
+  <data name="BiderectionalReadCaption" xml:space="preserve">
+    <value>Biderectional Vergleich</value>
   </data>
-  <data name="CancelCaption" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="ChooseFilesButtonCaption" xml:space="preserve">
+    <value>Dateien auswählen</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="FileCountCaption" xml:space="preserve">
+    <value>Dateien</value>
   </data>
-  <data name="NoCaption" xml:space="preserve">
-    <value>No</value>
+  <data name="FilesTabHeader" xml:space="preserve">
+    <value>Dateien</value>
   </data>
-  <data name="OkayCaption" xml:space="preserve">
-    <value>Okay</value>
+  <data name="GoNextPageButton" xml:space="preserve">
+    <value>Analyseparameter</value>
   </data>
-  <data name="YesCaption" xml:space="preserve">
-    <value>Yes</value>
+  <data name="MoveFileDown" xml:space="preserve">
+    <value>Einen Platz nach unten schieben</value>
+  </data>
+  <data name="MoveFileUp" xml:space="preserve">
+    <value>Einen Platz nach oben schieben</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Paket Verlust Analyse</value>
+  </data>
+  <data name="ResultTabHeader" xml:space="preserve">
+    <value>Analysieren</value>
+  </data>
+  <data name="StartAnalyzeButtonCaption" xml:space="preserve">
+    <value>Starte die Analyse</value>
   </data>
 </root>

@@ -117,7 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BiderectionalReadCaption" xml:space="preserve">
+    <value>Biderectional Comparission</value>
+  </data>
+  <data name="ChooseFilesButtonCaption" xml:space="preserve">
+    <value>Select Files</value>
+  </data>
+  <data name="FileCountCaption" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="FilesTabHeader" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="GoNextPageButton" xml:space="preserve">
+    <value>Analyze Parameters</value>
+  </data>
+  <data name="MoveFileDown" xml:space="preserve">
+    <value>Move File Down</value>
+  </data>
+  <data name="MoveFileUp" xml:space="preserve">
+    <value>Move File Up</value>
+  </data>
   <data name="PageTitle" xml:space="preserve">
     <value>Packet Loss Analyzer</value>
+  </data>
+  <data name="ResultTabHeader" xml:space="preserve">
+    <value>Analyze</value>
+  </data>
+  <data name="StartAnalyzeButtonCaption" xml:space="preserve">
+    <value>Analyze Files</value>
   </data>
 </root>

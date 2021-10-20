@@ -15,7 +15,7 @@
 		</MudButton>
 		@if (_files != null)
 		{
-			<MudText Typo="@Typo.h6">@_files.Count() File@(_files.Count() == 1 ? "" : "s"):</MudText>
+			<MudText Typo="@Typo.h6">@_files.Count() @L["FileCountCaption"]</MudText>
 			<MudList>
 				@foreach (var file in _files)
 				{
@@ -46,7 +46,7 @@
 								{
 									<MudIcon Icon="@Icons.Material.Outlined.Error" Color="Color.Error" />
 								}
-								@if (file.IsValid == false)
+								@if (file.IsValid == true)
 								{
 									<MudIcon Icon="@Icons.Material.Outlined.Done" Color="Color.Success" />
 								}

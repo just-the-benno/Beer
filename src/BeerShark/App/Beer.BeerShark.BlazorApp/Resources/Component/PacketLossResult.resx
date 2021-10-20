@@ -117,22 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppName" xml:space="preserve">
-    <value>Beer Shark</value>
+  <data name="LossCaption" xml:space="preserve">
+    <value>Loss</value>
   </data>
-  <data name="CancelCaption" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="NotFoundLabel" xml:space="preserve">
+    <value>Not Found</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="OtherCaption" xml:space="preserve">
+    <value>Additional Info</value>
   </data>
-  <data name="NoCaption" xml:space="preserve">
-    <value>No</value>
+  <data name="PacketEndIndexCaption" xml:space="preserve">
+    <value>End</value>
   </data>
-  <data name="OkayCaption" xml:space="preserve">
-    <value>Okay</value>
+  <data name="PacketStartIndexCaption" xml:space="preserve">
+    <value>Start</value>
   </data>
-  <data name="YesCaption" xml:space="preserve">
-    <value>Yes</value>
+  <data name="RelativeLossCaption" xml:space="preserve">
+    <value>relative</value>
+  </data>
+  <data name="TotalPacketLossCaption" xml:space="preserve">
+    <value>absolute</value>
+  </data>
+  <data name="TotalSkippedCaption" xml:space="preserve">
+    <value>Total Skipped</value>
+  </data>
+  <data name="TraceHeading" xml:space="preserve">
+    <value>Trace</value>
+  </data>
+  <data name="UniquePacketsCaption" xml:space="preserve">
+    <value>Unique Packets</value>
   </data>
 </root>

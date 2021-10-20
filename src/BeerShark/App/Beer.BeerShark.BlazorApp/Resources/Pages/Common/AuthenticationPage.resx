@@ -117,22 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppName" xml:space="preserve">
-    <value>Beer Shark</value>
+  <data name="CompletingLogginInText" xml:space="preserve">
+    <value>We are signing you in</value>
   </data>
-  <data name="CancelCaption" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="CompletingLogginInTitle" xml:space="preserve">
+    <value>Signin</value>
   </data>
-  <data name="Logout" xml:space="preserve">
+  <data name="CompletingLogOutText" xml:space="preserve">
+    <value>We are signing you out</value>
+  </data>
+  <data name="CompletingLogOutTitle" xml:space="preserve">
     <value>Logout</value>
   </data>
-  <data name="NoCaption" xml:space="preserve">
-    <value>No</value>
+  <data name="LoginFailedTitle" xml:space="preserve">
+    <value>Login Failed</value>
   </data>
-  <data name="OkayCaption" xml:space="preserve">
-    <value>Okay</value>
+  <data name="LogoutFailed" xml:space="preserve">
+    <value>Unable to log you out</value>
   </data>
-  <data name="YesCaption" xml:space="preserve">
-    <value>Yes</value>
+  <data name="LogoutLoginAgainCaption" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LogoutSuccessContent" xml:space="preserve">
+    <value>You have been successfully logout from DaAPI.</value>
+  </data>
+  <data name="LogoutSuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="LogoutText" xml:space="preserve">
+    <value>We are signing you out</value>
+  </data>
+  <data name="LogoutTitle" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="SigninText" xml:space="preserve">
+    <value>We are signing you in</value>
+  </data>
+  <data name="SigninTitle" xml:space="preserve">
+    <value>Signing in</value>
+  </data>
+  <data name="UserProfileText" xml:space="preserve">
+    <value>Requesting your information</value>
+  </data>
+  <data name="UserProfileTitle" xml:space="preserve">
+    <value>Loading information</value>
   </data>
 </root>

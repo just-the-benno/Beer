@@ -118,49 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppName" xml:space="preserve">
-    <value>DaAPI</value>
+    <value>Bier Shark</value>
   </data>
   <data name="CancelCaption" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
-  <data name="DayCaption" xml:space="preserve">
-    <value>Tage</value>
-  </data>
-  <data name="EndBeforeLabel" xml:space="preserve">
-    <value>noch</value>
-  </data>
-  <data name="GroupedByLabel" xml:space="preserve">
-    <value>Gruppieren nach</value>
-  </data>
-  <data name="LeaseStartedAtLabel" xml:space="preserve">
-    <value>gestartet vor</value>
-  </data>
   <data name="Logout" xml:space="preserve">
     <value>Ausloggen</value>
-  </data>
-  <data name="MonthCaption" xml:space="preserve">
-    <value>Monate</value>
   </data>
   <data name="NoCaption" xml:space="preserve">
     <value>Nein</value>
   </data>
-  <data name="NoDataAvailable" xml:space="preserve">
-    <value>Keine Daten vorhanden</value>
-  </data>
   <data name="OkayCaption" xml:space="preserve">
     <value>Okay</value>
-  </data>
-  <data name="RecentCaption" xml:space="preserve">
-    <value>Kürzlich</value>
-  </data>
-  <data name="SelectingDatePlaceholder" xml:space="preserve">
-    <value>Zeitspanne wählen</value>
-  </data>
-  <data name="ShowAsBarChartLabel" xml:space="preserve">
-    <value>Als Balken anzeigen</value>
-  </data>
-  <data name="WeekCaption" xml:space="preserve">
-    <value>Wochen</value>
   </data>
   <data name="YesCaption" xml:space="preserve">
     <value>Ja</value>
