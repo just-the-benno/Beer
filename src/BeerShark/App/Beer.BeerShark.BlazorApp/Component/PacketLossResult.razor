@@ -1,0 +1,128 @@
+﻿@inject IStringLocalizer<PacketLossResult> L
+<MudText Typo="Typo.h3">Result</MudText>
+
+<MudGrid>
+	<MudItem xs="12" sm="6">
+		<BeerSmallInfoCard Icon="far fa-handshake" Color="Color.Primary" Caption="@L["LossCaption"]" Values="@(new[] {
+		$"{  Math.Round( (100.0 * Result.TotalLost) / Result.UniquePackets,2)} {L["RelativeLossCaption"]} %",
+			$"{Result.TotalLost} {L["TotalPacketLossCaption"]}"
+})" />
+	</MudItem>
+	<MudItem xs="12" sm="6">
+		<BeerSmallInfoCard Icon="fas fa-exchange-alt" Color="Color.Info" Caption="@L["OtherCaption"]" Values="@(new [] {
+					$"{Result.UniquePackets} {L["UniquePacketsCaption"]}",
+					$"{Result.TotalSkipped} {L["TotalSkippedCaption"]}",
+
+				})" />
+	</MudItem>
+</MudGrid>
+
+
+<MudText Typo="Typo.h3">@L["TraceHeading"]</MudText>
+
+<div class="d-flex flex-row">
+	@foreach (var item in Result.Files)
+	{
+		<div class="d-flex" style="@GetColumnWidth()">
+			<div class="d-flex flex-column">
+				<MudText Typo=Typo.h4>@item.File.Name</MudText>
+				<MudText Typo=Typo.caption>@L["PacketStartIndexCaption"]: @item.SkippedOffset</MudText>
+				<MudText Typo=Typo.caption>@L["PacketEndIndexCaption"]: @item.AbandonOffset</MudText>
+			</div>
+		</div>
+	}
+</div>
+@{
+	Int32 startIndex = _itemsPerPage * (_pageIndex - 1);
+}
+
+@for (int i = startIndex; i < startIndex + _itemsPerPage; i++)
+{
+	int copy1 = i;
+
+	var trace = Result.Traces[copy1];
+	var fileStartIndex = (trace.OrignatedInDestination == false ? 1 : 0);
+	var fileEndIndex = (trace.OrignatedInDestination == false ? Result.Files.Count : Result.Files.Count - 1);
+
+	<div class="d-flex flex-row">
+		@if (trace.OrignatedInDestination == false)
+		{
+			var firstFile = Result.Files[0];
+			var firstFileIndex = (Int32)firstFile.SkippedOffset + copy1;
+
+			<div class="d-flex flex-column" style="@GetColumnWidth()">
+				@if (firstFileIndex < firstFile.File.Packets.Count)
+				{
+					<MudText> (@(firstFileIndex + 1))  @firstFile.File.Packets[firstFileIndex].Size</MudText>
+					@if (trace.IsTransmitted == true)
+					{
+						<MudText Color="Color.Success"> - @copy1  -</MudText>
+					}
+					else
+					{
+						<MudText Color="Color.Error">Not Found</MudText>
+					}
+				}
+			</div>
+
+		}
+
+		@for (int j = fileStartIndex; j < fileEndIndex; j++)
+		{
+			int copy2 = j;
+			var file = Result.Files[copy2];
+			int indexWithOffset = (Int32)file.SkippedOffset + copy1;
+			int matchingIndex = Result.GetTracingEntry(copy2, indexWithOffset, trace.OrignatedInDestination);
+
+
+			<div class="d-flex flex-column" style="@GetColumnWidth()">
+				@if (indexWithOffset < file.File.Packets.Count)
+				{
+
+					<MudText> (@(indexWithOffset + 1))  @file.File.Packets[indexWithOffset].Size</MudText>
+
+					@if (matchingIndex < 0)
+					{
+						<MudText Color="Color.Error">@L["NotFoundLabel"]</MudText>
+					}
+					else
+					{
+						<MudText Color="Color.Success"> - @matchingIndex  -</MudText>
+					}
+				}
+			</div>
+		}
+
+		@if (trace.OrignatedInDestination == true)
+		{
+			var lastFile = Result.Files[^1];
+			var lastFileIndex = (Int32)lastFile.SkippedOffset + copy1;
+
+			<div class="d-flex flex-column" style="@GetColumnWidth()">
+				@if (lastFileIndex < lastFile.File.Packets.Count)
+				{
+					<MudText> (@(lastFileIndex + 1))  @lastFile.File.Packets[lastFileIndex].Size</MudText>
+					@if (trace.IsTransmitted == true)
+					{
+						<MudText Color="Color.Success"> - @copy1  -</MudText>
+					}
+					else
+					{
+						<MudText Color="Color.Error">@L["NotFoundLabel"]</MudText>
+					}
+				}
+			</div>
+		}
+		}
+	</div>
+	<hr />
+}
+
+
+<MudPagination BoundaryCount="2" MiddleCount="5" Count="@( (Int32)Result.UniquePackets/_itemsPerPage + 1 )"
+			   ShowFirstButton="true" ShowLastButton="true" ShowNextButton="true"
+			   ShowPreviousButton="true" @bind-Selected="@_pageIndex" />
+
+@code {
+
+}

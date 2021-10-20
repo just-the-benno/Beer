@@ -57,6 +57,7 @@ namespace Beer.Identity
         {
             config.BeerAuthenticationClients["ControlCenter"].SetUrlIfNotNull(Configuration.GetServiceUri("ControlCenterApp", "https"));
             config.BeerAuthenticationClients["DaAPI"].SetUrlIfNotNull(Configuration.GetServiceUri("DaAPIApp", "https"));
+            config.BeerAuthenticationClients["BeerShark"].SetUrlIfNotNull(Configuration.GetServiceUri("BeerShark", "https"));
 
             var selfUrl = Configuration.GetServiceUri("Identity", "https");
             if (selfUrl != null)
@@ -159,6 +160,7 @@ namespace Beer.Identity
             services.AddScoped<HybridClientStore>(sp => new HybridClientStore(sp.GetService<IClientRepository>(), new IdentityServer4.Models.Client[] {
                     Config.GetBlazorWasmClient(config.BeerAuthenticationClients["ControlCenter"].SetClientId(AuthenticationDefaults.BeerAppClientId).SetScopes(AuthenticationDefaults.ControlCenterManageScope, AuthenticationDefaults.BeerUserListScope, AuthenticationDefaults.BeerUserCreateScope, AuthenticationDefaults.BeerUserDeleteScope, AuthenticationDefaults.BeerUserResetPasswordScope,AuthenticationDefaults.BeerClientListScope,AuthenticationDefaults.BeerClientModifyScope,AuthenticationDefaults.BeerClientDeleteScope)),
                     Config.GetBlazorWasmClient(config.BeerAuthenticationClients["DaAPI"].SetClientId(AuthenticationDefaults.DaAPIAppClientId).SetScopes(AuthenticationDefaults.DaAPIMangeScope)),
+                    Config.GetBlazorWasmClient(config.BeerAuthenticationClients["BeerShark"].SetClientId(AuthenticationDefaults.BeerSharkClientId).SetScopes("DummyScope")),
                 }));
 
             services.AddAuthentication();

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Beer.DaAPI.Shared.Responses.DHCPv6ScopeResponses.V1;
+using static Beer.DaAPI.Shared.Responses.NotificationPipelineResponses.V1;
 
 namespace Beer.DaAPI.BlazorApp.Services.TracingEnricher
 {
@@ -38,8 +40,11 @@ namespace Beer.DaAPI.BlazorApp.Services.TracingEnricher
 
         public async Task Initilze()
         {
-            _pipelines = (await _service.GetNotifactionPipelines()).ToDictionary(x => x.Id.ToString(), x => x.Name);
-            _dhcpv6Scopes = (await _service.GetDHCPv6ScopesAsList()).ToDictionary(x => x.Id.ToString(), x => x.Name);
+            var pipelines = await _service.GetNotifactionPipelines();
+            var scopes = await _service.GetDHCPv6ScopesAsList();
+
+            _pipelines = (pipelines ?? Array.Empty<NotificationPipelineReadModel>()).ToDictionary(x => x.Id.ToString(), x => x.Name);
+            _dhcpv6Scopes = (scopes ?? Array.Empty<DHCPv6ScopeItem>()).ToDictionary(x => x.Id.ToString(), x => x.Name);
         }
     }
 }

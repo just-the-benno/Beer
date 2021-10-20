@@ -76,47 +76,50 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+        bool _drawerOpen = true;
 
-    private String GetClaimsValue(System.Security.Claims.ClaimsPrincipal principal, String type) =>
-            principal.Claims.FirstOrDefault(x => x.Type == type)?.Value;
+        private String GetClaimsValue(System.Security.Claims.ClaimsPrincipal principal, String type) =>
+                principal.Claims.FirstOrDefault(x => x.Type == type)?.Value;
 
-    private List<AppLinkEntry> _apps = new List<AppLinkEntry>();
+        private List<AppLinkEntry> _apps = new List<AppLinkEntry>();
 
-    private MudTheme _default = new MudTheme
-    {
-        Palette = new Palette
+        private MudTheme _default = new MudTheme
         {
-            Background = "#fafafa",
-        },
-    };
+            Palette = new Palette
+            {
+                Background = "#fafafa",
+            },
+        };
 
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private async Task BeginSignOut(MouseEventArgs args)
-    {
-        await SignOutManager.SetSignOutState();
-        _navigationManager.NavigateTo("authentication/logout");
-    }
-
-    private IDictionary<String, String> _urls = new Dictionary<String, String>();
-
-    protected async override Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        _urls = await ccService.GetAppUrls();
-
-        if (_urls.ContainsKey("DaAPI-Blazor"))
+        void DrawerToggle()
         {
-            _apps.Add(new AppLinkEntry(_urls["DaAPI-Blazor"], "DaAPI", Icons.Material.Filled.AccountTree));
-        }
-        if (_urls.ContainsKey("Wiki"))
-        {
-            _apps.Add(new AppLinkEntry(_urls["Wiki"], "Wiki", Icons.Material.Filled.MenuBook));
+            _drawerOpen = !_drawerOpen;
         }
 
-    }
+        private async Task BeginSignOut(MouseEventArgs args)
+        {
+            await SignOutManager.SetSignOutState();
+            _navigationManager.NavigateTo("authentication/logout");
+        }
+
+        private IDictionary<String, String> _urls = new Dictionary<String, String>();
+
+        protected async override Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            _urls = await ccService.GetAppUrls();
+
+            if (_urls.ContainsKey("DaAPI-Blazor"))
+            {
+                _apps.Add(new AppLinkEntry(_urls["DaAPI-Blazor"], "DaAPI", Icons.Material.Filled.AccountTree));
+            }
+            if (_urls.ContainsKey("Wiki"))
+            {
+                _apps.Add(new AppLinkEntry(_urls["Wiki"], "Wiki", Icons.Material.Filled.MenuBook));
+            }
+            if (_urls.ContainsKey("BeerShark-BlazorApp"))
+            {
+                _apps.Add(new AppLinkEntry(_urls["BeerShark-BlazorApp"], "BeerShark", "fas fa-highlighter"));
+        }
+}
 }

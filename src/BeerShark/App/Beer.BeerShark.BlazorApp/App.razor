@@ -1,0 +1,44 @@
+﻿@inject IStringLocalizer<App> L
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            @if (routeData.PageType == typeof(Beer.BeerShark.BlazorApp.Pages.Common.AuthenticationPage))
+            {
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            }
+            else
+            {
+                <AuthorizeView>
+                    <Authorizing>
+                        <LayoutView Layout="typeof(SinglePageLayout)">
+                            <BeerLoadingComponent Title="@L["LoadingTitle"]" Text="@L["LoadingText"]" />
+                        </LayoutView>
+                    </Authorizing>
+                    <NotAuthorized>
+                        @if (!context.User.Identity.IsAuthenticated)
+                        {
+                            <RedirectToLogin />
+                        }
+                        else
+                        {
+                            <LayoutView Layout="typeof(SinglePageLayout)">
+                                <BeerDisplayErrorComponent Text="@L["NotAuthorized"]" />
+                            </LayoutView>
+                        }
+                    </NotAuthorized>
+                    <Authorized>
+                        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                    </Authorized>
+                </AuthorizeView>
+            }
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(SinglePageLayout)">
+                <LayoutView Layout="typeof(SinglePageLayout)">
+                    <BeerDisplayErrorComponent Text="@L["PageNotFoundErrorContent"]" />
+                </LayoutView>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
