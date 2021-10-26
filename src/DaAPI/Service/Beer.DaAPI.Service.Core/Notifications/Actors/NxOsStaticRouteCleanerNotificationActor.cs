@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Core.Notifications.Actors
@@ -17,6 +18,8 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         private readonly INxOsDeviceConfigurationService _nxosDeviceSerive;
         private readonly IDHCPv6PrefixCollector _dhcpv6PrefixCollector;
         private readonly ILogger<NxOsStaticRouteCleanerNotificationActor> _logger;
+
+        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         #endregion
 
@@ -43,34 +46,43 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         {
             _logger.LogDebug("connection to nx os device {address}", Url);
 
-            await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>(){
-                { "Url", Url }
-                });
-
-            tracingStream.OpenNextLevel(1);
-
-            Boolean isReachabled = await _nxosDeviceSerive.Connect(Url, Username, Password, tracingStream);
-            tracingStream.RevertLevel();
-
-            if (isReachabled == false)
+            try
             {
-                await tracingStream.Append(2, TracingRecordStatus.Informative, new Dictionary<String, String>(){
+                await _semaphoreSlim.WaitAsync();
+
+                await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>(){
                 { "Url", Url }
                 });
 
-                _logger.LogDebug("unable to connect to device {address}", Url);
-                return false;
+                tracingStream.OpenNextLevel(1);
+
+                Boolean isReachabled = await _nxosDeviceSerive.Connect(Url, Username, Password, tracingStream);
+                tracingStream.RevertLevel();
+
+                if (isReachabled == false)
+                {
+                    await tracingStream.Append(2, TracingRecordStatus.Informative, new Dictionary<String, String>(){
+                { "Url", Url }
+                });
+
+                    _logger.LogDebug("unable to connect to device {address}", Url);
+                    return false;
+                }
+
+                await tracingStream.Append(4, TracingRecordStatus.Informative);
+                tracingStream.OpenNextLevel(1);
+
+                IEnumerable<PrefixBinding> bindings = await _dhcpv6PrefixCollector.GetActiveDHCPv6Prefixes();
+                await _nxosDeviceSerive.CleanupRoutingTable(bindings, tracingStream);
+                tracingStream.RevertLevel();
+
+                _logger.LogDebug("actor {name} successfully finished", nameof(NxOsStaticRouteUpdaterNotificationActor));
+                return true;
             }
-
-            await tracingStream.Append(4, TracingRecordStatus.Informative);
-            tracingStream.OpenNextLevel(1);
-
-            IEnumerable<PrefixBinding> bindings = await _dhcpv6PrefixCollector.GetActiveDHCPv6Prefixes();
-            await _nxosDeviceSerive.CleanupRoutingTable(bindings,tracingStream);
-            tracingStream.RevertLevel();
-
-            _logger.LogDebug("actor {name} successfully finished", nameof(NxOsStaticRouteUpdaterNotificationActor));
-            return true;
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
         }
 
         public override NotificationActorCreateModel ToCreateModel() => new NotificationActorCreateModel
