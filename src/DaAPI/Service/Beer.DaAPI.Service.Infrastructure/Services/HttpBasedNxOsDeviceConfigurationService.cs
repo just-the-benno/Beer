@@ -90,7 +90,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             return content;
         }
 
-        private async Task<(Boolean, NxOsDeviceResponse)> ExecuteCLICommand(String command, TracingStream tracingStream)
+        private async Task<(Boolean, String)> ExecuteCLICommand(String command, TracingStream tracingStream)
         {
             await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>
             {
@@ -120,7 +120,7 @@ namespace Beer.DaAPI.Infrastructure.Services
                 });
 
                 _logger.LogError("unable to connect to nx os device. user is unauthorized");
-                return (false, null);
+                return (false, String.Empty);
             }
 
             String rawContent = await result.Content.ReadAsStringAsync();
@@ -139,12 +139,12 @@ namespace Beer.DaAPI.Infrastructure.Services
                 });
 
                 _logger.LogDebug("unable to execute command {errMsg}", response?.Errror?.Message + " " + response?.Errror?.Data?.Message);
-                return (false, response);
+                return (false, rawContent);
             }
 
             await tracingStream.Append(5, TracingRecordStatus.Success);
 
-            return (true, response);
+            return (true, rawContent);
 
         }
 
@@ -245,7 +245,7 @@ namespace Beer.DaAPI.Infrastructure.Services
                 return;
             }
 
-            var existingPrefixes = ParseIPv6RouteJson(cliPreResult.Item2.Result, false);
+            var existingPrefixes = ParseIPv6RouteJson(cliPreResult.Item2, true);
 
             foreach (var item in existingPrefixes)
             {
