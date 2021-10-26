@@ -82,14 +82,14 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             DHCPv6LeaseOverview activeLeaseWithoutPrefix = new DHCPv6LeaseOverview
             {
                 Address = random.GetIPv6Address().ToString(),
-                ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                ClientIdentifier = (new UUIDDUID(random.NextGuid())).GetAsByteStream(),
                 ExpectedEnd = DateTime.UtcNow.AddHours(random.Next(10, 20)),
                 Started = DateTime.UtcNow.AddHours(-random.Next(10, 20)),
                 Id = random.NextGuid(),
                 Prefix = null,
                 UniqueIdentifier = random.NextBytes(10),
                 State = LeaseStates.Active,
-                Scope = new ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = scopeId,
                     Name = scopeName,
@@ -99,7 +99,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             DHCPv6LeaseOverview expiredLeaseWithPrefix = new DHCPv6LeaseOverview
             {
                 Address = random.GetIPv6Address().ToString(),
-                ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                ClientIdentifier = (new UUIDDUID(random.NextGuid())).GetAsByteStream(),
                 ExpectedEnd = DateTime.UtcNow.AddHours(random.Next(10, 20)),
                 Started = DateTime.UtcNow.AddHours(-random.Next(10, 20)),
                 Id = random.NextGuid(),
@@ -110,7 +110,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 },
                 UniqueIdentifier = Array.Empty<Byte>(),
                 State = LeaseStates.Inactive,
-                Scope = new ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = scopeId,
                     Name = scopeName,
@@ -128,7 +128,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = expiredLeaseWithPrefix.Id,
                     Address = IPv6Address.FromString(expiredLeaseWithPrefix.Address.ToString()),
-                    ClientIdentifier = expiredLeaseWithPrefix.ClientIdentifier,
+                    ClientIdentifier = DUIDFactory.GetDUID(expiredLeaseWithPrefix.ClientIdentifier),
                     IdentityAssocationId = random.NextUInt32(),
                     ScopeId = scopeId,
                     StartedAt = expiredLeaseWithPrefix.Started,
@@ -153,7 +153,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = activeLeaseWithoutPrefix.Id,
                     Address = IPv6Address.FromString(activeLeaseWithoutPrefix.Address.ToString()),
-                    ClientIdentifier = activeLeaseWithoutPrefix.ClientIdentifier,
+                    ClientIdentifier = DUIDFactory.GetDUID(activeLeaseWithoutPrefix.ClientIdentifier),
                     IdentityAssocationId = random.NextUInt32(),
                     ScopeId = scopeId,
                     StartedAt = activeLeaseWithoutPrefix.Started,
@@ -194,14 +194,14 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             DHCPv6LeaseOverview activeLeaseWithoutPrefix = new DHCPv6LeaseOverview
             {
                 Address = random.GetIPv6Address().ToString(),
-                ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                ClientIdentifier = (new UUIDDUID(random.NextGuid())).GetAsByteStream(),
                 ExpectedEnd = DateTime.UtcNow.AddHours(random.Next(10, 20)),
                 Started = DateTime.UtcNow.AddHours(-random.Next(10, 20)),
                 Id = random.NextGuid(),
                 Prefix = null,
                 UniqueIdentifier = random.NextBytes(10),
                 State = LeaseStates.Active,
-                Scope = new ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = childId,
                     Name = childScopeName,
@@ -211,7 +211,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
             DHCPv6LeaseOverview expiredLeaseWithPrefix = new DHCPv6LeaseOverview
             {
                 Address = random.GetIPv6Address().ToString(),
-                ClientIdentifier = new UUIDDUID(random.NextGuid()),
+                ClientIdentifier = new UUIDDUID(random.NextGuid()).GetAsByteStream(),
                 ExpectedEnd = DateTime.UtcNow.AddHours(random.Next(10, 20)),
                 Started = DateTime.UtcNow.AddHours(-random.Next(10, 20)),
                 Id = random.NextGuid(),
@@ -222,7 +222,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 },
                 UniqueIdentifier = Array.Empty<Byte>(),
                 State = LeaseStates.Inactive,
-                Scope = new ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = grantParentId,
                     Name = grantParentScopeName,
@@ -252,7 +252,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = expiredLeaseWithPrefix.Id,
                     Address = IPv6Address.FromString(expiredLeaseWithPrefix.Address.ToString()),
-                    ClientIdentifier = expiredLeaseWithPrefix.ClientIdentifier,
+                    ClientIdentifier = DUIDFactory.GetDUID(expiredLeaseWithPrefix.ClientIdentifier),
                     IdentityAssocationId = random.NextUInt32(),
                     ScopeId = grantParentId,
                     StartedAt = expiredLeaseWithPrefix.Started,
@@ -277,7 +277,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 {
                     EntityId = activeLeaseWithoutPrefix.Id,
                     Address = IPv6Address.FromString(activeLeaseWithoutPrefix.Address),
-                    ClientIdentifier = activeLeaseWithoutPrefix.ClientIdentifier,
+                    ClientIdentifier = DUIDFactory.GetDUID(activeLeaseWithoutPrefix.ClientIdentifier),
                     IdentityAssocationId = random.NextUInt32(),
                     ScopeId = childId,
                     StartedAt = activeLeaseWithoutPrefix.Started,

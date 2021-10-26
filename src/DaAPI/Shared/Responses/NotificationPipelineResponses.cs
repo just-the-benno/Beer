@@ -35,6 +35,7 @@ namespace Beer.DaAPI.Shared.Responses
                 {
                     Boolean = 1,
                     DHCPv6ScopeList = 2,
+                    Timespan = 3,
                 }
 
                 public String Name { get; set; }

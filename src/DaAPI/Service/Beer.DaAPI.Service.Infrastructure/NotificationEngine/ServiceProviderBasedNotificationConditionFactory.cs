@@ -15,6 +15,8 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
         private static readonly Dictionary<String, Type> _typeResolver = new Dictionary<string, Type>
         {
             { nameof(DHCPv6ScopeIdNotificationCondition), typeof(DHCPv6ScopeIdNotificationCondition) },
+            { nameof(TimerIntervalNotificationCondition), typeof(TimerIntervalNotificationCondition) },
+
         };
 
         public ServiceProviderBasedNotificationConditionFactory(IServiceProvider serviceProvider)
@@ -22,20 +24,29 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
             this._serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public NotificationCondition Initilize(NotificationConditionCreateModel actorCreateInfo)
+        public NotificationCondition Initilize(NotificationConditionCreateModel conditionCreateInfo)
         {
-            if(_typeResolver.ContainsKey(actorCreateInfo.Typename) == false)
+            Console.WriteLine($"ServiceProviderBasedNotificationConditionFactory: Initilize of {conditionCreateInfo.Typename}");
+
+            if(_typeResolver.ContainsKey(conditionCreateInfo.Typename) == false)
             {
+                Console.WriteLine($"ServiceProviderBasedNotificationConditionFactory: Initilize of {conditionCreateInfo.Typename} failed");
                 return NotificationCondition.Invalid;
+
             }
 
-            var condition = (NotificationCondition)_serviceProvider.GetService(_typeResolver[actorCreateInfo.Typename]);
+            var condition = (NotificationCondition)_serviceProvider.GetService(_typeResolver[conditionCreateInfo.Typename]);
 
-            Boolean applied = condition.ApplyValues(actorCreateInfo.PropertiesAndValues);
+            Boolean applied = condition.ApplyValues(conditionCreateInfo.PropertiesAndValues);
             if(applied == false)
             {
+                Console.WriteLine($"ServiceProviderBasedNotificationConditionFactory: Applying values for {conditionCreateInfo.Typename} failed");
+
                 return NotificationCondition.Invalid;
             }
+
+            Console.WriteLine($"ServiceProviderBasedNotificationConditionFactory: Values for {conditionCreateInfo.Typename} applied");
+
 
             return condition;
         }

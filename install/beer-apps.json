@@ -50,7 +50,7 @@
             "AppSettings__JwtTokenAuthenticationOptions__AuthorityUrl": "https://<$IdentityUrl>",
             "AppSettings__AppURIs__DaAPI-Blazor": "https://<$DaAPIAppUrl>",
             "AppSettings__AppURIs__ControlCenter-BlazorApp": "https://<$ControlCenterAppUrl>",
-            "AppSettings__AppURIs__BeerShark-BlazorAppp": "https://<$BeerSharkAppUrl>",
+            "AppSettings__AppURIs__BeerShark-BlazorApp": "https://<$BeerSharkAppUrl>",
             "AppSettings__AppURIs__Wiki": "https://<$WikiURL>"
         }
     },

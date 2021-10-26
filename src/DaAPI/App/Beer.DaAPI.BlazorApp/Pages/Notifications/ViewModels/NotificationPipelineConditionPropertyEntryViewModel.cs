@@ -22,6 +22,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
         public IList<SelectedableValue<String>> Values { get; set; }
         public String Value { get; set; }
         public Boolean ValueAsBoolean { get; set; }
+        public TimeSpan? ValueAsTimespan { get; set; }
 
         public NotificationPipelineConditionPropertyEntryViewModel(String name, ConditionsPropertyTypes type)
         {
@@ -33,6 +34,7 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
             Type switch
             {
                 ConditionsPropertyTypes.Boolean => JsonSerializer.Serialize(ValueAsBoolean),
+                ConditionsPropertyTypes.Timespan => ValueAsTimespan.Value.Ticks.ToString(),
                 ConditionsPropertyTypes.DHCPv6ScopeList => JsonSerializer.Serialize(Values.Where(x => x.IsSelected == true).Select(x => x.Value).ToArray()),
                 _ => String.Empty,
             };

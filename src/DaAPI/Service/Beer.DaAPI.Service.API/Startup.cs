@@ -209,8 +209,11 @@ namespace Beer.DaAPI.Service.API
                ));
 
             services.AddTransient<NxOsStaticRouteUpdaterNotificationActor>();
-            services.AddTransient<DHCPv6ScopeIdNotificationCondition>();
+            services.AddTransient<NxOsStaticRouteCleanerNotificationActor>();
+            services.AddTransient<IDHCPv6PrefixCollector, StorageContext>();
 
+            services.AddTransient<DHCPv6ScopeIdNotificationCondition>();
+            services.AddTransient<TimerIntervalNotificationCondition>();
 
             services.AddSingleton(sp =>
             {
@@ -256,6 +259,8 @@ namespace Beer.DaAPI.Service.API
                 typeof(Startup).Assembly);
             services.AddHostedService<HostedService.LeaseTimerHostedService>();
             services.AddHostedService<HostedService.CleanupDatabaseTimerHostedService>();
+            services.AddHostedService<HostedService.NotificationTimerHostedService>();
+            
 #if DEBUG
             services.AddHostedService<HostedService.FakeTracingStreamEmitter>();
 #endif

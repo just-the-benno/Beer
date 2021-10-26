@@ -1,10 +1,12 @@
 ﻿using Beer.DaAPI.Core.Common;
 using Beer.DaAPI.Core.Common.DHCPv6;
 using Beer.DaAPI.Core.Listeners;
+using Beer.DaAPI.Core.Notifications.Triggers;
 using Beer.DaAPI.Core.Packets.DHCPv4;
 using Beer.DaAPI.Core.Packets.DHCPv6;
 using Beer.DaAPI.Core.Scopes.DHCPv4;
 using Beer.DaAPI.Core.Scopes.DHCPv6;
+using Beer.DaAPI.Core.Services;
 using Beer.DaAPI.Core.Tracing;
 using Beer.DaAPI.Infrastructure.Helper;
 using Beer.DaAPI.Infrastructure.Services;
@@ -40,7 +42,7 @@ using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
 
 namespace Beer.DaAPI.Infrastructure.StorageEngine
 {
-    public class StorageContext : DbContext, IDHCPv6ReadStore, IDHCPv4ReadStore
+    public class StorageContext : DbContext, IDHCPv6ReadStore, IDHCPv4ReadStore, IDHCPv6PrefixCollector
     {
         #region Fields
 
@@ -1749,6 +1751,28 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         }
 
+        public async Task<IEnumerable<PrefixBinding>> GetActiveDHCPv6Prefixes()
+        {
+            var preResult = await ((IQueryable<DHCPv6LeaseEntry>)DHCPv6LeaseEntries).Where(x => x.IsActive == true && x.PrefixLength > 0).Select(x => new
+              {
+                  Address = x.Address,
+                  Prefix = x.Prefix,
+                  Length = x.PrefixLength,
+              }).ToListAsync();
 
+            return preResult.Select(x =>
+            {
+                try
+                {
+                    return new PrefixBinding(IPv6Address.FromString(x.Prefix), new IPv6SubnetMaskIdentifier(x.Length), IPv6Address.FromString(x.Address));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Couldn't parse {x.Address} {x.Prefix}/{x.Length} into a binding");
+                    Console.WriteLine(ex.ToString());
+                    return null;
+                }
+            }).ToArray();
+        }
     }
 }
