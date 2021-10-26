@@ -1753,7 +1753,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public async Task<IEnumerable<PrefixBinding>> GetActiveDHCPv6Prefixes()
         {
-            var preResult = await ((IQueryable<DHCPv6LeaseEntry>)DHCPv6LeaseEntries).Where(x => x.IsActive == true && x.PrefixLength > 0).Select(x => new
+            var preResult = await ((IQueryable<DHCPv6LeaseEntryDataModel>)DHCPv6LeaseEntries).Where(x => x.IsActive == true && x.PrefixLength > 0).Select(x => new
               {
                   Address = x.Address,
                   Prefix = x.Prefix,
