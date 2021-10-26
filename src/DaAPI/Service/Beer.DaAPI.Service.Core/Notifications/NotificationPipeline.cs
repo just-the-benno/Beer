@@ -169,6 +169,7 @@ namespace Beer.DaAPI.Core.Notifications
 
         protected override void When(DomainEvent domainEvent)
         {
+            Console.WriteLine("When of Notification pipeline");
             switch (domainEvent)
             {
                 case NotificationPipelineCreatedEvent e:

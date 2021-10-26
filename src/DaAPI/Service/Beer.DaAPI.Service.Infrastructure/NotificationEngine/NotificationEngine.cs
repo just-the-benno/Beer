@@ -116,6 +116,10 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                 new NotificationTriggerDescription
                 {
                     Name = nameof(PrefixEdgeRouterBindingUpdatedTrigger),
+                },
+                new NotificationTriggerDescription
+                {
+                    Name = nameof(TimeIntervallTrigger),
                 }
             };
 
@@ -128,6 +132,14 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                     {
                         { nameof(DHCPv6ScopeIdNotificationCondition.IncludesChildren), NotifcationCondititonDescription.ConditionsPropertyTtpes.Boolean  },
                         { nameof(DHCPv6ScopeIdNotificationCondition.ScopeIds), NotifcationCondititonDescription.ConditionsPropertyTtpes.DHCPv6ScopeList  },
+                    }
+                },
+                new NotifcationCondititonDescription
+                {
+                    Name = nameof(TimerIntervalNotificationCondition),
+                    Properties = new Dictionary<string, NotifcationCondititonDescription.ConditionsPropertyTtpes>
+                    {
+                        { nameof(TimerIntervalNotificationCondition.Interval), NotifcationCondititonDescription.ConditionsPropertyTtpes.Timespan  },
                     }
                 },
             };
@@ -143,6 +155,16 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                         { nameof(NxOsStaticRouteUpdaterNotificationActor.Username),  NotifcationActorDescription.ActorPropertyTtpes.Username  },
                         { nameof(NxOsStaticRouteUpdaterNotificationActor.Password),  NotifcationActorDescription.ActorPropertyTtpes.Password  },
                     }
+                },
+                 new NotifcationActorDescription
+                {
+                    Name = nameof(NxOsStaticRouteCleanerNotificationActor),
+                    Properties = new Dictionary<String,NotifcationActorDescription.ActorPropertyTtpes>
+                    {
+                        { nameof(NxOsStaticRouteCleanerNotificationActor.Url),  NotifcationActorDescription.ActorPropertyTtpes.Endpoint  },
+                        { nameof(NxOsStaticRouteCleanerNotificationActor.Username),  NotifcationActorDescription.ActorPropertyTtpes.Username  },
+                        { nameof(NxOsStaticRouteCleanerNotificationActor.Password),  NotifcationActorDescription.ActorPropertyTtpes.Password  },
+                    }
                 }
             };
 
@@ -153,6 +175,12 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                  TriggerName = nameof(PrefixEdgeRouterBindingUpdatedTrigger),
                  CompactibleConditions = new[] { nameof(DHCPv6ScopeIdNotificationCondition) },
                  CompactibleActors = new[] { nameof(NxOsStaticRouteUpdaterNotificationActor) }
+                },
+                new NotificationPipelineTriggerMapperEntry
+                {
+                 TriggerName = nameof(TimeIntervallTrigger),
+                 CompactibleConditions = new [] { nameof(TimerIntervalNotificationCondition) },
+                 CompactibleActors = new[] { nameof(NxOsStaticRouteCleanerNotificationActor) }
                 }
             };
 

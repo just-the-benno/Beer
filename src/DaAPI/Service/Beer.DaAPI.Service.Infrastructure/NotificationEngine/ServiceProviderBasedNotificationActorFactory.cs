@@ -14,6 +14,8 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
         private static readonly Dictionary<String, Type> _typeResolver = new Dictionary<string, Type>
         {
             { nameof(NxOsStaticRouteUpdaterNotificationActor), typeof(NxOsStaticRouteUpdaterNotificationActor) },
+            { nameof(NxOsStaticRouteCleanerNotificationActor), typeof(NxOsStaticRouteCleanerNotificationActor) },
+
         };
 
         public ServiceProviderBasedNotificationActorFactory(IServiceProvider serviceProvider)

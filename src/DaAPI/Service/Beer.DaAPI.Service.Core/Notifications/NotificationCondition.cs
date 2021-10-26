@@ -11,6 +11,7 @@ namespace Beer.DaAPI.Core.Notifications
     {
         public static Int32 NotificationTrueConditionIdentifier = 0;
         public static Int32 DHCPv6ScopeIdConditionTracingIdentifier = 1;
+        public static Int32 TimeIntervalConditionTracingIdentifier = 2;
 
         private class NotificationTrueCondition : NotificationCondition
         {

@@ -66,7 +66,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Id = random.NextGuid(),
                 UniqueIdentifier = random.NextBytes(10),
                 State = LeaseStates.Active,
-                Scope = new DHCPv4ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = scopeId,
                     Name = scopeName,
@@ -82,7 +82,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Id = random.NextGuid(),
                 UniqueIdentifier = Array.Empty<Byte>(),
                 State = LeaseStates.Inactive,
-                Scope = new DHCPv4ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = scopeId,
                     Name = scopeName,
@@ -165,7 +165,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Id = random.NextGuid(),
                 UniqueIdentifier = random.NextBytes(10),
                 State = LeaseStates.Active,
-                Scope = new DHCPv4ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = childId,
                     Name = childScopeName,
@@ -181,7 +181,7 @@ namespace Beer.DaAPI.UnitTests.Host.ApiControllers
                 Id = random.NextGuid(),
                 UniqueIdentifier = Array.Empty<Byte>(),
                 State = LeaseStates.Inactive,
-                Scope = new DHCPv4ScopeOverview
+                Scope = new DaAPI.Shared.Responses.CommenResponses.V1.ScopeOverview
                 {
                     Id = grantParentId,
                     Name = grantParentScopeName,

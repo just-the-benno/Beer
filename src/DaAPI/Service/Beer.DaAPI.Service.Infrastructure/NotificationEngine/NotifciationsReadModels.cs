@@ -35,6 +35,7 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                 {
                     Boolean = 1,
                     DHCPv6ScopeList = 2,
+                    Timespan = 3,
                 }
 
                 public String Name { get; set; }

@@ -1,12 +1,15 @@
 ﻿using Beer.DaAPI.Core.Common.DHCPv6;
+using Beer.DaAPI.Core.Notifications.Triggers;
 using Beer.DaAPI.Core.Services;
 using Beer.DaAPI.Core.Tracing;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Beer.DaAPI.Infrastructure.Services
@@ -54,7 +57,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
         public Task<Boolean> Connect(String endpoint, String username, String password, TracingStream tracingStream)
         {
-            if(_connected == true) { return Task.FromResult(true); }
+            if (_connected == true) { return Task.FromResult(true); }
 
             String authHeaderValue = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}"));
 
@@ -87,7 +90,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             return content;
         }
 
-        private async Task<Boolean> ExecuteCLICommand(String command, TracingStream tracingStream)
+        private async Task<(Boolean, NxOsDeviceResponse)> ExecuteCLICommand(String command, TracingStream tracingStream)
         {
             await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>
             {
@@ -117,7 +120,7 @@ namespace Beer.DaAPI.Infrastructure.Services
                 });
 
                 _logger.LogError("unable to connect to nx os device. user is unauthorized");
-                return false;
+                return (false, null);
             }
 
             String rawContent = await result.Content.ReadAsStringAsync();
@@ -136,12 +139,13 @@ namespace Beer.DaAPI.Infrastructure.Services
                 });
 
                 _logger.LogDebug("unable to execute command {errMsg}", response?.Errror?.Message + " " + response?.Errror?.Data?.Message);
-                return false;
+                return (false, response);
             }
 
             await tracingStream.Append(5, TracingRecordStatus.Success);
 
-            return response.Errror == null;
+            return (true, response);
+
         }
 
         public async Task<Boolean> AddIPv6StaticRoute(IPv6Address prefix, IPv6SubnetMaskIdentifier length, IPv6Address host, TracingStream tracingStream)
@@ -149,7 +153,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             String command = $"ipv6 route {prefix}/{length} {host} 60";
             _logger.LogDebug("adding a static ipv6 route with {command}", command);
 
-            Boolean result = await ExecuteCLICommand(command, tracingStream);
+            Boolean result = (await ExecuteCLICommand(command, tracingStream)).Item1;
             return result;
         }
 
@@ -159,10 +163,97 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             _logger.LogDebug("removing a static ipv6 route with {command}", command);
 
-            Boolean result = await ExecuteCLICommand(command, tracingStream);
+            Boolean result = (await ExecuteCLICommand(command, tracingStream)).Item1;
             return result;
         }
 
         public int GetTracingIdenfier() => 1;
+
+        public IEnumerable<PrefixBinding> ParseIPv6RouteJson(String input, Boolean asCompletedDocument)
+        {
+            List<PrefixBinding> existingBindings = new List<PrefixBinding>();
+
+            JsonDocument document = JsonDocument.Parse(input);
+
+            var root = document.RootElement;
+            if (asCompletedDocument == true)
+            {
+                root = root.GetProperty("result");
+            }
+
+            var routeElements = root
+                .GetProperty("body")
+                .GetProperty("TABLE_vrf")
+                .GetProperty("ROW_vrf")
+                .GetProperty("TABLE_addrf")
+                .GetProperty("ROW_addrf")
+                .GetProperty("TABLE_prefix")
+                .GetProperty("ROW_prefix");
+
+            Int32 itemAmount = routeElements.GetArrayLength();
+
+            var array = routeElements.EnumerateArray();
+
+            foreach (var item in array)
+            {
+                var prefix = item.GetProperty("ipprefix").GetString();
+                if (prefix.Contains('/') == false) { continue; }
+                var parts = prefix.Split('/');
+
+                var prefixPart = parts[0];
+                byte length = Convert.ToByte(parts[1]);
+
+                var rowPathProperty = item.GetProperty("TABLE_path").GetProperty("ROW_path");
+
+                if (rowPathProperty.ValueKind != JsonValueKind.Array)
+                {
+                    if (rowPathProperty.TryGetProperty("ipnexthop", out JsonElement ipnextHopProperty) == false)
+                    {
+                        continue;
+                    }
+
+                    var hostAddress = ipnextHopProperty.GetString();
+
+                    existingBindings.Add(new PrefixBinding(
+                         IPv6Address.FromString(prefixPart), new IPv6SubnetMaskIdentifier(length), IPv6Address.FromString(hostAddress)));
+                }
+                else
+                {
+                    foreach (var hostEntry in rowPathProperty.EnumerateArray())
+                    {
+                        if (hostEntry.TryGetProperty("ipnexthop", out JsonElement ipnextHopProperty) == false)
+                        {
+                            continue;
+                        }
+
+                        var hostAddress = ipnextHopProperty.GetString();
+
+                        existingBindings.Add(new PrefixBinding(
+                            IPv6Address.FromString(prefixPart), new IPv6SubnetMaskIdentifier(length), IPv6Address.FromString(hostAddress)));
+                    }
+                }
+            }
+
+            return existingBindings;
+        }
+
+        public async Task CleanupRoutingTable(IEnumerable<PrefixBinding> bindings, TracingStream tracingStream)
+        {
+            var cliPreResult = await ExecuteCLICommand("show ipv6 route static", tracingStream);
+            if (cliPreResult.Item1 == false)
+            {
+                return;
+            }
+
+            var existingPrefixes = ParseIPv6RouteJson(cliPreResult.Item2.Result, false);
+
+            foreach (var item in existingPrefixes)
+            {
+                if (bindings.Any(x => x.Prefix == item.Prefix && x.Host == item.Host && x.Mask == item.Mask) == false)
+                {
+                    await RemoveIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
+                }
+            }
+        }
     }
 }

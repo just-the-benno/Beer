@@ -88,6 +88,9 @@
                                                 </div>
                                             </BeerShowCircularLoadingIndicatorWhileNull>
                                             break;
+                                        case NotificationCondititonDescription.ConditionsPropertyTypes.Timespan:
+                                        <DaAPITimeSpanPicker @bind-Time="_conditionPropertiesModel.Entries[index].ValueAsTimespan" For="@( () => _conditionPropertiesModel.Entries[index].ValueAsTimespan )" />
+                                            break;
                                         default:
                                             break;
                                     }

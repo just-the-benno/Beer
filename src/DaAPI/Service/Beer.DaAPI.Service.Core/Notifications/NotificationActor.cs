@@ -10,6 +10,8 @@ namespace Beer.DaAPI.Core.Notifications
     public abstract class NotificationActor : Value, ITracingRecord
     {
         public static Int32 NxOsStaticRouteUpdaterNotificationTraceIdenifier => 1;
+        public static Int32 NxOsStaticRouteCleanerNotificationTraceIdenifier => 2;
+
         public static NotificationActor Invalid => null;
 
         internal protected abstract Task<Boolean> Handle(NotifcationTrigger trigger, TracingStream tracingStream);
