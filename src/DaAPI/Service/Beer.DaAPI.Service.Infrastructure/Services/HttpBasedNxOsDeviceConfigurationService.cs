@@ -90,7 +90,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             return content;
         }
 
-        private async Task<(Boolean, String)> ExecuteCLICommand(String command, TracingStream tracingStream)
+        private async Task<(Boolean, String)> ExecuteCLICommand(String command, Boolean returnRawValue, TracingStream tracingStream)
         {
             await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>
             {
@@ -124,8 +124,11 @@ namespace Beer.DaAPI.Infrastructure.Services
             }
 
             String rawContent = await result.Content.ReadAsStringAsync();
-            NxOsDeviceResponse response = JsonConvert.DeserializeObject<NxOsDeviceResponse>(rawContent);
-
+            NxOsDeviceResponse response = null;
+            if (returnRawValue == false || result.IsSuccessStatusCode == false)
+            {
+                response = JsonConvert.DeserializeObject<NxOsDeviceResponse>(rawContent);
+            }
             if (result.IsSuccessStatusCode == false)
             {
                 await tracingStream.Append(4, TracingRecordStatus.Error, new Dictionary<String, String>
@@ -153,7 +156,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             String command = $"ipv6 route {prefix}/{length} {host} 60";
             _logger.LogDebug("adding a static ipv6 route with {command}", command);
 
-            Boolean result = (await ExecuteCLICommand(command, tracingStream)).Item1;
+            Boolean result = (await ExecuteCLICommand(command, false, tracingStream)).Item1;
             return result;
         }
 
@@ -163,7 +166,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             _logger.LogDebug("removing a static ipv6 route with {command}", command);
 
-            Boolean result = (await ExecuteCLICommand(command, tracingStream)).Item1;
+            Boolean result = (await ExecuteCLICommand(command, false, tracingStream)).Item1;
             return result;
         }
 
@@ -239,7 +242,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
         public async Task CleanupRoutingTable(IEnumerable<PrefixBinding> bindings, TracingStream tracingStream)
         {
-            var cliPreResult = await ExecuteCLICommand("show ipv6 route static", tracingStream);
+            var cliPreResult = await ExecuteCLICommand("show ipv6 route static", true, tracingStream);
             if (cliPreResult.Item1 == false)
             {
                 return;
