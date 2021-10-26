@@ -242,10 +242,7 @@ namespace Beer.DaAPI.Infrastructure.Services
 
         public async Task CleanupRoutingTable(IEnumerable<PrefixBinding> bindings, TracingStream tracingStream)
         {
-            _client.Timeout = TimeSpan.FromMinutes(2);
-
             var cliPreResult = await ExecuteCLICommand("show ipv6 route static", true, tracingStream);
-            _client.Timeout = TimeSpan.FromSeconds(30);
 
             if (cliPreResult.Item1 == false)
             {
