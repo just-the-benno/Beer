@@ -52,6 +52,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             ILogger<HttpBasedNxOsDeviceConfigurationService> logger)
         {
             this._logger = logger;
+            _client.Timeout = TimeSpan.FromMinutes(10);
             _client = client;
         }
 
