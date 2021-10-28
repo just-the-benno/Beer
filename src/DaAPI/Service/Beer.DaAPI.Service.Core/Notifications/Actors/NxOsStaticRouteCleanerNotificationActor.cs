@@ -19,8 +19,6 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         private readonly IDHCPv6PrefixCollector _dhcpv6PrefixCollector;
         private readonly ILogger<NxOsStaticRouteCleanerNotificationActor> _logger;
 
-        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
-
         #endregion
 
         #region Properties
@@ -46,43 +44,34 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         {
             _logger.LogDebug("connection to nx os device {address}", Url);
 
-            try
-            {
-                await _semaphoreSlim.WaitAsync();
-
-                await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>(){
+            await tracingStream.Append(1, TracingRecordStatus.Informative, new Dictionary<String, String>(){
                 { "Url", Url }
                 });
 
-                tracingStream.OpenNextLevel(1);
+            tracingStream.OpenNextLevel(1);
 
-                Boolean isReachabled = await _nxosDeviceSerive.Connect(Url, Username, Password, tracingStream);
-                tracingStream.RevertLevel();
+            Boolean isReachabled = await _nxosDeviceSerive.Connect(Url, Username, Password, tracingStream);
+            tracingStream.RevertLevel();
 
-                if (isReachabled == false)
-                {
-                    await tracingStream.Append(2, TracingRecordStatus.Informative, new Dictionary<String, String>(){
+            if (isReachabled == false)
+            {
+                await tracingStream.Append(2, TracingRecordStatus.Informative, new Dictionary<String, String>(){
                 { "Url", Url }
                 });
 
-                    _logger.LogDebug("unable to connect to device {address}", Url);
-                    return false;
-                }
-
-                await tracingStream.Append(4, TracingRecordStatus.Informative);
-                tracingStream.OpenNextLevel(1);
-
-                IEnumerable<PrefixBinding> bindings = await _dhcpv6PrefixCollector.GetActiveDHCPv6Prefixes();
-                await _nxosDeviceSerive.CleanupRoutingTable(bindings, tracingStream);
-                tracingStream.RevertLevel();
-
-                _logger.LogDebug("actor {name} successfully finished", nameof(NxOsStaticRouteUpdaterNotificationActor));
-                return true;
+                _logger.LogDebug("unable to connect to device {address}", Url);
+                return false;
             }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
+
+            await tracingStream.Append(4, TracingRecordStatus.Informative);
+            tracingStream.OpenNextLevel(1);
+
+            IEnumerable<PrefixBinding> bindings = await _dhcpv6PrefixCollector.GetActiveDHCPv6Prefixes();
+            await _nxosDeviceSerive.CleanupRoutingTable(bindings, tracingStream);
+            tracingStream.RevertLevel();
+
+            _logger.LogDebug("actor {name} successfully finished", nameof(NxOsStaticRouteUpdaterNotificationActor));
+            return true;
         }
 
         public override NotificationActorCreateModel ToCreateModel() => new NotificationActorCreateModel
