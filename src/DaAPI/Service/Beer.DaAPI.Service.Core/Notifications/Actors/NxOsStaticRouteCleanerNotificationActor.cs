@@ -1,9 +1,11 @@
 ﻿using Beer.DaAPI.Core.Notifications.Triggers;
+using Beer.DaAPI.Core.Scopes.DHCPv6;
 using Beer.DaAPI.Core.Services;
 using Beer.DaAPI.Core.Tracing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -16,6 +18,8 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         #region Fields
 
         private readonly INxOsDeviceConfigurationService _nxosDeviceSerive;
+        private readonly DHCPv6RootScope _rootScope;
+        private readonly ISerializer _serializer;
         private readonly IDHCPv6PrefixCollector _dhcpv6PrefixCollector;
         private readonly ILogger<NxOsStaticRouteCleanerNotificationActor> _logger;
 
@@ -27,14 +31,21 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         public String Username { get; private set; }
         public String Password { get; private set; }
 
+        public Boolean IncludesChildren { get; private set; }
+        public IEnumerable<Guid> ScopeIds { get; private set; }
+
         #endregion
 
         public NxOsStaticRouteCleanerNotificationActor(
+            DHCPv6RootScope rootScope,
+            ISerializer serializer,
             IDHCPv6PrefixCollector dhcpv6PrefixCollector,
             INxOsDeviceConfigurationService nxosDeviceSerive,
             ILogger<NxOsStaticRouteCleanerNotificationActor> logger
             )
         {
+            this._rootScope = rootScope;
+            this._serializer = serializer;
             this._dhcpv6PrefixCollector = dhcpv6PrefixCollector ?? throw new ArgumentNullException(nameof(dhcpv6PrefixCollector));
             this._nxosDeviceSerive = nxosDeviceSerive ?? throw new ArgumentNullException(nameof(nxosDeviceSerive));
             this._logger = logger;
@@ -66,12 +77,46 @@ namespace Beer.DaAPI.Core.Notifications.Actors
             await tracingStream.Append(4, TracingRecordStatus.Informative);
             tracingStream.OpenNextLevel(1);
 
-            IEnumerable<PrefixBinding> bindings = await _dhcpv6PrefixCollector.GetActiveDHCPv6Prefixes();
-            await _nxosDeviceSerive.CleanupRoutingTable(bindings, tracingStream);
+            var bindings = await _dhcpv6PrefixCollector.GetActiveDHCPv6Prefixes();
+
+            var relevantPrefixes = bindings.Where(x =>
+            {
+                var scope = _rootScope.GetScopeById(x.Item1);
+                if (scope == DHCPv6Scope.NotFound) { return false; }
+
+                if (IsChildOf(scope, ScopeIds) == false) { return false; }
+
+                return true;
+            }).Select(x => x.Item2).ToArray();
+
+            IEnumerable<PrefixBinding> prefixBindingsToAdd = await _nxosDeviceSerive.CleanupRoutingTable(relevantPrefixes, tracingStream);
+
+            foreach (var item in prefixBindingsToAdd)
+            {
+                var element = bindings.FirstOrDefault(x =>
+                x.Item2.Prefix == item.Prefix && x.Item2.Host == item.Host && x.Item2.Mask == item.Mask);
+
+                if (element == default)
+                {
+                    continue;
+                }
+
+                await _nxosDeviceSerive.AddIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
+            }
+
             tracingStream.RevertLevel();
 
             _logger.LogDebug("actor {name} successfully finished", nameof(NxOsStaticRouteUpdaterNotificationActor));
             return true;
+        }
+
+        private bool IsChildOf(DHCPv6Scope scope, IEnumerable<Guid> scopeIds)
+        {
+            if (scopeIds.Contains(scope.Id) == true) { return true; }
+
+            if (scope.ParentScope == DHCPv6Scope.NotFound) { return false; }
+
+            return IsChildOf(scope.ParentScope, scopeIds);
         }
 
         public override NotificationActorCreateModel ToCreateModel() => new NotificationActorCreateModel
@@ -82,6 +127,8 @@ namespace Beer.DaAPI.Core.Notifications.Actors
                 {nameof(Url), GetQuotedString(Url)  },
                 {nameof(Username), GetQuotedString(Username)  },
                 {nameof(Password), GetQuotedString(Password)  },
+                { nameof(IncludesChildren), _serializer.Seralize(IncludesChildren) },
+                { nameof(ScopeIds), _serializer.Seralize(ScopeIds) },
             }
         };
 
@@ -102,6 +149,9 @@ namespace Beer.DaAPI.Core.Notifications.Actors
                 Username = GetValueWithoutQuota(propertiesAndValues[nameof(Username)]);
                 Password = GetValueWithoutQuota(propertiesAndValues[nameof(Password)]);
 
+                IncludesChildren = _serializer.Deserialze<Boolean>(propertiesAndValues[nameof(IncludesChildren)]);
+                ScopeIds = _serializer.Deserialze<IEnumerable<Guid>>(propertiesAndValues[nameof(ScopeIds)]);
+
                 return true;
             }
             catch (Exception)
@@ -116,7 +166,9 @@ namespace Beer.DaAPI.Core.Notifications.Actors
         {
             { "Name", nameof(NxOsStaticRouteCleanerNotificationActor) },
             { "Url", Url },
-            { "Username", Username }
+            { "Username", Username },
+            { "IncludesChildren", JsonSerializer.Serialize(IncludesChildren) },
+            { "ScopeIds", JsonSerializer.Serialize(ScopeIds) }
         };
     }
 }

@@ -146,6 +146,23 @@
                                             <MudTextField T="string" Immediate="true" Placeholder="@L["ActorGenerellValuePlaceholder"]" Variant="Variant.Outlined" InputType="@( item.Type == NotifcationActorDescription.ActorPropertyTypes.Password ? InputType.Password : InputType.Text)" @bind-Value="_actorPropertiesModel.Entries[index].Value" For="@(() => _actorPropertiesModel.Entries[index].Value)" />
 
                                             break;
+                                              case NotifcationActorDescription.ActorPropertyTypes.Boolean:
+                                            <MudCheckBox T="Boolean" @bind-Checked="_actorPropertiesModel.Entries[index].ValueAsBoolean" For="@( () => _actorPropertiesModel.Entries[index].ValueAsBoolean )" />
+                                            break;
+                                        case NotifcationActorDescription.ActorPropertyTypes.DHCPv6ScopeList:
+                                            <BeerShowCircularLoadingIndicatorWhileNull Item="_scopes" Text="@L["LoadingText"]">
+                                                <div class="d-flex flex-column">
+                                                    @for (int j = 0; j < _scopes.Count; j++)
+                                                    {
+                                                        var temp2 = j;
+
+                                                        <MudCheckBox T="Boolean" Label="@_scopes[temp2].Name" @bind-Checked="_actorPropertiesModel.Entries[index].Values[temp2].IsSelected" For="@( () => _actorPropertiesModel.Entries[index].Values[temp2].IsSelected )" />
+                                                    }
+                                                    <ValidationMessage style="color: var(--mud-palette-error) !important;" For="@(() => _actorPropertiesModel.Entries[index].Values)" />
+
+                                                </div>
+                                            </BeerShowCircularLoadingIndicatorWhileNull>
+                                            break;
                                         default:
                                             break;
                                     }

@@ -50,6 +50,8 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                     Endpoint = 1,
                     Username = 2,
                     Password = 3,
+                    Boolean = 4,
+                    DHCPv6ScopeList = 5,
                 }
 
                 public String Name { get; set; }

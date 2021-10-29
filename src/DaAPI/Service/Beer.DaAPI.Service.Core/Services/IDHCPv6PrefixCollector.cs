@@ -9,6 +9,6 @@ namespace Beer.DaAPI.Core.Services
 {
     public interface IDHCPv6PrefixCollector
     {
-        Task<IEnumerable<PrefixBinding>> GetActiveDHCPv6Prefixes();
+        Task<IEnumerable<(Guid,PrefixBinding)>> GetActiveDHCPv6Prefixes();
     }
 }

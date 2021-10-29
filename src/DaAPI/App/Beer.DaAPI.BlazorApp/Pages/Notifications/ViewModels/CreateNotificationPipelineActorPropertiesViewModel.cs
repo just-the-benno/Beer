@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Beer.DaAPI.Shared.Responses;
+using FluentValidation;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,14 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
 
         public IList<NotificationPipelineActorPropertyEntryViewModel> Entries { get; set; }
 
+        internal void SetScopes(IEnumerable<DHCPv6ScopeResponses.V1.DHCPv6ScopeItem> scopes)
+        {
+            foreach (var item in Entries.Where(x => x.Type == NotifcationActorDescription.ActorPropertyTypes.DHCPv6ScopeList))
+            {
+                item.SetScopes(scopes);
+            }
+        }
+
     }
 
     public class NotificationPipelineActorPropertyEntryViewModelValidator : AbstractValidator<CreateNotificationPipelineActorPropertiesViewModel>
@@ -52,7 +61,11 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
 
             RuleForEach(x => x.Entries).ChildRules(element =>
             {
-                element.RuleFor(x => x.Value).NotEmpty().WithMessage(localizer["ValidationNotEmpty"]);
+                element.RuleFor(x => x.Value).NotEmpty().When(x => 
+                x.Type == NotifcationActorDescription.ActorPropertyTypes.Endpoint ||
+                x.Type == NotifcationActorDescription.ActorPropertyTypes.Username ||
+                x.Type == NotifcationActorDescription.ActorPropertyTypes.Password 
+                ).WithMessage(localizer["ValidationNotEmpty"]);
 
                 element.RuleFor(x => x.Value).Must(x => {
                     try
@@ -65,6 +78,8 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
                         return false;
                     }
                 }).WithMessage(localizer["ValidationNotAValidUrl"]).When(x => x.Type == NotifcationActorDescription.ActorPropertyTypes.Endpoint);
+
+                element.RuleFor(x => x.Values).Cascade(CascadeMode.Stop).NotNull().NotEmpty().Must(x => x.Any(y => y.IsSelected == true)).WithMessage(localizer["ValidationAtLeastOneScopeSelected"]).When(x => x.Type == NotifcationActorDescription.ActorPropertyTypes.DHCPv6ScopeList);
 
             }
            );

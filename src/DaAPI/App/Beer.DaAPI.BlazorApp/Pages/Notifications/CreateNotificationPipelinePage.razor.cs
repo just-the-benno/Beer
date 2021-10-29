@@ -76,9 +76,21 @@ namespace Beer.DaAPI.BlazorApp.Pages.Notifications
             StateHasChanged();
         }
 
-        private void ActorContextOnFieldChanged(object sender, FieldChangedEventArgs e)
+        private async void ActorContextOnFieldChanged(object sender, FieldChangedEventArgs e)
         {
             ValidateContext(_actorContext);
+
+            if (e.FieldIdentifier.FieldName == nameof(CreateNotificationPipelineActorPropertiesViewModel.ActorName))
+            {
+                if (_scopes == null &&
+                    _actorPropertiesModel.Entries.Count(x => x.Type ==  NotifcationActorDescription.ActorPropertyTypes.DHCPv6ScopeList) > 0)
+                {
+                    _scopes = (await _service.GetDHCPv6ScopesAsList()).ToList();
+                }
+
+                _actorPropertiesModel.SetScopes(_scopes);
+                base.StateHasChanged();
+            }
         }
 
         private async void ConditionContextOnFieldChanged(object sender, FieldChangedEventArgs e)

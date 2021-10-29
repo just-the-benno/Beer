@@ -164,6 +164,9 @@ namespace Beer.DaAPI.Infrastructure.NotificationEngine
                         { nameof(NxOsStaticRouteCleanerNotificationActor.Url),  NotifcationActorDescription.ActorPropertyTtpes.Endpoint  },
                         { nameof(NxOsStaticRouteCleanerNotificationActor.Username),  NotifcationActorDescription.ActorPropertyTtpes.Username  },
                         { nameof(NxOsStaticRouteCleanerNotificationActor.Password),  NotifcationActorDescription.ActorPropertyTtpes.Password  },
+                        { nameof(NxOsStaticRouteCleanerNotificationActor.IncludesChildren),  NotifcationActorDescription.ActorPropertyTtpes.Boolean  },
+                        { nameof(NxOsStaticRouteCleanerNotificationActor.ScopeIds),  NotifcationActorDescription.ActorPropertyTtpes.DHCPv6ScopeList  },
+
                     }
                 }
             };

@@ -240,13 +240,13 @@ namespace Beer.DaAPI.Infrastructure.Services
             return existingBindings;
         }
 
-        public async Task CleanupRoutingTable(IEnumerable<PrefixBinding> bindings, TracingStream tracingStream)
+        public async Task<IEnumerable<PrefixBinding>> CleanupRoutingTable(IEnumerable<PrefixBinding> bindings, TracingStream tracingStream)
         {
             var cliPreResult = await ExecuteCLICommand("show ipv6 route static", true, tracingStream);
 
             if (cliPreResult.Item1 == false)
             {
-                return;
+                return Array.Empty<PrefixBinding>();
             }
 
             var existingPrefixes = ParseIPv6RouteJson(cliPreResult.Item2, true);
@@ -265,10 +265,7 @@ namespace Beer.DaAPI.Infrastructure.Services
                 }
             }
 
-            foreach (var item in bindingsToAdd)
-            {
-                await AddIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
-            }
+            return bindingsToAdd;
         }
     }
 }

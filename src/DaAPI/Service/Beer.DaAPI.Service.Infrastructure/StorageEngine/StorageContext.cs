@@ -425,10 +425,10 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                             UniqueIdentifier = exisitingentry.UniqueIdentifier,
                             EndOfRenewalTime = e.Timestamp + e.RenewSpan,
                             EndOfPreferredLifetime = e.Timestamp + e.ReboundSpan,
-                            OrderNumber =  exisitingentry.OrderNumber,
+                            OrderNumber = exisitingentry.OrderNumber,
                         };
 
-                        if(leaseEntry.OrderNumber == 0)
+                        if (leaseEntry.OrderNumber == 0)
                         {
                             leaseEntry.OrderNumber = IPv4Address.FromString(exisitingentry.Address).GetNumericValue();
                         }
@@ -1751,26 +1751,27 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         }
 
-        public async Task<IEnumerable<PrefixBinding>> GetActiveDHCPv6Prefixes()
+        public async Task<IEnumerable<(Guid, PrefixBinding)>> GetActiveDHCPv6Prefixes()
         {
             var preResult = await ((IQueryable<DHCPv6LeaseEntryDataModel>)DHCPv6LeaseEntries).Where(x => x.IsActive == true && x.PrefixLength > 0).Select(x => new
-              {
-                  Address = x.Address,
-                  Prefix = x.Prefix,
-                  Length = x.PrefixLength,
-              }).ToListAsync();
+            {
+                Address = x.Address,
+                Prefix = x.Prefix,
+                Length = x.PrefixLength,
+                ScopeId = x.ScopeId,
+            }).ToListAsync();
 
             return preResult.Select(x =>
             {
                 try
                 {
-                    return new PrefixBinding(IPv6Address.FromString(x.Prefix), new IPv6SubnetMaskIdentifier(x.Length), IPv6Address.FromString(x.Address));
+                    return (x.ScopeId, new PrefixBinding(IPv6Address.FromString(x.Prefix), new IPv6SubnetMaskIdentifier(x.Length), IPv6Address.FromString(x.Address)));
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Couldn't parse {x.Address} {x.Prefix}/{x.Length} into a binding");
                     Console.WriteLine(ex.ToString());
-                    return null;
+                    return (Guid.Empty, null);
                 }
             }).ToArray();
         }
