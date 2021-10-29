@@ -261,7 +261,7 @@ namespace Beer.DaAPI.Infrastructure.Services
             foreach (var item in existingPrefixes)
             {
                 var binding = bindingsToAdd.FirstOrDefault(x => x.Prefix == item.Prefix && x.Host == item.Host && x.Mask == item.Mask);
-                if(bindings == null)
+                if(binding == null)
                 {
                     await RemoveIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
                     removeCounter++;
