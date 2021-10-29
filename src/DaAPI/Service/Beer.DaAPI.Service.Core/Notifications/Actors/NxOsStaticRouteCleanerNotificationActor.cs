@@ -89,6 +89,12 @@ namespace Beer.DaAPI.Core.Notifications.Actors
                 return true;
             }).Select(x => x.Item2).ToArray();
 
+            await tracingStream.Append(14, TracingRecordStatus.Informative, new Dictionary<String, String>
+            {
+               { "PrefixCount",  relevantPrefixes.Count().ToString()}
+            });
+
+
             IEnumerable<PrefixBinding> prefixBindingsToAdd = await _nxosDeviceSerive.CleanupRoutingTable(relevantPrefixes, tracingStream);
 
             foreach (var item in prefixBindingsToAdd)
