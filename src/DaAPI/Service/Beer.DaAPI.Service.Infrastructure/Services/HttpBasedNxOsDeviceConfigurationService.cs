@@ -250,13 +250,24 @@ namespace Beer.DaAPI.Infrastructure.Services
             }
 
             var existingPrefixes = ParseIPv6RouteJson(cliPreResult.Item2, true);
+            List<PrefixBinding> bindingsToAdd = new List<PrefixBinding>(bindings);
 
             foreach (var item in existingPrefixes)
             {
-                if (bindings.Any(x => x.Prefix == item.Prefix && x.Host == item.Host && x.Mask == item.Mask) == false)
+                var binding = bindingsToAdd.FirstOrDefault(x => x.Prefix == item.Prefix && x.Host == item.Host && x.Mask == item.Mask);
+                if(bindings == null)
                 {
                     await RemoveIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
                 }
+                else
+                {
+                    bindingsToAdd.Remove(binding);
+                }
+            }
+
+            foreach (var item in bindingsToAdd)
+            {
+                await AddIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
             }
         }
     }
