@@ -251,6 +251,12 @@ namespace Beer.DaAPI.Infrastructure.Services
 
             var existingPrefixes = ParseIPv6RouteJson(cliPreResult.Item2, true);
             List<PrefixBinding> bindingsToAdd = new List<PrefixBinding>(bindings);
+            await tracingStream.Append(11, TracingRecordStatus.Informative, new Dictionary<String,String>
+            {
+                { "ExistingRouteCount", existingPrefixes.Count().ToString() }
+            });
+
+            Int32 removeCounter = 0;
 
             foreach (var item in existingPrefixes)
             {
@@ -258,12 +264,20 @@ namespace Beer.DaAPI.Infrastructure.Services
                 if(bindings == null)
                 {
                     await RemoveIPv6StaticRoute(item.Prefix, item.Mask.Identifier, item.Host, tracingStream);
+                    removeCounter++;
                 }
                 else
                 {
                     bindingsToAdd.Remove(binding);
                 }
             }
+
+            await tracingStream.Append(12, TracingRecordStatus.Informative, new Dictionary<String, String>
+            {
+                { "ExistingRouteCount", existingPrefixes.Count().ToString() },
+                { "RemoveRouteCounter", removeCounter.ToString() },
+                { "RoutesToAddCounter", bindingsToAdd.Count.ToString() },
+            });
 
             return bindingsToAdd;
         }
