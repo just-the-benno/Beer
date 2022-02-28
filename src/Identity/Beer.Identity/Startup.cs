@@ -1,15 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using IdentityServer4;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using IdentityServerHost.Quickstart.UI;
 using Beer.Identity.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -18,11 +12,9 @@ using Beer.Identity.Services;
 using Beer.Identity.Utilities;
 using MediatR;
 using Beer.Identity.Configuration;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using System.Collections.Generic;
 using System;
 using Beer.Helper.API;
-using System.Linq;
 using Marten;
 using Beer.Identity.Infrastructure.Repositories;
 
@@ -111,7 +103,7 @@ namespace Beer.Identity
                           });
                    });
                     storeOptions.Connection(cString);
-                    storeOptions.AutoCreateSchemaObjects = Weasel.Postgresql.AutoCreate.All;
+                    storeOptions.AutoCreateSchemaObjects = Weasel.Core.AutoCreate.All;
                 });
             }
 

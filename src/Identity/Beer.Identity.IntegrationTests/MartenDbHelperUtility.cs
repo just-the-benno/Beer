@@ -31,7 +31,7 @@ namespace Beer.Identity.IntegrationTests
                        });
                 });
                 storeOptions.Connection(connectionString);
-                storeOptions.AutoCreateSchemaObjects = AutoCreate.All;
+                storeOptions.AutoCreateSchemaObjects = Weasel.Core.AutoCreate.All;
             });
 
             MartenBasedClientRepository repo = new(store);
