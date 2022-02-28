@@ -2417,6 +2417,119 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
 
             Assert.Null(secondResult);
         }
+
+        [Fact]
+        public void HandleSolicit_WithPrefix_CheckPrefixes()
+        {
+            Random random = new Random();
+
+            UInt32 prefixId = random.NextUInt32();
+            IPv6Address prefixNetworkAddress = IPv6Address.FromString("2001:e68:5423::0");
+            IPv6Address maxNetworkAddress = IPv6Address.FromString("2001:0e68:54ff::0");
+
+            Byte prefixLength = 50;
+            Byte assingedPrefixLength = 60;
+
+            var resolverInformations = GetMockupResolver(out Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> scopeResolverMock);
+
+            Guid scopeId = random.NextGuid();
+
+            var minAddress = IPv6Address.FromString("fe80::0");
+            var maxAddress = IPv6Address.FromString($"fe80::3FF");
+
+
+            DHCPv6RootScope rootScope = GetRootScope(scopeResolverMock);
+            rootScope.Load(new List<DomainEvent>{ new DHCPv6ScopeEvents.DHCPv6ScopeAddedEvent(
+                new DHCPv6ScopeCreateInstruction
+                {
+                    AddressProperties = new DHCPv6ScopeAddressProperties(
+                        minAddress,
+                        maxAddress,
+                        new List<IPv6Address>{ },
+                        t1: DHCPv6TimeScale.FromDouble(0.5),
+                        t2: DHCPv6TimeScale.FromDouble(0.75),
+                        preferredLifeTime: TimeSpan.FromDays(0.5),
+                        validLifeTime: TimeSpan.FromDays(1),
+                        rapitCommitEnabled: true,
+                        prefixDelgationInfo: DHCPv6PrefixDelgationInfo.FromValues(prefixNetworkAddress,new IPv6SubnetMaskIdentifier(prefixLength),new IPv6SubnetMaskIdentifier(assingedPrefixLength)),
+                        addressAllocationStrategy: DHCPv6ScopeAddressProperties.AddressAllocationStrategies.Random),
+                    ResolverInformation = resolverInformations,
+                    Name = "Testscope",
+                    Id = scopeId,
+                })
+            });
+
+            HashSet<IPv6Address> usedPrefixes = new HashSet<IPv6Address>();
+            HashSet<IPv6Address> usedAddresses = new HashSet<IPv6Address>();
+
+            for (int i = 0; i < 1024; i++)
+            {
+                var packet = GetSolicitPacket(random, out DUID clientDuid, out UInt32 iaId, false,
+                    new DHCPv6PacketIdentityAssociationPrefixDelegationOption(prefixId, TimeSpan.Zero, TimeSpan.Zero, Array.Empty<DHCPv6PacketByteValueSuboption>()),
+                    new DHCPv6PacketTrueOption(DHCPv6PacketOptionTypes.RapitCommit)
+                    );
+                
+
+                DHCPv6Packet result = rootScope.HandleSolicit(packet, GetServerPropertiesResolver());
+
+                var iaOption = result.GetInnerPacket().GetNonTemporaryIdentiyAssocation(iaId);
+                Assert.NotNull(iaOption);
+
+                var uncastedSuboption = iaOption.Suboptions.First();
+                Assert.NotNull(uncastedSuboption);
+                Assert.IsAssignableFrom<DHCPv6PacketIdentityAssociationAddressSuboption>(uncastedSuboption);
+
+                var addressSubOption = (DHCPv6PacketIdentityAssociationAddressSuboption)uncastedSuboption;
+                IPv6Address expectedAdress = addressSubOption.Address;
+
+                Assert.True(expectedAdress.IsBetween(minAddress, maxAddress));
+                Assert.DoesNotContain(expectedAdress, usedAddresses);
+                usedAddresses.Add(expectedAdress);
+
+                CheckPacket(packet, expectedAdress, iaId, result, DHCPv6PacketTypes.REPLY, DHCPv6PrefixDelegation.None);
+
+                DHCPv6Lease lease = CheckLease(i, i + 1, expectedAdress, scopeId, rootScope, DateTime.UtcNow, clientDuid, iaId, false, true);
+
+                Assert.NotEqual(DHCPv6PrefixDelegation.None, lease.PrefixDelegation);
+                Assert.Equal(assingedPrefixLength, lease.PrefixDelegation.Mask.Identifier);
+                Assert.Equal(prefixId, lease.PrefixDelegation.IdentityAssociation);
+                Assert.True((new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(64))).IsIPv6AdressANetworkAddress(lease.PrefixDelegation.NetworkAddress));
+
+                Assert.True(lease.PrefixDelegation.NetworkAddress.IsBetween(prefixNetworkAddress, maxNetworkAddress));
+
+                CheckEventAmount((i + 1) * 3, rootScope);
+                CheckLeaseCreatedEvent(i * 3, clientDuid, iaId, scopeId, rootScope, expectedAdress, lease);
+                CheckHandeledEvent((i * 3) + 2, packet, result, rootScope, scopeId);
+
+                var createdEvent = rootScope.GetChanges().ElementAt(i*3) as DHCPv6LeaseCreatedEvent;
+                Assert.True(createdEvent.HasPrefixDelegation);
+                Assert.Equal(lease.PrefixDelegation.NetworkAddress, createdEvent.DelegatedNetworkAddress);
+                Assert.Equal(assingedPrefixLength, createdEvent.PrefixLength);
+                Assert.Equal(prefixId, createdEvent.IdentityAssocationIdForPrefix);
+
+                var mask = new IPv6SubnetMask(new IPv6SubnetMaskIdentifier(assingedPrefixLength));
+                Assert.True(mask.IsIPv6AdressANetworkAddress(lease.PrefixDelegation.NetworkAddress));
+                Assert.DoesNotContain(lease.PrefixDelegation.NetworkAddress, usedPrefixes);
+
+                usedPrefixes.Add(lease.PrefixDelegation.NetworkAddress);
+
+                var trigger = CheckTrigger<PrefixEdgeRouterBindingUpdatedTrigger>(rootScope);
+
+                Assert.Equal(scopeId, trigger.ScopeId);
+                Assert.Null(trigger.OldBinding);
+                Assert.NotNull(trigger.NewBinding);
+
+                Assert.Equal(lease.PrefixDelegation.NetworkAddress, trigger.NewBinding.Prefix);
+                Assert.Equal(assingedPrefixLength, trigger.NewBinding.Mask.Identifier);
+                Assert.Equal(expectedAdress, trigger.NewBinding.Host);
+
+                rootScope.ClearTriggers();
+
+            }
+
+            Assert.Equal(1024, usedPrefixes.Count);
+            Assert.Equal(1024, usedAddresses.Count);
+        }
     }
 }
 

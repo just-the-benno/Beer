@@ -148,6 +148,25 @@ namespace Beer.DaAPI.Service.API
             {
                 var storageEngine = sp.GetRequiredService<IDHCPv6StorageEngine>();
                 DHCPv6RootScope scope = storageEngine.GetRootScope().GetAwaiter().GetResult();
+
+                foreach (var item in scope.GetRootScopes())
+                {
+                    foreach (var childScope in item.GetAllChildScopes())
+                    {
+                        foreach (var lease in childScope.Leases.GetAllLeases())
+                        {
+                            if(lease.PrefixDelegation != null)
+                            {
+                                Console.WriteLine($"lease with prefix {lease.Address} and {lease.PrefixDelegation.NetworkAddress}/{lease.PrefixDelegation.Mask.Identifier.Value}");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"lease without prefix {lease.Address}");
+                            }
+                        }
+                    }
+                }
+
                 return scope;
             });
 

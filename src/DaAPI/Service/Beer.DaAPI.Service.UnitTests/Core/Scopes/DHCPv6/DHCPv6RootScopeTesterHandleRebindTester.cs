@@ -320,6 +320,9 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             CheckLeaseActivatedEvent(2, scopeId, lease.Id, rootScope);
 
             CheckHandeledEvent(3, packet, result, rootScope, scopeId, DHCPv6RebindHandledEvent.RebindErrors.NoError);
+
+            var secondReply = rootScope.HandleRebind(packet, GetServerPropertiesResolver());
+
         }
 
         [Theory]

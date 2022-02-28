@@ -54,7 +54,7 @@ namespace Beer.DaAPI.Service.Infrastructure.StorageEngine
         public async Task<bool> DeleteAggregateRoot<T>(Guid id) where T : AggregateRootWithEvents
         {
             String streamId = GetStreamId<T>(id);
-            await _client.SoftDeleteAsync(streamId, StreamState.Any);
+            await _client.DeleteAsync(streamId, StreamState.Any);
             return true;
         }
 

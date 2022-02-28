@@ -37,7 +37,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             DHCPv6Packet packet = DHCPv6Packet.FromByteArray(ByteHelper.CopyData(buffer, offset, size),
            new IPv6HeaderInformation(
                IPv6Address.FromByteArray(sourceAddress),
-               IPv6Address.FromByteArray(base.Endpoint.Address.GetAddressBytes()))
+               IPv6Address.FromString(base.Address))
            );
 
             return packet;

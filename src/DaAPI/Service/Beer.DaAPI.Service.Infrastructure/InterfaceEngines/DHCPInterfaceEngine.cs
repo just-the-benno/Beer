@@ -125,7 +125,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
 
         private void RestartSever(TServer notWorkingServer)
         {
-            _logger.LogInformation("server {address} requested a restart", notWorkingServer.Endpoint.Address);
+            _logger.LogInformation("server {address} requested a restart", notWorkingServer.Endpoint);
 
             var listener = _activeSockets.Where(x => x.Value == notWorkingServer).Select(x => x.Key).FirstOrDefault();
             if (listener != null)
@@ -171,7 +171,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             if (result == false)
             {
                 _logger.LogError("unable to send packet to {receiver}", packet.Header.Destionation);
-                await _serviceBus.Publish(new UnableToSentPacketMessage(server.Endpoint.Address.ToString()));
+                await _serviceBus.Publish(new UnableToSentPacketMessage(server.Endpoint.ToString()));
             }
 
             return result;

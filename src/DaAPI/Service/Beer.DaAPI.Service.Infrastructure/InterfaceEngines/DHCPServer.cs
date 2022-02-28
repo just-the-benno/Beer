@@ -48,7 +48,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
 
         protected override void OnStarted()
         {
-            _logger.LogInformation("Listening on port {address}:{_serverPort} for packets", base.Endpoint.Address, _port);
+            _logger.LogInformation("Listening on port {address}:{_serverPort} for packets", base.Endpoint, _port);
             ReceiveAsync();
         }
 
@@ -59,7 +59,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             IPEndPoint iPEndPoint = (IPEndPoint)endpoint;
 
             _logger.LogDebug("received incoming bytes ({size}) from [{endpoint}]:{endpointPort} on [{listener}]:{listenerPort}",
-                size, iPEndPoint.Address, iPEndPoint.Port, base.Endpoint.Address, base.Endpoint.Port);
+                size, iPEndPoint.Address, iPEndPoint.Port, base.Endpoint, base.Endpoint);
             _logger.LogDebug("NEXT STEP: check if it is a valid packet");
 
             TPacket packet = ParsePacket(((IPEndPoint)endpoint).Address.GetAddressBytes(), buffer, (Int32)offset, (Int32)size);
@@ -67,7 +67,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             if (packet.IsValid == false)
             {
                 _logger.LogInformation("received an invalid packet from [{endpoint}]:{endpointPort} on [{listener}]:{listenerPort}",
-                    iPEndPoint.Address, iPEndPoint.Port, base.Endpoint.Address, base.Endpoint.Port);
+                    iPEndPoint.Address, iPEndPoint.Port, base.Endpoint, base.Endpoint);
                 _logger.LogInformation("NEXT STEP: drop packet");
 
                 await _serviceBus.Publish(_invalidPacketarrivedMessageFactory(packet));
@@ -75,7 +75,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
             else
             {
                 _logger.LogInformation("received a valid dhcpv6 pakcet from [{endpoint}]:{endpointPort} on [{listener}]:{listenerPort}",
-                    iPEndPoint.Address, iPEndPoint.Port, base.Endpoint.Address, base.Endpoint.Port);
+                    iPEndPoint.Address, iPEndPoint.Port, base.Endpoint, base.Endpoint);
                 _logger.LogDebug("NEXT STEP: check if packet needs to be filtered");
 
                 await _serviceBus.Publish(_validPacketarrivedMessageFactory(packet));
@@ -98,7 +98,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
 
             _logger.LogDebug("sending packet with {length} bytes to [{destinationAddress}]:{destionationPort} from [{listenerAddress}:{listenerPort}]",
                 packetAsStream.Length, packet.Header.Destionation, port,
-                base.Endpoint.Address, base.Endpoint.Port);
+                base.Endpoint, base.Endpoint);
 
             if (_logger.IsEnabled(LogLevel.Debug) == true)
             {

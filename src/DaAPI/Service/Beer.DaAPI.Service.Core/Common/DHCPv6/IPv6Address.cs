@@ -73,6 +73,18 @@ namespace Beer.DaAPI.Core.Common.DHCPv6
             return new IPv6Address(ByteHelper.CopyData(stream, start, 16), false);
         }
 
+        public static IPv6Address TryFromString(String address)
+        {
+            try
+            {
+                return IPv6Address.FromString(address);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public static IPv6Address FromString(String address)
         {
             if (String.IsNullOrEmpty(address) == true)

@@ -20,15 +20,15 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         {
             ValueConverter<T, string> converter = new ValueConverter<T, string>
             (
-                v => JsonSerializer.Serialize(v, null),
-                v => JsonSerializer.Deserialize<T>(v, null) ?? new T()
+                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),
+                v => JsonSerializer.Deserialize<T>(v, new JsonSerializerOptions()) ?? new T()
             );
 
             ValueComparer<T> comparer = new ValueComparer<T>
             (
-                (l, r) => JsonSerializer.Serialize(l, null) == JsonSerializer.Serialize(r, null),
-                v => v == null ? 0 : JsonSerializer.Serialize(v, null).GetHashCode(),
-                v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, null), null)
+                (l, r) => JsonSerializer.Serialize(l, new JsonSerializerOptions()) == JsonSerializer.Serialize(r, new JsonSerializerOptions()),
+                v => v == null ? 0 : JsonSerializer.Serialize(v, new JsonSerializerOptions()).GetHashCode(),
+                v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, new JsonSerializerOptions()), new JsonSerializerOptions())
             );
 
             propertyBuilder.HasConversion(converter);

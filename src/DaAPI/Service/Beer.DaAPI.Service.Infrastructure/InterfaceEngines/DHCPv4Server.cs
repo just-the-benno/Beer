@@ -35,7 +35,7 @@ namespace Beer.DaAPI.Infrastructure.InterfaceEngines
         {
             DHCPv4Packet packet = DHCPv4Packet.FromByteArray(ByteHelper.CopyData(buffer, offset, size),
                IPv4Address.FromByteArray(sourceAddress),
-               IPv4Address.FromByteArray(base.Endpoint.Address.GetAddressBytes()));
+               IPv4Address.FromString(base.Address));
 
             return packet;
         }

@@ -153,11 +153,11 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                                                  select subG.OrderByDescending(x => x.Timestamp).Cast<DHCPv6LeaseEntryDataModel>().FirstOrDefault())
                                     }).ToDictionary(x => x.Id, x => x.Items.ToArray());
 
-            return firstGroupResult.ToDictionary(x => x.Key, x => x.Value.Select(y => new DHCPv6LeaseCreatedEvent
+            return firstGroupResult.ToDictionary(x => x.Key, x => (IEnumerable<DHCPv6LeaseCreatedEvent>)x.Value.Select(y => new DHCPv6LeaseCreatedEvent
             {
                 Address = IPv6Address.FromString(y.Address),
-                DelegatedNetworkAddress = String.IsNullOrEmpty(y.Prefix) == true ? null : IPv6Address.FromString(y.Prefix),
-                HasPrefixDelegation = String.IsNullOrEmpty(y.Prefix),
+                DelegatedNetworkAddress = String.IsNullOrEmpty(y.Prefix) == true ? null : IPv6Address.TryFromString(y.Prefix),
+                HasPrefixDelegation = String.IsNullOrEmpty(y.Prefix) == false && IPv6Address.TryFromString(y.Prefix) != null,
                 PrefixLength = y.PrefixLength,
                 IdentityAssocationId = y.IdentityAssocationId,
                 IdentityAssocationIdForPrefix = y.IdentityAssocationIdForPrefix,
@@ -168,7 +168,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 ValidUntil = y.End,
                 Timestamp = y.Timestamp,
                 UniqueIdentiifer = y.UniqueIdentifier,
-            }));
+            }).ToList());
         }
 
         private async Task<Boolean?> ProjectDHCPv6PacketAndLeaseRelatedEvents(DomainEvent @event)

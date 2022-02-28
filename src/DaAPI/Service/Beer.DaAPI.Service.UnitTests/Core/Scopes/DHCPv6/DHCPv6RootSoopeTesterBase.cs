@@ -68,6 +68,19 @@ namespace Beer.DaAPI.UnitTests.Core.Scopes.DHCPv6
             return resolverInformations;
         }
 
+        protected static CreateScopeResolverInformation GetMockupResolver(out Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> scopeResolverMock)
+        {
+            CreateScopeResolverInformation resolverInformations = new CreateScopeResolverInformation { Typename = "something" };
+            scopeResolverMock = new Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+
+            Mock<IScopeResolver<DHCPv6Packet, IPv6Address>> resolverMock = new Mock<IScopeResolver<DHCPv6Packet, IPv6Address>>(MockBehavior.Strict);
+            resolverMock.Setup(x => x.PacketMeetsCondition(It.IsAny<DHCPv6Packet>())).Returns(true);
+            resolverMock.SetupGet(x => x.HasUniqueIdentifier).Returns(false);
+            scopeResolverMock.Setup(x => x.InitializeResolver(resolverInformations)).Returns(resolverMock.Object);
+
+            return resolverInformations;
+        }
+
         protected static CreateScopeResolverInformation GetMockupResolver(
            IEnumerable<DHCPv6Packet> packets,
            out Mock<IScopeResolverManager<DHCPv6Packet, IPv6Address>> scopeResolverMock,
