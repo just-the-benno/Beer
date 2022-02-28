@@ -42,6 +42,26 @@ using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
 
 namespace Beer.DaAPI.Infrastructure.StorageEngine
 {
+    public static class DateTimeExtensions
+    {
+        public static DateTime? SetKindUtc(this DateTime? dateTime)
+        {
+            if (dateTime.HasValue)
+            {
+                return dateTime.Value.SetKindUtc();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static DateTime SetKindUtc(this DateTime dateTime)
+        {
+            if (dateTime.Kind == DateTimeKind.Utc) { return dateTime; }
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+        }
+    }
+
     public class StorageContext : DbContext, IDHCPv6ReadStore, IDHCPv4ReadStore, IDHCPv6PrefixCollector
     {
         #region Fields
@@ -562,7 +582,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         EventType = item.GetType().Name,
                         FullEventType = item.GetType().FullName,
                         ScopeId = item is DHCPv4ScopeRelatedEvent ? ((DHCPv4ScopeRelatedEvent)item).ScopeId : ((DHCPv6ScopeRelatedEvent)item).ScopeId,
-                        Timestamp = DateTime.Now,
+                        Timestamp = DateTime.Now.SetKindUtc(),
                         LeaseId = item is DHCPv4ScopeRelatedEvent ? ((DHCPv4ScopeRelatedEvent)item).EntityId : ((DHCPv6ScopeRelatedEvent)item).EntityId,
                         EventData = JsonConvert.SerializeObject(item, settings)
                     };
@@ -843,7 +863,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
         public async Task<DashboardResponse> GetDashboardOverview()
         {
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.UtcNow.SetKindUtc();
 
             DashboardResponse response = new DashboardResponse
             {
@@ -1029,7 +1049,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                 return new Dictionary<DateTime, Int32>();
             }
 
-            end ??= DateTime.UtcNow;
+            end ??= DateTime.UtcNow.SetKindUtc();
             DateTime currentStart;
 
             var preResult = await set.Where(x => start.Value < x.End && end.Value >= x.Start)
@@ -1082,7 +1102,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         {
             var entry = new DHCPv6PacketHandledEntryDataModel
             {
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.SetKindUtc(),
 
                 RequestSize = packet.GetSize(),
                 RequestDestination = packet.Header.Destionation.ToString(),
@@ -1112,7 +1132,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
 
             var entry = new DHCPv4PacketHandledEntryDataModel
             {
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.SetKindUtc(),
 
                 RequestSize = packet.GetSize(),
                 RequestDestination = packet.Header.Destionation.ToString(),
@@ -1279,7 +1299,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == streamId);
             if (dataModel == null) { return false; }
 
-            dataModel.ClosedAt = DateTime.UtcNow;
+            dataModel.ClosedAt = DateTime.UtcNow.SetKindUtc();
             return await SaveChangesAsyncInternal();
         }
 

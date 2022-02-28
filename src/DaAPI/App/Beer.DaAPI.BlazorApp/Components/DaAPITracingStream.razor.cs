@@ -106,7 +106,8 @@ namespace Beer.DaAPI.BlazorApp.Components
                  InvokeAsync(StateHasChanged);
              });
 
-            await _hubConnection.StartAsync();
+            //await _hubConnection.StartAsync();
+            await Task.Delay(10);
 
         }
 
@@ -181,23 +182,32 @@ namespace Beer.DaAPI.BlazorApp.Components
 
         public async ValueTask DisposeAsync()
         {
-            if (_hubConnection != null)
+            try
             {
-                await UnsubscribeOfGroup();
-                await _hubConnection.DisposeAsync();
+                if (_hubConnection != null)
+                {
+                    await UnsubscribeOfGroup();
+                    await _hubConnection.DisposeAsync();
+                }
+            }
+            catch (Exception)
+            {
+
             }
         }
 
         private async Task UnsubscribeOfGroup()
         {
-            await _hubConnection.SendAsync("Unsubscribe", _subscripedGroup);
-            _subscripedGroup = String.Empty;
+            //await _hubConnection.SendAsync("Unsubscribe", _subscripedGroup);
+            //_subscripedGroup = String.Empty;
+            await Task.Delay(10);
         }
 
         private async Task SubscribeToGroup(String groupName)
         {
-            await _hubConnection.SendAsync("Subscribe", groupName);
-            _subscripedGroup = groupName;
+            //await _hubConnection.SendAsync("Subscribe", groupName);
+            //_subscripedGroup = groupName;
+            await Task.Delay(10);
         }
     }
 }
