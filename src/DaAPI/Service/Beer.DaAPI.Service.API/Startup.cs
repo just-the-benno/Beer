@@ -155,13 +155,13 @@ namespace Beer.DaAPI.Service.API
                     {
                         foreach (var lease in childScope.Leases.GetAllLeases())
                         {
-                            if(lease.PrefixDelegation != null)
+                            if(lease.PrefixDelegation != null && lease.PrefixDelegation != DHCPv6PrefixDelegation.None)
                             {
-                                Console.WriteLine($"lease with prefix {lease.Address} and {lease.PrefixDelegation.NetworkAddress}/{lease.PrefixDelegation.Mask.Identifier.Value}");
+                                Console.WriteLine($"lease {lease.Address} with prefix {lease.PrefixDelegation.NetworkAddress}/{lease.PrefixDelegation.Mask.Identifier.Value}");
                             }
                             else
                             {
-                                Console.WriteLine($"lease without prefix {lease.Address}");
+                                Console.WriteLine($"lease {lease.Address} without  prefix ");
                             }
                         }
                     }
@@ -308,6 +308,8 @@ namespace Beer.DaAPI.Service.API
 
         public async void Configure(IApplicationBuilder app, IServiceProvider provider)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -562,7 +562,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                         EventType = item.GetType().Name,
                         FullEventType = item.GetType().FullName,
                         ScopeId = item is DHCPv4ScopeRelatedEvent ? ((DHCPv4ScopeRelatedEvent)item).ScopeId : ((DHCPv6ScopeRelatedEvent)item).ScopeId,
-                        Timestamp = DateTime.UtcNow,
+                        Timestamp = DateTime.Now,
                         LeaseId = item is DHCPv4ScopeRelatedEvent ? ((DHCPv4ScopeRelatedEvent)item).EntityId : ((DHCPv6ScopeRelatedEvent)item).EntityId,
                         EventData = JsonConvert.SerializeObject(item, settings)
                     };
