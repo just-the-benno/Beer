@@ -66,6 +66,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
     {
         #region Fields
 
+        private static SemaphoreSlim _semaphoreSlim = new(1, 1);
+
         #endregion
 
         #region Sets
@@ -107,8 +109,18 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                  .HasJsonConversion();
         }
 
-        private async Task<Boolean> SaveChangesAsyncInternal() => await SaveChangesAsync() > 0;
-
+        private async Task<Boolean> SaveChangesAsyncInternal()
+        {
+            try
+            {
+                await _semaphoreSlim.WaitAsync();
+                return await SaveChangesAsync() > 0;
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
+        }
 
         public async Task<IEnumerable<DHCPv6Listener>> GetDHCPv6Listener()
         {
