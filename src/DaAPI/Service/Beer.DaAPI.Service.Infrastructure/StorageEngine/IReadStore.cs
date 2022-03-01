@@ -11,6 +11,13 @@ using static Beer.DaAPI.Shared.Responses.TracingResponses.V1;
 
 namespace Beer.DaAPI.Infrastructure.StorageEngine
 {
+    public interface ITracingStore
+    {
+        Task<Boolean> AddTracingStream(TracingStream stream);
+        Task<Boolean> AddTracingRecord(TracingRecord record);
+        Task<Boolean> CloseTracingStream(Guid streamId);
+    }
+
     public interface IReadStore
     {
         Task<Boolean> Project(IEnumerable<DomainEvent> events);
@@ -20,9 +27,7 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
         Task<Boolean> DeletePacketHandledEventsOlderThan(DateTime handledEventThreshold);
         Task<Boolean> DeletePacketHandledEventMoreThan(UInt32 amount);
        
-        Task<Boolean> AddTracingStream(TracingStream stream);
-        Task<Boolean> AddTracingRecord(TracingRecord record);
-        Task<Boolean> CloseTracingStream(Guid streamId);
+        
         Task<Boolean> RemoveTracingStreamsOlderThan(DateTime tracingStreamThreshold);
         Task<FilteredResult<TracingStreamOverview>> GetTracingOverview(FilterTracingRequest request);
         Task<IEnumerable<TracingStreamRecord>> GetTracingStreamRecords(Guid traceid, Guid? entityId);

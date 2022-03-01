@@ -66,8 +66,6 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
     {
         #region Fields
 
-        private static SemaphoreSlim _semaphoreSlim = new(1, 1);
-
         #endregion
 
         #region Sets
@@ -109,18 +107,8 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
                  .HasJsonConversion();
         }
 
-        private async Task<Boolean> SaveChangesAsyncInternal()
-        {
-            try
-            {
-                await _semaphoreSlim.WaitAsync();
-                return await SaveChangesAsync() > 0;
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
-        }
+        private async Task<Boolean> SaveChangesAsyncInternal() => await SaveChangesAsync() > 0;
+
 
         public async Task<IEnumerable<DHCPv6Listener>> GetDHCPv6Listener()
         {
@@ -1274,46 +1262,46 @@ namespace Beer.DaAPI.Infrastructure.StorageEngine
             return result;
         }
 
-        public async Task<Boolean> AddTracingStream(TracingStream stream)
-        {
-            TracingStreamDataModel dataModel = new(stream);
-            TracingStreamEntryDataModel entry = new(stream, dataModel);
+        //public async Task<Boolean> AddTracingStream(TracingStream stream)
+        //{
+        //    TracingStreamDataModel dataModel = new(stream);
+        //    TracingStreamEntryDataModel entry = new(stream, dataModel);
 
-            TracingStreams.Add(dataModel);
-            TracingStreamRecords.Add(entry);
+        //    TracingStreams.Add(dataModel);
+        //    TracingStreamRecords.Add(entry);
 
-            return await SaveChangesAsyncInternal();
-        }
+        //    return await SaveChangesAsyncInternal();
+        //}
 
-        public async Task<Boolean> AddTracingRecord(TracingRecord record)
-        {
-            TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == record.StreamId);
-            if (dataModel == null) { return false; }
+        //public async Task<Boolean> AddTracingRecord(TracingRecord record)
+        //{
+        //    TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == record.StreamId);
+        //    if (dataModel == null) { return false; }
 
-            dataModel.RecordCount += 1;
-            if (record.Status == TracingRecordStatus.Error)
-            {
-                dataModel.ResultType = (Int32)TracingRecordStatus.Error;
-            }
-            else if (record.Status == TracingRecordStatus.Success)
-            {
-                dataModel.ResultType = (Int32)TracingRecordStatus.Success;
-            }
+        //    dataModel.RecordCount += 1;
+        //    if (record.Status == TracingRecordStatus.Error)
+        //    {
+        //        dataModel.ResultType = (Int32)TracingRecordStatus.Error;
+        //    }
+        //    else if (record.Status == TracingRecordStatus.Success)
+        //    {
+        //        dataModel.ResultType = (Int32)TracingRecordStatus.Success;
+        //    }
 
-            TracingStreamEntryDataModel entry = new(record, dataModel);
-            TracingStreamRecords.Add(entry);
+        //    TracingStreamEntryDataModel entry = new(record, dataModel);
+        //    TracingStreamRecords.Add(entry);
 
-            return await SaveChangesAsyncInternal();
-        }
+        //    return await SaveChangesAsyncInternal();
+        //}
 
-        public async Task<Boolean> CloseTracingStream(Guid streamId)
-        {
-            TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == streamId);
-            if (dataModel == null) { return false; }
+        //public async Task<Boolean> CloseTracingStream(Guid streamId)
+        //{
+        //    TracingStreamDataModel dataModel = await ((IQueryable<TracingStreamDataModel>)TracingStreams).FirstOrDefaultAsync(x => x.Id == streamId);
+        //    if (dataModel == null) { return false; }
 
-            dataModel.ClosedAt = DateTime.UtcNow.SetKindUtc();
-            return await SaveChangesAsyncInternal();
-        }
+        //    dataModel.ClosedAt = DateTime.UtcNow.SetKindUtc();
+        //    return await SaveChangesAsyncInternal();
+        //}
 
         public async Task<Boolean> RemoveTracingStreamsOlderThan(DateTime tracingStreamThreshold)
         {

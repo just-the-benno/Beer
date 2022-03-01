@@ -13,9 +13,9 @@ namespace Beer.DaAPI.Infrastructure.Tracing
     public class TracingManager : ITracingManager
     {
         private readonly IServiceBus _serviceBus;
-        private readonly IReadStore _store;
+        private readonly ITracingStore _store;
 
-        public TracingManager(IServiceBus serviceBus, IReadStore store)
+        public TracingManager(IServiceBus serviceBus, ITracingStore store)
         {
             this._serviceBus = serviceBus ?? throw new ArgumentNullException(nameof(serviceBus));
             this._store = store ?? throw new ArgumentNullException(nameof(store));

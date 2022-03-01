@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
+using Beer.DaAPI.Service.Infrastructure.StorageEngine;
 
 namespace Beer.DaAPI.Service.IntegrationTests.Tracing
 {
@@ -49,7 +50,10 @@ namespace Beer.DaAPI.Service.IntegrationTests.Tracing
             //String dbName = random.GetAlphanumericString();
             String dbName = "DaAPI";
 
+            String dbConnectionString = $"{ConfigurationUtility.GetConnectionString("DaAPIDatabaseTestConnection")};Database={dbName};";
+
             var context = DatabaseTestingUtility.GetTestDatabaseContext(dbName);
+            var wrtieStore = new DapperBasedTracingStore(dbConnectionString, Mock.Of<ILogger<DapperBasedTracingStore>>());
             try
             {
                 context.Database.Migrate();
@@ -57,7 +61,7 @@ namespace Beer.DaAPI.Service.IntegrationTests.Tracing
                 Mock<IDHCPv6StorageEngine> storeEngineMock = new Mock<IDHCPv6StorageEngine>();
                 storeEngineMock.Setup(x => x.Save(It.IsAny<NotificationPipeline>())).ReturnsAsync(true);
 
-                var tracingManager = new TracingManager(Mock.Of<IServiceBus>(), context);
+                var tracingManager = new TracingManager(Mock.Of<IServiceBus>(), wrtieStore);
 
                 NotificationEngine engine = new NotificationEngine(
                     storeEngineMock.Object, tracingManager);
@@ -136,7 +140,7 @@ namespace Beer.DaAPI.Service.IntegrationTests.Tracing
             }
             finally
             {
-                //await DatabaseTestingUtility.DeleteDatabase(dbName);
+                await DatabaseTestingUtility.DeleteDatabase(dbName);
             }
         }
 

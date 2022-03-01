@@ -155,7 +155,7 @@ namespace Beer.DaAPI.Service.API
                     {
                         foreach (var lease in childScope.Leases.GetAllLeases())
                         {
-                            if(lease.PrefixDelegation != null && lease.PrefixDelegation != DHCPv6PrefixDelegation.None)
+                            if (lease.PrefixDelegation != null && lease.PrefixDelegation != DHCPv6PrefixDelegation.None)
                             {
                                 Console.WriteLine($"lease {lease.Address} with prefix {lease.PrefixDelegation.NetworkAddress}/{lease.PrefixDelegation.Mask.Identifier.Value}");
                             }
@@ -182,6 +182,8 @@ namespace Beer.DaAPI.Service.API
 
             var esdbSettings = EventStoreClientSettings.Create(Configuration.GetConnectionString("ESDB"));
             esdbSettings.DefaultCredentials = new UserCredentials(appSettings.EventStoreSettings.Username, appSettings.EventStoreSettings.Password);
+
+            services.AddTransient<ITracingStore, DapperBasedTracingStore>(sp => new DapperBasedTracingStore(Configuration.GetConnectionString("DaAPIDb"), sp.GetService<ILogger<DapperBasedTracingStore>>()));
 
             services.AddSingleton(new EventStoreBasedStoreConnenctionOptions(new EventStoreClient(esdbSettings), appSettings.EventStoreSettings.Prefix));
 
@@ -279,7 +281,7 @@ namespace Beer.DaAPI.Service.API
             services.AddHostedService<HostedService.LeaseTimerHostedService>();
             services.AddHostedService<HostedService.CleanupDatabaseTimerHostedService>();
             services.AddHostedService<HostedService.NotificationTimerHostedService>();
-            
+
 #if DEBUG
             services.AddHostedService<HostedService.FakeTracingStreamEmitter>();
 #endif
